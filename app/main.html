@@ -14,43 +14,29 @@
 	</head>
 	<body ng-app="boilerplateApp" layout="row" ng-controller="AppController as appCtrl" ng-init="appCtrl.initialize()">
 
-		<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="sidebar" md-is-locked-open="$mdMedia('gt-sm')">
-
-			<md-toolbar class="md-theme-indigo">
-				<h1 class="md-toolbar-tools">Sidebar</h1>
-			</md-toolbar>
-
-			<div layout="column" layout-align="space-between start"
-					 ng-controller="SidebarController as sidebarCtrl" ng-init="sidebarCtrl.initialize()">
-				<md-list>
-					<md-list-item ng-repeat="item in sidebarCtrl.items">
-						<md-button ng-class="{ 'selected': item === sidebarCtrl.selectedItem }" ng-click="sidebarCtrl.selectItem(item)">
-							 {{ item.text }}
-						 </md-button>
-					 </md-list-item>
-				 </md-list>
-				 <div flex layout="row" layout-align="end end">
-					 <md-button class="md-fab md-fab-bottom-right" ng-click="sidebarCtrl.addItem()">
-						 <md-icon>add</md-icon>
-					 </md-button>
-				 </div>
-			 </div>
-
-		</md-sidenav>
-
 		<div flex layout="column" tabindex="-1" class="md-whiteframe-z2" role="main">
-
-			<md-toolbar layout="row" class="md-whiteframe-z1">
-				<md-button class="menu" hide-gt-sm ng-click="appCtrl.toggleSidebar()" aria-label="Show Active Sessions">
-					<md-icon>menu</md-icon>
-				</md-button>
-				<h1>Electron Boilerplate</h1>
+			<md-toolbar>
+				<div class="md-toolbar-tools">
+					<h1>
+						<span>Inspect Demonstrator</span>
+					</h1>
+					<span flex></span>
+					<md-button class="md-icon-button" ui-sref="library()" ui-sref-opts="{ reload: true }" ui-sref-active="selected">
+						<md-tooltip>Access your library</md-tooltip>
+						<md-icon>local_library</md-icon>
+					</md-button>
+					<md-button class="md-icon-button" ui-sref="incidents()" ui-sref-opts="{ reload: true }" ui-sref-active="selected">
+						<md-tooltip>Access your incidents</md-tooltip>
+						<md-icon>content_copy</md-icon>
+					</md-button>
+					<md-button class="md-icon-button" ui-sref="logs()" ui-sref-opts="{ reload: true }" ui-sref-active="selected">
+						<md-tooltip>Access your audit logs</md-tooltip>
+						<md-icon>import_export</md-icon>
+					</md-button>					
+				</div>
 			</md-toolbar>
 
-			<md-content flex id="content" ui-view>
-
-			</md-content>
-
+			<md-content flex id="content" ui-view></md-content>
 		</div>
 
     <script type="text/javascript" src="node_modules/angular/angular.min.js"></script>
@@ -60,7 +46,9 @@
 		<script type="text/javascript" src="node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
 		<script type="text/javascript" src="node_modules/angular-sanitize/angular-sanitize.min.js"></script>
 		<script type="text/javascript" src="js/appCtrl.js"></script>
-		<script type="text/javascript" src="js/sidebarCtrl.js"></script>
+		<script type="text/javascript" src="js/libraryCtrl.js"></script>
+		<script type="text/javascript" src="js/incidentCtrl.js"></script>
+		<script type="text/javascript" src="js/logCtrl.js"></script>
 		<script type="text/javascript" src="js/routes.js"></script>
 
 	</body>

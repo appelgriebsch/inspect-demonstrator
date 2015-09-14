@@ -3,28 +3,11 @@ body {
 	padding: 0px;
 	margin: 0px;
 	height: 100%;
+	-webkit-user-select: none;
 }
 
-md-sidenav md-list {
-	width: 100%;
-	text-align: left;
-}
-
-md-sidenav md-list .md-button {
-	width: 100%;
-	text-align: left;
-}
-
-md-sidenav md-list .md-button.selected {
+md-toolbar .md-button.selected md-icon {
 	color: #03a9f4;
-}
-
-.menu {
-	background-color: transparent;
-	border: none;
-	height: 38px;
-	width: 38px;
-	margin: 16px;
 }
 
 md-toolbar h1 {
