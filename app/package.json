@@ -33,6 +33,8 @@
     "multicast-dns": "^3.0.0",
     "multicast-dns-service-types": "^1.1.0",
     "network-address": "^1.0.0",
+    "pageres": "^2.1.0",
+    "pdfjs-dist": "^1.1.465",
     "pouchdb": "^4.0.2",
     "pouchdb-find": "^0.3.5",
     "pouchdb-quick-search": "^1.1.0",
