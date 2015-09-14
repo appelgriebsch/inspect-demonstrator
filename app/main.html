@@ -21,7 +21,7 @@
 						<span>Inspect Demonstrator</span>
 					</h1>
 					<span flex></span>
-					<md-button class="md-icon-button" md-no-ink ui-sref="library()" ui-sref-opts="{ reload: true }" ui-sref-active="selected">
+					<md-button class="md-icon-button" md-no-ink ui-sref="library.list()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('library') }">
 						<md-icon>local_library</md-icon>
 						<md-tooltip>Access your library</md-tooltip>
 					</md-button>
@@ -49,6 +49,8 @@
 		<script type="text/javascript" src="js/libraryCtrl.js"></script>
 		<script type="text/javascript" src="js/incidentCtrl.js"></script>
 		<script type="text/javascript" src="js/logCtrl.js"></script>
+		<script type="text/javascript" src="js/uploadCtrl.js"></script>
+		<script type="text/javascript" src="js/docCtrl.js"></script>
 		<script type="text/javascript" src="js/routes.js"></script>
 
 	</body>
