@@ -6,8 +6,8 @@ body {
 	-webkit-user-select: none;
 }
 
-md-toolbar .md-button.selected md-icon {
-	color: #03a9f4;
+md-toolbar .md-button:not(.selected) md-icon {
+	color: #bdbdbd;
 }
 
 md-toolbar h1 {
