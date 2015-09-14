@@ -2,8 +2,8 @@
 
   'use strict';
 
-  angular.module('boilerplateApp', [ 'ngMaterial', 'ngSanitize', 'ui.router' ]);
-  angular.module('boilerplateApp').controller('AppController', ['$mdSidenav', '$log', '$q', AppController]);
+  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'ui.router']);
+  angular.module('inspectApp').controller('AppController', ['$mdSidenav', '$log', '$q', AppController]);
 
   function AppController($mdSidenav, $log, $q) {
 

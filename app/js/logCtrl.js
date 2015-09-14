@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('boilerplateApp').controller('LogController', ['$state', '$log', '$q', LogController]);
+  angular.module('inspectApp').controller('LogController', ['$state', '$log', '$q', LogController]);
 
   function LogController($state, $log, $q) {
 
@@ -12,8 +12,7 @@
 
     };
 
-    self.addItem = function() {
-    };
+    self.addItem = function() {};
 
   };
 

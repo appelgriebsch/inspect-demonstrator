@@ -19,7 +19,7 @@
   PouchDB.plugin(require('transform-pouch'));
 
   // initialize service finder module
-  var ServiceFinder = require('./libs/ServiceFinder');
+  var ServiceFinder = require('node-servicefinder').ServiceFinder;
 
   // create main application window
   function createMainWindow () {

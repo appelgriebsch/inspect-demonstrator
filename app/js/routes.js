@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('boilerplateApp')
+  angular.module('inspectApp')
     .config(function($stateProvider, $urlRouterProvider) {
 
       // for all unmatched entries

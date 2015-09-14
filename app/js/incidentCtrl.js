@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('boilerplateApp').controller('IncidentController', ['$state', '$log', '$q', IncidentController]);
+  angular.module('inspectApp').controller('IncidentController', ['$state', '$log', '$q', IncidentController]);
 
   function IncidentController($state, $log, $q) {
 
@@ -12,8 +12,7 @@
 
     };
 
-    self.addItem = function() {
-    };
+    self.addItem = function() {};
 
   };
 

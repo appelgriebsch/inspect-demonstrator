@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('boilerplateApp').controller('LibraryController', ['$state', '$log', '$q', LibraryController]);
+  angular.module('inspectApp').controller('LibraryController', ['$state', '$log', '$q', LibraryController]);
 
   function LibraryController($state, $log, $q) {
 
@@ -12,8 +12,7 @@
 
     };
 
-    self.addItem = function() {
-    };
+    self.addItem = function() {};
 
   };
 
