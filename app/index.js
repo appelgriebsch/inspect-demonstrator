@@ -25,12 +25,12 @@
   function createMainWindow () {
 
     var win = new BrowserWindow({
-  		width: 600,
-  		height: 400,
+  		width: 1024,
+  		height: 768,
   		resizable: true
   	});
 
-  	win.loadUrl('file://' + __dirname + '/main.html');
+  	win.loadUrl('file://' + __dirname + '/index.html');
   	win.on('closed', onClosed);
 
   	return win;

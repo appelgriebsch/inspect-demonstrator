@@ -6,34 +6,38 @@
     .config(function($stateProvider, $urlRouterProvider) {
 
       // for all unmatched entries
-      $urlRouterProvider.otherwise("/library/list");
+      $urlRouterProvider.otherwise("/main/library");
 
       // separate states
       $stateProvider
-        .state("library", {
+        .state("main", {
+          url: "/main",
+          templateUrl: "views/main.html"
+        })
+        .state("main.library", {
           url: "/library",
           templateUrl: "views/library.html",
-          controller: "LibraryController as libraryCtrl"
+          controller: "LibraryController as ctl"
         })
-        .state("library.list", {
-          url: "/list",
-          templateUrl: "views/documents.html",
-          controller: "DocumentController as docCtrl"
-        })
-        .state("library.new", {
-          url: "/new",
+        .state("main.uploadFiles", {
+          url: "/uploadFiles",
           templateUrl: "views/upload.html",
-          controller: "UploadController as uploadCtrl"
+          controller: "UploadController as ctl"
         })
-        .state("incidents", {
-          url: "/incidents",
+        .state("main.captureUrl", {
+          url: "/captureUrl",
+          templateUrl: "views/capture.html",
+          controller: "CaptureController as ctl"
+        })
+        .state("main.incidents", {
+          url: "/incidents/list",
           templateUrl: "views/incidents.html",
-          controller: "IncidentController as incidentCtrl"
+          controller: "IncidentController as ctl"
         })
-        .state("logs", {
-          url: "/logs",
+        .state("main.logs", {
+          url: "/logs/list",
           templateUrl: "views/logs.html",
-          controller: "LogController as logCtrl"
+          controller: "LogController as ctl"
         });
     });
 })();

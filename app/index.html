@@ -7,7 +7,7 @@
 		<meta name="description" content="">
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-		<title>Electron boilerplate</title>
+		<title>Inspect Demonstrator</title>
 		<link rel="stylesheet" href="css/fonts.css"/>
 		<link rel="stylesheet" href="node_modules/angular-material/angular-material.min.css"/>
     <link rel="stylesheet" href="css/main.css"/>
@@ -21,18 +21,19 @@
 						<span>Inspect Demonstrator</span>
 					</h1>
 					<span flex></span>
-					<md-button class="md-icon-button" md-no-ink ui-sref="library.list()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('library') }">
+					<md-button class="md-icon-button" md-no-ink ui-sref="main.library()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('main.library') }">
 						<md-icon>local_library</md-icon>
 						<md-tooltip>Access your library</md-tooltip>
 					</md-button>
-					<md-button class="md-icon-button" md-no-ink ui-sref="incidents()" ui-sref-opts="{ reload: true }" ui-sref-active="selected">
+					<md-button class="md-icon-button" md-no-ink ui-sref="main.incidents()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('main.incidents') }">
 						<md-icon>content_copy</md-icon>
 						<md-tooltip>Access your incidents</md-tooltip>
 					</md-button>
-					<md-button class="md-icon-button" md-no-ink ui-sref="logs()" ui-sref-opts="{ reload: true }" ui-sref-active="selected">
+					<md-button class="md-icon-button" md-no-ink ui-sref="main.logs()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('main.logs') }">
 						<md-icon>import_export</md-icon>
 						<md-tooltip>Access your audit logs</md-tooltip>
 					</md-button>
+					<span></span>
 				</div>
 			</md-toolbar>
 
@@ -50,7 +51,7 @@
 		<script type="text/javascript" src="js/incidentCtrl.js"></script>
 		<script type="text/javascript" src="js/logCtrl.js"></script>
 		<script type="text/javascript" src="js/uploadCtrl.js"></script>
-		<script type="text/javascript" src="js/docCtrl.js"></script>
+		<script type="text/javascript" src="js/captureCtrl.js"></script>
 		<script type="text/javascript" src="js/routes.js"></script>
 
 	</body>
