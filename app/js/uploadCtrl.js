@@ -94,13 +94,23 @@
     };
 
     self.submit = function() {
-      console.log(self.files);
-      for (var i = 0; i < self.files.length; ++i) {
-        AuditService.addEvent({
-          type: 'Upload',
-          name: self.files[i].path
-        });
-      }
+
+      var info = self.files.map(function(file) {
+        return {
+          file: (file.type == "folder" ? 0 : 1),
+          folder: (file.type == "file" ? 0 : 1)
+        };
+      }).reduce(function(sum, elem) {
+        return {
+          files: sum.files + elem.file,
+          folders: sum.folders + elem.folder
+        };
+      }, { files: 0, folders: 0 });
+
+      info.type = 'upload';
+      info.details = angular.copy(self.files);
+
+      return AuditService.addEvent(info);
     };
   };
 

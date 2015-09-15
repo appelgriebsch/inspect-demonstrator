@@ -1,17 +1,25 @@
-<div layout="column" layout-align="space-between start" ng-init="ctl.initialize()">
+<div layout="column" layout-align="start space-between" layout-fill ng-init="ctl.initialize()">
 
   <h2>Audit logs</h2>
 
-  <md-list>
-    <md-list-item ng-repeat="event in ctl.events">
-      <div>{{ event.name }}</div>
-    </md-list-item>
-  </md-list>
-
-  <div flex layout="row" layout-align="end end">
-    <md-button class="md-fab md-fab-bottom-right" ng-click="libraryCtrl.addItem()">
-      <md-icon>add</md-icon>
-    </md-button>
+  <div layout="column" layout-align="center center" layout-fill>
+    <timeline layout-fill>
+      <timeline-node ng-repeat="event in ctl.events" side="{{ event.direction }}">
+        <timeline-badge class="info">
+          <md-icon ng-if="event.type === 'upload'">file_upload</md-icon>
+          <md-icon ng-if="event.type === 'capture'">public</md-icon>
+        </timeline-badge>
+        <timeline-panel>
+          <timeline-heading>
+            <timeline-title>{{ event.createdBy }}: {{ event.createdAt | date: 'medium' }}</timeline-title>
+          </timeline-heading>
+          <timeline-content>
+            <p ng-if="event.type === 'upload'">Uploaded {{ event.files }} file(s) &amp; {{ event.folders }} folder(s)</p>
+            <p ng-if="event.type === 'capture'">Captured Web Site {{ event.url }}</p>
+          </timeline-content>
+        </timeline-panel>
+      </timeline-node>
+    </timeline>
   </div>
 
 </div>

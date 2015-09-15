@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'ui.router'])
+  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'angular-timeline', 'ui.router'])
     .run(
       ['$rootScope', '$state', '$stateParams',
         function($rootScope, $state, $stateParams) {

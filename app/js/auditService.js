@@ -20,13 +20,18 @@
           views: {
             all: {
               map: function mapFun(doc) {
-                  emit(doc.capturedAt);
+                  emit(doc.createdAt);
               }.toString()
             }
           }
         };
 
-        return db.put(ddoc);
+        db.get('_design/audits').then(function(result) {
+          if (result) {
+            ddoc._rev = result._rev;
+          }
+          return db.put(ddoc);
+        });
       },
 
       events: function() {
@@ -42,7 +47,9 @@
       addEvent: function(entry) {
 
         var doc = angular.copy(entry);
-        doc.createdAt = new Date();
+        var today = new Date();
+
+        doc.createdAt = today.toISOString();
         doc.createdBy = app.username();
         doc.createdOn = app.hostname();
 

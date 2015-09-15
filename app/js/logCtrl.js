@@ -11,12 +11,18 @@
 
     self.initialize = function() {
 
-      $q.when(AuditService.events())
-        .then(function(events) {
-          events.rows.map(function(event) {
-            self.events.push(event.doc);
-          });
-        });
+      $q.when(AuditService.initialize())
+        .then(
+          $q.when(AuditService.events())
+            .then(function(events) {
+              events.rows.map(function(event) {
+                var evt = event.doc;
+                var direction = ( self.events % 2 == 0 ? 'left' : 'right' );
+                evt.direction = direction;
+                self.events.push(evt);
+              });
+            })
+          );
     };
   };
 
