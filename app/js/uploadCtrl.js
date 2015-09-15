@@ -2,9 +2,9 @@
 
   'use strict';
 
-  angular.module('inspectApp').controller('UploadController', ['$state', '$log', '$q', UploadController]);
+  angular.module('inspectApp').controller('UploadController', ['$state', '$log', '$q', 'AuditService', UploadController]);
 
-  function UploadController($state, $log, $q) {
+  function UploadController($state, $log, $q, AuditService) {
 
     var self = this;
     var fs = require('fs');
@@ -37,6 +37,9 @@
         });
         return false;
       };
+
+      return AuditService.initialize();
+
     };
 
     self.selectFile = function() {
@@ -92,6 +95,12 @@
 
     self.submit = function() {
       console.log(self.files);
+      for (var i = 0; i < self.files.length; ++i) {
+        AuditService.addEvent({
+          type: 'Upload',
+          name: self.files[i].path
+        });
+      }
     };
   };
 

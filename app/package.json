@@ -27,6 +27,7 @@
     "angular-aria": "^1.4.5",
     "angular-material": "^0.11.0",
     "angular-sanitize": "^1.4.5",
+    "angular-timeline": "^1.2.1",
     "angular-ui-router": "^0.2.15",
     "electron-debug": "^0.2.0",
     "geopouch": "^2.0.0",
