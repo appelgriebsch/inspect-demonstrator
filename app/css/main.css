@@ -38,4 +38,5 @@ md-toolbar h1 {
 	box-sizing: border-box;
 	min-height: auto;
 	height: 128px;
+	min-width: 180px;
 }

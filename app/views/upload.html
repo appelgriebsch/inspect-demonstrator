@@ -2,12 +2,6 @@
 
   <h3>Create Document</h3>
 
-  <md-whiteframe id="dropZone" layout layout-align="center center">
-    <span>
-        Drop your files and/or folders here...
-    </span>
-  </md-whiteframe>
-
   <md-list flex>
   	<md-list-item class="md-2-line upload-preview md-whiteframe-z1" layout="row" layout-margin ng-repeat="file in uploadCtrl.files">
       <div class="md-item-text" layout-fill layout="column" layout-padding>
@@ -21,7 +15,34 @@
         <md-progress-linear md-mode="determinate" value="{{ file.uploadProgress }}"></md-progress-linear>
       </div>
     </md-list-item>
+    <md-list-item class="upload-preview" layout="row" layout-margin>
+      <md-menu>
+        <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
+          <md-icon md-menu-origin>add_circle_outline</md-icon>
+        </md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ng-click="uploadCtrl.selectFile()">
+              <md-icon md-menu-align-target>insert_drive_file</md-icon>
+              Add File
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="uploadCtrl.selectFolder()">
+              <md-icon md-menu-align-target>folder</md-icon>
+              Add Folder
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </md-list-item>
   </md-list>
+
+  <md-whiteframe id="dropZone" layout layout-align="center center">
+    <span>
+        Drop your files and/or folders here...
+    </span>
+  </md-whiteframe>
 
   <div flex layout="row" layout-align="end end">
     <md-button class="md-fab md-fab-bottom-right" ng-click="uploadCtrl.submit()">

@@ -30,6 +30,7 @@
     "angular-ui-router": "^0.2.15",
     "electron-debug": "^0.2.0",
     "geopouch": "^2.0.0",
+    "mime": "^1.3.4",
     "node-notifier": "^4.2.3",
     "node-servicefinder": "appelgriebsch/node-servicefinder",
     "pageres": "^2.1.0",
