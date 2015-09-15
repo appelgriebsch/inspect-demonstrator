@@ -40,3 +40,7 @@ md-toolbar h1 {
 	height: 128px;
 	min-width: 180px;
 }
+
+.filename {
+	overflow: hidden;
+}

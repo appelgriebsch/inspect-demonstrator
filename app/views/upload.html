@@ -6,7 +6,7 @@
   	<md-list-item class="md-2-line upload-preview md-whiteframe-z1" layout="row" layout-margin ng-repeat="file in uploadCtrl.files">
       <div class="md-item-text" layout-fill layout="column" layout-padding>
         <div layout="row" layout-fill>
-          <h4>{{ file.name }}</h4>
+          <h4 class="filename">{{ file.name }}</h4>
           <span flex></span>
           <md-icon ng-if="file.type === 'folder'">folder</md-icon>
           <md-icon ng-if="file.type === 'file'">insert_drive_file</md-icon>
