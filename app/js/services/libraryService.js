@@ -6,15 +6,12 @@
 
   function LibraryService() {
 
-    var self = this;
-
     return {
 
       initialize: function() {
 
       }
-
     };
-  };
+  }
 
 })();

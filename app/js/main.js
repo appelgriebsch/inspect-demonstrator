@@ -25,17 +25,16 @@
 
   function AppController($mdSidenav, $log, $q) {
 
-    var self = this;
-
-    self.initialize = function() {
+    this.initialize = function() {
       // TODO: initialization code
-    }
+    };
 
-    self.toggleSidebar = function() {
+    this.toggleSidebar = function() {
       var pending = $q.when(true);
       pending.then(function() {
         $mdSidenav('sidebar').toggle();
       });
-    }
-  };
+    };
+  }
+
 })();

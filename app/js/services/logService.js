@@ -2,14 +2,14 @@
 
   'use strict';
 
-  angular.module('inspectApp').service('LogService', [LogService]);
+  angular.module('inspectApp').service('LogService', ['PouchDBService', LogService]);
 
-  function LogService() {
+  function LogService(PouchDBService) {
 
-    var self = this;
+    var db = PouchDBService.initialize('audits');
     var remote = require('remote');
     var app = remote.require('app');
-    var db = app.pouchDB('audits');
+    var sysCfg = app.sysConfig();
 
     var _prefill = function(event) {
 
@@ -17,8 +17,8 @@
       var today = new Date();
 
       doc.createdAt = today.toISOString();
-      doc.createdBy = app.username();
-      doc.createdOn = app.hostname();
+      doc.createdBy = sysCfg.user;
+      doc.createdOn = sysCfg.host;
 
       return doc;
     };
@@ -32,7 +32,7 @@
           views: {
             all: {
               map: function mapFun(doc) {
-                  emit(doc.createdAt);
+                emit(doc.createdAt);
               }.toString()
             }
           }
@@ -49,8 +49,7 @@
             if (err.status == 404) {
               // view did not exists, save to create new one
               return db.put(ddoc);
-            }
-            else {
+            } else {
               throw err;
             }
           });
@@ -99,6 +98,6 @@
         return db.allDocs(options);
       }
     };
-  };
+  }
 
 })();

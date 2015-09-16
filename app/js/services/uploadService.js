@@ -6,19 +6,17 @@
 
   function UploadService() {
 
-    var self = this;
-
     return {
 
       initialize: function() {
 
-        
+
       },
 
       upload: function(files) {
 
       }
     };
-  };
+  }
 
 })();

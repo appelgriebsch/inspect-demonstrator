@@ -6,7 +6,6 @@
 
   function UploadController($state, $log, $q, logService, uploadService) {
 
-    var self = this;
     var fs = require('fs');
     var path = require('path');
     var mime = require('mime');
@@ -14,13 +13,13 @@
     var remote = require('remote');
     var dialog = remote.require('dialog');
 
-    self.files = [];
+    this.files = [];
 
-    self.initialize = function() {
+    this.initialize = function() {
 
       var dropZone = document.querySelector('#dropZone');
 
-      dropZone.ondragover = function(e) {
+      dropZone.ondragover = (e) => {
         e.dataTransfer.dropEffect = 'copy';
         return false;
       };
@@ -29,11 +28,11 @@
         return false;
       };
 
-      dropZone.ondrop = function(e) {
+      dropZone.ondrop = (e) => {
         e.preventDefault();
         var files = e.dataTransfer.files;
-        $q.when(true).then(function() {
-          self.addFiles(files);
+        $q.when(true).then(() => {
+          this.addFiles(files);
         });
         return false;
       };
@@ -42,33 +41,34 @@
 
     };
 
-    self.selectFile = function() {
+    this.selectFile = function() {
       var files = dialog.showOpenDialog({
         properties: ['openFile', 'multiSelections']
       }) || [];
-      $q.when(true).then(function() {
-        self.addFiles(files);
+      $q.when(true).then(() => {
+        this.addFiles(files);
       });
     };
 
-    self.selectFolder = function() {
+    this.selectFolder = function() {
       var files = dialog.showOpenDialog({
         properties: ['openDirectory', 'multiSelections']
       }) || [];
-      $q.when(true).then(function() {
-        self.addFiles(files);
+      $q.when(true).then(() => {
+        this.addFiles(files);
       });
     };
 
-    self.addFiles = function(files) {
+    this.addFiles = function(files) {
       for (var i = 0; i < files.length; ++i) {
         var file = files[i];
         var uploadRequest = {};
-        if (typeof file === "string") {
-          var fInfo = fs.statSync(file);
-          var mimeInfo = mime.lookup(file);
+        var fInfo, mimeInfo;
+        if (typeof file === 'string') {
+          fInfo = fs.statSync(file);
+          mimeInfo = mime.lookup(file);
           uploadRequest = {
-            type: fInfo.isDirectory() ? "folder" : "file",
+            type: fInfo.isDirectory() ? 'folder' : 'file',
             mime: mimeInfo,
             size: fInfo.size,
             info: fInfo.isDirectory() ? fs.readdirSync(file).length + ' files' : fInfo.size + ' bytes',
@@ -77,10 +77,10 @@
             uploadProgress: 0
           };
         } else {
-          var fInfo = fs.statSync(file.path);
-          var mimeInfo = mime.lookup(file.path);
+          fInfo = fs.statSync(file.path);
+          mimeInfo = mime.lookup(file.path);
           uploadRequest = {
-            type: fInfo.isDirectory() ? "folder" : "file",
+            type: fInfo.isDirectory() ? 'folder' : 'file',
             mime: mimeInfo,
             size: file.size,
             info: fInfo.isDirectory() ? fs.readdirSync(file.path).length + ' files' : file.size + ' bytes',
@@ -89,16 +89,16 @@
             uploadProgress: 0
           };
         }
-        self.files.push(uploadRequest);
+        this.files.push(uploadRequest);
       }
     };
 
-    self.submit = function() {
+    this.submit = function() {
 
-      var info = self.files.map(function(file) {
+      var info = this.files.map(function(file) {
         return {
-          file: (file.type == "folder" ? 0 : 1),
-          folder: (file.type == "file" ? 0 : 1)
+          file: (file.type == 'folder' ? 0 : 1),
+          folder: (file.type == 'file' ? 0 : 1)
         };
       }).reduce(function(sum, elem) {
         return {
@@ -108,13 +108,13 @@
       }, { files: 0, folders: 0 });
 
       info.type = 'upload';
-      info.details = angular.copy(self.files);
+      info.details = angular.copy(this.files);
 
       $q.when(logService.addInfo(info))
-        .then(function() {
-          return uploadService.upload(self.files);
+        .then(() => {
+          return uploadService.upload(this.files);
         });
     };
-  };
+  }
 
 })();

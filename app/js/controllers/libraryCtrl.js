@@ -6,14 +6,11 @@
 
   function LibraryController($state, $log, $q) {
 
-    var self = this;
-
-    self.initialize = function() {
+    this.initialize = function() {
 
     };
 
-    self.addItem = function() {};
-
-  };
+    this.addItem = function() {};
+  }
 
 })();

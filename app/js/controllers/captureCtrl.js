@@ -6,24 +6,18 @@
 
   function CaptureController($state, $log, $q, logService) {
 
-    var self = this;
-
-    self.initialize = function() {
-
+    this.initialize = function() {
       return logService.initialize();
     };
 
-    self.submit = function() {
-
+    this.submit = function() {
       var info = {
         class: 'info',
         type: 'capture',
         url: 'http://www.heise.de'
       };
-
       return logService.addEvent(info);
     };
-
-  };
+  }
 
 })();
