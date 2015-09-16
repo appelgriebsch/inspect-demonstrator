@@ -38,12 +38,22 @@
           }
         };
 
-        db.get('_design/audits').then(function(result) {
-          if (result) {
-            ddoc._rev = result._rev;
-          }
-          return db.put(ddoc);
-        });
+        db.get('_design/audits')
+          .then(function(result) {
+            if (result) {
+              ddoc._rev = result._rev;
+            }
+            return db.put(ddoc);
+          })
+          .catch(function(err) {
+            if (err.status == 404) {
+              // view did not exists, save to create new one
+              return db.put(ddoc);
+            }
+            else {
+              throw err;
+            }
+          });
       },
 
       events: function() {
