@@ -2,14 +2,26 @@
 
   'use strict';
 
-  angular.module('inspectApp').service('AuditService', [AuditService]);
+  angular.module('inspectApp').service('LogService', [LogService]);
 
-  function AuditService() {
+  function LogService() {
 
     var self = this;
     var remote = require('remote');
     var app = remote.require('app');
     var db = app.pouchDB('audits');
+
+    var _prefill = function(event) {
+
+      var doc = angular.copy(event);
+      var today = new Date();
+
+      doc.createdAt = today.toISOString();
+      doc.createdBy = app.username();
+      doc.createdOn = app.hostname();
+
+      return doc;
+    };
 
     return {
 
@@ -44,14 +56,26 @@
         return db.query('audits/all', options);
       },
 
-      addEvent: function(entry) {
+      addInfo: function(entry) {
 
-        var doc = angular.copy(entry);
-        var today = new Date();
+        var doc = _prefill(entry);
+        doc.class = 'info';
 
-        doc.createdAt = today.toISOString();
-        doc.createdBy = app.username();
-        doc.createdOn = app.hostname();
+        return db.post(doc);
+      },
+
+      addWarning: function(entry) {
+
+        var doc = _prefill(entry);
+        doc.class = 'warning';
+
+        return db.post(doc);
+      },
+
+      addError: function(entry) {
+
+        var doc = _prefill(entry);
+        doc.class = 'error';
 
         return db.post(doc);
       },

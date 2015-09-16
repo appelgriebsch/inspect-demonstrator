@@ -2,9 +2,9 @@
 
   'use strict';
 
-  angular.module('inspectApp').controller('UploadController', ['$state', '$log', '$q', 'AuditService', UploadController]);
+  angular.module('inspectApp').controller('UploadController', ['$state', '$log', '$q', 'LogService', 'UploadService', UploadController]);
 
-  function UploadController($state, $log, $q, AuditService) {
+  function UploadController($state, $log, $q, logService, uploadService) {
 
     var self = this;
     var fs = require('fs');
@@ -38,7 +38,7 @@
         return false;
       };
 
-      return AuditService.initialize();
+      return logService.initialize();
 
     };
 
@@ -110,7 +110,10 @@
       info.type = 'upload';
       info.details = angular.copy(self.files);
 
-      return AuditService.addEvent(info);
+      $q.when(logService.addInfo(info))
+        .then(function() {
+          return uploadService.upload(self.files);
+        });
     };
   };
 

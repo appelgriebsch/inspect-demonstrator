@@ -2,25 +2,26 @@
 
   'use strict';
 
-  angular.module('inspectApp').controller('CaptureController', ['$state', '$log', '$q', 'AuditService', CaptureController]);
+  angular.module('inspectApp').controller('CaptureController', ['$state', '$log', '$q', 'LogService', CaptureController]);
 
-  function CaptureController($state, $log, $q, AuditService) {
+  function CaptureController($state, $log, $q, logService) {
 
     var self = this;
 
     self.initialize = function() {
 
-      return AuditService.initialize();
+      return logService.initialize();
     };
 
     self.submit = function() {
 
       var info = {
+        class: 'info',
         type: 'capture',
         url: 'http://www.heise.de'
       };
 
-      return AuditService.addEvent(info);
+      return logService.addEvent(info);
     };
 
   };
