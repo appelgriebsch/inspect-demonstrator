@@ -31,7 +31,7 @@
 
     this.toggleSidebar = function() {
       var pending = $q.when(true);
-      pending.then(function() {
+      pending.then(() => {
         $mdSidenav('sidebar').toggle();
       });
     };

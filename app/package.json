@@ -1,5 +1,6 @@
 {
   "name": "inspect-demonstrator",
+  "productName": "inspect-demonstrator",
   "version": "0.1.0",
   "description": "A demonstrator for the funded INSPECT project",
   "main": "index.js",
@@ -30,6 +31,8 @@
     "angular-timeline": "^1.2.1",
     "angular-ui-router": "^0.2.15",
     "electron-debug": "^0.2.0",
+    "leveldown": "^1.4.1",
+    "localstorage-down": "^0.6.3",
     "geopouch": "^2.0.0",
     "mime": "^1.3.4",
     "node-notifier": "^4.2.3",

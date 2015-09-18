@@ -16,7 +16,7 @@
         type: 'capture',
         url: 'http://www.heise.de'
       };
-      return logService.addEvent(info);
+      return logService.addInfo(info);
     };
   }
 
