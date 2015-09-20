@@ -7,11 +7,7 @@
   function UploadController($state, $log, $q, logService, uploadService) {
 
     var fs = require('fs');
-    var path = require('path');
     var mime = require('mime');
-
-    var remote = require('remote');
-    var dialog = remote.require('dialog');
 
     this.files = [];
 
@@ -42,53 +38,29 @@
     };
 
     this.selectFile = function() {
-      var files = dialog.showOpenDialog({
-        properties: ['openFile', 'multiSelections']
-      }) || [];
-      $q.when(true).then(() => {
-        this.addFiles(files);
-      });
+
     };
 
     this.selectFolder = function() {
-      var files = dialog.showOpenDialog({
-        properties: ['openDirectory', 'multiSelections']
-      }) || [];
-      $q.when(true).then(() => {
-        this.addFiles(files);
-      });
+
     };
 
     this.addFiles = function(files) {
       for (var i = 0; i < files.length; ++i) {
         var file = files[i];
-        var uploadRequest = {};
-        var fInfo, mimeInfo;
-        if (typeof file === 'string') {
-          fInfo = fs.statSync(file);
-          mimeInfo = mime.lookup(file);
-          uploadRequest = {
-            type: fInfo.isDirectory() ? 'folder' : 'file',
-            mime: mimeInfo,
-            size: fInfo.size,
-            info: fInfo.isDirectory() ? fs.readdirSync(file).length + ' files' : fInfo.size + ' bytes',
-            name: path.basename(file),
-            path: file,
-            uploadProgress: 0
-          };
-        } else {
-          fInfo = fs.statSync(file.path);
-          mimeInfo = mime.lookup(file.path);
-          uploadRequest = {
-            type: fInfo.isDirectory() ? 'folder' : 'file',
-            mime: mimeInfo,
-            size: file.size,
-            info: fInfo.isDirectory() ? fs.readdirSync(file.path).length + ' files' : file.size + ' bytes',
-            name: file.name,
-            path: file.path,
-            uploadProgress: 0
-          };
-        }
+        var fInfo = fs.statSync(file.path);
+        var mimeInfo = mime.lookup(file.path);
+        var uploadRequest = {
+          type: fInfo.isDirectory() ? 'folder' : 'file',
+          mime: mimeInfo,
+          size: file.size,
+          info: fInfo.isDirectory() ? fs.readdirSync(file.path).length + ' files' : file.size + ' bytes',
+          name: file.name,
+          path: file.path,
+          fileReader: file,
+          uploadProgress: 0
+        };
+
         this.files.push(uploadRequest);
       }
     };
@@ -105,7 +77,10 @@
           files: sum.files + elem.file,
           folders: sum.folders + elem.folder
         };
-      }, { files: 0, folders: 0 });
+      }, {
+        files: 0,
+        folders: 0
+      });
 
       info.type = 'upload';
       info.details = angular.copy(this.files);

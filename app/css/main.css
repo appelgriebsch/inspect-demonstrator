@@ -44,4 +44,5 @@ md-toolbar h1 {
 
 .filename {
 	overflow: hidden;
+	max-height: 2.5em;
 }
