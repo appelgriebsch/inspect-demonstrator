@@ -10,10 +10,25 @@
     var mime = require('mime');
 
     this.files = [];
+    var dropZone, fileSelector, folderSelector;
 
     this.initialize = function() {
 
-      var dropZone = document.querySelector('#dropZone');
+      dropZone = document.querySelector('#dropZone');
+      fileSelector = document.querySelector('#fileSelector');
+      folderSelector = document.querySelector('#folderSelector');
+
+      fileSelector.onchange = (e) => {
+        $q.when(true).then(() => {
+          this.addFiles(e.target.files);
+        });
+      };
+
+      folderSelector.onchange = (e) => {
+        $q.when(true).then(() => {
+          this.addFiles(e.target.files);
+        });
+      };
 
       dropZone.ondragover = (e) => {
         e.dataTransfer.dropEffect = 'copy';
@@ -38,11 +53,15 @@
     };
 
     this.selectFile = function() {
-
+      $q.when(true).then(() => {
+        fileSelector.click();
+      });
     };
 
     this.selectFolder = function() {
-
+      $q.when(true).then(() => {
+        folderSelector.click();
+      });
     };
 
     this.addFiles = function(files) {

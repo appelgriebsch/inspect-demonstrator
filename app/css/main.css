@@ -46,3 +46,8 @@ md-toolbar h1 {
 	overflow: hidden;
 	max-height: 2.5em;
 }
+
+.hidden {
+	visibility: hidden;
+	position:absolute;
+}
