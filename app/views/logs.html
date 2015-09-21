@@ -14,7 +14,7 @@
             <timeline-title>{{ event.createdBy }}: {{ event.createdAt | date: 'medium' }}</timeline-title>
           </timeline-heading>
           <timeline-content>
-            <p ng-if="event.type === 'upload'">Uploaded {{ event.files }} file(s) &amp; {{ event.folders }} folder(s)</p>
+            <p ng-if="event.type === 'upload'">Uploaded {{ event.files }} file(s)</p>
             <p ng-if="event.type === 'capture'">Captured Web Site {{ event.url }}</p>
           </timeline-content>
         </timeline-panel>

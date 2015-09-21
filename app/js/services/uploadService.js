@@ -30,7 +30,7 @@
             resolve(evt.target.result);
           };
 
-          reader.readAsArrayBuffer(file.fileReader);
+          reader.readAsArrayBuffer(file.raw);
 
         });
 
@@ -67,7 +67,7 @@
           var file = files[i];
           var uploader;
 
-          switch (file.type) {
+          switch (file.info.type) {
             case "folder":
               uploader = new FolderUploader(file, $q);
               break;

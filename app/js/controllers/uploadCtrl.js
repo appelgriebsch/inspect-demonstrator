@@ -2,12 +2,9 @@
 
   'use strict';
 
-  angular.module('inspectApp').controller('UploadController', ['$state', '$log', '$q', 'LogService', 'UploadService', UploadController]);
+  angular.module('inspectApp').controller('UploadController', ['$state', '$log', '$q', 'LogService', 'FileSystemService', 'UploadService', UploadController]);
 
-  function UploadController($state, $log, $q, logService, uploadService) {
-
-    var fs = require('fs');
-    var mime = require('mime');
+  function UploadController($state, $log, $q, logService, fileSystemService, uploadService) {
 
     this.files = [];
     var dropZone, fileSelector, folderSelector;
@@ -49,7 +46,6 @@
       };
 
       return logService.initialize();
-
     };
 
     this.selectFile = function() {
@@ -65,40 +61,37 @@
     };
 
     this.addFiles = function(files) {
+
+      var newRequests = [];
+
       for (var i = 0; i < files.length; ++i) {
         var file = files[i];
-        var fInfo = fs.statSync(file.path);
-        var mimeInfo = mime.lookup(file.path);
         var uploadRequest = {
-          type: fInfo.isDirectory() ? 'folder' : 'file',
-          mime: mimeInfo,
-          size: file.size,
-          info: fInfo.isDirectory() ? fs.readdirSync(file.path).length + ' files' : file.size + ' bytes',
           name: file.name,
           path: file.path,
-          fileReader: file,
+          raw: file,
+          status: 'unknown',
           uploadProgress: 0
         };
-
+        newRequests.push(uploadRequest);
         this.files.push(uploadRequest);
       }
+
+      return fileSystemService.examine(newRequests);
     };
 
     this.submit = function() {
 
       var info = this.files.map(function(file) {
         return {
-          file: (file.type == 'folder' ? 0 : 1),
-          folder: (file.type == 'file' ? 0 : 1)
+          file: (file.info.type === 'folder' ? file.info.noOfFiles : 1)
         };
       }).reduce(function(sum, elem) {
         return {
-          files: sum.files + elem.file,
-          folders: sum.folders + elem.folder
+          files: sum.files + elem.file
         };
       }, {
-        files: 0,
-        folders: 0
+        files: 0
       });
 
       info.type = 'upload';
@@ -108,6 +101,19 @@
         .then(() => {
           return uploadService.upload(this.files);
         });
+    };
+
+    this.status = function() {
+
+      var result = 'ready';
+      for (var i = 0; i < this.files; ++i) {
+        if (this.files[i].status === 'unknown') {
+          result = 'busy';
+          break;
+        }
+      }
+
+      return result;
     };
   }
 
