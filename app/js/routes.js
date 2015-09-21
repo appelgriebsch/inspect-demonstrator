@@ -29,6 +29,11 @@
           templateUrl: 'views/capture.html',
           controller: 'CaptureController as ctl'
         })
+        .state('main.searchLibrary', {
+          url: '/searchLibrary',
+          templateUrl: 'views/searchLibrary.html',
+          controller: 'SearchLibraryController as ctl'
+        })
         .state('main.incidents', {
           url: '/incidents/list',
           templateUrl: 'views/incidents.html',
