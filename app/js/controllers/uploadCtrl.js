@@ -69,7 +69,6 @@
         var uploadRequest = {
           name: file.name,
           path: file.path,
-          raw: file,
           status: 'unknown',
           uploadProgress: 0
         };

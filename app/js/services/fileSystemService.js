@@ -41,6 +41,8 @@
           var result = {
             type: 'file',
             noOfFiles: 1,
+            name: path.basename(file),
+            path: file,
             mime: mime.lookup(file),
             last_accessed: info.atime,
             last_modified: info.mtime,
@@ -81,15 +83,11 @@
 
           for (var i = 0; i < files.length; ++i) {
 
-            var name = files[i];
-            var f = path.join(folder, name);
+            var f = path.join(folder, files[i]);
 
             checkItem(f).then((item) => {
 
               received += 1;
-
-              item.name = name;
-              item.path = f;
 
               result.subitems.push(item);
               result.size += item.size;
