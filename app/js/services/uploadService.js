@@ -27,7 +27,10 @@
           };
 
           reader.onload = (evt) => {
-            resolve(evt.target.result);
+            resolve({
+              file: file,
+              result: evt.target.result
+            });
           };
 
           reader.readAsArrayBuffer(file.raw);
@@ -41,13 +44,13 @@
 
   function FolderUploader(folder, $q) {
 
-    var path = require('path');
-
     return {
 
       upload: function() {
 
+        console.log(folder);
         var promise = new Promise((resolve, reject) => {
+
 
         });
 
@@ -67,6 +70,10 @@
           var file = files[i];
           var uploader;
 
+          if (file.status === 'uploaded') {
+            continue;
+          }
+
           switch (file.info.type) {
             case "folder":
               uploader = new FolderUploader(file, $q);
@@ -78,6 +85,7 @@
 
           uploader.upload().then((result) => {
             console.log(result);
+            result.file.status = 'uploaded';
           }).catch((err) => {
             console.log(err);
           });

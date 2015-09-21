@@ -22,11 +22,17 @@
         <span flex></span>
         <md-progress-linear md-mode="determinate" value="{{ file.uploadProgress }}"></md-progress-linear>
       </div>
-      <div ng-if="file.status !== 'ready'" class="md-item-text" layout-fill layout="column" layout-padding>
+      <div ng-if="file.status === 'unknown'" class="md-item-text" layout-fill layout="column" layout-padding>
         <div layout="row" layout-fill>
           <h4 class="filename">{{ file.name }}</h4>
         </div>
-        <md-progress-circular md-mode='indeterminate' md-diameter='20px'></md-progress-circular>        
+        <md-progress-circular md-mode='indeterminate' md-diameter='20px'></md-progress-circular>
+      </div>
+      <div ng-if="file.status === 'uploaded'" class="md-item-text" layout-fill layout="column" layout-padding>
+        <div layout="row" layout-fill>
+          <h4 class="filename">{{ file.name }}</h4>
+        </div>
+        <md-icon>check</md-icon>
       </div>
     </md-list-item>
     <md-list-item class="upload-preview" layout="row" layout-margin>

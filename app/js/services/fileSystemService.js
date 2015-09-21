@@ -81,11 +81,15 @@
 
           for (var i = 0; i < files.length; ++i) {
 
-            var f = path.join(folder, files[i]);
+            var name = files[i];
+            var f = path.join(folder, name);
 
             checkItem(f).then((item) => {
 
               received += 1;
+
+              item.name = name;
+              item.path = f;
 
               result.subitems.push(item);
               result.size += item.size;
