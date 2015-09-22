@@ -80,8 +80,16 @@
           }
 
           var received = 0;
+          var count = files.length;
 
-          for (var i = 0; i < files.length; ++i) {
+          for (var i = 0; i < count; ++i) {
+
+            var file = files[i];
+
+            if ((file === '.') || (file === '..')) {
+              received += 1;
+              continue;
+            }
 
             var f = path.join(folder, files[i]);
 
@@ -93,7 +101,7 @@
               result.size += item.size;
               result.noOfFiles += item.noOfFiles;
 
-              if (received == i) {
+              if (received == count) {
                 result.display_size = calcUnitSize(result.size);
                 resolve(result);
               }
@@ -123,8 +131,9 @@
         var promise = new Promise((resolve, reject) => {
 
           var received = 0;
+          var count = uploadRequest.length;
 
-          for (var n = 0; n < uploadRequest.length; ++n) {
+          for (var n = 0; n < count; ++n) {
 
             var request = uploadRequest[n];
 
@@ -137,7 +146,7 @@
                 request.status = 'ready';
               });
 
-              if (received == n) {
+              if (received == count) {
                 resolve(uploadRequest);
               }
             }).catch((err) => {
