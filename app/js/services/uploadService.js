@@ -7,6 +7,21 @@
   function FileUploader(file, db, $q) {
 
     var fs = require('fs');
+    var remote = require('remote');
+    var app = remote.require('app');
+    var sysCfg = app.sysConfig();
+
+    var _prefill = function(upload) {
+
+      var doc = angular.copy(upload);
+      var today = new Date();
+
+      doc.createdAt = today.toISOString();
+      doc.createdBy = sysCfg.user;
+      doc.createdOn = sysCfg.host;
+
+      return doc;
+    };
 
     return {
 
@@ -27,15 +42,12 @@
               'data': result
             };
 
-            console.log(_attachments);
-
-            db.post({
-                _attachments: _attachments
-              })
-              .then((doc) => {
+            var doc = _prefill({ _attachments: _attachments, filename: file.name, status: 'uploaded' });
+            db.post(doc)
+              .then((result) => {
                 resolve({
                   file: file,
-                  doc: doc
+                  doc: result
                 });
               }).catch((err) => {
                 reject(err);
@@ -65,8 +77,6 @@
             var fileUploader = new FileUploader(file, db, $q);
 
             fileUploader.upload().then((result) => {
-
-              console.log(result);
 
               received += 1;
 
