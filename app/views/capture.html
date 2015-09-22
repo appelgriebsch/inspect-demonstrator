@@ -1,5 +1,4 @@
-<!-- index.html partial -->
-<div layout="column" layout-align="space-between start" ng-init="ctl.initialize()">
+<div layout="column" layout-align="start space-between" layout-fill ng-init="ctl.initialize()">
 
   <div layout="row" layout-align="start center">
     <md-button class="md-primary" ui-sref="main.library()">
@@ -8,6 +7,21 @@
     <md-icon>chevron_right</md-icon>
     <h3>Capture Web Reference</h3>
     <span flex></span>
+  </div>
+
+  <div flex layout="column" layout-fill layout-margin>
+
+    <div flex layout="row" layout-fill layout-padding>
+      <md-input-container layout-fill>
+        <label>Website URL</label>
+        <input type="url" id="url" ng-keypress="ctl.loadUrl($event)">
+      </md-input-container>
+      <span flex></span>
+      <md-button class="md-icon-button" ng-click="ctl.loadUrl($event)">
+        <md-icon>forward</md-icon>
+      </md-button>
+    </div>
+    <webview id="webview" nodeintegration layout-fill></webview>
   </div>
 
   <div flex layout="row" layout-align="end end">

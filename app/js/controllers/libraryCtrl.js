@@ -17,7 +17,6 @@
             result.rows.map((item) => {
               this.items.push(item.doc);
             });
-            console.log(this.items);
           })
         );
     };
