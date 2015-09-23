@@ -2,8 +2,6 @@
 
   'use strict';
 
-  angular.module('inspectApp').service('PouchDBService', [PouchDBService]);
-
   function PouchDBService() {
 
     // initialize pouch db adapter
@@ -45,5 +43,7 @@
       }
     };
   }
+
+  module.exports = PouchDBService;
 
 })();

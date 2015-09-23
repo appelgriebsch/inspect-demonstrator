@@ -2,12 +2,10 @@
 
   'use strict';
 
-  angular.module('inspectApp').controller('CaptureController', ['$state', '$log', '$q', 'LogService', CaptureController]);
-
-  function CaptureController($state, $log, $q, logService) {
+  function LibraryCaptureController($q, ActivityService, LibraryDataService) {
 
     this.initialize = function() {
-      return logService.initialize();
+      return ActivityService.initialize();
     };
 
     var _loadUrl = function(url) {
@@ -31,8 +29,10 @@
         type: 'capture',
         url: 'http://www.heise.de'
       };
-      return logService.addInfo(info);
+      return ActivityService.addInfo(info);
     };
   }
+
+  module.exports = LibraryCaptureController;
 
 })();

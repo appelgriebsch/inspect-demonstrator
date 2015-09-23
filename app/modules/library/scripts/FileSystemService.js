@@ -2,8 +2,6 @@
 
   'use strict';
 
-  angular.module('inspectApp').service('FileSystemService', ['$q', FileSystemService]);
-
   function FileSystemService($q) {
 
     var fs = require('fs');
@@ -159,5 +157,7 @@
       }
     };
   }
+
+  module.exports = FileSystemService;
 
 })();

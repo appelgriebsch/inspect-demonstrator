@@ -2,9 +2,7 @@
 
   'use strict';
 
-  angular.module('inspectApp').service('LogService', ['PouchDBService', LogService]);
-
-  function LogService(PouchDBService) {
+  function ActivityService(PouchDBService) {
 
     var db = PouchDBService.initialize('audits');
     var remote = require('remote');
@@ -100,4 +98,6 @@
     };
   }
 
+  module.exports = ActivityService;
+  
 })();

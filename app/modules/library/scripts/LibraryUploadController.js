@@ -2,9 +2,7 @@
 
   'use strict';
 
-  angular.module('inspectApp').controller('UploadController', ['$state', '$log', '$q', 'LogService', 'FileSystemService', 'UploadService', UploadController]);
-
-  function UploadController($state, $log, $q, logService, fileSystemService, uploadService) {
+  function LibraryUploadController($scope, $q, ActivityService, FileSystemService, FileUploadService) {
 
     this.files = [];
     var dropZone, fileSelector, folderSelector;
@@ -45,7 +43,32 @@
         return false;
       };
 
-      return logService.initialize();
+      $scope.$on('submit', (event, args) => {
+
+        console.log('submit', event, args);
+
+        var info = this.files.map(function(file) {
+          return {
+            file: (file.info.type === 'folder' ? file.info.noOfFiles : 1)
+          };
+        }).reduce(function(sum, elem) {
+          return {
+            files: sum.files + elem.file
+          };
+        }, {
+          files: 0
+        });
+
+        info.type = 'upload';
+        info.details = angular.copy(this.files);
+
+        $q.when(ActivityService.addInfo(info))
+          .then(() => {
+            return FileUploadService.upload(this.files);
+          });
+      });
+
+      return ActivityService.initialize();
     };
 
     this.selectFile = function() {
@@ -76,44 +99,10 @@
         this.files.push(uploadRequest);
       }
 
-      return fileSystemService.examine(newRequests);
-    };
-
-    this.submit = function() {
-
-      var info = this.files.map(function(file) {
-        return {
-          file: (file.info.type === 'folder' ? file.info.noOfFiles : 1)
-        };
-      }).reduce(function(sum, elem) {
-        return {
-          files: sum.files + elem.file
-        };
-      }, {
-        files: 0
-      });
-
-      info.type = 'upload';
-      info.details = angular.copy(this.files);
-
-      $q.when(logService.addInfo(info))
-        .then(() => {
-          return uploadService.upload(this.files);
-        });
-    };
-
-    this.status = function() {
-
-      var result = 'ready';
-      for (var i = 0; i < this.files; ++i) {
-        if (this.files[i].status === 'unknown') {
-          result = 'busy';
-          break;
-        }
-      }
-
-      return result;
+      return FileSystemService.examine(newRequests);
     };
   }
+
+  module.exports = LibraryUploadController;
 
 })();

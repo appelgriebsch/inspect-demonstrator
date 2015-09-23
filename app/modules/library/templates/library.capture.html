@@ -1,0 +1,15 @@
+<div layout-fill layout="column" ng-init="ctl.initialize()">
+
+  <div flex layout="row" layout-fill layout-padding>
+    <md-input-container layout-fill>
+      <label>Website URL</label>
+      <input type="url" id="url" ng-keypress="ctl.loadUrl($event)">
+    </md-input-container>
+    <span flex></span>
+    <md-button class="md-icon-button" ng-click="ctl.loadUrl($event)">
+      <md-icon>forward</md-icon>
+    </md-button>
+  </div>
+  <webview id="webview" nodeintegration layout-fill></webview>
+  
+</div>

@@ -2,17 +2,15 @@
 
   'use strict';
 
-  angular.module('inspectApp').controller('LogController', ['$state', '$log', '$q', 'LogService', LogController]);
-
-  function LogController($state, $log, $q, LogService) {
+  function ActivitiesViewController($state, $log, $q, ActivityService) {
 
     this.events = [];
 
     this.initialize = function() {
 
-      $q.when(LogService.initialize())
+      $q.when(ActivityService.initialize())
         .then(
-          $q.when(LogService.events())
+          $q.when(ActivityService.events())
           .then((events) => {
             events.rows.map((event) => {
               var evt = event.doc;
@@ -24,5 +22,7 @@
         );
     };
   }
+
+  module.exports = ActivitiesViewController;
 
 })();

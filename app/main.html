@@ -1,115 +1,32 @@
 <!doctype html>
 <html>
-	<head>
 
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="description" content="">
-		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+<head>
 
-		<title>Inspect Demonstrator</title>
-		<link rel="stylesheet" href="css/fonts.css"/>
-		<link rel="stylesheet" href="node_modules/angular-material/angular-material.min.css"/>
-		<link rel="stylesheet" href="node_modules/angular-timeline/dist/angular-timeline.css"/>
-    <link rel="stylesheet" href="css/main.css"/>
-	</head>
-	<body ng-app="inspectApp" layout="row" ng-controller="AppController as appCtrl" ng-init="appCtrl.initialize()">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="description" content="">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 
-		<div flex layout="column" tabindex="-1" class="md-whiteframe-z1" role="main">
-			<md-toolbar class="md-whiteframe-z3">
-				<div class="md-toolbar-tools">
-					<h1>
-						<span>Inspect Demonstrator</span>
-					</h1>
-					<span flex></span>
-					<md-button class="md-icon-button" md-no-ink ui-sref="main.library()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('main.library') }">
-						<md-icon>local_library</md-icon>
-						<md-tooltip>Access your library</md-tooltip>
-					</md-button>
-					<md-button class="md-icon-button" md-no-ink ui-sref="main.incidents()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('main.incidents') }">
-						<md-icon>content_copy</md-icon>
-						<md-tooltip>Access your incidents</md-tooltip>
-					</md-button>
-					<md-button class="md-icon-button" md-no-ink ui-sref="main.logs()" ui-sref-opts="{ reload: true }" ng-class="{ selected: $state.includes('main.logs') }">
-						<md-icon>import_export</md-icon>
-						<md-tooltip>Access your audit logs</md-tooltip>
-					</md-button>
-					<span></span>
-				</div>
-			</md-toolbar>
+	<title>Inspect Demonstrator</title>
+	<link rel="stylesheet" href="css/fonts.css" />
+	<link rel="stylesheet" href="node_modules/angular-material/angular-material.min.css" />
+	<link rel="stylesheet" href="node_modules/angular-timeline/dist/angular-timeline.css" />
+	<link rel="stylesheet" href="css/main.css" />
+</head>
 
-			<md-content flex id="content" ui-view></md-content>
+<body ng-app="inspectApp" layout="row" role="main" ui-view>
 
-			<!-- actions -->
-			<div ng-if="$state.includes('main.library')" flex layout="row" layout-align="end end">
-				<md-fab-speed-dial class="md-fab md-fab-bottom-right" md-direction="up">
-					<md-fab-trigger>
-						<md-button class="md-fab">
-							<md-icon>menu</md-icon>
-						</md-button>
-					</md-fab-trigger>
-					<md-fab-actions>
-						<md-button class="md-fab md-raised md-mini" ui-sref="main.captureUrl()">
-							<md-tooltip md-direction="left">Add Web Reference</md-tooltip>
-							<md-icon>public</md-icon>
-						</md-button>
-						<md-button class="md-fab md-raised md-mini" ui-sref="main.uploadFiles()">
-							<md-tooltip md-direction="left">Add Local Files</md-tooltip>
-							<md-icon>file_upload</md-icon>
-						</md-button>
-						<md-button class="md-fab md-raised md-mini" ui-sref="main.searchLibrary()">
-							<md-tooltip md-direction="left">Search</md-tooltip>
-							<md-icon>search</md-icon>
-						</md-button>
-					</md-fab-actions>
-				</md-fab-speed-dial>
-			</div>
+	<script type="text/javascript" src="node_modules/angular/angular.min.js"></script>
+	<script type="text/javascript" src="node_modules/angular-animate/angular-animate.min.js"></script>
+	<script type="text/javascript" src="node_modules/angular-aria/angular-aria.min.js"></script>
+	<script type="text/javascript" src="node_modules/angular-material/angular-material.min.js"></script>
+	<script type="text/javascript" src="node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
+	<script type="text/javascript" src="node_modules/angular-sanitize/angular-sanitize.min.js"></script>
+	<script type="text/javascript" src="node_modules/angular-timeline/dist/angular-timeline.js"></script>
 
-			<div ng-if="$state.includes('main.incidents')" flex layout="row" layout-align="end end">
-				<md-fab-speed-dial class="md-fab md-fab-bottom-right" md-direction="up">
-					<md-fab-trigger>
-						<md-button class="md-fab">
-							<md-icon>menu</md-icon>
-						</md-button>
-					</md-fab-trigger>
-					<md-fab-actions>
-						<md-button class="md-fab md-raised md-mini" ui-sref="main.addIncident()">
-							<md-tooltip md-direction="left">Add New Incident</md-tooltip>
-							<md-icon>add</md-icon>
-						</md-button>
-						<md-button class="md-fab md-raised md-mini" ui-sref="main.searchIncidents()">
-							<md-tooltip md-direction="left">Search</md-tooltip>
-							<md-icon>search</md-icon>
-						</md-button>
-					</md-fab-actions>
-				</md-fab-speed-dial>
-			</div>
+	<script type="text/javascript" src="shell.js"></script>
 
-		</div>
+</body>
 
-    <script type="text/javascript" src="node_modules/angular/angular.min.js"></script>
-    <script type="text/javascript" src="node_modules/angular-animate/angular-animate.min.js"></script>
-    <script type="text/javascript" src="node_modules/angular-aria/angular-aria.min.js"></script>
-    <script type="text/javascript" src="node_modules/angular-material/angular-material.min.js"></script>
-		<script type="text/javascript" src="node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
-		<script type="text/javascript" src="node_modules/angular-sanitize/angular-sanitize.min.js"></script>
-		<script type="text/javascript" src="node_modules/angular-timeline/dist/angular-timeline.js"></script>
-
-		<script type="text/javascript" src="js/main.js"></script>
-		<script type="text/javascript" src="js/routes.js"></script>
-
-		<script type="text/javascript" src="js/services/pouchDBService.js"></script>
-		<script type="text/javascript" src="js/services/logService.js"></script>
-		<script type="text/javascript" src="js/services/uploadService.js"></script>
-		<script type="text/javascript" src="js/services/libraryService.js"></script>
-		<script type="text/javascript" src="js/services/fileSystemService.js"></script>
-
-		<script type="text/javascript" src="js/controllers/libraryCtrl.js"></script>
-		<script type="text/javascript" src="js/controllers/incidentCtrl.js"></script>
-		<script type="text/javascript" src="js/controllers/logCtrl.js"></script>
-		<script type="text/javascript" src="js/controllers/uploadCtrl.js"></script>
-		<script type="text/javascript" src="js/controllers/captureCtrl.js"></script>
-		<script type="text/javascript" src="js/controllers/searchLibraryCtrl.js"></script>
-
-	</body>
 </html>

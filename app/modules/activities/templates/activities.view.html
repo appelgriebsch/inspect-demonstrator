@@ -1,0 +1,19 @@
+<div layout="column" layout-align="center center" layout-fill ng-init="ctl.initialize()">
+  <timeline layout-fill>
+    <timeline-node ng-repeat="event in ctl.events" side="{{ event.direction }}">
+      <timeline-badge class="{{ event.class }}">
+        <md-icon ng-if="event.type === 'upload'">file_upload</md-icon>
+        <md-icon ng-if="event.type === 'capture'">public</md-icon>
+      </timeline-badge>
+      <timeline-panel>
+        <timeline-heading>
+          <timeline-title>{{ event.createdBy }}: {{ event.createdAt | date: 'medium' }}</timeline-title>
+        </timeline-heading>
+        <timeline-content>
+          <p ng-if="event.type === 'upload'">Uploaded {{ event.files }} file(s)</p>
+          <p ng-if="event.type === 'capture'">Captured Web Site {{ event.url }}</p>
+        </timeline-content>
+      </timeline-panel>
+    </timeline-node>
+  </timeline>
+</div>

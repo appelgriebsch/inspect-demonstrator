@@ -2,9 +2,7 @@
 
   'use strict';
 
-  angular.module('inspectApp').service('LibraryService', ['PouchDBService', LibraryService]);
-
-  function LibraryService(PouchDBService) {
+  function LibraryDataService(PouchDBService) {
 
     var db = PouchDBService.initialize('library');
 
@@ -51,5 +49,7 @@
       }
     };
   }
+
+  module.exports = LibraryDataService;
 
 })();

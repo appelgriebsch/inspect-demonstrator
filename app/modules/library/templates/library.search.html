@@ -1,0 +1,14 @@
+<div layout="column" layout-align="space-between start" ng-init="ctl.initialize()">
+
+  <div flex layout="row" layout-fill layout-padding>
+    <md-input-container layout-fill>
+      <label>Search Term</label>
+      <input type="url" id="url" ng-keypress="ctl.search($event)">
+    </md-input-container>
+    <span flex></span>
+    <md-button class="md-icon-button" ng-click="ctl.search($event)">
+      <md-icon>send</md-icon>
+    </md-button>
+  </div>
+
+</div>
