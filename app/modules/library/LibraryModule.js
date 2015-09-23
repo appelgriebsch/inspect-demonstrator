@@ -4,61 +4,65 @@
 
   function LibraryModule() {
 
-    this.initialize = function() {
+    var moduleConfig;
+
+    this.initialize = function(config) {
+
+      moduleConfig =  config;
 
       angular.module('inspectApp')
         .config(function($stateProvider, $urlRouterProvider) {
 
           $stateProvider
-            .state('app.library', {
+            .state(`${moduleConfig.state}`, {
               url: '/library',
               views: {
                 'module': {
-                  templateUrl: './modules/library/library.html'
+                  templateUrl: `${moduleConfig.path}/library.html`
                 }
               }
             })
-            .state('app.library.view', {
+            .state(`${moduleConfig.state}.view`, {
               url: '/view',
               views: {
                 'content': {
-                  templateUrl: './modules/library/templates/library.view.html',
+                  templateUrl: `${moduleConfig.path}/templates/library.view.html`,
                   controller: 'LibraryViewController as ctl'
                 },
                 'actions@app': {
-                  templateUrl: './modules/library/templates/library.actions.html'
+                  templateUrl: `${moduleConfig.path}/templates/library.actions.html`
                 }
               }
             })
-            .state('app.library.upload', {
+            .state(`${moduleConfig.state}.upload`, {
               url: '/upload',
               views: {
                 'content': {
-                  templateUrl: './modules/library/templates/library.upload.html',
+                  templateUrl: `${moduleConfig.path}/templates/library.upload.html`,
                   controller: 'LibraryUploadController as ctl'
                 },
                 'actions@app': {
-                  templateUrl: './templates/shell.submit.html'
+                  templateUrl: 'templates/shell.submit.html'
                 }
               }
             })
-            .state('app.library.capture', {
+            .state(`${moduleConfig.state}.capture`, {
               url: '/capture',
               views: {
                 'content': {
-                  templateUrl: './modules/library/templates/library.capture.html',
+                  templateUrl: `${moduleConfig.path}/templates/library.capture.html`,
                   controller: 'LibraryCaptureController as ctl'
                 },
                 'actions@app': {
-                  templateUrl: './templates/shell.submit.html'
+                  templateUrl: 'templates/shell.submit.html'
                 }
               }
             })
-            .state('app.library.search', {
+            .state(`${moduleConfig.state}.search`, {
               url: '/search',
               views: {
                 'content': {
-                  templateUrl: './modules/library/templates/library.search.html',
+                  templateUrl: `${moduleConfig.path}/templates/library.search.html`,
                   controller: 'LibrarySearchController as ctl'
                 }
               }

@@ -2,10 +2,12 @@
 
   'use strict';
 
-  function ShellController($mdSidenav, $scope, $log, $q) {
+  function ShellController($mdSidenav, $scope, $log, $q, modulesProvider) {
+
+    this.modules = [];
 
     this.initialize = function() {
-      // TODO: initialization code
+      this.modules = modulesProvider.modules;
     };
 
     this.toggleSidebar = () => {
@@ -15,12 +17,10 @@
     };
 
     this.submit = () => {
-      console.log('send submit');
       $scope.$emit('submit');
     };
 
     this.cancel = () => {
-      console.log('send cancel');
       $scope.$emit('cancel');
     };
   }

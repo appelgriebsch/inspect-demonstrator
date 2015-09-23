@@ -19,13 +19,16 @@
       $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
         .accentPalette('grey');
-    });
+    })
+    .config(function($stateProvider, $urlRouterProvider, modulesProvider) {
 
-  angular.module('inspectApp')
-    .config(function($stateProvider, $urlRouterProvider) {
+      console.log(modulesProvider);
+      
+      var appcfg = require('./appcfg');
+      var defaultRoute = appcfg.modules[appcfg.defaultModule].url;
 
       // for all unmatched entries
-      $urlRouterProvider.otherwise('/app/library/view');
+      $urlRouterProvider.otherwise(defaultRoute);
 
       // separate states
       $stateProvider
@@ -39,21 +42,11 @@
 
   var ShellController = require('./scripts/ShellController');
   var PouchDBService = require('./scripts/PouchDBService');
-
-  var ActivityModule = require('./modules/activities/ActivityModule');
-  var IncidentModule = require('./modules/incidents/IncidentModule');
-  var LibraryModule = require('./modules/library/LibraryModule');
+  var ModuleProvider = require('./scripts/ModuleProvider');
 
   angular.module('inspectApp').service('PouchDBService', [PouchDBService]);
-  angular.module('inspectApp').controller('ShellController', ['$mdSidenav', '$scope', '$log', '$q', ShellController]);
+  angular.module('inspectApp').provider('modules', [ModuleProvider]);
 
-  var activityModule = new ActivityModule();
-  activityModule.initialize();
-
-  var incidentModule = new IncidentModule();
-  incidentModule.initialize();
-
-  var libraryModule = new LibraryModule();
-  libraryModule.initialize();
+  angular.module('inspectApp').controller('ShellController', ['$mdSidenav', '$scope', '$log', '$q', 'modules', ShellController]);
 
 })();

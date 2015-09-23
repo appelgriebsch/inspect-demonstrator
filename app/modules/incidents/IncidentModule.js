@@ -4,29 +4,33 @@
 
   function IncidentModule() {
 
-    this.initialize = function() {
+    var moduleConfig;
+
+    this.initialize = function(config) {
+
+      moduleConfig =  config;
 
       angular.module('inspectApp')
         .config(function($stateProvider, $urlRouterProvider) {
 
           $stateProvider
-            .state('app.incidents', {
+            .state(`${moduleConfig.state}`, {
               url: '/incidents',
               views: {
                 'module': {
-                  templateUrl: './modules/incidents/incidents.html'
+                  templateUrl: `${moduleConfig.path}/incidents.html`
                 }
               }
             })
-            .state('app.incidents.view', {
+            .state(`${moduleConfig.state}.view`, {
               url: '/view',
               views: {
                 'content': {
-                  templateUrl: './modules/incidents/templates/incidents.view.html',
+                  templateUrl: `${moduleConfig.path}/templates/incidents.view.html`,
                   controller: 'IncidentViewController as ctl'
                 },
                 'actions@app': {
-                  templateUrl: './modules/incidents/templates/incidents.actions.html'
+                  templateUrl: `${moduleConfig.path}/templates/incidents.actions.html`
                 }
               }
             });
