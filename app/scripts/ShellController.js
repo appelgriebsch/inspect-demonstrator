@@ -15,11 +15,16 @@
     };
 
     this.submit = () => {
-      console.log('emit');
+      console.log('send submit');
       $scope.$emit('submit');
+    };
+
+    this.cancel = () => {
+      console.log('send cancel');
+      $scope.$emit('cancel');
     };
   }
 
   module.exports = ShellController;
-  
+
 })();
