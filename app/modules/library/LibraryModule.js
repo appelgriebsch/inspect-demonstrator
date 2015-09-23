@@ -81,7 +81,7 @@
 
       angular.module('inspectApp').controller('LibraryCaptureController', ['$q', 'ActivityService', 'LibraryDataService', LibraryCaptureController]);
       angular.module('inspectApp').controller('LibrarySearchController', ['$q', 'ActivityService', 'LibraryDataService', LibrarySearchController]);
-      angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$q', 'ActivityService', 'FileSystemService', 'FileUploadService', LibraryUploadController]);
+      angular.module('inspectApp').controller('LibraryUploadController', ['$rootScope', '$q', 'ActivityService', 'FileSystemService', 'FileUploadService', LibraryUploadController]);
       angular.module('inspectApp').controller('LibraryViewController', ['$q', 'LibraryDataService', LibraryViewController]);
 
     };
