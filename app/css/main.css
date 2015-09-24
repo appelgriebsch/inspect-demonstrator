@@ -62,10 +62,7 @@ md-content[ui-view='content'], md-content[ui-view='module'] {
 	width: 100%;
 }
 
-md-content[ui-view='module'] {
-	padding: 20px;
-}
-
 md-content[ui-view='content'] {
+	padding: 20px;
 	overflow: auto;
 }
