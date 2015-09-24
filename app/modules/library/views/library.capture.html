@@ -1,6 +1,5 @@
-<div layout-fill layout="column" ng-init="ctl.initialize()">
-
-  <div flex layout="row" layout-fill layout-padding>
+<div flex layout="column" layout-fill ng-init="ctl.initialize()">
+  <div layout="row">
     <md-input-container layout-fill>
       <label>Website URL</label>
       <input type="url" id="url" ng-keypress="ctl.loadUrl($event)">
@@ -10,6 +9,5 @@
       <md-icon>forward</md-icon>
     </md-button>
   </div>
-  <webview id="webview" nodeintegration layout-fill></webview>
-  
+  <webview id='webview' nodeintegration></webview>
 </div>

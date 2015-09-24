@@ -1,5 +1,4 @@
-<div layout-fill layout="column" ng-init="ctl.initialize()">
-
+<div layout="column" layout-fill ng-init="ctl.initialize()">
   <md-list flex>
   	<md-list-item class="upload-preview md-whiteframe-z1" layout="row" layout-margin ng-repeat="file in ctl.files">
       <div ng-if="file.status === 'ready'" class="md-item-text" layout-fill layout="column" layout-padding>
@@ -57,5 +56,4 @@
         Drop your files and/or folders here...
     </span>
   </md-whiteframe>
-
 </div>
