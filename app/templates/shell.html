@@ -5,9 +5,9 @@
         <span>Inspect Demonstrator</span>
       </h1>
       <span flex></span>
-      <md-button class="md-icon-button" md-no-ink ng-repeat="module in ctl.modules" ng-href="#{{ module.config.url }}" ng-class="{ selected: $state.includes('{{ module.config.state }}') }">
-        <md-icon>{{ module.config.icon }}</md-icon>
-        <md-tooltip>{{ module.config.tooltip }}</md-tooltip>
+      <md-button class="md-icon-button" md-no-ink ng-repeat="module in ctl.modules" ng-href="#{{ module.info.url }}" ng-class="{ selected: $state.includes('{{ module.info.state }}') }">
+        <md-icon>{{ module.info.icon }}</md-icon>
+        <md-tooltip>{{ module.info.tooltip }}</md-tooltip>
       </md-button>
       <span></span>
     </div>
