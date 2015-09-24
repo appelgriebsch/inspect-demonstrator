@@ -2,15 +2,15 @@
 
   'use strict';
 
-  function ActivitiesViewController($state, $log, $q, ActivityService) {
+  function ActivitiesViewController($state, $log, $q, ActivityDataService) {
 
     this.events = [];
 
     this.initialize = function() {
 
-      $q.when(ActivityService.initialize())
+      $q.when(ActivityDataService.initialize())
         .then(
-          $q.when(ActivityService.events())
+          $q.when(ActivityDataService.events())
           .then((events) => {
             events.rows.map((event) => {
               var evt = event.doc;

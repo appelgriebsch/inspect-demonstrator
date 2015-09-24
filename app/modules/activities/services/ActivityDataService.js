@@ -2,24 +2,9 @@
 
   'use strict';
 
-  function ActivityService(PouchDBService) {
+  function ActivityDataService(PouchDBService) {
 
-    var db = PouchDBService.initialize('audits');
-    var remote = require('remote');
-    var app = remote.require('app');
-    var sysCfg = app.sysConfig();
-
-    var _prefill = function(event) {
-
-      var doc = angular.copy(event);
-      var today = new Date();
-
-      doc.createdAt = today.toISOString();
-      doc.createdBy = sysCfg.user;
-      doc.createdOn = sysCfg.host;
-
-      return doc;
-    };
+    var db = PouchDBService.initialize('activities');
 
     return {
 
@@ -63,30 +48,6 @@
         return db.query('audits/all', options);
       },
 
-      addInfo: function(entry) {
-
-        var doc = _prefill(entry);
-        doc.class = 'info';
-
-        return db.post(doc);
-      },
-
-      addWarning: function(entry) {
-
-        var doc = _prefill(entry);
-        doc.class = 'warning';
-
-        return db.post(doc);
-      },
-
-      addError: function(entry) {
-
-        var doc = _prefill(entry);
-        doc.class = 'error';
-
-        return db.post(doc);
-      },
-
       search: function(filter) {
 
         var options = {
@@ -94,10 +55,15 @@
         };
 
         return db.allDocs(options);
+      },
+
+      writeEntry: function(doc) {
+
+        return db.post(doc);
       }
     };
   }
 
-  module.exports = ActivityService;
-  
+  module.exports = ActivityDataService;
+
 })();

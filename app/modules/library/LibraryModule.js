@@ -22,11 +22,11 @@
             url: '/view',
             views: {
               'content': {
-                templateUrl: `${moduleConfig.path}/templates/library.view.html`,
+                templateUrl: `${moduleConfig.path}/views/library.view.html`,
                 controller: 'LibraryViewController as ctl'
               },
               'actions@app': {
-                templateUrl: `${moduleConfig.path}/templates/library.actions.html`
+                templateUrl: `${moduleConfig.path}/views/library.actions.html`
               }
             }
           })
@@ -34,7 +34,7 @@
             url: '/upload',
             views: {
               'content': {
-                templateUrl: `${moduleConfig.path}/templates/library.upload.html`,
+                templateUrl: `${moduleConfig.path}/views/library.upload.html`,
                 controller: 'LibraryUploadController as ctl'
               },
               'actions@app': {
@@ -46,7 +46,7 @@
             url: '/capture',
             views: {
               'content': {
-                templateUrl: `${moduleConfig.path}/templates/library.capture.html`,
+                templateUrl: `${moduleConfig.path}/views/library.capture.html`,
                 controller: 'LibraryCaptureController as ctl'
               },
               'actions@app': {
@@ -58,7 +58,7 @@
             url: '/search',
             views: {
               'content': {
-                templateUrl: `${moduleConfig.path}/templates/library.search.html`,
+                templateUrl: `${moduleConfig.path}/views/library.search.html`,
                 controller: 'LibrarySearchController as ctl'
               }
             }
@@ -66,14 +66,14 @@
 
       });
 
-    var FileSystemService = require('./scripts/FileSystemService');
-    var FileUploadService = require('./scripts/FileUploadService');
-    var LibraryDataService = require('./scripts/LibraryDataService');
+    var FileSystemService = require('./services/FileSystemService');
+    var FileUploadService = require('./services/FileUploadService');
+    var LibraryDataService = require('./services/LibraryDataService');
 
-    var LibraryCaptureController = require('./scripts/LibraryCaptureController');
-    var LibrarySearchController = require('./scripts/LibrarySearchController');
-    var LibraryUploadController = require('./scripts/LibraryUploadController');
-    var LibraryViewController = require('./scripts/LibraryViewController');
+    var LibraryCaptureController = require('./controllers/LibraryCaptureController');
+    var LibrarySearchController = require('./controllers/LibrarySearchController');
+    var LibraryUploadController = require('./controllers/LibraryUploadController');
+    var LibraryViewController = require('./controllers/LibraryViewController');
 
     angular.module('inspectApp').service('FileSystemService', ['$q', FileSystemService]);
     angular.module('inspectApp').service('FileUploadService', ['$q', 'PouchDBService', FileUploadService]);

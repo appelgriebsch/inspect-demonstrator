@@ -39,6 +39,8 @@
   var ShellController = require('./scripts/ShellController');
   var PouchDBService = require('./scripts/PouchDBService');
   var ModuleProvider = require('./scripts/ModuleProvider');
+
+  // hint: has to initialize modules here, otherwise controller objects are not found :(
   ModuleProvider.loadModules();
 
   angular.module('inspectApp').service('PouchDBService', [PouchDBService]);

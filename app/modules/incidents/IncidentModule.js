@@ -22,20 +22,23 @@
             url: '/view',
             views: {
               'content': {
-                templateUrl: `${moduleConfig.path}/templates/incidents.view.html`,
+                templateUrl: `${moduleConfig.path}/views/incidents.view.html`,
                 controller: 'IncidentViewController as ctl'
               },
               'actions@app': {
-                templateUrl: `${moduleConfig.path}/templates/incidents.actions.html`
+                templateUrl: `${moduleConfig.path}/views/incidents.actions.html`
               }
             }
           });
 
       });
 
-    var IncidentViewController = require('./scripts/IncidentViewController');
+    var IncidentDataService = require('./services/IncidentDataService');
 
-    angular.module('inspectApp').controller('IncidentViewController', ['$scope', '$q', 'ActivityService', IncidentViewController]);
+    var IncidentViewController = require('./controllers/IncidentViewController');
+
+    angular.module('inspectApp').service('IncidentDataService', ['PouchDBService', IncidentDataService]);
+    angular.module('inspectApp').controller('IncidentViewController', ['$scope', '$q', 'ActivityService', 'IncidentDataService', IncidentViewController]);
 
   }
 

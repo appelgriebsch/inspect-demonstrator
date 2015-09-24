@@ -22,7 +22,7 @@
             url: '/view',
             views: {
               'content': {
-                templateUrl: `${moduleConfig.path}/templates/activities.view.html`,
+                templateUrl: `${moduleConfig.path}/views/activities.view.html`,
                 controller: 'ActivitiesViewController as ctl'
               }
             }
@@ -30,11 +30,15 @@
 
       });
 
-    var ActivityService = require('./scripts/ActivityService.js');
-    var ActivitiesViewController = require('./scripts/ActivitiesViewController');
+    var ActivityDataService = require('./services/ActivityDataService.js');
+    var ActivityService = require('./services/ActivityService.js');
 
-    angular.module('inspectApp').service('ActivityService', ['PouchDBService', ActivityService]);
-    angular.module('inspectApp').controller('ActivitiesViewController', ['$state', '$log', '$q', 'ActivityService', ActivitiesViewController]);
+    var ActivitiesViewController = require('./controllers/ActivitiesViewController');
+
+    angular.module('inspectApp').service('ActivityDataService', ['PouchDBService', ActivityDataService]);
+    angular.module('inspectApp').service('ActivityService', ['ActivityDataService', ActivityService]);
+
+    angular.module('inspectApp').controller('ActivitiesViewController', ['$state', '$log', '$q', 'ActivityDataService', ActivitiesViewController]);
 
   }
 
