@@ -81,7 +81,7 @@ grunt.initConfig({
         arch: 'x64',
         icon: app_icons.icns,
         prune: true,
-        asar: true
+        asar: false
       }
     },
     win32Build: {
@@ -94,12 +94,12 @@ grunt.initConfig({
         arch: 'ia32',
         icon: app_icons.ico,
         prune: true,
-        asar: true
+        asar: false
       }
     },
     linuxBuild: {
       options: {
-        name: 'boilerplate',
+        name: app_name,
         dir: 'build/linux',
         out: 'build',
         version: electron_version,
@@ -107,7 +107,7 @@ grunt.initConfig({
         arch: 'x64',
         icon: app_icons.png,
         prune: true,
-        asar: true
+        asar: false
       }
     }
   },
@@ -141,6 +141,7 @@ grunt.initConfig({
       productName: app_name,
       productDescription: app_description,
       productVersion: app_version,
+      bin: app_name,
       icon: app_icons.png,
       categories: [
         'Utility'
@@ -163,6 +164,7 @@ grunt.initConfig({
       productName: app_name,
       productDescription: app_description,
       productVersion: app_version,
+      bin: app_name,
       icon: app_icons.png,
       section: 'devel',
       priority: 'optional',
