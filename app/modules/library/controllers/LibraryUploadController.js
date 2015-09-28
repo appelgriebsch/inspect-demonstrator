@@ -2,10 +2,28 @@
 
   'use strict';
 
-  function LibraryUploadController($scope, $q, ActivityService, FileSystemService, FileUploadService) {
+  function LibraryUploadController($scope, $state, $q, ActivityService, FileSystemService, FileUploadService) {
 
     this.files = [];
     var dropZone, fileSelector, folderSelector;
+
+    var calcUnitSize = function(fileSize) {
+
+      var result = {
+        unit: 'bytes',
+        number: fileSize
+      };
+
+      if (fileSize > (1024 * 1024)) {
+        result.number = Math.round(fileSize / (1024 * 1024));
+        result.unit = 'mb';
+      } else if (fileSize > 1024) {
+        result.number = Math.round(fileSize / 1024);
+        result.unit = 'kb';
+      }
+
+      return result;
+    };
 
     this.initialize = function() {
 
@@ -45,26 +63,40 @@
 
       $scope.$on('submit', (event, args) => {
 
-        console.log('submit', event, args);
+        var notifier = require('node-notifier');
 
-        var info = this.files.map(function(file) {
-          return {
-            file: (file.info.type === 'folder' ? file.info.noOfFiles : 1)
-          };
-        }).reduce(function(sum, elem) {
-          return {
-            files: sum.files + elem.file
-          };
-        }, {
-          files: 0
-        });
+        FileUploadService.upload(this.files)
+          .then((uploadedFiles) => {
 
-        info.type = 'upload';
-        info.details = angular.copy(this.files);
+            var info = uploadedFiles.map(function(uploadedFile) {
+              return {
+                file: (uploadedFile.file.info.type === 'folder' ? uploadedFile.file.info.noOfFiles : 1),
+                size: uploadedFile.file.info.size
+              };
+            }).reduce(function(sum, elem) {
+              return {
+                files: sum.files + elem.file,
+                size: sum.size + elem.size
+              };
+            }, {
+              files: 0,
+              size: 0
+            });
 
-        $q.when(ActivityService.addInfo(info))
-          .then(() => {
-            return FileUploadService.upload(this.files);
+            info.type = 'upload';
+            info.details = angular.copy(uploadedFiles);
+            info.displaySize = calcUnitSize(info.size);
+
+            notifier.notify({
+              title: 'Files uploaded',
+              message: `${info.files} file(s) (${info.displaySize.number} ${info.displaySize.unit}) have been uploaded.`
+            });
+
+            ActivityService.addInfo(info).then(() => {
+              $q.when(true).then(() => {
+                $state.go('^.view');
+              });
+            });
           });
       });
 
@@ -92,8 +124,7 @@
         var uploadRequest = {
           name: file.name,
           path: file.path,
-          status: 'unknown',
-          uploadProgress: 0
+          status: 'unknown'
         };
         newRequests.push(uploadRequest);
         this.files.push(uploadRequest);

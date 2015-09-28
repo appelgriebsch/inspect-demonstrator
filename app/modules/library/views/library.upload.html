@@ -9,8 +9,6 @@
           <md-icon ng-if="file.info.type === 'file'">insert_drive_file</md-icon>
         </div>
         <span>{{ file.info.noOfFiles }} file(s) with {{ file.info.display_size.number }} {{ file.info.display_size.unit }}</span>
-        <span flex></span>
-        <md-progress-linear md-mode="determinate" value="{{ file.uploadProgress }}"></md-progress-linear>
       </div>
       <div ng-if="file.status === 'unknown'" class="md-item-text" layout-fill layout="column" layout-padding>
         <div layout="row" layout-fill>

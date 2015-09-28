@@ -48,12 +48,17 @@
               });
               db.post(doc)
                 .then((result) => {
+                  file.status = 'uploaded';
                   resolve({
                     file: file,
-                    doc: result
+                    result: result
                   });
                 }).catch((err) => {
-                  reject(err);
+                  file.status = 'error';
+                  reject({
+                    result: err,
+                    file: file
+                  });
                 });
             });
           });
@@ -83,18 +88,19 @@
 
                 received += 1;
 
-                $q.when(true).then(() => {
-                  folder.uploadProgress = Math.round(received * 100 / count);
-                });
-
-                if (received == (count - 1)) {
+                if (received == count) {
+                  folder.status = 'uploaded';
                   resolve({
                     file: folder
                   });
                 }
 
               }).catch((err) => {
-                reject(err);
+                folder.status = 'error';
+                reject({
+                  result: err,
+                  file: folder
+                });
               });
             }
           });
@@ -106,13 +112,17 @@
 
     var db = PouchDBService.initialize('library');
 
-    return {
+    var uploader = function(requests) {
 
-      upload: function(files) {
+      var promise = new Promise((resolve, reject) => {
 
-        for (var i = 0; i < files.length; ++i) {
+        var count = requests.length;
+        var handledRequests = 0;
+        var uploaded = [];
 
-          var file = files[i];
+        for (var i = 0; i < count; ++i) {
+
+          var file = requests[i];
           var uploader;
 
           if (file.status === 'uploaded') {
@@ -129,16 +139,32 @@
           }
 
           uploader.upload().then((result) => {
-            console.log(result);
-            result.file.status = 'uploaded';
+
+            handledRequests += 1;
+            uploaded.push(result);
+
+            if (handledRequests == count) {
+              resolve(uploaded);
+            }
           }).catch((err) => {
+            handledRequests += 1;
             console.log(err);
           });
         }
+      });
+
+      return promise;
+    };
+
+    return {
+
+      upload: function(requests) {
+
+        return uploader(requests);
       }
     };
   }
 
   module.exports = FileUploadService;
-  
+
 })();
