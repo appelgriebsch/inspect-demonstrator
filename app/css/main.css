@@ -27,24 +27,6 @@ md-toolbar h1 {
 	min-height: 128px;
 }
 
-.item-preview {
-	float: left;
-	width: 30%;
-	box-sizing: border-box;
-	min-height: auto;
-	height: 240px;
-	min-width: 200px;
-}
-
-.upload-preview {
-	float: left;
-	width: 20%;
-	box-sizing: border-box;
-	min-height: auto;
-	height: 128px;
-	min-width: 180px;
-}
-
 .filename, .fileinfo {
 	overflow: hidden;
 	max-height: 2.5em;
