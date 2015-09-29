@@ -49,6 +49,7 @@
 
   app.on('ready', function() {
     mainWindow = createMainWindow();
+    webSiteCaptureService = new WebSiteCapture();
   });
 
   // initialize service finder module
@@ -65,7 +66,7 @@
   const hostname = os.hostname();
   const username = (process.platform === 'win32') ? process.env.USERNAME : process.env.USER;
 
-  const webSiteCaptureService = new WebSiteCapture();
+  var webSiteCaptureService;
 
   app.serviceFinder = function(serviceName, protocol, subTypes, includeLocal) {
     return new ServiceFinder(serviceName, protocol, subTypes, includeLocal);

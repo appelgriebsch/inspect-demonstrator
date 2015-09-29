@@ -95,7 +95,7 @@
 						doc.capturedAt = new Date();
 						doc.url = request.url;
 						doc.type = "website";
-						ipc.send('capture-finished', JSON.stringify(doc));
+						ipc.send('capture-finished', doc);
 					});
 
 					viewport.addEventListener('did-finish-load', function() {
@@ -103,7 +103,7 @@
 					});
 
 					ipc.on('capture-page', function(arg) {
-						request = JSON.parse(arg);
+						request = arg;
 						viewport.src = request.url;
 					});
 				}
