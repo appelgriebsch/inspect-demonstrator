@@ -8,6 +8,9 @@
     var app = require('app');
     var browserWindow = require('browser-window');
 
+    var path = require('path');
+    var fs = require('fs');
+
     var filenamifyUrl = require('filenamify-url');
     var pageres = require('pageres');
 
@@ -42,18 +45,27 @@
 
       var promise = new Promise((resolve, reject) => {
 
+        var tempPath = app.getPath('temp');
         var capturePage = new pageres({
           delay: 2,
           filename: '<%= date %>.<%= url %>'
         })
         .src(uri, [display.width + 'x' + display.height])
-        .dest(app.getPath('temp'));
+        .dest(tempPath);
 
         capturePage.run(function(err, results) {
           if (err) {
             reject(err);
           } else {
-            resolve(results);
+            var name = results[0].filename;
+            var file = path.join(tempPath, name);
+            var pageImg = fs.readFileSync(file);
+            resolve({
+              url: uri,
+              name: name,
+              type: 'image/png',
+              content: pageImg
+            });
           }
         });
       });
@@ -66,21 +78,27 @@
       var promise = new Promise((resolve, reject) => {
 
         resolver = resolve;
-
         _window.webContents.send('capture-page', {
           url: uri,
           name: filenamifyUrl(uri)
         });
-
       });
 
       return promise;
     };
 
+    var _close = function() {
+      if (_window) {
+        _window.close();
+        _window = null;
+      }
+    };
+
     return {
 
       capturePage: _capturePage,
-      capturePreview: _capturePreview
+      capturePreview: _capturePreview,
+      close: _close
     };
   }
 

@@ -4,9 +4,11 @@
                 md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1"
                   ng-repeat="item in ctl.items">
-      <md-icon class="md-48">insert_drive_file</md-icon>
+      <md-icon class="md-48" ng-if="item.type === 'document'">insert_drive_file</md-icon>
+      <img class="thumbnail" ng-if="item.type === 'website'" ng-src="{{ item.preview }}"></img>
       <md-grid-tile-footer>
-        <h3 class="filename">{{ item.filename }}</h3>
+        <h3 class="filename" ng-if="item.type === 'document'">{{ item.filename }}</h3>
+        <h3 class="filename" ng-if="item.type === 'website'">{{ item.title }}</h3>
       </md-grid-tile-footer>
     </md-grid-tile>
   </md-grid-list>

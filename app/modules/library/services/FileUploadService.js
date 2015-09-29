@@ -44,7 +44,8 @@
               var doc = _prefill({
                 _attachments: _attachments,
                 filename: file.name,
-                status: 'uploaded'
+                status: 'uploaded',
+                type: 'document'
               });
               db.post(doc)
                 .then((result) => {

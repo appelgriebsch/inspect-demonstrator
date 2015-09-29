@@ -30,6 +30,9 @@
     // deref the window
     // for multiple windows store them in an array
     mainWindow = null;
+    if (webSiteCaptureService) {
+      webSiteCaptureService.close();
+    }
   }
 
   // prevent window being GC'd
