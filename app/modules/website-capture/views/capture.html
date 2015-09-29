@@ -91,7 +91,7 @@
 
 					viewport.addEventListener('ipc-message', function(evt) {
 						var doc = JSON.parse(evt.channel);
-						doc.canonicalID = request.name.substr(0, request.name.length - 4);
+						doc.canonicalID = request.name;
 						doc.capturedAt = new Date();
 						doc.url = request.url;
 						doc.type = "website";

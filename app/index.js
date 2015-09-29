@@ -65,6 +65,8 @@
   const hostname = os.hostname();
   const username = (process.platform === 'win32') ? process.env.USERNAME : process.env.USER;
 
+  const webSiteCaptureService = new WebSiteCapture();
+
   app.serviceFinder = function(serviceName, protocol, subTypes, includeLocal) {
     return new ServiceFinder(serviceName, protocol, subTypes, includeLocal);
   };
@@ -84,7 +86,7 @@
 
   app.captureWebSiteService = function() {
 
-    return new WebSiteCapture();
+    return webSiteCaptureService;
   };
 
 })();

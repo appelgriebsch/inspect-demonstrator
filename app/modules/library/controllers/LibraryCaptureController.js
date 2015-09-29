@@ -16,14 +16,12 @@
       var app = remote.require('app');
 
       app.captureWebSiteService().capturePreview(uri).then((result) => {
-
         console.log(result);
         $q.when(true).then(() => {
           this.capture = result;
         });
 
       }).catch((err) => {
-
         console.log(err);
       });
 
@@ -40,7 +38,7 @@
       var info = {
         class: 'info',
         type: 'capture',
-        url: 'http://www.heise.de'
+        url: this.capture.url
       };
       return ActivityService.addInfo(info);
     };
