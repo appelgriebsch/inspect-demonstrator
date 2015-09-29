@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="capture.css"/>
+	</head>
+	<body>
+		<webview id="content" nodeintegration></webview>
+		<script id="capture-metadata" type="text/template">
+			(function() {
+
+				var ipc = require('ipc');
+				var _title = null;
+				var _description = null;
+				var _author = null;
+				var _keywords = null;
+
+				var elem = document.querySelector('title');
+				if (elem) {
+					_title = elem.innerText;
+				}
+				else {
+					elem = document.querySelector('meta[name=Title]');
+					if (elem) {
+						_title = elem.content;
+					}
+					else {
+						elem = document.querySelector('meta[name=title]');
+						if (elem) {
+							_title = elem.content;
+						}
+					}
+				}
+
+				elem = document.querySelector('meta[name=Description]');
+				if (elem) {
+					_description = elem.content;
+				}
+				else {
+					elem = document.querySelector('meta[name=description]');
+					if (elem) {
+						_description = elem.content;
+					}
+				}
+
+				elem = document.querySelector('meta[name=Author]');
+				if (elem) {
+					_author = elem.content;
+				}
+				else {
+					elem = document.querySelector('meta[name=author]');
+					if (elem) {
+						_author = elem.content;
+					}
+				}
+
+				elem = document.querySelector('meta[name=Keywords]');
+				if (elem) {
+					_keywords = elem.content;
+				}
+				else {
+					elem = document.querySelector('meta[name=keywords]');
+					if (elem) {
+						_keywords = elem.content;
+					}
+				}
+
+				result = {
+					title: _title,
+					description: _description,
+					author: _author,
+					keywords: _keywords
+				};
+
+				ipc.sendToHost(JSON.stringify(result));
+			})();
+
+		</script>
+		<script>
+
+			onload = function() {
+
+				var ipc = require('ipc');
+				var viewport = document.getElementById('content');
+				var request = null;
+
+				if(viewport) {
+
+					viewport.addEventListener('ipc-message', function(evt) {
+						var doc = JSON.parse(evt.channel);
+						doc.canonicalID = request.name.substr(0, request.name.length - 4);
+						doc.capturedAt = new Date();
+						doc.url = request.url;
+						doc.type = "website";
+						ipc.send('capture-finished', JSON.stringify(doc));
+					});
+
+					viewport.addEventListener('did-finish-load', function() {
+						viewport.executeJavaScript(document.getElementById('capture-metadata').innerText);
+					});
+
+					ipc.on('capture-page', function(arg) {
+						request = JSON.parse(arg);
+						viewport.src = request.url;
+					});
+				}
+			}
+		</script>
+	</body>
+</html>

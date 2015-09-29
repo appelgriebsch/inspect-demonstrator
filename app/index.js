@@ -11,9 +11,6 @@
   // adds debug features like hotkeys for triggering dev tools and reload
   require('electron-debug')();
 
-  // initialize service finder module
-  var ServiceFinder = require('node-servicefinder').ServiceFinder;
-
   // create main application window
   function createMainWindow() {
 
@@ -54,6 +51,10 @@
     mainWindow = createMainWindow();
   });
 
+  // initialize service finder module
+  var ServiceFinder = require('node-servicefinder').ServiceFinder;
+  var WebSiteCapture = require('./modules/website-capture/WebSiteCaptureModule');
+
   var path = require('path');
   var os = require('os');
 
@@ -79,6 +80,11 @@
         cache: cacheDir
       }
     };
+  };
+
+  app.captureWebSiteService = function() {
+
+    return new WebSiteCapture();
   };
 
 })();
