@@ -9,15 +9,18 @@
     };
 
     this.capture = undefined;
+    this.isBusy = false;
 
     var _loadUrl = function(uri) {
 
       var remote = require('remote');
       var app = remote.require('app');
 
+      this.isBusy = true;
+
       app.captureWebSiteService().capturePreview(uri).then((result) => {
-        console.log(result);
         $q.when(true).then(() => {
+          this.isBusy = false;
           this.capture = result;
         });
 

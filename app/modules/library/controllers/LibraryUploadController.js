@@ -5,6 +5,8 @@
   function LibraryUploadController($scope, $state, $q, ActivityService, FileSystemService, FileUploadService) {
 
     this.files = [];
+    this.isBusy = false;
+
     var dropZone, fileSelector, folderSelector;
 
     var calcUnitSize = function(fileSize) {
@@ -64,6 +66,7 @@
       $scope.$on('submit', (event, args) => {
 
         var notifier = require('node-notifier');
+        this.isBusy = true;
 
         FileUploadService.upload(this.files)
           .then((uploadedFiles) => {
@@ -94,6 +97,7 @@
 
             ActivityService.addInfo(info).then(() => {
               $q.when(true).then(() => {
+                this.isBusy = false;
                 $state.go('^.view');
               });
             });
