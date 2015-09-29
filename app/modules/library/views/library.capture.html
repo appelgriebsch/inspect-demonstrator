@@ -2,7 +2,7 @@
   <centered ng-if="ctl.isBusy">
     <div layout="row" layout-align="space-around center">
       <h3>Capturing Web Site...</h3>
-      <md-progress-circular class="md-accent" mode="indeterminate"></md-progress-circular>
+      <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
     </div>
   </centered>
   <div layout="row">
@@ -15,5 +15,11 @@
       <md-icon>forward</md-icon>
     </md-button>
   </div>
-  <img class="pagePreview" ng-src="{{ ctl.capture.preview }}"></img>
+  <md-card ng-if="ctl.capture">
+    <img class="pagePreview md-card-image" ng-src="{{ ctl.capture.preview }}"></img>
+    <md-card-content>
+      <h2>{{ ctl.capture.title }}</h2>
+      <p>{{ ctl.capture.description }}</p>
+    </md-card-content>
+  </md-card>
 </div>
