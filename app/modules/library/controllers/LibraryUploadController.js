@@ -87,7 +87,7 @@
             });
 
             info.type = 'upload';
-            info.details = angular.copy(uploadedFiles);
+            info.details = uploadedFiles;
             info.displaySize = calcUnitSize(info.size);
 
             notifier.notify({
