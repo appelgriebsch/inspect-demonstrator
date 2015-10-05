@@ -48,6 +48,8 @@
 
             ActivityService.addInfo(info).then(() => {
               $q.when(true).then(() => {
+                this.capture = null;
+                this.url = null;
                 this.isBusy = false;
                 $state.go('^.view');
               });
@@ -64,8 +66,10 @@
       this.isBusy = true;
 
       app.captureWebSiteService().capturePreview(this.url).then((result) => {
-        this.isBusy = false;
-        this.capture = result;
+        $q.when(true).then(() => {
+          this.isBusy = false;
+          this.capture = result;
+        });
       }).catch((err) => {
         console.log(err);
       });
@@ -75,10 +79,12 @@
     this.loadUrl = (evt) => {
 
       if ((evt.keyCode) && (evt.keyCode == 13)) {
-        $q.when(true).then(() => {
-          this.url = evt.target.value;
-          _loadUrl();
-        });
+        this.url = evt.target.value;
+        _loadUrl();
+      }
+      else {
+        this.url = document.querySelector('#url').value;
+        _loadUrl();
       }
     };
   }
