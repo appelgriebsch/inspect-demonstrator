@@ -2,11 +2,16 @@
 
   'use strict';
 
-  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'angular-timeline', 'ui.router', 'angular-centered'])
+  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'angular-timeline', 'ui.router', 'angular-centered', 'notification'])
     .config(function($mdThemingProvider) {
       $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
         .accentPalette('grey');
+    })
+    .config(function($notificationProvider) {
+      $notificationProvider.setOptions({
+        icon: __dirname + '/assets/demonstrator.png'
+      });
     })
     .config(function($stateProvider, $urlRouterProvider) {
 

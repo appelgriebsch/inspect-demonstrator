@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function LibraryUploadController($scope, $state, $q, ActivityService, FileSystemService, FileUploadService) {
+  function LibraryUploadController($scope, $state, $q, $notification, ActivityService, FileSystemService, FileUploadService) {
 
     this.files = [];
     this.isBusy = false;
@@ -35,12 +35,14 @@
 
       fileSelector.onchange = (e) => {
         $q.when(true).then(() => {
+          console.log('file-sel:', e.target.files);
           this.addFiles(e.target.files);
         });
       };
 
       folderSelector.onchange = (e) => {
         $q.when(true).then(() => {
+          console.log('folder-sel:', e.target.files);
           this.addFiles(e.target.files);
         });
       };
@@ -57,6 +59,7 @@
       dropZone.ondrop = (e) => {
         e.preventDefault();
         var files = e.dataTransfer.files;
+        console.log('dropped:', files);
         $q.when(true).then(() => {
           this.addFiles(files);
         });
@@ -65,7 +68,6 @@
 
       $scope.$on('submit', (event, args) => {
 
-        var notifier = require('node-notifier');
         this.isBusy = true;
 
         FileUploadService.upload(this.files)
@@ -90,9 +92,9 @@
             info.details = uploadedFiles;
             info.displaySize = calcUnitSize(info.size);
 
-            notifier.notify({
-              title: 'Files uploaded',
-              message: `${info.files} file(s) (${info.displaySize.number} ${info.displaySize.unit}) have been uploaded.`
+            $notification('Files uploaded', {
+              body: `${info.files} file(s) (${info.displaySize.number} ${info.displaySize.unit}) have been uploaded.`,
+              delay: 2000
             });
 
             ActivityService.addInfo(info).then(() => {
@@ -104,7 +106,9 @@
           });
       });
 
-      return ActivityService.initialize();
+      $notification.requestPermission().then(() => {
+        return ActivityService.initialize();
+      });
     };
 
     this.selectFile = function() {

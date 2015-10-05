@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function LibraryCaptureController($scope, $state, $q, ActivityService, PouchDBService) {
+  function LibraryCaptureController($scope, $state, $q, $notification, ActivityService, PouchDBService) {
 
     var remote = require('remote');
     var app = remote.require('app');
@@ -15,7 +15,6 @@
 
       $scope.$on('submit', (event, args) => {
 
-        var notifier = require('node-notifier');
         this.isBusy = true;
 
         app.captureWebSiteService().capturePage(this.url).then((result) => {
@@ -41,9 +40,9 @@
               url: this.capture.url
             };
 
-            notifier.notify({
-              title: 'Website captured',
-              message: `${info.details.title} has been captured.`
+            $notification('Website captured', {
+              body: `${info.details.title} has been captured.`,
+              delay: 2000
             });
 
             ActivityService.addInfo(info).then(() => {
@@ -58,7 +57,9 @@
         });
       });
 
-      return ActivityService.initialize();
+      $notification.requestPermission().then(() => {
+        return ActivityService.initialize();
+      });
     };
 
     var _loadUrl = function() {
@@ -82,7 +83,7 @@
         this.url = evt.target.value;
         _loadUrl();
       }
-      else {
+      else if (typeof evt === MouseEvent){
         this.url = document.querySelector('#url').value;
         _loadUrl();
       }

@@ -81,7 +81,7 @@ grunt.initConfig({
         arch: 'x64',
         icon: app_icons.icns,
         prune: true,
-        asar: false
+        asar: true
       }
     },
     win32Build: {
@@ -94,7 +94,7 @@ grunt.initConfig({
         arch: 'ia32',
         icon: app_icons.ico,
         prune: true,
-        asar: false
+        asar: true
       }
     },
     linuxBuild: {
@@ -107,7 +107,7 @@ grunt.initConfig({
         arch: 'x64',
         icon: app_icons.png,
         prune: true,
-        asar: false
+        asar: true
       }
     }
   },
