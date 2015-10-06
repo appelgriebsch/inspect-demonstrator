@@ -18,8 +18,16 @@
   <md-card ng-if="ctl.capture">
     <img class="pagePreview md-card-image" ng-src="{{ ctl.capture.preview }}"></img>
     <md-card-content>
-      <h2>{{ ctl.capture.title }}</h2>
+      <div ng-if="ctl.capture.author !== ''" layout="row" layout-fill>
+        <h2>{{ ctl.capture.author }}</h2>
+        <span flex></span>
+        <small>{{ ctl.capture.publicationDate | date: 'short' }}</small>
+      </div>
+      <h3>{{ ctl.capture.title }}</h3>
       <p>{{ ctl.capture.description }}</p>
     </md-card-content>
+    <md-card-footer>
+      <md-chips ng-model="ctl.capture.tags" readonly="true"></md-chips>
+    </md-card-footer>
   </md-card>
 </div>
