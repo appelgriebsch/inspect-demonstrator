@@ -32,13 +32,13 @@
     _window.loadUrl('file://' + __dirname + '/views/capture.html');
     _window.showInactive();
 
-    var resolver;
+    var callback;
 
     ipc.on('capture-finished', function(event, result) {
       _window.capturePage(function(preview) {
         result.preview = preview.toDataUrl();
-        resolver(result);
-        resolver = null;
+        callback.resolve(result);
+        callback = null;
       });
     });
 
@@ -78,7 +78,11 @@
 
       var promise = new Promise((resolve, reject) => {
 
-        resolver = resolve;
+        callback = {
+          resolve: resolve,
+          reject: reject
+        };
+
         _window.webContents.send('capture-page', {
           url: uri,
           name: filenamifyUrl(uri)

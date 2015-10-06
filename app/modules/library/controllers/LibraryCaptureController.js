@@ -10,12 +10,14 @@
     this.isBusy = false;
     this.capture;
     this.url;
+    this.statusMessage;
 
     this.initialize = function() {
 
       $scope.$on('submit', (event, args) => {
 
         this.isBusy = true;
+        this.statusMessage = 'Snapshotting Web Site...';
 
         app.captureWebSiteService().capturePage(this.url).then((result) => {
 
@@ -65,8 +67,9 @@
     var _loadUrl = function() {
 
       this.isBusy = true;
-
+      this.statusMessage = 'Analysing Web Site...';
       app.captureWebSiteService().capturePreview(this.url).then((result) => {
+        console.log(result);
         $q.when(true).then(() => {
           this.isBusy = false;
           this.capture = result;
@@ -78,6 +81,8 @@
     }.bind(this);
 
     this.loadUrl = (evt) => {
+
+      console.log(typeof evt);
 
       if ((evt.keyCode) && (evt.keyCode == 13)) {
         this.url = evt.target.value;

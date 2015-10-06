@@ -12,70 +12,27 @@
 		<script id="capture-metadata" type="text/template">
 			(function() {
 
-				var ipc = require('ipc');
-				var _title = null;
-				var _description = null;
-				var _author = null;
-				var _keywords = null;
+				var _tag = document.querySelector("meta[name='parsely-page']");
+				var _parsely = _tag ? JSON.parse(_tag.content) : null;
 
-				var elem = document.querySelector('title');
-				if (elem) {
-					_title = elem.innerText;
-				}
-				else {
-					elem = document.querySelector('meta[name=Title]');
-					if (elem) {
-						_title = elem.content;
-					}
-					else {
-						elem = document.querySelector('meta[name=title]');
-						if (elem) {
-							_title = elem.content;
-						}
-					}
-				}
+				var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title");
+				var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description");
+				var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']");
+				var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']");
+				var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']");
+				var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']");
 
-				elem = document.querySelector('meta[name=Description]');
-				if (elem) {
-					_description = elem.content;
-				}
-				else {
-					elem = document.querySelector('meta[name=description]');
-					if (elem) {
-						_description = elem.content;
-					}
-				}
-
-				elem = document.querySelector('meta[name=Author]');
-				if (elem) {
-					_author = elem.content;
-				}
-				else {
-					elem = document.querySelector('meta[name=author]');
-					if (elem) {
-						_author = elem.content;
-					}
-				}
-
-				elem = document.querySelector('meta[name=Keywords]');
-				if (elem) {
-					_keywords = elem.content;
-				}
-				else {
-					elem = document.querySelector('meta[name=keywords]');
-					if (elem) {
-						_keywords = elem.content;
-					}
-				}
-
-				result = {
-					title: _title,
-					description: _description,
-					author: _author,
-					keywords: _keywords
+				var result = {
+					title: _parsely ? _parsely.title : (_title.content ? _title.content : _title.text),
+					description: _description.content ? _description.content : _description.text,
+					url: _parsely ? _parsely.link : (_url.content ? _url.content : _url.href),
+					publicationDate: _parsely ? _parsely.pub_date : _pubDate.content,
+					author: _parsely ? _parsely.author : _author.content,
+					tags: _parsely ? _parsely.tags : (_tags.content ? _tags.content.split(/\s*,\s*/) : Array.map(_tags, (elem) => { return elem.content }))
 				};
 
-				ipc.sendToHost(JSON.stringify(result));
+				var ipc = require('ipc');
+				ipc.sendToHost(result);
 			})();
 
 		</script>
@@ -90,7 +47,7 @@
 				if(viewport) {
 
 					viewport.addEventListener('ipc-message', function(evt) {
-						var doc = JSON.parse(evt.channel);
+						var doc = evt.channel;
 						var today = new Date();
 
 						doc.canonicalID = request.name;
