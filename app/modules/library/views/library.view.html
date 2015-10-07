@@ -8,7 +8,9 @@
       <img class="thumbnail" ng-if="item.type === 'website'" ng-src="{{ item.preview }}"></img>
       <md-grid-tile-footer>
         <h3 class="filename" ng-if="item.type === 'document'">{{ item.filename }}</h3>
-        <h3 class="filename" ng-if="item.type === 'website'">{{ item.title }}</h3>
+        <h3 class="filename" ng-if="item.type === 'website'">
+          <a ui-sref="^.details({ doc: item._id })">{{ item.title }}</a>
+        </h3>
       </md-grid-tile-footer>
     </md-grid-tile>
   </md-grid-list>

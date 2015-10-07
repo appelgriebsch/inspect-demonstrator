@@ -16,7 +16,7 @@
 
         var _attachments = {};
 
-        _attachments[result.name] = {
+        _attachments[this.capture.canonicalID] = {
           'content_type': result.type,
           'data': result.content
         };
@@ -72,6 +72,7 @@
         $q.when(true).then(() => {
           this.isBusy = false;
           this.capture = result;
+          console.log(result);
         });
       });
 

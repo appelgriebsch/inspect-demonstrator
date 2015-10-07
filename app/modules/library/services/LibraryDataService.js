@@ -46,6 +46,11 @@
         };
 
         return db.query('books/all', options);
+      },
+
+      document: function(docID) {
+
+        return db.get(docID, { attachments: true, binary: true });
       }
     };
   }

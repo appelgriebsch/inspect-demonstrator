@@ -8,7 +8,7 @@
   <div layout="row">
     <md-input-container layout-fill>
       <label>Website URL</label>
-      <input type="url" id="url" ng-keypress="ctl.loadUrl($event)">
+      <input type="url" id="url" ng-keypress="ctl.loadUrl($event)" autofocus="autofocus">
     </md-input-container>
     <span flex></span>
     <md-button class="md-icon-button" ng-click="ctl.loadUrl($event)">
@@ -17,6 +17,7 @@
   </div>
   <md-card ng-if="ctl.capture">
     <img class="pagePreview md-card-image" ng-src="{{ ctl.capture.preview }}"></img>
+    <md-divider></md-divider>
     <md-card-content>
       <div ng-if="ctl.capture.author !== ''" layout="row" layout-fill>
         <h2>{{ ctl.capture.author }}</h2>
@@ -25,9 +26,11 @@
       </div>
       <h3>{{ ctl.capture.title }}</h3>
       <p>{{ ctl.capture.description }}</p>
+      <!--div layout="row" layout-sm="column" layout-align="start center" layout-wrap layout-fill>
+        <md-whiteframe class="md-whiteframe-1dp tag-item" flex="15" layout layout-align="center center" ng-repeat="tag in ctl.capture.tags">
+          <span>{{ tag }}</span>
+        </md-whiteframe>
+      </div-->
     </md-card-content>
-    <md-card-footer>
-      
-    </md-card-footer>
   </md-card>
 </div>

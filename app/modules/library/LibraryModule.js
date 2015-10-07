@@ -62,6 +62,15 @@
                 controller: 'LibrarySearchController as ctl'
               }
             }
+          })
+          .state(`${moduleConfig.state}.details`, {
+            url: '/detail/:doc',
+            views: {
+              'content': {
+                templateUrl: `${moduleConfig.path}/views/library.details.html`,
+                controller: 'LibraryDocumentController as ctl'
+              }
+            }
           });
 
       });
@@ -71,6 +80,7 @@
     var LibraryDataService = require('./services/LibraryDataService');
 
     var LibraryCaptureController = require('./controllers/LibraryCaptureController');
+    var LibraryDocumentController = require('./controllers/LibraryDocumentController');
     var LibrarySearchController = require('./controllers/LibrarySearchController');
     var LibraryUploadController = require('./controllers/LibraryUploadController');
     var LibraryViewController = require('./controllers/LibraryViewController');
@@ -80,6 +90,7 @@
     angular.module('inspectApp').service('LibraryDataService', ['PouchDBService', LibraryDataService]);
 
     angular.module('inspectApp').controller('LibraryCaptureController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'PouchDBService', LibraryCaptureController]);
+    angular.module('inspectApp').controller('LibraryDocumentController', ['$stateParams', '$q', 'ActivityService', 'LibraryDataService', LibraryDocumentController]);
     angular.module('inspectApp').controller('LibrarySearchController', ['$q', 'ActivityService', 'LibraryDataService', LibrarySearchController]);
     angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'FileSystemService', 'FileUploadService', LibraryUploadController]);
     angular.module('inspectApp').controller('LibraryViewController', ['$q', 'LibraryDataService', LibraryViewController]);
