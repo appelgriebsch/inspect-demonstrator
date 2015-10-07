@@ -177,7 +177,7 @@ grunt.initConfig({
         'Utility'
       ],
       rename: function(dest, src) {
-        return dest + '<%= name %>_<%= version %>-<%= revision %>_<%= arch %>.deb';
+        return dest + '<%= name %>_<%= version %>-<%= revision %>.<%= arch %>.deb';
       }
     },
     linux64: {

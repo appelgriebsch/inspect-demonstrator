@@ -11,12 +11,12 @@
     this.initialize = function() {
       $q.when(LibraryDataService.initialize())
         .then(() => {
-          $q.when(LibraryDataService.document(docID))
+          $q.when(LibraryDataService.item(docID))
           .then((result) => {
             if (result._attachments) {
               result.image = nativeImage.createFromBuffer(result._attachments[result.canonicalID].data);
             }
-            this.document = result;            
+            this.document = result;
           })
         });
     };
