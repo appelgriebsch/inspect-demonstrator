@@ -51,6 +51,6 @@
   angular.module('inspectApp').service('PouchDBService', [PouchDBService]);
   angular.module('inspectApp').provider('modules', [ModuleProvider]);
 
-  angular.module('inspectApp').controller('ShellController', ['$mdSidenav', '$scope', '$log', '$q', 'modules', ShellController]);
+  angular.module('inspectApp').controller('ShellController', ['$state', '$mdSidenav', '$scope', '$log', '$q', 'modules', ShellController]);
 
 })();

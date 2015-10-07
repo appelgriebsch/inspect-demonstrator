@@ -4,9 +4,6 @@
 
   function LibraryUploadController($scope, $state, $q, $notification, ActivityService, FileSystemService, FileUploadService) {
 
-    this.files = [];
-    this.isBusy = false;
-
     var dropZone, fileSelector, folderSelector;
 
     var calcUnitSize = function(fileSize) {
@@ -26,6 +23,59 @@
 
       return result;
     };
+
+    $scope.$on('submit', (event, args) => {
+
+      this.isBusy = true;
+
+      FileUploadService.upload(this.files)
+        .then((uploadedFiles) => {
+
+          var info = uploadedFiles.map(function(uploadedFile) {
+            return {
+              file: (uploadedFile.file.info.type === 'folder' ? uploadedFile.file.info.noOfFiles : 1),
+              size: uploadedFile.file.info.size
+            };
+          }).reduce(function(sum, elem) {
+            return {
+              files: sum.files + elem.file,
+              size: sum.size + elem.size
+            };
+          }, {
+            files: 0,
+            size: 0
+          });
+
+          info.type = 'upload';
+          info.details = uploadedFiles;
+          info.displaySize = calcUnitSize(info.size);
+
+          $notification('Files uploaded', {
+            body: `${info.files} file(s) (${info.displaySize.number} ${info.displaySize.unit}) have been uploaded.`,
+            delay: 2000
+          });
+
+          ActivityService.addInfo(info).then(() => {
+            $q.when(true).then(() => {
+              this.isBusy = false;
+              $state.go('^.view');
+            });
+          });
+        });
+    });
+
+    $scope.$on('cancel', (event, args) => {
+
+      $q.when(true).then(() => {
+        this.files = [];
+        this.isBusy = false;
+        $state.go('^.view');
+      });
+
+    });
+
+    this.files = [];
+    this.isBusy = false;
 
     this.initialize = function() {
 
@@ -65,46 +115,6 @@
         });
         return false;
       };
-
-      $scope.$on('submit', (event, args) => {
-
-        this.isBusy = true;
-
-        FileUploadService.upload(this.files)
-          .then((uploadedFiles) => {
-
-            var info = uploadedFiles.map(function(uploadedFile) {
-              return {
-                file: (uploadedFile.file.info.type === 'folder' ? uploadedFile.file.info.noOfFiles : 1),
-                size: uploadedFile.file.info.size
-              };
-            }).reduce(function(sum, elem) {
-              return {
-                files: sum.files + elem.file,
-                size: sum.size + elem.size
-              };
-            }, {
-              files: 0,
-              size: 0
-            });
-
-            info.type = 'upload';
-            info.details = uploadedFiles;
-            info.displaySize = calcUnitSize(info.size);
-
-            $notification('Files uploaded', {
-              body: `${info.files} file(s) (${info.displaySize.number} ${info.displaySize.unit}) have been uploaded.`,
-              delay: 2000
-            });
-
-            ActivityService.addInfo(info).then(() => {
-              $q.when(true).then(() => {
-                this.isBusy = false;
-                $state.go('^.view');
-              });
-            });
-          });
-      });
 
       $notification.requestPermission().then(() => {
         return ActivityService.initialize();

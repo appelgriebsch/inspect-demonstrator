@@ -7,72 +7,62 @@
     var remote = require('remote');
     var app = remote.require('app');
 
-    this.isBusy = false;
-    this.capture;
-    this.url;
-    this.statusMessage;
+    $scope.$on('submit', (event, args) => {
 
-    this.initialize = function() {
+      this.isBusy = true;
+      this.statusMessage = 'Snapshotting Web Site...';
 
-      $scope.$on('submit', (event, args) => {
+      app.captureWebSiteService().capturePage(this.url).then((result) => {
 
-        this.isBusy = true;
-        this.statusMessage = 'Snapshotting Web Site...';
+        var _attachments = {};
 
-        app.captureWebSiteService().capturePage(this.url).then((result) => {
+        _attachments[result.name] = {
+          'content_type': result.type,
+          'data': result.content
+        };
 
-          var _attachments = {};
+        this.capture._attachments = _attachments;
+        this.capture.status = 'uploaded';
 
-          _attachments[result.name] = {
-            'content_type': result.type,
-            'data': result.content
+        var db = PouchDBService.initialize('library');
+
+        db.post(this.capture).then((dbRes) => {
+
+          var info = {
+            class: 'info',
+            type: 'capture',
+            id: dbRes._id,
+            details: this.capture,
+            url: this.capture.url
           };
 
-          this.capture._attachments = _attachments;
-          this.capture.status = 'uploaded';
+          $notification('Website captured', {
+            body: `${info.details.title} has been captured.`,
+            delay: 2000
+          });
 
-          var db = PouchDBService.initialize('library');
-
-          db.post(this.capture).then((dbRes) => {
-
-            var info = {
-              class: 'info',
-              type: 'capture',
-              id: dbRes._id,
-              details: this.capture,
-              url: this.capture.url
-            };
-
-            $notification('Website captured', {
-              body: `${info.details.title} has been captured.`,
-              delay: 2000
-            });
-
-            ActivityService.addInfo(info).then(() => {
-              $q.when(true).then(() => {
-                this.capture = null;
-                this.url = null;
-                this.isBusy = false;
-                $state.go('^.view');
-              });
+          ActivityService.addInfo(info).then(() => {
+            $q.when(true).then(() => {
+              this.capture = null;
+              this.url = null;
+              this.isBusy = false;
+              $state.go('^.view');
             });
           });
         });
       });
+    });
 
-      $scope.$on('cancel', (event, args) => {
-        $q.when(true).then(() => {
-          this.capture = null;
-          this.url = null;
-          this.isBusy = false;
-          $state.go('^.view');
-        });
+    $scope.$on('cancel', (event, args) => {
+
+      $q.when(true).then(() => {
+        this.capture = null;
+        this.url = null;
+        this.isBusy = false;
+        $state.go('^.view');
       });
 
-      $notification.requestPermission().then(() => {
-        return ActivityService.initialize();
-      });
-    };
+    });
 
     var _loadUrl = function() {
 
@@ -86,6 +76,17 @@
       });
 
     }.bind(this);
+
+    this.isBusy = false;
+    this.capture;
+    this.url;
+    this.statusMessage;
+
+    this.initialize = function() {
+      $notification.requestPermission().then(() => {
+        return ActivityService.initialize();
+      });
+    };
 
     this.loadUrl = (evt) => {
 
