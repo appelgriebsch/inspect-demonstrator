@@ -38,6 +38,7 @@
             var info = {
               class: 'info',
               type: 'capture',
+              id: dbRes._id,
               details: this.capture,
               url: this.capture.url
             };
@@ -59,6 +60,15 @@
         });
       });
 
+      $scope.$on('cancel', (event, args) => {
+        $q.when(true).then(() => {
+          this.capture = null;
+          this.url = null;
+          this.isBusy = false;
+          $state.go('^.view');
+        });
+      });
+
       $notification.requestPermission().then(() => {
         return ActivityService.initialize();
       });
@@ -69,28 +79,27 @@
       this.isBusy = true;
       this.statusMessage = 'Analysing Web Site...';
       app.captureWebSiteService().capturePreview(this.url).then((result) => {
-        console.log(result);
         $q.when(true).then(() => {
           this.isBusy = false;
           this.capture = result;
         });
-      }).catch((err) => {
-        console.log(err);
       });
 
     }.bind(this);
 
     this.loadUrl = (evt) => {
 
-      console.log(typeof evt);
-
       if ((evt.keyCode) && (evt.keyCode == 13)) {
-        this.url = evt.target.value;
-        _loadUrl();
+        $q.when(true).then(() => {
+          this.url = evt.target.value;
+          _loadUrl();
+        });
       }
-      else if (typeof evt === MouseEvent){
-        this.url = document.querySelector('#url').value;
-        _loadUrl();
+      else if ((evt.type) && (evt.type === 'click')) {
+        $q.when(true).then(() => {
+          this.url = document.querySelector('#url').value;
+          _loadUrl();
+        });
       }
     };
   }

@@ -17,11 +17,15 @@
     };
 
     this.submit = () => {
-      $scope.$emit('submit');
+      $q.when(true).then(() => {
+        $scope.$emit('submit');
+      });
     };
 
     this.cancel = () => {
-      $scope.$emit('cancel');
+      $q.when(true).then(() => {
+        $scope.$emit('cancel');
+      });
     };
   }
 
