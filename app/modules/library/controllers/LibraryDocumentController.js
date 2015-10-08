@@ -38,6 +38,19 @@
       });
     };
 
+    this.runAction = function() {
+      angular.element(document.querySelector('.pagePreview')).removeClass('zoom-in-activated');
+      angular.element(document.querySelector('.pagePreview')).removeClass('zoom-out-activated');
+    };
+
+    $scope.$on('zoom-in', (event, args) => {
+      angular.element(document.querySelector('.pagePreview')).addClass('zoom-in-activated');
+    });
+
+    $scope.$on('zoom-out', (event, args) => {
+      angular.element(document.querySelector('.pagePreview')).addClass('zoom-out-activated');
+    });
+
     $scope.$on('remove-document', (event, args) => {
 
       var confirm = $mdDialog.confirm()
