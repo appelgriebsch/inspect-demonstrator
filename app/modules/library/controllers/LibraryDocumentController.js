@@ -32,10 +32,16 @@
                       .cancel('No, please keep it');
       $mdDialog.show(confirm).then(() => {
         LibraryDataService.delete(this.document).then(() => {
+
+          var details = angular.copy(this.document);
+          details.status = 'deleted';
+          delete details._attachments;
+          delete details.preview;
+
           var info = {
             type: 'delete',
-            id: this.document._id,
-            doc: this.document
+            id: details._id,
+            details: details
           };
           ActivityService.addWarning(info).then(() =>{
             $state.go('^.view');

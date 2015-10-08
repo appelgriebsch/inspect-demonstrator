@@ -8,12 +8,17 @@
       </timeline-badge>
       <timeline-panel>
         <timeline-heading>
-          <timeline-title>{{ event.createdBy }}: {{ event.createdAt | date: 'medium' }}</timeline-title>
+          <timeline-title layout-align="space-between start" layout="row" layout-fill>
+            <span>{{ event.createdBy }}: {{ event.createdAt | date: 'medium' }}</span>
+            <md-button class='md-icon-button info-btn'>
+              <md-icon>info_outline</md-icon>
+            </md-button>
+          </timeline-title>
         </timeline-heading>
         <timeline-content>
           <p ng-if="event.type === 'upload'">Uploaded {{ event.files }} file(s)</p>
-          <p ng-if="event.type === 'capture'">Captured Web Site {{ event.url }}</p>
-          <p ng-if="event.type === 'delete'">Removed document {{ event.doc.title }}</p>
+          <p ng-if="event.type === 'capture'">Captured Web Site <i>{{ event.details.title }}</i></p>
+          <p ng-if="event.type === 'delete'">Removed Document <i>{{ event.details.title }}</i></p>
         </timeline-content>
       </timeline-panel>
     </timeline-node>

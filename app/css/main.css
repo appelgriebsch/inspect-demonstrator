@@ -90,3 +90,11 @@ md-content[ui-view='content'] {
 	margin: 15px;
 	height: 50px;
 }
+
+.md-icon-button.info-btn {
+	float: right;
+	margin: -6px 6px;
+	height: 32px;
+	line-height: 32px;
+	width: 32px;
+}

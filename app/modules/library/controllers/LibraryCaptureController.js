@@ -28,12 +28,14 @@
 
         db.post(this.capture).then((dbRes) => {
 
+          var details = angular.copy(this.capture);
+          delete details._attachments;
+          delete details.preview;
+
           var info = {
-            class: 'info',
             type: 'capture',
             id: dbRes._id,
-            details: this.capture,
-            url: this.capture.url
+            details: details
           };
 
           $notification('Website captured', {
@@ -72,7 +74,6 @@
         $q.when(true).then(() => {
           this.isBusy = false;
           this.capture = result;
-          console.log(result);
         });
       });
 
