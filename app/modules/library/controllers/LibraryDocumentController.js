@@ -37,7 +37,7 @@
             id: this.document._id,
             doc: this.document
           };
-          ActivityService.addWarning(info).then(() =>{            
+          ActivityService.addWarning(info).then(() =>{
             $state.go('^.view');
           });
         });
