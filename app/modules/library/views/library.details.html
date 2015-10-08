@@ -1,3 +1,36 @@
 <div layout="column" layout-fill ng-init="ctl.initialize()">
+  <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
+    <md-input-container>
+      <label>Title</label>
+      <textarea ng-model="ctl.document.title" disabled></textarea>
+    </md-input-container>
+    <md-input-container>
+      <label>Description</label>
+      <textarea ng-model="ctl.document.description" disabled></textarea>
+    </md-input-container>
+    <md-input-container>
+      <label>Author</label>
+      <input ng-model="ctl.document.author" disabled></input>
+    </md-input-container>
+    <md-input-container>
+      <label>Publication Date</label>
+      <input ng-model="ctl.document.publicationDate" disabled></input>
+    </md-input-container>
+    <md-input-container>
+      <label>Tags</label>
+      <md-chips
+        ng-model="ctl.document.tags"
+        readonly="true">
+      </md-chips>
+      <md-chips class="md-chips-readonly"
+        ng-model="ctl.document.custom_tags"
+        readonly="false"
+        placeholder="Enter a tag"
+        delete-button-label="Remove Tag"
+        delete-hint="Press delete to remove tag"
+        secondary-placeholder="+Tag">
+      </md-chips>
+    </md-input-container>
+  </md-content>
   <img class="pagePreview" ng-src="{{ ctl.document.image.toDataUrl() }}"></img>
 </div>

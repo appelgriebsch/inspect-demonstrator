@@ -13,7 +13,6 @@
           $q.when(LibraryDataService.library())
           .then((result) => {
             result.rows.map((item) => {
-              console.log(item.doc);
               this.items.push(item.doc);
             });
           })

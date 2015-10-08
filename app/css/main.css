@@ -1,100 +1,98 @@
-html,
-body {
-	padding: 0px;
-	margin: 0px;
-	height: 100%;
-	overflow: none;
-	-webkit-user-select: none;
+html, body {
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+  overflow: none;
+  -webkit-user-select: none;
 }
-
 md-toolbar .md-button:not(.selected) md-icon {
-	color: #bdbdbd;
+  color: #bdbdbd;
 }
-
 md-toolbar h1 {
-	margin: auto;
-	font-size: 1.25em;
-	font-weight: 400;
+  margin: auto;
+  font-size: 1.25em;
+  font-weight: 400;
 }
-
 #dropZone {
   background: #FAFAFA;
   margin: 15px;
-	padding: 15px;
-	border: 2px dashed #DCDCDC;
-	border-radius: 5px;
-	line-height: 34px;
-	min-height: 128px;
+  padding: 15px;
+  border: 2px dashed #DCDCDC;
+  border-radius: 5px;
+  line-height: 34px;
+  min-height: 128px;
 }
-
 .filename, .fileinfo {
-	overflow: hidden;
-	max-height: 2.5em;
+  overflow: hidden;
+  max-height: 2.5em;
 }
-
 .filename a {
-	color: white;
-	text-decoration: none;
+  color: white;
+  text-decoration: none;
   text-shadow: 1px 1px rgb(107, 104, 104);
-	font-weight: 500;
+  font-weight: 500;
 }
-
 .hidden {
-	visibility: hidden;
-	position:absolute;
+  visibility: hidden;
+  position: absolute;
 }
-
 .md-48 {
-	font-size: 48px;
+  font-size: 48px;
 }
-
 .pagePreview {
-	width: 100%;
-	object-fit: contain;
-	height: auto;
+  width: 100%;
+  object-fit: contain;
+  height: auto;
 }
-
 .thumbnail {
-	width: 100%;
-	max-height: 100%;
-	object-fit: cover;
-	object-position: 0 0;
+  width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: 0 0;
 }
-
 md-content[ui-view='content'], md-content[ui-view='module'] {
-	min-height: 100%;
-	height: 100%;
-	min-width: 100%;
-	width: 100%;
+  min-height: 100%;
+  height: 100%;
+  min-width: 100%;
+  width: 100%;
 }
-
 md-content[ui-view='content'] {
-	padding: 20px;
-	overflow: auto;
+  padding: 20px;
+  overflow: auto;
 }
-
 .timeline-badge {
-	z-index: 1 !important;
+  z-index: 1 !important;
 }
-
 .angular-center-container {
-	background-color: rgba(0, 0, 0, 0.66);
+  background-color: rgba(0, 0, 0, 0.66);
 }
-
 .angular-centered h3 {
-	color: white;
+  color: white;
 }
-
 .tag-item {
-	background: #FFF none repeat scroll 0% 0%;
-	margin: 15px;
-	height: 50px;
+  background: #FFF none repeat scroll 0% 0%;
+  margin: 15px;
+  height: 50px;
 }
-
 .md-icon-button.info-btn {
-	float: right;
-	margin: -6px 6px;
-	height: 32px;
-	line-height: 32px;
-	width: 32px;
+  float: right;
+  margin: -6px 6px;
+  height: 32px;
+  line-height: 32px;
+  width: 32px;
+}
+md-input-container .md-input[disabled] {
+  color: rgba(0,0,0,0.87);
+}
+.sidebar {
+  position: absolute;
+  height: 100%;
+  z-index: 100;
+  width: 20%;
+  overflow: hidden;
+	background-color: rgba(255, 255, 255, 0.9);
+  /* open/close transition */
+  transition-property: width;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-out;
 }

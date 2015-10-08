@@ -17,6 +17,7 @@
             if (result._attachments) {
               result.image = nativeImage.createFromBuffer(result._attachments[result.canonicalID].data);
             }
+            result.custom_tags = [];
             this.document = result;
           });
         });
