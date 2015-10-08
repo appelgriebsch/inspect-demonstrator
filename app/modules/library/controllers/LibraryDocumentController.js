@@ -8,6 +8,7 @@
     var docID = $stateParams.doc;
 
     this.document;
+    this.sidebarOpened = false;
 
     this.initialize = function() {
       $q.when(LibraryDataService.initialize())
@@ -21,6 +22,20 @@
             this.document = result;
           });
         });
+    };
+
+    this.openSidebar = function() {
+      $q.when(true).then(() => {
+        angular.element(document.querySelector('.sidebar')).addClass('sidebar-open');
+        this.sidebarOpened = true;
+      });
+    };
+
+    this.closeSidebar = function() {
+      $q.when(true).then(() => {
+        angular.element(document.querySelector('.sidebar')).removeClass('sidebar-open');
+        this.sidebarOpened = false;
+      });
     };
 
     $scope.$on('remove-document', (event, args) => {
