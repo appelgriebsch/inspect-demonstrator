@@ -26,11 +26,7 @@
       </div>
       <h3>{{ ctl.capture.title }}</h3>
       <p>{{ ctl.capture.description }}</p>
-      <!--div layout="row" layout-sm="column" layout-align="start center" layout-wrap layout-fill>
-        <md-whiteframe class="md-whiteframe-1dp tag-item" flex="15" layout layout-align="center center" ng-repeat="tag in ctl.capture.tags">
-          <span>{{ tag }}</span>
-        </md-whiteframe>
-      </div-->
+      <md-chips ng-if="ctl.capture.tags" ng-model="ctl.capture.tags" readonly="true"></md-chips>
     </md-card-content>
   </md-card>
 </div>

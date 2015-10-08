@@ -87,7 +87,7 @@ md-input-container .md-input[disabled] {
 .sidebar {
   position: absolute;
   height: 100%;
-  z-index: 100;
+  z-index: 1;
   width: 2em;
   overflow: hidden;
 	background-color: rgba(255, 255, 255, 0.9);

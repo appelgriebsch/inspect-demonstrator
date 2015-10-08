@@ -28,7 +28,7 @@
       </md-input-container>
       <md-input-container>
         <label>Tags</label>
-        <md-chips
+        <md-chips ng-if="ctl.document.tags"
           ng-model="ctl.document.tags"
           readonly="true">
         </md-chips>
