@@ -8,6 +8,7 @@
     var docID = $stateParams.doc;
 
     this.document;
+    this.action;
     this.sidebarOpened = false;
 
     this.initialize = function() {
@@ -38,17 +39,36 @@
       });
     };
 
-    this.runAction = function() {
-      angular.element(document.querySelector('.pagePreview')).removeClass('zoom-in-activated');
-      angular.element(document.querySelector('.pagePreview')).removeClass('zoom-out-activated');
+    this.runAction = function(evt) {
+      console.log(evt);
+      switch(this.action) {
+        case "zoom-in":
+          angular.element(document.querySelector('.pagePreview')).removeClass('zoom-in-activated');
+          break;
+
+        case "zoom-out":
+          angular.element(document.querySelector('.pagePreview')).removeClass('zoom-out-activated');
+          break;
+
+          case "annotate":
+            angular.element(document.querySelector('.pagePreview')).removeClass('annotate-activated');
+            break;
+      }
     };
 
     $scope.$on('zoom-in', (event, args) => {
       angular.element(document.querySelector('.pagePreview')).addClass('zoom-in-activated');
+      this.action = "zoom-in";
     });
 
     $scope.$on('zoom-out', (event, args) => {
       angular.element(document.querySelector('.pagePreview')).addClass('zoom-out-activated');
+      this.action = "zoom-out";
+    });
+
+    $scope.$on('annotate', (events, args) => {
+      angular.element(document.querySelector('.pagePreview')).addClass('annotate-activated');
+      this.action = "annotate";
     });
 
     $scope.$on('remove-document', (event, args) => {

@@ -13,7 +13,7 @@
       <md-tooltip md-direction="left">Share Document</md-tooltip>
       <md-icon>share</md-icon>
     </md-button>
-    <md-button class="md-fab md-raised md-mini">
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('annotate', $event)">
       <md-tooltip md-direction="left">Annotate Document</md-tooltip>
       <md-icon>comment</md-icon>
     </md-button>

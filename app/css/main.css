@@ -106,10 +106,14 @@ md-input-container .md-input[disabled] {
   line-height: 32px;
   width: 32px;
   float: right;
+  margin-top: 8px;
 }
 .zoom-in-activated {
   cursor: zoom-in;
 }
 .zoom-out-activated {
   cursor: zoom-out;
+}
+.annotate-activated {
+  cursor: text;
 }

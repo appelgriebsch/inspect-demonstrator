@@ -43,5 +43,5 @@
       </md-input-container>
     </div>
   </md-content>
-  <img class="pagePreview" ng-src="{{ ctl.document.image.toDataUrl() }}" ng-click="ctl.runAction()" tabindex="-1"></img>
+  <img class="pagePreview" ng-src="{{ ctl.document.image.toDataUrl() }}" ng-click="ctl.runAction($event)" tabindex="-1"></img>
 </div>
