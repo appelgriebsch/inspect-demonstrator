@@ -27,7 +27,7 @@
           url: '/app',
           abstract: true,
           templateUrl: './templates/shell.html',
-          controller: 'ShellController as ctl'
+          controller: 'ShellController as shell'
         });
     })
     .run(['$rootScope', '$state', '$stateParams',
@@ -51,6 +51,6 @@
   angular.module('inspectApp').service('PouchDBService', [PouchDBService]);
   angular.module('inspectApp').provider('modules', [ModuleProvider]);
 
-  angular.module('inspectApp').controller('ShellController', ['$state', '$mdSidenav', '$scope', '$log', '$q', 'modules', ShellController]);
+  angular.module('inspectApp').controller('ShellController', ['$mdSidenav', '$scope', '$log', '$q', 'modules', ShellController]);
 
 })();

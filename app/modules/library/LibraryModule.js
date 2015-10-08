@@ -26,7 +26,7 @@
                 controller: 'LibraryViewController as ctl'
               },
               'actions@app': {
-                templateUrl: `${moduleConfig.path}/views/library.actions.html`
+                templateUrl: `${moduleConfig.path}/views/library.view.actions.html`
               }
             }
           })
@@ -60,6 +60,9 @@
               'content': {
                 templateUrl: `${moduleConfig.path}/views/library.search.html`,
                 controller: 'LibrarySearchController as ctl'
+              },
+              'actions@app': {
+                templateUrl: `${moduleConfig.path}/views/library.search.actions.html`
               }
             }
           })
@@ -69,6 +72,9 @@
               'content': {
                 templateUrl: `${moduleConfig.path}/views/library.details.html`,
                 controller: 'LibraryDocumentController as ctl'
+              },
+              'actions@app': {
+                templateUrl: `${moduleConfig.path}/views/library.details.actions.html`
               }
             }
           });
@@ -90,10 +96,10 @@
     angular.module('inspectApp').service('LibraryDataService', ['PouchDBService', LibraryDataService]);
 
     angular.module('inspectApp').controller('LibraryCaptureController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'PouchDBService', LibraryCaptureController]);
-    angular.module('inspectApp').controller('LibraryDocumentController', ['$stateParams', '$q', 'ActivityService', 'LibraryDataService', LibraryDocumentController]);
-    angular.module('inspectApp').controller('LibrarySearchController', ['$q', 'ActivityService', 'LibraryDataService', LibrarySearchController]);
+    angular.module('inspectApp').controller('LibraryDocumentController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', LibraryDocumentController]);
+    angular.module('inspectApp').controller('LibrarySearchController', ['$scope', '$state', '$q', 'ActivityService', 'LibraryDataService', LibrarySearchController]);
     angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'FileSystemService', 'FileUploadService', LibraryUploadController]);
-    angular.module('inspectApp').controller('LibraryViewController', ['$q', 'LibraryDataService', LibraryViewController]);
+    angular.module('inspectApp').controller('LibraryViewController', ['$scope', '$state', '$q', 'LibraryDataService', LibraryViewController]);
 
   }
 

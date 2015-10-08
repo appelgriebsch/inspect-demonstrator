@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function LibrarySearchController($q, ActivityService, LibraryDataService) {
+  function LibrarySearchController($scope, $state, $q, ActivityService, LibraryDataService) {
 
     this.initialize = function() {
       return ActivityService.initialize();

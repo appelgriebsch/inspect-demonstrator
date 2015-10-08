@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function LibraryViewController($q, LibraryDataService) {
+  function LibraryViewController($scope, $state, $q, LibraryDataService) {
 
     this.items = [];
 

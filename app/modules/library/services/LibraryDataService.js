@@ -121,6 +121,14 @@
 
       item: function(docID) {
         return db.get(docID, { attachments: true, binary: true });
+      },
+
+      save: function(doc) {
+
+      },
+
+      delete: function(doc) {
+        return db.remove(doc);
       }
     };
   }

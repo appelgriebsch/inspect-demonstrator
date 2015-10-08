@@ -1,9 +1,9 @@
-<md-button class="md-fab md-warn" ng-click="ctl.cancel()">
+<md-button class="md-fab md-warn" ng-click="shell.sendEvent('cancel')">
   <md-tooltip md-direction="top">Better cancel here...</md-tooltip>
   <md-icon>cancel</md-icon>
 </md-button>
 <span></span>
-<md-button class="md-fab md-primary" ng-click="ctl.submit()">
+<md-button class="md-fab md-primary" ng-click="shell.sendEvent('submit')">
   <md-tooltip md-direction="top">Let's do it...</md-tooltip>
   <md-icon>send</md-icon>
 </md-button>

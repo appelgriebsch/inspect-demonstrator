@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function ShellController($state, $mdSidenav, $scope, $log, $q, modulesProvider) {
+  function ShellController($mdSidenav, $scope, $log, $q, modulesProvider) {
 
     this.modules = [];
 
@@ -16,15 +16,9 @@
       });
     };
 
-    this.submit = () => {
+    this.sendEvent = (event, arg) => {
       $q.when(true).then(() => {
-        $scope.$broadcast('submit', $state.current.name);
-      });
-    };
-
-    this.cancel = () => {
-      $q.when(true).then(() => {
-        $scope.$broadcast('cancel', $state.current.name);
+        $scope.$broadcast(event, arg);
       });
     };
   }
