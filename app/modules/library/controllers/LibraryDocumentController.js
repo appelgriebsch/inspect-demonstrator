@@ -56,9 +56,7 @@
 
       document.body.onresize = render;
       document.getElementById('page').addEventListener('mousewheel', (evt) => {
-        this.mousePos.deltaX += evt.wheelDeltaX;
-        this.mousePos.deltaY += evt.wheelDeltaY;
-        render();
+        this.runAction(evt);
       });
 
       $q.when(LibraryDataService.initialize())
@@ -74,6 +72,16 @@
               this.document = result;
             });
         });
+    };
+
+    this.activateScrolling = () => {
+      angular.element(document.querySelector('#page')).addClass('scrolling-activated');
+      document.getElementById('page').addEventListener('mousemove', this.runAction);
+    };
+
+    this.deactivateScrolling = () => {
+      angular.element(document.querySelector('#page')).removeClass('scrolling-activated');
+      document.getElementById('page').removeEventListener('mousemove', this.runAction);
     };
 
     this.openSidebar = function() {
@@ -98,30 +106,34 @@
       var canvas = document.getElementById('page');
       var rect = canvas.getBoundingClientRect();
 
-      this.mousePos.x = evt.clientX - rect.left;
-      this.mousePos.y = evt.clientY - rect.top;
-
       switch (this.action) {
       case 'zoom-in':
         angular.element(document.querySelector('#page')).removeClass('zoom-in-activated');
+        this.mousePos.x = evt.clientX - rect.left;
+        this.mousePos.y = evt.clientY - rect.top;
         this.scaleFactor += 0.25;
-        render();
         break;
 
       case 'zoom-out':
         angular.element(document.querySelector('#page')).removeClass('zoom-out-activated');
+        this.mousePos.x = evt.clientX - rect.left;
+        this.mousePos.y = evt.clientY - rect.top;
         this.scaleFactor -= 0.25;
-        render();
         break;
 
       case 'annotate':
         angular.element(document.querySelector('#page')).removeClass('annotate-activated');
+        this.mousePos.x = evt.clientX - rect.left;
+        this.mousePos.y = evt.clientY - rect.top;
         break;
 
       default:
-        console.log(this.scaleFactor, this.mousePos);
+        this.mousePos.deltaX += (evt.wheelDeltaX ? evt.wheelDeltaX : evt.movementX);
+        this.mousePos.deltaY += (evt.wheelDeltaY ? evt.wheelDeltaY : evt.movementY);
+        break;
       }
 
+      render();
       this.action='';
     };
 

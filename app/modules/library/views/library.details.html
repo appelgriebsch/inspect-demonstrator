@@ -43,5 +43,9 @@
       </md-input-container>
     </div>
   </md-content>
-  <canvas id="page" ng-click="ctl.runAction($event)" tabindex="-1" layout-fill ng-mousewheel="ctl.scrollPage($event)"></canvas>
+  <canvas id="page" tabindex="-1" layout-fill
+          ng-click="ctl.runAction($event)"
+          ng-mousedown="ctl.activateScrolling($event)"
+          ng-mouseup="ctl.deactivateScrolling($event)">            
+  </canvas>
 </div>
