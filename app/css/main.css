@@ -88,7 +88,7 @@ md-input-container .md-input[disabled] {
 	background-color: rgba(255, 255, 255, 0.9);
 }
 .sidebar-open {
-  width: 25%;
+  width: 33%;
   overflow-y: auto;
 }
 .md-icon-button.sidebar-btn {
