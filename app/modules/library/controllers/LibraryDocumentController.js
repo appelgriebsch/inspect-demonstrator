@@ -19,6 +19,43 @@
       deltaY: 0
     };
 
+    var renderAnnotation = (context, annotation, scale) => {
+
+      var x = annotation.x / scale / this.scaleFactor - annotation.width;
+      var y = annotation.y / scale / this.scaleFactor;
+      var hlen = x + annotation.width;
+      var vlen = y + annotation.height;
+      var radius = 10;
+
+      context.beginPath();
+      context.strokeStyle = 'yellow';
+      context.fillStyle = "rgba(255, 255, 0, 0.5)";
+      context.lineWidth = '1';
+
+      context.moveTo(x + radius, y);
+
+      context.lineTo(hlen - radius, y);
+      context.quadraticCurveTo(hlen, y, hlen, y + radius);
+      context.lineTo(hlen, y + annotation.height - radius);
+      context.quadraticCurveTo(hlen, vlen, hlen - radius, vlen);
+      context.lineTo(x + radius, vlen);
+      context.quadraticCurveTo(x, vlen, x, vlen - radius);
+      context.lineTo(x, y + radius);
+      context.quadraticCurveTo(x, y, x + radius, y);
+
+      context.closePath();
+      context.fill();
+    }
+
+    var renderPage = (context, canvasWidth, canvasHeight, scale) => {
+
+      context.clearRect(0, 0, canvasWidth, canvasHeight);
+      context.translate(this.mousePos.deltaX, this.mousePos.deltaY);
+      context.scale(scale * this.scaleFactor, scale * this.scaleFactor);
+
+      context.drawImage(imageData, -0.5 * this.mousePos.x, -0.5 * this.mousePos.y);
+    };
+
     var render = () => {
 
       var canvas = document.getElementById('page');
@@ -34,21 +71,29 @@
 
       var scaleX = cw / imgW;
 
-      var maxScrollPosition = -1 * (imgH * scaleX * this.scaleFactor) + (ch * this.scaleFactor);
-
+      var maxScrollPositionY = -1 * (imgH * scaleX * this.scaleFactor) + (ch * this.scaleFactor);
       if (this.mousePos.deltaY > 0) {     // first go down (negative)
         this.mousePos.deltaY = 0;         // if scroll back up, just stop at origin
-      } else if (Math.abs(this.mousePos.deltaY) > Math.abs(maxScrollPosition)) {
-        this.mousePos.deltaY = maxScrollPosition;
+      } else if (Math.abs(this.mousePos.deltaY) > Math.abs(maxScrollPositionY)) {
+        this.mousePos.deltaY = maxScrollPositionY;
       }
 
-      ctx.clearRect(0, 0, cw, ch);
+      var maxScrollPositionX = (imgW * scaleX * this.scaleFactor) - (cw * this.scaleFactor);
+      if (this.mousePos.deltaX < 0) {
+        this.mousePos.deltaX = 0;
+      } else if (Math.abs(this.mousePos.deltaX) > Math.abs(maxScrollPositionX)) {
+        this.mousePos.deltaX = maxScrollPositionX;
+      }
 
       ctx.save();
-      ctx.translate(0, this.mousePos.deltaY);
-      ctx.scale(scaleX * this.scaleFactor, scaleX * this.scaleFactor);
 
-      ctx.drawImage(imageData, -0.5 * this.mousePos.x, -0.5 * this.mousePos.y);
+      renderPage(ctx, cw, ch, scaleX);
+
+      for (var i = 0; i < this.document.annotations.length; ++i) {
+        var annotation = this.document.annotations[i];
+        renderAnnotation(ctx, annotation, scaleX);
+      }
+
       ctx.restore();
     };
 
@@ -63,12 +108,16 @@
         .then(() => {
           $q.when(LibraryDataService.item(docID))
             .then((result) => {
+
               if (result._attachments) {
                 imageData = new Image();
                 imageData.onload = render;
                 imageData.src = nativeImage.createFromBuffer(result._attachments[result.canonicalID].data).toDataUrl();
               }
-              result.custom_tags = [];
+
+              result.custom_tags = result.custom_tags || [];
+              result.annotations = result.annotations || [];
+
               this.document = result;
             });
         });
@@ -123,8 +172,14 @@
 
       case 'annotate':
         angular.element(document.querySelector('#page')).removeClass('annotate-activated');
-        this.mousePos.x = evt.clientX - rect.left;
-        this.mousePos.y = evt.clientY - rect.top;
+        var x = evt.clientX - rect.left;
+        var y = evt.clientY - rect.top;
+        this.document.annotations.push({
+          x: x,
+          y: y,
+          width: 150,
+          height: 70
+        });
         break;
 
       default:
