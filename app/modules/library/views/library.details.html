@@ -43,5 +43,5 @@
       </md-input-container>
     </div>
   </md-content>
-  <img class="pagePreview" ng-src="{{ ctl.document.image.toDataUrl() }}" ng-click="ctl.runAction($event)" tabindex="-1"></img>
+  <canvas id="page" ng-click="ctl.runAction($event)" tabindex="-1" layout-fill ng-mousewheel="ctl.scrollPage($event)"></canvas>
 </div>
