@@ -17,13 +17,17 @@
       <md-tooltip md-direction="left">Annotate Document</md-tooltip>
       <md-icon>comment</md-icon>
     </md-button>
-    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('zoom-in', $event)">
-      <md-tooltip md-direction="left">Zoom In</md-tooltip>
-      <md-icon>zoom_in</md-icon>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('reset-page', $event)">
+      <md-tooltip md-direction="left">Reset Zoom</md-tooltip>
+      <md-icon>aspect_ration</md-icon>
     </md-button>
     <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('zoom-out', $event)">
       <md-tooltip md-direction="left">Zoom Out</md-tooltip>
       <md-icon>zoom_out</md-icon>
+    </md-button>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('zoom-in', $event)">
+      <md-tooltip md-direction="left">Zoom In</md-tooltip>
+      <md-icon>zoom_in</md-icon>
     </md-button>
   </md-fab-actions>
 </md-fab-speed-dial>

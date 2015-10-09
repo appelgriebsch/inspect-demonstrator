@@ -33,17 +33,24 @@
       var imgH = imageData.height;
 
       var scaleX = cw / imgW;
-      var scaleY = ch / imgH;
 
-      console.log(this.scaleFactor, this.mousePos);
+      var maxScrollPosition = -1 * (imgH * scaleX * this.scaleFactor) + (ch * this.scaleFactor);
+
+      if (this.mousePos.deltaY > 0) {     // first go down (negative)
+        this.mousePos.deltaY = 0;         // if scroll back up, just stop at origin
+      } else if (Math.abs(this.mousePos.deltaY) > Math.abs(maxScrollPosition)) {
+        this.mousePos.deltaY = maxScrollPosition;
+      }
 
       ctx.clearRect(0, 0, cw, ch);
+
       ctx.save();
+      ctx.translate(0, this.mousePos.deltaY);
       ctx.scale(scaleX * this.scaleFactor, scaleX * this.scaleFactor);
-      ctx.translate(Math.min(this.mousePos.deltaX, cw), Math.min(this.mousePos.deltaY, ch));
-      ctx.drawImage(imageData, -1 * this.mousePos.x, -1 * this.mousePos.y);
+
+      ctx.drawImage(imageData, -0.5 * this.mousePos.x, -0.5 * this.mousePos.y);
       ctx.restore();
-    }
+    };
 
     this.initialize = function() {
 
@@ -88,43 +95,55 @@
       evt.preventDefault();
       evt.stopPropagation();
 
-      var rect = evt.target.getBoundingClientRect();
+      var canvas = document.getElementById('page');
+      var rect = canvas.getBoundingClientRect();
 
-      this.mousePos.x = parseInt(evt.clientX - rect.left);
-      this.mousePos.y = parseInt(evt.clientY - rect.top);
+      this.mousePos.x = evt.clientX - rect.left;
+      this.mousePos.y = evt.clientY - rect.top;
 
       switch (this.action) {
-        case "zoom-in":
-          angular.element(document.querySelector('#page')).removeClass('zoom-in-activated');
-          this.scaleFactor += 0.1;
-          render();
-          break;
+      case 'zoom-in':
+        angular.element(document.querySelector('#page')).removeClass('zoom-in-activated');
+        this.scaleFactor += 0.25;
+        render();
+        break;
 
-        case "zoom-out":
-          angular.element(document.querySelector('#page')).removeClass('zoom-out-activated');
-          this.scaleFactor -= 0.1;
-          render();
-          break;
+      case 'zoom-out':
+        angular.element(document.querySelector('#page')).removeClass('zoom-out-activated');
+        this.scaleFactor -= 0.25;
+        render();
+        break;
 
-        case "annotate":
-          angular.element(document.querySelector('#page')).removeClass('annotate-activated');
-          break;
+      case 'annotate':
+        angular.element(document.querySelector('#page')).removeClass('annotate-activated');
+        break;
+
+      default:
+        console.log(this.scaleFactor, this.mousePos);
       }
+
+      this.action='';
     };
 
     $scope.$on('zoom-in', (event, args) => {
       angular.element(document.querySelector('#page')).addClass('zoom-in-activated');
-      this.action = "zoom-in";
+      this.action = 'zoom-in';
     });
 
     $scope.$on('zoom-out', (event, args) => {
       angular.element(document.querySelector('#page')).addClass('zoom-out-activated');
-      this.action = "zoom-out";
+      this.action = 'zoom-out';
     });
 
-    $scope.$on('annotate', (events, args) => {
+    $scope.$on('annotate', (event, args) => {
       angular.element(document.querySelector('#page')).addClass('annotate-activated');
-      this.action = "annotate";
+      this.action = 'annotate';
+    });
+
+    $scope.$on('reset-page', (event, args) => {
+      this.scaleFactor = 1.0;
+      this.mousePos = { x: 0, y: 0, deltaX: 0, deltaY: 0};
+      render();
     });
 
     $scope.$on('remove-document', (event, args) => {
