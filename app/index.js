@@ -30,8 +30,13 @@
     // deref the window
     // for multiple windows store them in an array
     mainWindow = null;
+
     if (webSiteCaptureService) {
       webSiteCaptureService.close();
+    }
+
+    if (pdfViewerService) {
+      pdfViewerService.close();
     }
   }
 
@@ -39,9 +44,7 @@
   var mainWindow;
 
   app.on('window-all-closed', function() {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
+    app.quit();
   });
 
   app.on('activate-with-no-open-windows', function() {
@@ -53,11 +56,13 @@
   app.on('ready', function() {
     mainWindow = createMainWindow();
     webSiteCaptureService = new WebSiteCapture();
+    pdfViewerService = new PDFViewer();
   });
 
   // initialize service finder module
   var ServiceFinder = require('node-servicefinder').ServiceFinder;
   var WebSiteCapture = require('./modules/website-capture/WebSiteCaptureModule');
+  var PDFViewer = require('./modules/pdf-viewer/PDFViewerModule');
 
   var path = require('path');
   var os = require('os');
@@ -69,7 +74,7 @@
   const hostname = os.hostname();
   const username = (process.platform === 'win32') ? process.env.USERNAME : process.env.USER;
 
-  var webSiteCaptureService;
+  var webSiteCaptureService, pdfViewerService;
 
   app.serviceFinder = function(serviceName, protocol, subTypes, includeLocal) {
     return new ServiceFinder(serviceName, protocol, subTypes, includeLocal);
@@ -88,8 +93,11 @@
     };
   };
 
-  app.captureWebSiteService = function() {
+  app.pdfViewerService = function() {
+    return pdfViewerService;
+  };
 
+  app.captureWebSiteService = function() {
     return webSiteCaptureService;
   };
 

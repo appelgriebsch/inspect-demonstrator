@@ -24,7 +24,7 @@
       height: display.height,
       resizable: false,
       'skip-taskbar': true,
-      show: true,
+      show: false,
       'accept-first-mouse': false,
       'enable-larger-than-screen': true
     });

@@ -2,27 +2,12 @@
 
   'use strict';
 
-  function LibraryUploadController($scope, $state, $q, $notification, ActivityService, FileSystemService, FileUploadService) {
+  function LibraryUploadController($scope, $state, $q, $notification, ActivityService, FileUploadService) {
+
+    var remote = require('remote');
+    var app = remote.require('app');
 
     var dropZone, fileSelector, folderSelector;
-
-    var calcUnitSize = function(fileSize) {
-
-      var result = {
-        unit: 'bytes',
-        number: fileSize
-      };
-
-      if (fileSize > (1024 * 1024)) {
-        result.number = Math.round(fileSize / (1024 * 1024));
-        result.unit = 'mb';
-      } else if (fileSize > 1024) {
-        result.number = Math.round(fileSize / 1024);
-        result.unit = 'kb';
-      }
-
-      return result;
-    };
 
     $scope.$on('submit', (event, args) => {
 
@@ -148,7 +133,19 @@
         this.files.push(uploadRequest);
       }
 
-      return FileSystemService.examine(newRequests);
+      newRequests.forEach((request) => {
+        console.log(request);
+        app.pdfViewerService().preview({
+          id: request.name,
+          path: request.path
+        }).then((result) => {
+          console.log(request, result);
+          $q.when(true).then(() => {
+            request.status = 'ready';
+            request.preview = result.preview;
+          });
+        });
+      });
     };
   }
 

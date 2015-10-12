@@ -10,19 +10,20 @@
                 md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1"
                   ng-repeat="file in ctl.files">
-      <md-icon class="md-48" ng-if="file.info.type === 'folder'">folder</md-icon>
-      <md-icon class="md-48" ng-if="file.info.type === 'file'">insert_drive_file</md-icon>
+      <md-progress-circular ng-if="file.status === 'unknown'"
+                            md-mode="indeterminate"></md-progress-circular>
+      <img class="pagePrev" ng-if="file.status === 'ready'" ng-src="{{ file.preview }}"></img>
       <md-grid-tile-footer>
         <h3>
           <div class="filename">{{ file.name }}</div>
-          <div class="fileinfo">{{ file.info.noOfFiles }} file(s) with {{ file.info.display_size.number }} {{ file.info.display_size.unit }}</div>
         </h3>
       </md-grid-tile-footer>
     </md-grid-tile>
   </md-grid-list>
   <md-whiteframe id="dropZone" layout layout-align="center center">
     <span>
-      <input type="file" id="fileSelector" class="hidden" multiple="multiple"></input>
+      <input type="file" id="fileSelector" class="hidden"
+             multiple="multiple" accept=".pdf, image/*"></input>
       <input type="file" id="folderSelector" class="hidden" webkitdirectory="" directory=""></input>
     <span>
         Drop your files and/or folders here... or click here
@@ -32,19 +33,19 @@
           </md-button>
           <md-menu-content width="4">
             <md-menu-item>
-              <md-button ng-click="ctl.selectFile()">
+              <md-button ng-click="ctl.selectFile($event)">
                 <md-icon md-menu-align-target>insert_drive_file</md-icon>
                 Add File
               </md-button>
             </md-menu-item>
             <md-menu-item>
-              <md-button ng-click="ctl.selectFolder()">
+              <md-button ng-click="ctl.selectFolder($event)">
                 <md-icon md-menu-align-target>folder</md-icon>
                 Add Folder
               </md-button>
             </md-menu-item>
             <md-menu-item>
-              <md-button ng-click="ctl.downloadFile()">
+              <md-button ng-click="ctl.downloadFile($event)">
                 <md-icon md-menu-align-target>public</md-icon>
                 Add URL
               </md-button>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="description" content="">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+		<!-- pdf.js styles -->
+		<link rel="stylesheet" href="../../../node_modules/pdfjs-dist/web/pdf_viewer.css"/>
+    <link rel="stylesheet" href="pdfviewer.css"/>
+	</head>
+	<body tabindex="1">
+
+		<div id="pageContainer" class="pdfPage"></div>
+
+		<!-- pdf.js modules -->
+		<script type="text/javascript" src="../../../node_modules/pdfjs-dist/build/pdf.js"></script>
+		<script type="text/javascript" src="../../../node_modules/pdfjs-dist/web/pdf_viewer.js"></script>
+
+		<script>
+
+			onload = function() {
+
+				var ipc = require('ipc');
+				var viewport = document.getElementById('pageContainer');
+				var request = null;
+				var PAGE_TO_VIEW = 1;
+				var SCALE = 1.0;
+
+				if(viewport) {
+
+					ipc.on('capture-pdf', function(arg) {
+
+						request = arg;
+
+						viewport.innerHTML = '';
+
+						var doc = { url: 'file:///' + request.path };
+
+						PDFJS.getDocument(doc).then(function (pdfDocument) {
+							// Document loaded, retrieving the page.
+						  return pdfDocument.getPage(PAGE_TO_VIEW).then(function (pdfPage) {
+						    // Creating the page view with default parameters.
+						    var pdfPageView = new PDFJS.PDFPageView({
+						      container: viewport,
+						      id: PAGE_TO_VIEW,
+						      scale: SCALE,
+						      defaultViewport: pdfPage.getViewport(SCALE),
+						    });
+						    // Associates the actual page with the view, and drawing it
+						    pdfPageView.setPdfPage(pdfPage);
+						    pdfPageView.draw().then(() => {
+
+									var imgData = document.getElementById('page1').toDataURL('image/png');
+									var today = new Date();
+
+									request.createdAt = today.toISOString();
+									request.preview = imgData;
+
+									ipc.send('capture-pdf-finished', request);
+								});
+						  });
+						});
+					});
+				}
+			}
+		</script>
+  </body>
+</html>

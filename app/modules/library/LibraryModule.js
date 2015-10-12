@@ -81,7 +81,6 @@
 
       });
 
-    var FileSystemService = require('./services/FileSystemService');
     var FileUploadService = require('./services/FileUploadService');
     var LibraryDataService = require('./services/LibraryDataService');
 
@@ -91,14 +90,13 @@
     var LibraryUploadController = require('./controllers/LibraryUploadController');
     var LibraryViewController = require('./controllers/LibraryViewController');
 
-    angular.module('inspectApp').service('FileSystemService', ['$q', FileSystemService]);
     angular.module('inspectApp').service('FileUploadService', ['$q', 'PouchDBService', FileUploadService]);
     angular.module('inspectApp').service('LibraryDataService', ['PouchDBService', LibraryDataService]);
 
     angular.module('inspectApp').controller('LibraryCaptureController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'PouchDBService', LibraryCaptureController]);
     angular.module('inspectApp').controller('LibraryDocumentController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', LibraryDocumentController]);
     angular.module('inspectApp').controller('LibrarySearchController', ['$scope', '$state', '$q', 'ActivityService', 'LibraryDataService', LibrarySearchController]);
-    angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'FileSystemService', 'FileUploadService', LibraryUploadController]);
+    angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'FileUploadService', LibraryUploadController]);
     angular.module('inspectApp').controller('LibraryViewController', ['$scope', '$state', '$q', 'LibraryDataService', LibraryViewController]);
 
   }
