@@ -54,8 +54,14 @@
 
 										var imgData = document.getElementById('page1').toDataURL('image/png');
 										var today = new Date();
+										var pdfMeta = metadata.info;
 
-										request.info = metadata.info;
+										request.info = {
+											noOfPages: pdfDocument.pdfInfo.numPages,
+											authors: pdfMeta.Author ? pdfMeta.Author.split(/\s*,\s*/) : '',
+											title: pdfMeta.Title || request.id.substring(0, request.id.lastIndexOf('.')),
+											tags: pdfMeta.Keywords ? pdfMeta.Keywords.split(/\s*,\s*/) : []
+										}
 										request.createdAt = today.toISOString();
 										request.preview = imgData;
 

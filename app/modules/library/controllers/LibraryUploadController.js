@@ -93,13 +93,6 @@
         });
       };
 
-      folderSelector.onchange = (e) => {
-        $q.when(true).then(() => {
-          console.log('folder-sel:', e.target.files);
-          this.addFiles(e.target.files);
-        });
-      };
-
       dropZone.ondragover = (e) => {
         e.dataTransfer.dropEffect = 'copy';
         return false;
@@ -130,12 +123,6 @@
       });
     };
 
-    this.selectFolder = function() {
-      $q.when(true).then(() => {
-        folderSelector.click();
-      });
-    };
-
     this.addFiles = function(files) {
 
       var newRequests = [];
@@ -145,6 +132,8 @@
         var uploadRequest = {
           name: file.name,
           path: file.path,
+          mime: file.type,
+          size: file.size,
           status: 'unknown'
         };
         newRequests.push(uploadRequest);
