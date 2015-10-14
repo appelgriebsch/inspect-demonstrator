@@ -15,17 +15,26 @@
       <md-icon>forward</md-icon>
     </md-button>
   </div>
-  <md-card ng-if="ctl.capture">
-    <img class="pagePreview md-card-image" ng-src="{{ ctl.capture.preview }}"></img>
-    <md-divider></md-divider>
-    <md-card-content>
-      <div ng-if="ctl.capture.author !== ''" layout="row" layout-fill>
-        <h2>{{ ctl.capture.author }}</h2>
-        <span flex></span>
-        <small>{{ ctl.capture.publicationDate | date: 'short' }}</small>
-      </div>
-      <h3>{{ ctl.capture.title }}</h3>
-      <p>{{ ctl.capture.description }}</p>
-    </md-card-content>
-  </md-card>
+  <img class="pagePrev"
+       ns-popover
+       ns-popover-template="captureMetadata"
+       ns-popover-trigger="mousemove"
+       ns-popover-placement="top"
+       ns-popover-mouse-relative="xy"
+       ns-popover-timeout="0.2"
+       ns-popover-popup-delay="0.7"
+       ns-popover-theme="ns-popover-tooltip-theme"
+       ng-src="{{ ctl.capture.preview }}"></img>
 </div>
+<script type="text/ng-template" id="captureMetadata">
+  <div class="triangle"></div>
+  <div class="ns-popover-tooltip">
+    <div ng-if="ctl.capture.author !== ''" layout="row" layout-fill>
+      <h2>{{ ctl.capture.author }}</h2>
+      <span flex></span>
+      <small>{{ ctl.capture.publicationDate | date: 'short' }}</small>
+    </div>
+    <h3>{{ ctl.capture.title }}</h3>
+    <p>{{ ctl.capture.description }}</p>
+  </div>
+</script>

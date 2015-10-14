@@ -112,7 +112,7 @@
               if (result._attachments) {
                 imageData = new Image();
                 imageData.onload = render;
-                imageData.src = nativeImage.createFromBuffer(result._attachments[result.canonicalID].data).toDataUrl();
+                imageData.src = nativeImage.createFromBuffer(result._attachments["image"].data).toDataUrl();
               }
 
               result.custom_tags = result.custom_tags || [];
