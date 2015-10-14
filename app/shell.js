@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'angular-timeline', 'ui.router', 'angular-centered', 'notification'])
+  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'angular-timeline', 'ui.router', 'angular-centered', 'notification', 'nsPopover'])
     .config(function($mdThemingProvider) {
       $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')

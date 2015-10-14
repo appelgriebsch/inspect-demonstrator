@@ -65,7 +65,7 @@
 												title: pdfMeta.Title || request.id.substring(0, request.id.lastIndexOf('.')),
 												subject: pdfMeta.Subject || '',
 												tags: pdfMeta.Keywords ? pdfMeta.Keywords.split(/\s*,\s*/) : [],
-												outline: outline
+												outline: outline || []
 											}
 											request.createdAt = today.toISOString();
 											request.preview = imgData;
