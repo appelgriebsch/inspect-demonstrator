@@ -16,10 +16,12 @@
 
         var _attachments = {};
 
-        _attachments[this.capture.canonicalID] = {
-          'content_type': result.type,
-          'data': result.content
-        };
+        result.attachments.forEach((attachment) => {
+          _attachments[attachment.name] = {
+            'content_type': attachment.type,
+            'data': attachment.content
+          };
+        });
 
         this.capture._attachments = _attachments;
         this.capture.status = 'uploaded';

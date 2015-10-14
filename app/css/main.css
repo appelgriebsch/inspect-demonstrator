@@ -122,3 +122,7 @@ md-input-container .md-input[disabled] {
 .scrolling-activated {
   cursor: all-scroll;
 }
+.selected {
+  border-color: #607D8B;
+  border-width: 1px;
+}

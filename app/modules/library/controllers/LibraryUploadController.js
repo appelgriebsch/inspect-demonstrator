@@ -7,7 +7,7 @@
     var remote = require('remote');
     var app = remote.require('app');
 
-    var dropZone, fileSelector, folderSelector;
+    var dropZone, fileSelector;
 
     var calcUnitSize = function(fileSize) {
 
@@ -84,11 +84,9 @@
 
       dropZone = document.querySelector('#dropZone');
       fileSelector = document.querySelector('#fileSelector');
-      folderSelector = document.querySelector('#folderSelector');
 
       fileSelector.onchange = (e) => {
         $q.when(true).then(() => {
-          console.log('file-sel:', e.target.files);
           this.addFiles(e.target.files);
         });
       };
@@ -117,6 +115,16 @@
       });
     };
 
+    this.selectItem = function(item) {
+
+      var idx = this.files.indexOf(item);
+      var selected = this.files[idx].isSelected;
+
+      $q.when(true).then(() => {
+        this.files[idx].isSelected = !selected;
+      });
+    };
+        
     this.selectFile = function() {
       $q.when(true).then(() => {
         fileSelector.click();

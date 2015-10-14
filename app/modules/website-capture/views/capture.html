@@ -54,7 +54,7 @@
 						doc.createdAt = today.toISOString();
 						doc.url = (doc.url.length ? doc.url : request.url);
 						doc.type = "website";
-						ipc.send('capture-finished', doc);
+						ipc.send('capture-site-finished', doc);
 					});
 
 					viewport.addEventListener('did-finish-load', function() {
@@ -65,7 +65,7 @@
 						console.log(e);
 					});
 
-					ipc.on('capture-page', function(arg) {
+					ipc.on('capture-site', function(arg) {
 						request = arg;
 						viewport.src = request.url;
 					});
