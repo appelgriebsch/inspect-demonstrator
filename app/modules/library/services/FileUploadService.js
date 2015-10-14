@@ -37,13 +37,16 @@
               var _attachments = {};
 
               _attachments[file.name] = {
-                'content_type': (file.info ? file.info.mime : file.mime),
+                'content_type': file.mime,
                 'data': result
               };
 
               var doc = _prefill({
                 _attachments: _attachments,
+                info: file.info,
+                title: file.info.title,
                 filename: file.name,
+                preview: file.preview,
                 status: 'uploaded',
                 type: 'document'
               });
@@ -69,48 +72,6 @@
       };
     }
 
-    function FolderUploader(folder, db, $q) {
-
-      return {
-
-        upload: function() {
-
-          var promise = new Promise((resolve, reject) => {
-
-            var received = 0;
-            var count = folder.info.subitems.length;
-
-            for (var i = 0; i < count; ++i) {
-
-              var file = folder.info.subitems[i];
-              var fileUploader = new FileUploader(file, db, $q);
-
-              fileUploader.upload().then((result) => {
-
-                received += 1;
-
-                if (received == count) {
-                  folder.status = 'uploaded';
-                  resolve({
-                    file: folder
-                  });
-                }
-
-              }).catch((err) => {
-                folder.status = 'error';
-                reject({
-                  result: err,
-                  file: folder
-                });
-              });
-            }
-          });
-
-          return promise;
-        }
-      };
-    }
-
     var db = PouchDBService.initialize('library');
 
     var uploader = function(requests) {
@@ -124,20 +85,12 @@
         for (var i = 0; i < count; ++i) {
 
           var file = requests[i];
-          var uploader;
 
           if (file.status === 'uploaded') {
             continue;
           }
 
-          switch (file.info.type) {
-            case 'folder':
-              uploader = new FolderUploader(file, db, $q);
-              break;
-            case 'file':
-              uploader = new FileUploader(file, db, $q);
-              break;
-          }
+          var uploader = new FileUploader(file, db, $q);
 
           uploader.upload().then((result) => {
 

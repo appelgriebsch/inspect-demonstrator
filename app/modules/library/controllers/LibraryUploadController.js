@@ -124,7 +124,7 @@
         this.files[idx].isSelected = !selected;
       });
     };
-        
+
     this.selectFile = function() {
       $q.when(true).then(() => {
         fileSelector.click();
@@ -158,6 +158,7 @@
             request.preview = result.preview;
             request.info = result.info;
             console.log(request);
+
           });
         });
       });
