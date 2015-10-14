@@ -29,7 +29,7 @@
 
 				if(viewport) {
 
-					ipc.on('capture-pdf', function(arg) {
+					ipc.on('analyze-pdf', function(arg) {
 
 						request = arg;
 
@@ -55,17 +55,20 @@
 										var imgData = document.getElementById('page1').toDataURL('image/png');
 										var today = new Date();
 										var pdfMeta = metadata.info;
+										var date = pdfMeta.CreationDate.substr(2, 14);
 
 										request.info = {
 											noOfPages: pdfDocument.pdfInfo.numPages,
+											publicationDate: date.substr(0,4) + '-' + date.substr(4,2) + '-' + date.substr(6,2) + 'T' + date.substr(8,2) + ':' + date.substr(10,2) + ':' + date.substr(12,2),
 											authors: pdfMeta.Author ? pdfMeta.Author.split(/\s*,\s*/) : '',
 											title: pdfMeta.Title || request.id.substring(0, request.id.lastIndexOf('.')),
+											subject: pdfMeta.Subject || '',
 											tags: pdfMeta.Keywords ? pdfMeta.Keywords.split(/\s*,\s*/) : []
 										}
 										request.createdAt = today.toISOString();
 										request.preview = imgData;
 
-										ipc.send('capture-pdf-finished', request);
+										ipc.send('analyze-pdf-finished', request);
 									});
 							  });
 							});

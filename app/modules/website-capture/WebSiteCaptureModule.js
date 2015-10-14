@@ -30,7 +30,6 @@
     });
 
     _window.loadUrl('file://' + __dirname + '/views/capture.html');
-    _window.showInactive();
 
     var callback;
 

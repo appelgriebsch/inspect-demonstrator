@@ -23,7 +23,6 @@
     });
 
     _window.loadUrl('file://' + __dirname + '/views/pdfviewer.html');
-    _window.showInactive();
 
     var _close = function() {
       if (_window) {
@@ -34,7 +33,7 @@
 
     var callback;
 
-    ipc.on('capture-pdf-finished', function(event, result) {
+    ipc.on('analyze-pdf-finished', function(event, result) {
       callback.resolve(result);
       callback = null;
     });
@@ -48,7 +47,7 @@
           reject: reject
         };
 
-        _window.webContents.send('capture-pdf', file);
+        _window.webContents.send('analyze-pdf', file);
       });
 
       return promise;
