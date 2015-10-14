@@ -17,7 +17,7 @@
   </div>
   <img class="pagePrev"
        ns-popover
-       ns-popover-template="captureMetadata"
+       ns-popover-template="siteMetadata"
        ns-popover-trigger="mousemove"
        ns-popover-placement="top"
        ns-popover-mouse-relative="xy"
@@ -26,7 +26,7 @@
        ns-popover-theme="ns-popover-tooltip-theme"
        ng-src="{{ ctl.capture.preview }}"></img>
 </div>
-<script type="text/ng-template" id="captureMetadata">
+<script type="text/ng-template" id="siteMetadata">
   <div class="triangle"></div>
   <div class="ns-popover-tooltip">
     <div ng-if="ctl.capture.author !== ''" layout="row" layout-fill>

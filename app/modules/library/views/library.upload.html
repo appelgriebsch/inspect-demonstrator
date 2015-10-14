@@ -14,10 +14,17 @@
       <md-progress-circular ng-if="file.status === 'unknown'"
                             md-mode="indeterminate"></md-progress-circular>
       <img class="pagePrev" ng-if="file.status === 'ready'" ng-src="{{ file.preview }}"></img>
-      <md-grid-tile-footer>
+      <md-grid-tile-footer ns-popover
+                      ns-popover-template="pdfMetadata"
+                      ns-popover-trigger="mouseenter"
+                      ns-popover-timeout="0.2"
+                      ns-popover-popup-delay="0.7"
+                      ns-popover-theme="ns-popover-tooltip-theme">
         <h3>
           <div ng-if="file.status === 'unknown'" class="filename">{{ file.name }}</div>
-          <div ng-if="file.status === 'ready'" class="filename">{{ file.info.title }}</div>
+          <div ng-if="file.status === 'ready'" class="filename">
+            <a>{{ file.info.title }}</a>
+          </div>
         </h3>
       </md-grid-tile-footer>
     </md-grid-tile>
@@ -50,3 +57,14 @@
     </span>
   </md-whiteframe>
 </div>
+<script type="text/ng-template" id="pdfMetadata">
+  <div class="triangle"></div>
+  <div class="ns-popover-tooltip">
+    <div ng-if="file.info.authors !== ''" layout="row" layout-fill>
+      <h2>{{ file.info.authors.join(' ') }}</h2>
+      <span flex></span>
+      <small>{{ file.info.publicationDate | date: 'short' }}</small>
+    </div>
+    <h3>{{ file.info.title }}</h3>
+  </div>
+</script>
