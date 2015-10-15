@@ -1,7 +1,7 @@
 <div layout="column" layout-fill ng-init="ctl.initialize()">
   <centered ng-if="ctl.isBusy">
     <div layout="row" layout-align="space-around center">
-      <h3>Uploading Files &amp; Folders...</h3>
+      <h3>Uploading files...</h3>
       <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
     </div>
   </centered>
@@ -23,7 +23,7 @@
         <h3>
           <div ng-if="file.status === 'unknown'" class="filename">{{ file.name }}</div>
           <div ng-if="file.status === 'ready'" class="filename">
-            <a>{{ file.info.title }}</a>
+            <a>{{ file.title }}</a>
           </div>
         </h3>
       </md-grid-tile-footer>
@@ -41,15 +41,15 @@
           </md-button>
           <md-menu-content width="4">
             <md-menu-item>
-              <md-button ng-click="ctl.selectFile($event)">
+              <md-button ng-click="ctl.showFileSelector($event)">
                 <md-icon md-menu-align-target>insert_drive_file</md-icon>
-                Add File
+                Upload File(s)
               </md-button>
             </md-menu-item>
             <md-menu-item>
               <md-button ng-click="ctl.downloadFile($event)">
                 <md-icon md-menu-align-target>public</md-icon>
-                Add URL
+                Get File from URL
               </md-button>
             </md-menu-item>
           </md-menu-content>
@@ -60,11 +60,11 @@
 <script type="text/ng-template" id="pdfMetadata">
   <div class="triangle"></div>
   <div class="ns-popover-tooltip">
-    <div ng-if="file.info.authors !== ''" layout="row" layout-fill>
-      <h2>{{ file.info.authors.join(' ') }}</h2>
+    <div ng-if="file.author !== ''" layout="row" layout-fill>
+      <h2>{{ file.author.join(' ') }}</h2>
       <span flex></span>
-      <small>{{ file.info.publicationDate | date: 'short' }}</small>
+      <small>{{ file.publicationDate | date: 'short' }}</small>
     </div>
-    <h3>{{ file.info.title }}</h3>
+    <h3>{{ file.title }}</h3>
   </div>
 </script>

@@ -36,8 +36,8 @@
 
           var info = uploadedFiles.map(function(uploadedFile) {
             return {
-              file: (uploadedFile.file.info.type === 'folder' ? uploadedFile.file.info.noOfFiles : 1),
-              size: uploadedFile.file.info.size
+              file: 1,
+              size: uploadedFile.file.size
             };
           }).reduce(function(sum, elem) {
             return {
@@ -125,7 +125,7 @@
       });
     };
 
-    this.selectFile = function() {
+    this.showFileSelector = function() {
       $q.when(true).then(() => {
         fileSelector.click();
       });
@@ -154,11 +154,9 @@
           path: request.path
         }).then((result) => {
           $q.when(true).then(() => {
+            angular.merge(request, result);
             request.status = 'ready';
-            request.preview = result.preview;
-            request.info = result.info;
-            console.log(request);
-
+            request.type = 'document';
           });
         });
       });

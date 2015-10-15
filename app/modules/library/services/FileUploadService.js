@@ -41,15 +41,9 @@
                 'data': result
               };
 
-              var doc = _prefill({
-                _attachments: _attachments,
-                info: file.info,
-                title: file.info.title,
-                filename: file.name,
-                preview: file.preview,
-                status: 'uploaded',
-                type: 'document'
-              });
+              var doc = _prefill(file);
+              doc._attachments = _attachments;
+
               db.post(doc)
                 .then((result) => {
                   file.status = 'uploaded';

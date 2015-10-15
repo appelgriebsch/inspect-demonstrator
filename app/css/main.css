@@ -126,3 +126,8 @@ md-input-container .md-input[disabled] {
   border-color: #607D8B;
   border-width: 1px;
 }
+#pdfViewerContainer {
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+}

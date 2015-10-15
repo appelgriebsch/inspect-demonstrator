@@ -18,14 +18,11 @@
     var scraper = require('website-scraper');
     var rm = require('rimraf');
 
-    var localScreen = require('screen');
-    var display = localScreen.getPrimaryDisplay().workAreaSize;
-
     var _window = new browserWindow({
-      x: display.width,
-      y: display.height,
-      width: display.width,
-      height: display.height,
+      x: 0,
+      y: 0,
+      width: 1280,
+      height: 720,
       resizable: false,
       'skip-taskbar': true,
       show: false,
@@ -55,7 +52,7 @@
           delay: 2,
           filename: '<%= date %>.<%= url %>'
         })
-        .src(uri, [display.width + 'x' + display.height])
+        .src(uri, [1280 + 'x' + 720])
         .dest(tempPath);
 
         capturePage.run(function(err, results) {

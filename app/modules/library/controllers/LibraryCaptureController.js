@@ -6,6 +6,19 @@
 
     var remote = require('remote');
     var app = remote.require('app');
+    var sysCfg = app.sysConfig();
+
+    var _prefill = function(upload) {
+
+      var doc = angular.copy(upload);
+      var today = new Date();
+
+      doc.createdAt = today.toISOString();
+      doc.createdBy = sysCfg.user;
+      doc.createdOn = sysCfg.host;
+
+      return doc;
+    };
 
     $scope.$on('submit', (event, args) => {
 
@@ -23,14 +36,17 @@
           };
         });
 
-        this.capture._attachments = _attachments;
-        this.capture.status = 'uploaded';
+        var doc = _prefill(this.capture);
+        doc._attachments = _attachments;
+        doc.status = 'uploaded';
 
+        console.log(doc);
+        
         var db = PouchDBService.initialize('library');
 
-        db.post(this.capture).then((dbRes) => {
+        db.post(doc).then((dbRes) => {
 
-          var details = angular.copy(this.capture);
+          var details = angular.copy(doc);
           delete details._attachments;
           delete details.preview;
 

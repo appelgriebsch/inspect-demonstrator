@@ -18,6 +18,17 @@
           })
         );
     };
+
+    this.selectItem = function(item) {
+
+      var idx = this.items.indexOf(item);
+      if (idx === -1) return;
+
+      $q.when(true).then(() => {
+        item.isSelected = !item.isSelected;
+        this.items[idx] = item;
+      });
+    };
   }
 
   module.exports = LibraryViewController;

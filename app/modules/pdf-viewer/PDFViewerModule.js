@@ -7,14 +7,11 @@
     var ipc = require('ipc');
     var browserWindow = require('browser-window');
 
-    var localScreen = require('screen');
-    var display = localScreen.getPrimaryDisplay().workAreaSize;
-
     var _window = new browserWindow({
-      x: display.width,
-      y: display.height,
-      width: display.width,
-      height: display.height,
+      x: 0,
+      y: 0,
+      width: 1280,
+      height: 720,
       resizable: false,
       'skip-taskbar': true,
       show: false,

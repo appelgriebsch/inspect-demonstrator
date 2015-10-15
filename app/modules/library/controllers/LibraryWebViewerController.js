@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function LibraryDocumentController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService) {
+  function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService) {
 
     var nativeImage = require('native-image');
     var docID = $stateParams.doc;
@@ -29,7 +29,7 @@
 
       context.beginPath();
       context.strokeStyle = 'yellow';
-      context.fillStyle = "rgba(255, 255, 0, 0.5)";
+      context.fillStyle = 'rgba(255, 255, 0, 0.5)';
       context.lineWidth = '1';
 
       context.moveTo(x + radius, y);
@@ -45,7 +45,7 @@
 
       context.closePath();
       context.fill();
-    }
+    };
 
     var renderPage = (context, canvasWidth, canvasHeight, scale) => {
 
@@ -58,7 +58,7 @@
 
     var render = () => {
 
-      var canvas = document.getElementById('page');
+      var canvas = document.getElementById('image');
       var ctx = canvas.getContext('2d');
 
       canvas.width = canvas.parentNode.clientWidth;
@@ -100,7 +100,7 @@
     this.initialize = function() {
 
       document.body.onresize = render;
-      document.getElementById('page').addEventListener('mousewheel', (evt) => {
+      document.getElementById('image').addEventListener('mousewheel', (evt) => {
         this.runAction(evt);
       });
 
@@ -112,7 +112,7 @@
               if (result._attachments) {
                 imageData = new Image();
                 imageData.onload = render;
-                imageData.src = nativeImage.createFromBuffer(result._attachments["image"].data).toDataUrl();
+                imageData.src = nativeImage.createFromBuffer(result._attachments['image'].data).toDataUrl();
               }
 
               result.custom_tags = result.custom_tags || [];
@@ -124,13 +124,13 @@
     };
 
     this.activateScrolling = () => {
-      angular.element(document.querySelector('#page')).addClass('scrolling-activated');
-      document.getElementById('page').addEventListener('mousemove', this.runAction);
+      angular.element(document.querySelector('#image')).addClass('scrolling-activated');
+      document.getElementById('image').addEventListener('mousemove', this.runAction);
     };
 
     this.deactivateScrolling = () => {
-      angular.element(document.querySelector('#page')).removeClass('scrolling-activated');
-      document.getElementById('page').removeEventListener('mousemove', this.runAction);
+      angular.element(document.querySelector('#image')).removeClass('scrolling-activated');
+      document.getElementById('image').removeEventListener('mousemove', this.runAction);
     };
 
     this.openSidebar = function() {
@@ -152,26 +152,26 @@
       evt.preventDefault();
       evt.stopPropagation();
 
-      var canvas = document.getElementById('page');
+      var canvas = document.getElementById('image');
       var rect = canvas.getBoundingClientRect();
 
       switch (this.action) {
       case 'zoom-in':
-        angular.element(document.querySelector('#page')).removeClass('zoom-in-activated');
+        angular.element(document.querySelector('#image')).removeClass('zoom-in-activated');
         this.mousePos.x = evt.clientX - rect.left;
         this.mousePos.y = evt.clientY - rect.top;
         this.scaleFactor += 0.25;
         break;
 
       case 'zoom-out':
-        angular.element(document.querySelector('#page')).removeClass('zoom-out-activated');
+        angular.element(document.querySelector('#image')).removeClass('zoom-out-activated');
         this.mousePos.x = evt.clientX - rect.left;
         this.mousePos.y = evt.clientY - rect.top;
         this.scaleFactor -= 0.25;
         break;
 
       case 'annotate':
-        angular.element(document.querySelector('#page')).removeClass('annotate-activated');
+        angular.element(document.querySelector('#image')).removeClass('annotate-activated');
         var x = evt.clientX - rect.left;
         var y = evt.clientY - rect.top;
         this.document.annotations.push({
@@ -193,17 +193,17 @@
     };
 
     $scope.$on('zoom-in', (event, args) => {
-      angular.element(document.querySelector('#page')).addClass('zoom-in-activated');
+      angular.element(document.querySelector('#image')).addClass('zoom-in-activated');
       this.action = 'zoom-in';
     });
 
     $scope.$on('zoom-out', (event, args) => {
-      angular.element(document.querySelector('#page')).addClass('zoom-out-activated');
+      angular.element(document.querySelector('#image')).addClass('zoom-out-activated');
       this.action = 'zoom-out';
     });
 
     $scope.$on('annotate', (event, args) => {
-      angular.element(document.querySelector('#page')).addClass('annotate-activated');
+      angular.element(document.querySelector('#image')).addClass('annotate-activated');
       this.action = 'annotate';
     });
 
@@ -242,6 +242,6 @@
     });
   }
 
-  module.exports = LibraryDocumentController;
+  module.exports = LibraryWebViewerController;
 
 })();
