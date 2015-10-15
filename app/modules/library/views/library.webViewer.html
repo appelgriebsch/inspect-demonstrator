@@ -43,9 +43,5 @@
       </md-input-container>
     </div>
   </md-content>
-  <canvas id="image" tabindex="-1" layout-fill
-          ng-click="ctl.runAction($event)"
-          ng-mousedown="ctl.activateScrolling($event)"
-          ng-mouseup="ctl.deactivateScrolling($event)">
-  </canvas>
+  <webview id='viewer' />
 </div>

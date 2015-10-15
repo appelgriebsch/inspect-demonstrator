@@ -1,66 +1,51 @@
-<div layout="column" layout-fill ng-init="ctl.initialize()">
+<div layout-fill layout="column" ng-init="ctl.initialize()">
   <centered ng-if="ctl.isBusy">
-    <div layout="row" layout-align="space-around center">
+    <div layout-align="space-around center" layout="row">
       <h3>Uploading files...</h3>
       <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
     </div>
   </centered>
-  <md-grid-list md-cols-gt-md="8" md-cols-md="2" md-cols-sm="1"
-                md-gutter-gt-sm="6px" md-gutter="12px"
-                md-row-height-gt-md="1:1" md-row-height="4:3">
-    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="2"
-                  ng-repeat="file in ctl.files"
-                  ng-click="ctl.selectItem(file)" ng-class="{ 'selected': file.isSelected }">
-      <md-progress-circular ng-if="file.status === 'unknown'"
-                            md-mode="indeterminate"></md-progress-circular>
+  <md-grid-list md-cols-gt-md="8" md-cols-md="2" md-cols-sm="1" md-gutter-gt-sm="6px" md-gutter="12px" md-row-height-gt-md="1:1" md-row-height="4:3">
+    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="2" ng-class="{ 'selected': file.isSelected }" ng-click="ctl.selectItem(file)" ng-repeat="file in ctl.files">
+      <md-progress-circular md-mode="indeterminate" ng-if="file.status === 'unknown'"></md-progress-circular>
       <img class="pagePrev" ng-if="file.status === 'ready'" ng-src="{{ file.preview }}"></img>
-      <md-grid-tile-footer ns-popover
-                      ns-popover-template="pdfMetadata"
-                      ns-popover-trigger="mouseenter"
-                      ns-popover-timeout="0.2"
-                      ns-popover-popup-delay="0.7"
-                      ns-popover-theme="ns-popover-tooltip-theme">
+      <md-grid-tile-footer ns-popover ns-popover-popup-delay="0.7" ns-popover-template="pdfMetadata" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-timeout="0.2" ns-popover-trigger="mouseenter">
         <h3>
-          <div ng-if="file.status === 'unknown'" class="filename">{{ file.name }}</div>
-          <div ng-if="file.status === 'ready'" class="filename">
+          <div class="filename" ng-if="file.status === 'unknown'">{{ file.name }}</div>
+          <div class="filename" ng-if="file.status === 'ready'">
             <a>{{ file.title }}</a>
           </div>
         </h3>
       </md-grid-tile-footer>
     </md-grid-tile>
+    <md-grid-tile md-colspan="1" md-rowspan="2" layout-align="center center">
+      <input accept=".pdf, image/*" class="hidden" id="fileSelector" type="file"></input>
+      <md-menu>
+        <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
+          <md-icon md-menu-origin>add_circle_outline</md-icon>
+        </md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ng-click="ctl.showFileSelector($event)">
+              <md-icon md-menu-align-target>insert_drive_file</md-icon>
+              Upload File(s)
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ng-click="ctl.downloadFile($event)">
+              <md-icon md-menu-align-target>public</md-icon>
+              Get File from URL
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </md-grid-tile>
   </md-grid-list>
-  <md-whiteframe id="dropZone" layout layout-align="center center">
-    <span>
-      <input type="file" id="fileSelector" class="hidden"
-             multiple="multiple" accept=".pdf, image/*"></input>
-    <span>
-        Drop your files here... or choose an option:
-        <md-menu>
-          <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
-            <md-icon md-menu-origin>add_circle_outline</md-icon>
-          </md-button>
-          <md-menu-content width="4">
-            <md-menu-item>
-              <md-button ng-click="ctl.showFileSelector($event)">
-                <md-icon md-menu-align-target>insert_drive_file</md-icon>
-                Upload File(s)
-              </md-button>
-            </md-menu-item>
-            <md-menu-item>
-              <md-button ng-click="ctl.downloadFile($event)">
-                <md-icon md-menu-align-target>public</md-icon>
-                Get File from URL
-              </md-button>
-            </md-menu-item>
-          </md-menu-content>
-        </md-menu>
-    </span>
-  </md-whiteframe>
 </div>
-<script type="text/ng-template" id="pdfMetadata">
+<script id="pdfMetadata" type="text/ng-template">
   <div class="triangle"></div>
   <div class="ns-popover-tooltip">
-    <div ng-if="file.author !== ''" layout="row" layout-fill>
+    <div layout-fill layout="row" ng-if="file.author !== ''">
       <h2>{{ file.author.join(' ') }}</h2>
       <span flex></span>
       <small>{{ file.publicationDate | date: 'short' }}</small>

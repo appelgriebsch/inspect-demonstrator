@@ -19,7 +19,6 @@
 
               if (result._attachments) {
                 this.pdfData = result._attachments[result.name].data;
-                console.log(this.pdfData);
               }
 
               var container = document.getElementById('pdfViewerContainer');
@@ -82,7 +81,7 @@
         .cancel('No, please keep it');
       $mdDialog.show(confirm).then(() => {
         LibraryDataService.delete(this.document).then(() => {
-
+          
           var details = angular.copy(this.document);
           details.status = 'deleted';
           delete details._attachments;

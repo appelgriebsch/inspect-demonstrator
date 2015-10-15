@@ -7,7 +7,7 @@
     var remote = require('remote');
     var app = remote.require('app');
 
-    var dropZone, fileSelector;
+    var fileSelector;
 
     var calcUnitSize = function(fileSize) {
 
@@ -27,7 +27,7 @@
       return result;
     };
 
-    $scope.$on('submit', (event, args) => {
+    $scope.$on('submit', () => {
 
       this.isBusy = true;
 
@@ -67,7 +67,7 @@
         });
     });
 
-    $scope.$on('cancel', (event, args) => {
+    $scope.$on('cancel', () => {
 
       $q.when(true).then(() => {
         this.files = [];
@@ -81,35 +81,6 @@
     this.isBusy = false;
 
     this.initialize = function() {
-
-      dropZone = document.querySelector('#dropZone');
-      fileSelector = document.querySelector('#fileSelector');
-
-      fileSelector.onchange = (e) => {
-        $q.when(true).then(() => {
-          this.addFiles(e.target.files);
-        });
-      };
-
-      dropZone.ondragover = (e) => {
-        e.dataTransfer.dropEffect = 'copy';
-        return false;
-      };
-
-      dropZone.ondragleave = dropZone.ondragend = function() {
-        return false;
-      };
-
-      dropZone.ondrop = (e) => {
-        e.preventDefault();
-        var files = e.dataTransfer.files;
-        console.log('dropped:', files);
-        $q.when(true).then(() => {
-          this.addFiles(files);
-        });
-        return false;
-      };
-
       $notification.requestPermission().then(() => {
         return ActivityService.initialize();
       });
@@ -126,6 +97,18 @@
     };
 
     this.showFileSelector = function() {
+
+      if (!fileSelector) {
+
+        fileSelector = document.getElementById('fileSelector');
+
+        fileSelector.onchange = (e) => {
+          $q.when(true).then(() => {
+            this.addFiles(e.target.files);
+          });
+        };
+      }
+
       $q.when(true).then(() => {
         fileSelector.click();
       });

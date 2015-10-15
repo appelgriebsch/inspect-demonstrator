@@ -12,7 +12,6 @@
     var fs = require('fs');
 
     var filenamifyUrl = require('filenamify-url');
-    var pageres = require('pageres');
 
     var asar = require('asar');
     var scraper = require('website-scraper');
@@ -48,55 +47,41 @@
       var promise = new Promise((resolve, reject) => {
 
         var tempPath = app.getPath('temp');
-        var capturePage = new pageres({
-          delay: 2,
-          filename: '<%= date %>.<%= url %>'
-        })
-        .src(uri, [1280 + 'x' + 720])
-        .dest(tempPath);
+        var name = filenamifyUrl(uri);
 
-        capturePage.run(function(err, results) {
-          if (err) {
-            reject(err);
-          }
-          else {
-            var name = results[0].filename;
-            var file = path.join(tempPath, name);
-            var pageImg = fs.readFileSync(file);
-            var capturePath = path.join(tempPath, name.substr(0, name.lastIndexOf('.')));
-            scraper.scrape({
-              urls: [uri],
-              directory: capturePath
-            }).then(function (result) {
-              fs.writeFileSync(path.join(capturePath, 'site.json'), JSON.stringify(result[0]));
-              var asarFile = path.join(tempPath, 'site.archive');
-              asar.createPackage(capturePath, asarFile, function(err) {
-                if (err) {
-                  reject(err);
-                }
+        var capturePath = path.join(tempPath, name.substr(0, name.lastIndexOf('.')));
 
-                var archive = fs.readFileSync(asarFile);
+        scraper.scrape({
 
-                fs.unlinkSync(file);
-                fs.unlinkSync(asarFile);
+          urls: [uri],
+          directory: capturePath
 
-                rm(capturePath, function() {
-                  resolve({
-                    url: uri,
-                    attachments: [{
-                      name: 'image',
-                      type: 'image/png',
-                      content: pageImg
-                    },{
-                      name: 'archive',
-                      type: 'application/asar',
-                      content: archive
-                    }]
-                  });
-                });
+        }).then(function(result) {
+
+          fs.writeFileSync(path.join(capturePath, 'site.json'), JSON.stringify(result[0]));
+
+          var asarFile = path.join(tempPath, 'site.archive');
+          asar.createPackage(capturePath, asarFile, function(err) {
+
+            if (err) {
+              reject(err);
+            }
+
+            var archive = fs.readFileSync(asarFile);
+
+            fs.unlinkSync(asarFile);
+
+            rm(capturePath, function() {
+              resolve({
+                url: uri,
+                attachments: [{
+                  name: 'archive',
+                  type: 'application/asar',
+                  content: archive
+                }]
               });
             });
-          }
+          });
         });
       });
 
