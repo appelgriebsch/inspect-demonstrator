@@ -31,6 +31,7 @@
     var callback;
 
     ipc.on('analyze-pdf-finished', function(event, result) {
+      result._id = result.id;      
       callback.resolve(result);
       callback = null;
     });

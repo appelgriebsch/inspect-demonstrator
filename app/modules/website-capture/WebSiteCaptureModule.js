@@ -36,7 +36,7 @@
     ipc.on('capture-site-finished', function(event, result) {
       _window.capturePage(function(preview) {
         result.preview = preview.toDataUrl();
-        result._id = result.canonicalID;
+        result._id = result.id;
         callback.resolve(result);
         callback = null;
       });

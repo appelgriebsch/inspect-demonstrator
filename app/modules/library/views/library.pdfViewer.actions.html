@@ -9,7 +9,7 @@
       <md-tooltip md-direction="left">Remove Document</md-tooltip>
       <md-icon>delete</md-icon>
     </md-button>
-    <md-button class="md-fab md-raised md-mini">
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('export-document', $event)">
       <md-tooltip md-direction="left">Share Document</md-tooltip>
       <md-icon>share</md-icon>
     </md-button>

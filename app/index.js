@@ -93,6 +93,10 @@
     };
   };
 
+  app.getMainWindow = function() {
+    return mainWindow;
+  };
+
   app.pdfViewerService = function() {
     return pdfViewerService;
   };
