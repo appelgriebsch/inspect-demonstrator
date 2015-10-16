@@ -92,6 +92,7 @@
           });
       });
 
+    var DocumentSharingService = require('./services/DocumentSharingService');
     var FileUploadService = require('./services/FileUploadService');
     var LibraryDataService = require('./services/LibraryDataService');
 
@@ -102,15 +103,16 @@
     var LibraryViewController = require('./controllers/LibraryViewController');
     var LibraryWebViewerController = require('./controllers/LibraryWebViewerController');
 
+    angular.module('inspectApp').service('DocumentSharingService', [DocumentSharingService]);
     angular.module('inspectApp').service('FileUploadService', ['$q', 'PouchDBService', FileUploadService]);
     angular.module('inspectApp').service('LibraryDataService', ['PouchDBService', LibraryDataService]);
 
     angular.module('inspectApp').controller('LibraryCaptureController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'PouchDBService', LibraryCaptureController]);
-    angular.module('inspectApp').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', LibraryPDFViewerController]);    
+    angular.module('inspectApp').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', 'DocumentSharingService', LibraryPDFViewerController]);
     angular.module('inspectApp').controller('LibrarySearchController', ['$scope', '$state', '$q', 'ActivityService', 'LibraryDataService', LibrarySearchController]);
     angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'FileUploadService', LibraryUploadController]);
     angular.module('inspectApp').controller('LibraryViewController', ['$scope', '$state', '$q', 'LibraryDataService', LibraryViewController]);
-    angular.module('inspectApp').controller('LibraryWebViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', LibraryWebViewerController]);
+    angular.module('inspectApp').controller('LibraryWebViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', 'DocumentSharingService', LibraryWebViewerController]);
   }
 
   module.exports = LibraryModule;

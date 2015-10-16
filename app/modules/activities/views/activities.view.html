@@ -5,6 +5,7 @@
         <md-icon ng-if="event.type === 'upload'">file_upload</md-icon>
         <md-icon ng-if="event.type === 'capture'">public</md-icon>
         <md-icon ng-if="event.type === 'delete'">delete</md-icon>
+        <md-icon ng-if="event.type === 'export'">import_export</md-icon>
       </timeline-badge>
       <timeline-panel>
         <timeline-heading>
@@ -19,6 +20,7 @@
           <p ng-if="event.type === 'upload'">Uploaded {{ event.files }} file(s)</p>
           <p ng-if="event.type === 'capture'">Captured Web Site <i>{{ event.details.title }}</i></p>
           <p ng-if="event.type === 'delete'">Removed Document <i>{{ event.details.title }}</i></p>
+          <p ng-if="event.type === 'export'">Exported Document <i>{{ event.details.title }}</i></p>
         </timeline-content>
       </timeline-panel>
     </timeline-node>

@@ -2,12 +2,14 @@
 
   'use strict';
 
-  function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService) {
+  function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService, DocumentSharingService) {
 
     var fs = require('original-fs');
     var path = require('path');
+
     var remote = require('remote');
     var app = remote.require('app');
+    var dialog = remote.require('dialog');
 
     var webViewer = document.getElementById('viewer');
     var docID = $stateParams.doc;
@@ -16,9 +18,11 @@
     this.document;
     this.action;
     this.sidebarOpened = false;
+    this.isBusy = true;
+    this.statusMessage = 'Loading Document...';
 
     this.initialize = function() {
-      
+
       $q.when(LibraryDataService.initialize())
         .then(() => {
           $q.when(LibraryDataService.item(docID))
@@ -26,14 +30,16 @@
 
               if (result._attachments) {
                 var asarArchive = result._attachments['archive'].data;
-                webarchive = path.join(app.getPath('temp'), result.canonicalID + '.asar');
+                webarchive = path.join(app.getPath('temp'), result.id + '.asar');
                 fs.writeFileSync(webarchive, asarArchive);
                 webViewer.src = 'file://' + webarchive + '/index.html';
               }
 
               result.custom_tags = result.custom_tags || [];
               result.annotations = result.annotations || [];
+
               this.document = result;
+              this.isBusy = false;
             });
         });
     };
@@ -60,7 +66,9 @@
         .targetEvent(args)
         .ok('Yes, delete it')
         .cancel('No, please keep it');
+
       $mdDialog.show(confirm).then(() => {
+
         LibraryDataService.delete(this.document).then(() => {
 
           var details = angular.copy(this.document);
@@ -73,11 +81,45 @@
             id: details._id,
             details: details
           };
+
           ActivityService.addWarning(info).then(() => {
             $state.go('^.view');
           });
+
         });
       });
+    });
+
+    $scope.$on('export-document', (event, args) => {
+
+      var targetPath = dialog.showOpenDialog(app.getMainWindow(), {
+        title: 'Please select destination folder:',
+        defaultPath: app.getPath('home'),
+        properties: ['openDirectory', 'createDirectory']
+      });
+
+      if (targetPath !== undefined) {
+        this.isBusy = true;
+        this.statusMessage = 'Exporting Document...';
+        DocumentSharingService.export(
+            angular.copy(this.document), targetPath[0]).then((result) => {
+
+          var details = angular.copy(this.document);
+          delete details._attachments;
+          delete details.preview;
+
+          angular.merge(details, result);
+
+          var info = {
+            type: 'export',
+            id: details._id,
+            details: details
+          };
+
+          this.isBusy = false;
+          return ActivityService.addInfo(info);
+        });
+      }
     });
   }
 

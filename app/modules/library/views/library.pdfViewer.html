@@ -1,4 +1,10 @@
 <div layout="column" layout-fill ng-init="ctl.initialize()">
+  <centered ng-if="ctl.isBusy">
+    <div layout="row" layout-align="space-around center">
+      <h3>{{ ctl.statusMessage }}</h3>
+      <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
+    </div>
+  </centered>
   <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
     <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
       <md-icon>chevron_right</md-icon>
