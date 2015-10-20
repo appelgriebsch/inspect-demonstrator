@@ -12,44 +12,105 @@
     var asar = require('asar');
     var rm = require('rimraf');
 
-    var _import = function(file) {
-      console.log(file);
+    var _import = function(targetFolder) {
+
+      var promise = new Promise((resolve, reject) => {
+
+        fs.readdir(targetFolder, (err, files) => {
+
+          if (err) {
+            reject(err);
+            return;
+          }
+
+          var results = [];
+
+          files.forEach((file) => {
+
+            if (path.extname(file) === '.archive') {
+
+              var asarFile = path.join(targetFolder, file);
+              var tempPath = path.join(app.getPath('temp'), path.basename(file));
+
+              asar.extractAll(asarFile, tempPath);
+
+              var doc = JSON.parse(fs.readFileSync(path.join(tempPath, 'metadata.json')));
+              var atts = JSON.parse(fs.readFileSync(path.join(tempPath, 'attachments.json')));
+
+              doc._attachments = [];
+
+              for (var attName in atts) {
+
+                var attachment = atts[attName];
+
+                attachment.content = fs.readFileSync(path.join(tempPath, 'attachments', attName));
+                doc._attachments.push({
+                  content_type: attachment.content_type,
+                  data: attachment.content
+                });
+              }
+
+              console.log(doc);
+
+              results.push(doc);
+            }
+          });
+
+          console.log('done');
+          console.log(results);
+          resolve(results);
+        });
+      });
+
+      return promise;
     };
 
-    var _export = function(document, targetFolder) {
+    var _export = function(documents, targetFolder) {
 
       var promise = new Promise((resolve, reject) => {
 
         var tempPath = app.getPath('temp');
-        var name = document.id;
 
-        var capturePath = path.join(tempPath, name.substr(0, name.lastIndexOf('.')));
-        var attachmentPath = path.join(capturePath, 'attachments');
+        var results = [];
 
-        if (!fs.existsSync(capturePath)) fs.mkdirSync(capturePath);
-        if (!fs.existsSync(attachmentPath)) fs.mkdirSync(attachmentPath);
+        documents.forEach((doc) => {
 
-        for (var attName in document._attachments) {
-          var attachment = document._attachments[attName];
+          var name = doc.id || doc._id;
 
-          fs.writeFileSync(path.join(attachmentPath, attName), attachment.data);
-          delete attachment.data;
-        }
+          var capturePath = path.join(tempPath, name.substr(0, name.lastIndexOf('.')));
+          var attachmentPath = path.join(capturePath, 'attachments');
 
-        fs.writeFileSync(path.join(capturePath, 'attachments.json'), JSON.stringify(document._attachments));
-        delete document._attachments;
-        fs.writeFileSync(path.join(capturePath, 'metadata.json'), JSON.stringify(document));
+          if (!fs.existsSync(capturePath)) fs.mkdirSync(capturePath);
+          if (!fs.existsSync(attachmentPath)) fs.mkdirSync(attachmentPath);
 
-        var asarFile = path.join(targetFolder, name + '.archive');
-        asar.createPackage(capturePath, asarFile, function(err) {
+          for (var attName in doc._attachments) {
+            var attachment = doc._attachments[attName];
 
-          if (err) {
-            reject(err);
+            fs.writeFileSync(path.join(attachmentPath, attName), attachment.data);
+            delete attachment.data;
           }
 
-          rm(capturePath, () => {
-            resolve({
-              target: asarFile
+          fs.writeFileSync(path.join(capturePath, 'attachments.json'), JSON.stringify(doc._attachments));
+          delete doc._attachments;
+          fs.writeFileSync(path.join(capturePath, 'metadata.json'), JSON.stringify(doc));
+
+          var asarFile = path.join(targetFolder, name + '.archive');
+          asar.createPackage(capturePath, asarFile, function(err) {
+
+            if (err) {
+              reject(err);
+            }
+
+            rm(capturePath, () => {
+              results.push({
+                doc: doc,
+                target: asarFile
+              });
+
+              if (results.length === documents.length) {
+                console.log(results);
+                resolve(results);      
+              }
             });
           });
         });

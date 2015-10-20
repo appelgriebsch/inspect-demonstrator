@@ -101,8 +101,7 @@
       if (targetPath !== undefined) {
         this.isBusy = true;
         this.statusMessage = 'Exporting Document...';
-        DocumentSharingService.export(
-            angular.copy(this.document), targetPath[0]).then((result) => {
+        DocumentSharingService.export([this.document], targetPath[0]).then((result) => {
 
           var details = angular.copy(this.document);
           delete details._attachments;

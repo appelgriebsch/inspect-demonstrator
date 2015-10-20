@@ -2,11 +2,11 @@
 
   'use strict';
 
-  function LibraryUploadController($scope, $state, $q, $notification, ActivityService, FileUploadService) {
+  function LibraryUploadController($scope, $state, $q, $http, $notification, ActivityService, FileUploadService) {
 
     var remote = require('remote');
     var app = remote.require('app');
-
+    
     var fileSelector;
 
     var calcUnitSize = function(fileSize) {
@@ -112,6 +112,12 @@
       $q.when(true).then(() => {
         fileSelector.click();
       });
+    };
+
+    this.downloadFile = function(evt) {
+
+      evt.preventDefault();
+
     };
 
     this.addFiles = function(files) {
