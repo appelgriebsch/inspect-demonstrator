@@ -6,21 +6,21 @@
 
     var db = PouchDBService.initialize('library');
 
-    var initializeDBView = function(view) {
+    var saveDoc = function(doc) {
 
       var promise = Promise.resolve(
-      db.get(view._id)
+      db.get(doc._id)
         .then(function(result) {
 
           if (result) {
-            view._rev = result._rev;
+            doc._rev = result._rev;
           }
-          return db.put(view);
+          return db.put(doc);
         })
         .catch(function(err) {
 
           if (err.status == 404) {
-            return db.put(view);
+            return db.put(doc);
           }
           else {
             throw err;
@@ -102,9 +102,9 @@
           }
         };
 
-        var p1 = initializeDBView(library);
-        var p2 = initializeDBView(websites);
-        var p3 = initializeDBView(documents);
+        var p1 = saveDoc(library);
+        var p2 = saveDoc(websites);
+        var p3 = saveDoc(documents);
 
         return Promise.all([p1, p2, p3]);
       },
@@ -124,7 +124,7 @@
       },
 
       save: function(doc) {
-
+        return saveDoc(doc);
       },
 
       delete: function(doc) {

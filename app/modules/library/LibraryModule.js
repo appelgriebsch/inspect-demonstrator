@@ -110,8 +110,8 @@
     angular.module('inspectApp').controller('LibraryCaptureController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'PouchDBService', LibraryCaptureController]);
     angular.module('inspectApp').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', 'DocumentSharingService', LibraryPDFViewerController]);
     angular.module('inspectApp').controller('LibrarySearchController', ['$scope', '$state', '$q', 'ActivityService', 'LibraryDataService', LibrarySearchController]);
-    angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', '$notification', 'ActivityService', 'FileUploadService', LibraryUploadController]);
-    angular.module('inspectApp').controller('LibraryViewController', ['$scope', '$state', '$q', 'LibraryDataService', LibraryViewController]);
+    angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', '$http', '$notification', 'ActivityService', 'FileUploadService', LibraryUploadController]);
+    angular.module('inspectApp').controller('LibraryViewController', ['$scope', '$state', '$q', 'LibraryDataService', 'DocumentSharingService', 'ActivityService', LibraryViewController]);
     angular.module('inspectApp').controller('LibraryWebViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'ActivityService', 'LibraryDataService', 'DocumentSharingService', LibraryWebViewerController]);
   }
 
