@@ -24,10 +24,13 @@
           }
 
           var results = [];
+          var archives = 0;
 
           files.forEach((file) => {
 
             if (path.extname(file) === '.archive') {
+
+              archives += 1;
 
               var asarFile = path.join(targetFolder, file);
               var tempPath = path.join(app.getPath('temp'), path.basename(file));
@@ -37,28 +40,29 @@
               var doc = JSON.parse(fs.readFileSync(path.join(tempPath, 'metadata.json')));
               var atts = JSON.parse(fs.readFileSync(path.join(tempPath, 'attachments.json')));
 
-              doc._attachments = [];
+              doc._attachments = {};
 
               for (var attName in atts) {
 
                 var attachment = atts[attName];
 
                 attachment.content = fs.readFileSync(path.join(tempPath, 'attachments', attName));
-                doc._attachments.push({
+                doc._attachments[attName] = {
                   content_type: attachment.content_type,
                   data: attachment.content
-                });
+                };
               }
 
-              console.log(doc);
+              rm(tempPath, () => {
 
-              results.push(doc);
+                results.push(doc);
+
+                if (results.length === archives) {
+                  resolve(results);
+                }
+              });
             }
           });
-
-          console.log('done');
-          console.log(results);
-          resolve(results);
         });
       });
 
@@ -91,7 +95,10 @@
           }
 
           fs.writeFileSync(path.join(capturePath, 'attachments.json'), JSON.stringify(doc._attachments));
+
           delete doc._attachments;
+          delete doc._rev;
+
           fs.writeFileSync(path.join(capturePath, 'metadata.json'), JSON.stringify(doc));
 
           var asarFile = path.join(targetFolder, name + '.archive');
@@ -108,8 +115,7 @@
               });
 
               if (results.length === documents.length) {
-                console.log(results);
-                resolve(results);      
+                resolve(results);
               }
             });
           });
