@@ -8,33 +8,75 @@
   <div layout="row">
     <md-input-container layout-fill>
       <label>Website URL</label>
-      <input type="url" id="url" ng-keypress="ctl.loadUrl($event)" autofocus="autofocus">
+      <input type="url" id="url" ng-model="ctl.url" ng-keypress="ctl.loadUrl($event)" autofocus="autofocus">
     </md-input-container>
     <span flex></span>
     <md-button class="md-icon-button" ng-click="ctl.loadUrl($event)">
       <md-icon>forward</md-icon>
     </md-button>
   </div>
-  <img class="pagePrev"
-       ns-popover
-       ns-popover-template="siteMetadata"
-       ns-popover-trigger="mousemove"
-       ns-popover-placement="top"
-       ns-popover-mouse-relative="xy"
-       ns-popover-timeout="0.2"
-       ns-popover-popup-delay="0.7"
-       ns-popover-theme="ns-popover-tooltip-theme"
-       ng-src="{{ ctl.capture.preview }}"></img>
-</div>
-<script type="text/ng-template" id="siteMetadata">
-  <div class="triangle"></div>
-  <div class="ns-popover-tooltip">
-    <div ng-if="ctl.capture.author !== ''" layout="row" layout-fill>
-      <h2>{{ ctl.capture.author }}</h2>
-      <span flex></span>
-      <small>{{ ctl.capture.publicationDate | date: 'short' }}</small>
+  <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
+    <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
+      <md-icon>chevron_right</md-icon>
+    </md-button>
+    <div ng-if="ctl.sidebarOpened">
+      <div layout-align="space-between start" layout="row" layout-fill>
+        <h3>Document Information</h3>
+        <md-button class='md-icon-button sidebar-btn-opened' ng-click="ctl.closeSidebar()">
+          <md-icon>chevron_left</md-icon>
+        </md-button>
+      </div>
+      <md-input-container>
+        <label>Title</label>
+        <textarea ng-model="ctl.document.title" disabled></textarea>
+      </md-input-container>
+      <md-input-container>
+        <label>Description</label>
+        <textarea ng-model="ctl.document.description" disabled></textarea>
+      </md-input-container>
+      <md-input-container>
+        <label>Author</label>
+        <input ng-model="ctl.document.author" disabled></input>
+      </md-input-container>
+      <md-input-container>
+        <label>Publication Date</label>
+        <input ng-model="ctl.document.publicationDate" disabled></input>
+      </md-input-container>
+      <md-input-container>
+        <label>Tags</label>
+        <md-chips ng-if="ctl.document.tags"
+          ng-model="ctl.document.tags"
+          readonly="true">
+        </md-chips>
+      </md-input-container>
     </div>
-    <h3>{{ ctl.capture.title }}</h3>
-    <p>{{ ctl.capture.description }}</p>
-  </div>
+  </md-content>
+  <webview id='viewer' nodeintegration partition="{{ ctl.getUniqueId() }}" />
+</div>
+<script id="capture-metadata" type="text/template">
+  (function() {
+
+    var _tag = document.querySelector("meta[name='parsely-page']");
+    var _parsely = _tag ? JSON.parse(_tag.content) : null;
+
+    var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title");
+    var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description");
+    var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']");
+    var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']");
+    var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']");
+    var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']");
+
+    var result = {
+      title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''),
+      description: _description ? (_description.content ? _description.content : _description.text) : '',
+      url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''),
+      publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''),
+      author: _parsely ? _parsely.author : (_author ? _author.content : ''),
+      tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : _tags.map((elem) => { return elem.content }) ) : []
+    };
+
+    var ipc = require('ipc');
+    ipc.sendToHost(result);
+  })();
+
 </script>
