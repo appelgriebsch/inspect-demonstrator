@@ -11,6 +11,7 @@
     var app = remote.require('app');
     var dialog = remote.require('dialog');
 
+    var uuid = require('uuid').v1();
     var webViewer = document.getElementById('viewer');
     var docID = $stateParams.doc;
     var webarchive;
@@ -58,6 +59,10 @@
       });
     };
 
+    this.getUniqueId = function() {
+      return uuid;
+    };
+    
     $scope.$on('remove-document', (event, args) => {
 
       var confirm = $mdDialog.confirm()
