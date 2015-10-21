@@ -12,76 +12,33 @@
     var uuid = require('uuid').v1();
     var webViewer = document.getElementById('viewer');
 
-    var setBusy = function(msg) {
+    var setBusy = (msg) => {
       $q.when(true).then(() => {
         this.isBusy = true;
         this.statusMessage = msg;
       });
-    }
+    };
 
-    var setReady = function() {
+    var setReady = () => {
       $q.when(true).then(() => {
         this.isBusy = false;
         this.statusMessage = '';
       });
-    }
+    };
 
     $scope.$on('submit', (event, args) => {
 
       setBusy('Snapshotting Web Site...');
 
-      app.captureWebSiteService().capturePage(this.url).then((result) => {
-
-        var _attachments = {};
-
-        result.attachments.forEach((attachment) => {
-          _attachments[attachment.name] = {
-            'content_type': attachment.type,
-            'data': attachment.content
-          };
-        });
-
-        var doc = _prefill(this.capture);
-        doc._attachments = _attachments;
-        doc.status = 'uploaded';
-
-        console.log(doc);
-
-        var db = PouchDBService.initialize('library');
-
-        db.post(doc).then((dbRes) => {
-
-          var details = angular.copy(doc);
-          delete details._attachments;
-          delete details.preview;
-
-          var info = {
-            type: 'capture',
-            id: dbRes._id,
-            details: details
-          };
-
-          $notification('Website captured', {
-            body: `${info.details.title} has been captured.`,
-            delay: 2000
-          });
-
-          ActivityService.addInfo(info).then(() => {
-            $q.when(true).then(() => {
-              this.capture = null;
-              this.url = null;
-              this.isBusy = false;
-              $state.go('^.view');
-            });
-          });
-        });
+      DocumentCaptureService.captureWebSite(this.url).then((result) => {
+        console.log(result);
       });
     });
 
     $scope.$on('cancel', (event, args) => {
 
       $q.when(true).then(() => {
-        this.capture = null;
+        this.document = null;
         this.url = null;
         setReady();
         $state.go('^.view');
