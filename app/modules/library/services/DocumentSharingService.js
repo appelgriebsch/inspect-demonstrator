@@ -11,8 +11,6 @@
     var fs = require('fs');
     var path = require('path');
 
-    var uuid = require('uuid').v1();
-
     var asar = require('asar');
     var rm = require('rimraf');
 
@@ -21,6 +19,17 @@
       var fileName = path.join(app.getPath('temp'), `${id}.mhtml`);
       fs.writeFileSync(fileName, attachment.data);
       return fileName;
+    };
+
+    var _requestFiles = function() {
+
+      var files = dialog.showOpenDialog(app.getMainWindow(), {
+        title: 'Please select files:',
+        defaultPath: app.getPath('home'),
+        properties: ['openFile', 'multiSelections']
+      });
+
+      return files;
     };
 
     var _requestFolder = function() {
@@ -34,57 +43,48 @@
       return targetPath[0];
     };
 
-    var _import = function(targetFolder) {
+    var _import = function(files) {
 
       var promise = new Promise((resolve, reject) => {
 
-        fs.readdir(targetFolder, (err, files) => {
+        var results = [];
+        var archives = 0;
 
-          if (err) {
-            reject(err);
-            return;
-          }
+        files.forEach((file) => {
 
-          var results = [];
-          var archives = 0;
+          if (path.extname(file) === '.archive') {
 
-          files.forEach((file) => {
+            archives += 1;
 
-            if (path.extname(file) === '.archive') {
+            var tempPath = path.join(app.getPath('temp'), path.basename(file));
 
-              archives += 1;
+            asar.extractAll(file, tempPath);
 
-              var asarFile = path.join(targetFolder, file);
-              var tempPath = path.join(app.getPath('temp'), path.basename(file));
+            var doc = JSON.parse(fs.readFileSync(path.join(tempPath, 'metadata.json')));
+            var atts = JSON.parse(fs.readFileSync(path.join(tempPath, 'attachments.json')));
 
-              asar.extractAll(asarFile, tempPath);
+            doc._attachments = {};
 
-              var doc = JSON.parse(fs.readFileSync(path.join(tempPath, 'metadata.json')));
-              var atts = JSON.parse(fs.readFileSync(path.join(tempPath, 'attachments.json')));
+            for (var attName in atts) {
 
-              doc._attachments = {};
+              var attachment = atts[attName];
 
-              for (var attName in atts) {
-
-                var attachment = atts[attName];
-
-                attachment.content = fs.readFileSync(path.join(tempPath, 'attachments', attName));
-                doc._attachments[attName] = {
-                  content_type: attachment.content_type,
-                  data: attachment.content
-                };
-              }
-
-              rm(tempPath, () => {
-
-                results.push(doc);
-
-                if (results.length === archives) {
-                  resolve(results);
-                }
-              });
+              attachment.content = fs.readFileSync(path.join(tempPath, 'attachments', attName));
+              doc._attachments[attName] = {
+                content_type: attachment.content_type,
+                data: attachment.content
+              };
             }
-          });
+
+            rm(tempPath, () => {
+
+              results.push(doc);
+
+              if (results.length === archives) {
+                resolve(results);
+              }
+            });
+          }
         });
       });
 
@@ -156,6 +156,7 @@
       import: _import,
       export: _export,
       replicate: _replicate,
+      requestFiles: _requestFiles,
       requestFolder: _requestFolder,
       requestTemporaryFile: _requestTemporaryFile
     };
