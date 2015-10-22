@@ -4,6 +4,9 @@
 
   function DocumentCaptureService($http) {
 
+    var remote = require('remote');
+    var app = remote.require('app');
+
     var _isWebResource = function(uri) {
 
       var r = /^(ftp|http|https):\/\/[^ "]+$/;
@@ -49,11 +52,14 @@
       var promise = new Promise((resolve, reject) => {
 
         if (_isWebResource(url)) {
-
-          $http.get(url).then((result) => {
-            console.log(result);
+          app.snapshotWebSite(url).then((result) => {
             resolve(result);
+          })
+          .catch((err) => {
+            reject(err);
           });
+        } else {
+          reject(`${url} is not a valid web resource!`);
         }
       });
 

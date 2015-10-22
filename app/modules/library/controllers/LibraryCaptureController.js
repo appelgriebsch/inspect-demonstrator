@@ -31,7 +31,44 @@
       setBusy('Snapshotting Web Site...');
 
       DocumentCaptureService.captureWebSite(this.url).then((result) => {
-        console.log(result);
+
+        this.document._id = result.id;
+        this.document.id = result.id;
+        this.document.preview = result.preview;
+
+        var _attachments = this.document._attachments || {};
+        _attachments[result.id] = {
+          content_type: result.content_type,
+          data: result.data
+        };
+
+        this.document._attachments = _attachments;
+        LibraryDataService.save(this.document).then((result) => {
+
+          var info = angular.copy(this.document);
+          delete info._attachments;
+          delete info.preview;
+
+          info._id = result.id;
+          info._rev = result.rev;
+          info.icon = 'public';
+          info.description = `Web Site <i>${info.title}</i> captured successfully!`;
+
+          console.log(info);
+
+          ActivityService.addInfo(info).then(() => {
+            this.document = null;
+            this.url = null;
+            setReady();
+            $state.go('^.view');
+          }).catch((err) => {
+            console.log(err);
+          });
+        }).catch((err) => {
+          console.log(err);
+        });
+      }).catch((err) => {
+        console.log(err);
       });
     });
 

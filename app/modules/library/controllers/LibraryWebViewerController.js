@@ -4,17 +4,30 @@
 
   function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService, DocumentSharingService) {
 
-    var fs = require('original-fs');
-    var path = require('path');
-
     var remote = require('remote');
     var app = remote.require('app');
     var dialog = remote.require('dialog');
 
+    var path = require('path');
+    var fs = require('fs');
+
     var uuid = require('uuid').v1();
     var webViewer = document.getElementById('viewer');
     var docID = $stateParams.doc;
-    var webarchive;
+
+    var setBusy = (msg) => {
+      $q.when(true).then(() => {
+        this.isBusy = true;
+        this.statusMessage = msg;
+      });
+    };
+
+    var setReady = () => {
+      $q.when(true).then(() => {
+        this.isBusy = false;
+        this.statusMessage = '';
+      });
+    };
 
     this.document;
     this.action;
@@ -24,25 +37,22 @@
 
     this.initialize = function() {
 
-      $q.when(LibraryDataService.initialize())
-        .then(() => {
-          $q.when(LibraryDataService.item(docID))
-            .then((result) => {
+      var ps = [LibraryDataService.initialize(), ActivityService.initialize()];
 
-              if (result._attachments) {
-                var asarArchive = result._attachments['archive'].data;
-                webarchive = path.join(app.getPath('temp'), result.id + '.asar');
-                fs.writeFileSync(webarchive, asarArchive);
-                webViewer.src = 'file://' + webarchive + '/index.html';
-              }
-
-              result.custom_tags = result.custom_tags || [];
-              result.annotations = result.annotations || [];
-
-              this.document = result;
-              this.isBusy = false;
-            });
-        });
+      Promise.all(ps).then(() => {
+        return LibraryDataService.item(docID);
+      }).then((result) => {
+        var archive = result._attachments[result.id] || undefined;
+        if (archive) {
+          var fileName = path.join(app.getPath('temp'), `${result.id}.mhtml`);
+          fs.writeFileSync(fileName, archive.data);
+          webViewer.src = `file://${fileName}`;
+        }
+        result.custom_tags = result.custom_tags || [];
+        result.annotations = result.annotations || [];
+        this.document = result;
+        setReady();
+      });
     };
 
     this.openSidebar = function() {
@@ -62,7 +72,7 @@
     this.getUniqueId = function() {
       return uuid;
     };
-    
+
     $scope.$on('remove-document', (event, args) => {
 
       var confirm = $mdDialog.confirm()
