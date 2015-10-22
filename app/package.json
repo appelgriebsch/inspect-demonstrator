@@ -50,6 +50,7 @@
     "rimraf": "^2.4.3",
     "socket-pouch": "^1.0.0",
     "transform-pouch": "^1.0.2",
+    "uuid": "^2.0.1",
     "website-scraper": "^0.3.0"
   }
 }

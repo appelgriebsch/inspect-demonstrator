@@ -31,10 +31,6 @@
     // for multiple windows store them in an array
     mainWindow = null;
 
-    if (webSiteCaptureService) {
-      webSiteCaptureService.close();
-    }
-
     if (pdfViewerService) {
       pdfViewerService.close();
     }
@@ -55,17 +51,16 @@
 
   app.on('ready', function() {
     mainWindow = createMainWindow();
-    webSiteCaptureService = new WebSiteCapture();
     pdfViewerService = new PDFViewer();
   });
 
   // initialize service finder module
   var ServiceFinder = require('node-servicefinder').ServiceFinder;
-  var WebSiteCapture = require('./modules/website-capture/WebSiteCaptureModule');
   var PDFViewer = require('./modules/pdf-viewer/PDFViewerModule');
 
   var path = require('path');
   var os = require('os');
+  var fs = require('fs');
 
   const dataDir = app.getPath('userData') + path.sep;
   const cacheDir = app.getPath('userCache') + path.sep;
@@ -74,7 +69,7 @@
   const hostname = os.hostname();
   const username = (process.platform === 'win32') ? process.env.USERNAME : process.env.USER;
 
-  var webSiteCaptureService, pdfViewerService;
+  var pdfViewerService;
 
   app.serviceFinder = function(serviceName, protocol, subTypes, includeLocal) {
     return new ServiceFinder(serviceName, protocol, subTypes, includeLocal);
@@ -101,8 +96,51 @@
     return pdfViewerService;
   };
 
-  app.captureWebSiteService = function() {
-    return webSiteCaptureService;
+  app.snapshotWebSite = function(url) {
+
+    var promise = new Promise((resolve, reject) => {
+
+      var webWnd = new BrowserWindow({
+        x: 0,
+        y: 0,
+        width: 1280,
+        height: 720,
+        resizable: false,
+        'skip-taskbar': true,
+        show: false,
+        'accept-first-mouse': false,
+        'enable-larger-than-screen': true
+      });
+
+      webWnd.loadUrl(url);
+
+      webWnd.webContents.on('dom-ready', () => {
+        webWnd.capturePage(function (thumbnail) {
+          var tempPath = app.getPath('temp');
+          var filenamifyUrl = require('filenamify-url');
+          var rm = require('rimraf');
+          var fileName = filenamifyUrl(url);
+          webWnd.webContents.savePage(path.join(tempPath, fileName), 'MHTML', function(err) {
+            if (err) {
+              reject(err);
+            } else {
+              var archive = fs.readFileSync(path.join(tempPath, fileName));
+              webWnd.destroy();
+              rm(path.join(tempPath, fileName), () => {
+                resolve({
+                  id: fileName,
+                  content_type: 'application/x-mimearchive',
+                  preview: thumbnail.toDataUrl(),
+                  data: archive
+                });
+              });
+            }
+          });
+        });
+      });
+    });
+
+    return promise;
   };
 
 })();
