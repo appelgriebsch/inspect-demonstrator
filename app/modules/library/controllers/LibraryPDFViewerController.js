@@ -93,7 +93,8 @@
           info.type = 'delete';
           info.status = 'deleted';
           info.icon = 'delete';
-          info.description = `<i>${info.title}</i> has been deleted.`;
+          info.description = `Document <i>${info.title}</i> has been deleted.`;
+
           delete info._attachments;
           delete info.preview;
 
@@ -120,7 +121,8 @@
           var info = angular.copy(this.document);
           info.icon = 'share';
           info.type = 'export';
-          info.description = `<i>${info.title}</i> exported successfully.`;
+          info.description = `Document <i>${info.title}</i> exported successfully.`;
+
           delete info._attachments;
           delete info.preview;
 

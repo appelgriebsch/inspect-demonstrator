@@ -46,12 +46,15 @@
 
               this.items.push(result);
               p.push($scope.writeLog('info', info));
+            }).catch((error) => {
+              $scope.setError(error);
             });
           });
 
           return Promise.all(p);
 
-        }).then(() => {
+        }).then((results) => {
+          $scope.notify('Import finished successfully', `${results.length} documents have been imported successfully.`);          
           $scope.setReady();
         }).catch((err) => {
           $scope.setError(err);
@@ -87,7 +90,8 @@
 
           return Promise.all(p);
 
-        }).then(() => {
+        }).then((results) => {
+          $scope.notify('Export finished successfully', `${results.length} documents have been exported successfully.`);
           $scope.setReady();
         }).catch((err) => {
           $scope.setError(err);
