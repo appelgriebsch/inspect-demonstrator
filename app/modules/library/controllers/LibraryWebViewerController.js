@@ -12,24 +12,22 @@
     this.sidebarOpened = false;
 
     webViewer.addEventListener('load-commit', (evt) => {
-      if (evt.isMainFrame) {
-        evt.preventDefault();
-      }
+      evt.preventDefault();
+      evt.stopPropagation();
     });
 
     this.initialize = function() {
 
       var ps = [LibraryDataService.initialize()];
 
-      $scope.setBusy(this.statusMessage);
+      $scope.setBusy('Loading Web Site...');
 
       Promise.all(ps).then(() => {
         return LibraryDataService.item(docID);
       }).then((result) => {
         var archive = result._attachments[result.id] || undefined;
         if (archive) {
-          var fileName = path.join(app.getPath('temp'), `${result.id}.mhtml`);
-          fs.writeFileSync(fileName, archive.data);
+          var fileName = DocumentSharingService.requestTemporaryFile(result.id, archive);
           webViewer.src = `file://${fileName}`;
         }
         result.custom_tags = result.custom_tags || [];
@@ -81,7 +79,7 @@
             details: details
           };
 
-          ActivityService.addWarning(info).then(() => {
+          $scope.writeLog('warning', info).then(() => {
             $state.go('^.view');
           });
 
@@ -91,16 +89,13 @@
 
     $scope.$on('export-document', (event, args) => {
 
-      var targetPath = dialog.showOpenDialog(app.getMainWindow(), {
-        title: 'Please select destination folder:',
-        defaultPath: app.getPath('home'),
-        properties: ['openDirectory', 'createDirectory']
-      });
+      var targetPath = DocumentSharingService.requestFolder();
 
       if (targetPath !== undefined) {
-        this.isBusy = true;
-        this.statusMessage = 'Exporting Document...';
-        DocumentSharingService.export([this.document], targetPath[0]).then((result) => {
+
+        $scope.setBusy('Exporting Document...');
+
+        DocumentSharingService.export([this.document], targetPath).then((result) => {
 
           var details = angular.copy(this.document);
           delete details._attachments;
@@ -115,7 +110,7 @@
           };
 
           $scope.setReady(false);
-          return ActivityService.addInfo(info);
+          return $scope.writeLog('info', info);
         });
       }
     });

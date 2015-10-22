@@ -10,8 +10,18 @@
 
     var fs = require('fs');
     var path = require('path');
+
+    var uuid = require('uuid').v1();
+
     var asar = require('asar');
     var rm = require('rimraf');
+
+    var _requestTemporaryFile = function(id, attachment) {
+
+      var fileName = path.join(app.getPath('temp'), `${id}.mhtml`);
+      fs.writeFileSync(fileName, attachment.data);
+      return fileName;
+    };
 
     var _requestFolder = function() {
 
@@ -146,7 +156,8 @@
       import: _import,
       export: _export,
       replicate: _replicate,
-      requestFolder: _requestFolder
+      requestFolder: _requestFolder,
+      requestTemporaryFile: _requestTemporaryFile
     };
   }
 
