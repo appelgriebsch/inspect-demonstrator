@@ -11,7 +11,7 @@
 
       var r = /^(ftp|http|https):\/\/[^ "]+$/;
       return r.test(uri);
-    }
+    };
 
     var _captureImage = function(uri) {
 
@@ -54,8 +54,7 @@
         if (_isWebResource(url)) {
           app.snapshotWebSite(url).then((result) => {
             resolve(result);
-          })
-          .catch((err) => {
+          }).catch((err) => {
             reject(err);
           });
         } else {

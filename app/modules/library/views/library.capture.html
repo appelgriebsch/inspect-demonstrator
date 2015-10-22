@@ -1,10 +1,4 @@
 <div flex layout="column" layout-fill ng-init="ctl.initialize()">
-  <centered ng-if="ctl.isBusy">
-    <div layout="row" layout-align="space-around center">
-      <h3>{{ ctl.statusMessage }}</h3>
-      <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
-    </div>
-  </centered>
   <div layout="row">
     <md-input-container layout-fill>
       <label>Website URL</label>
@@ -28,15 +22,15 @@
       </div>
       <md-input-container>
         <label>Title</label>
-        <textarea ng-model="ctl.document.title" disabled></textarea>
+        <textarea ng-model="ctl.document.title" ng-disabled="ctl.document.title !== ''"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Description</label>
-        <textarea ng-model="ctl.document.description" disabled></textarea>
+        <textarea ng-model="ctl.document.description" ng-disabled="ctl.document.description !== ''"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Author</label>
-        <input ng-model="ctl.document.author" disabled></input>
+        <input ng-model="ctl.document.author" ng-disabled="ctl.document.author !== ''"></input>
       </md-input-container>
       <md-input-container>
         <label>Publication Date</label>

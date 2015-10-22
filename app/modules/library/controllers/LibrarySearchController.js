@@ -2,10 +2,12 @@
 
   'use strict';
 
-  function LibrarySearchController($scope, $state, $q, ActivityService, LibraryDataService) {
+  function LibrarySearchController($scope, $state, $q, LibraryDataService) {
 
     this.initialize = function() {
-      return ActivityService.initialize();
+
+      var init = [LibraryDataService.initialize()];
+      return Promise.all(init);
     };
   }
 

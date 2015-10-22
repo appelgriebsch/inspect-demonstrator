@@ -5,7 +5,7 @@
   function LibraryDataService(PouchDBService) {
 
     var db = PouchDBService.initialize('library');
-
+    
     var saveDoc = function(doc) {
 
       var promise = Promise.resolve(

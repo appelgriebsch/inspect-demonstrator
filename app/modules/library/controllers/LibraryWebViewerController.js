@@ -1,57 +1,34 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
-  function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService, DocumentSharingService) {
-
-    var remote = require('remote');
-    var app = remote.require('app');
-    var dialog = remote.require('dialog');
-
-    var path = require('path');
-    var fs = require('fs');
+  function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     var uuid = require('uuid').v1();
     var webViewer = document.getElementById('viewer');
     var docID = $stateParams.doc;
 
-    var setBusy = (msg) => {
-      $q.when(true).then(() => {
-        this.isBusy = true;
-        this.statusMessage = msg;
-      });
-    };
-
-    var setReady = () => {
-      $q.when(true).then(() => {
-        this.isBusy = false;
-        this.statusMessage = '';
-      });
-    };
-
     this.document;
-    this.action;
     this.sidebarOpened = false;
-    this.isBusy = true;
-    this.statusMessage = 'Loading Document...';
 
     this.initialize = function() {
 
-      var ps = [LibraryDataService.initialize(), ActivityService.initialize()];
+      var ps = [LibraryDataService.initialize()];
+
+      $scope.setBusy('Loading Web Site...');
 
       Promise.all(ps).then(() => {
         return LibraryDataService.item(docID);
       }).then((result) => {
         var archive = result._attachments[result.id] || undefined;
         if (archive) {
-          var fileName = path.join(app.getPath('temp'), `${result.id}.mhtml`);
-          fs.writeFileSync(fileName, archive.data);
+          var fileName = DocumentSharingService.requestTemporaryFile(result.id, archive);
           webViewer.src = `file://${fileName}`;
         }
         result.custom_tags = result.custom_tags || [];
         result.annotations = result.annotations || [];
         this.document = result;
-        setReady();
+        $scope.setReady(false);
       });
     };
 
@@ -86,52 +63,52 @@
 
         LibraryDataService.delete(this.document).then(() => {
 
-          var details = angular.copy(this.document);
-          details.status = 'deleted';
-          delete details._attachments;
-          delete details.preview;
+          var info = angular.copy(this.document);
+          info.type = 'delete';
+          info.status = 'deleted';
+          info.icon = 'delete';
+          info.description = `Document <i>${info.title}</i> has been deleted.`;
 
-          var info = {
-            type: 'delete',
-            id: details._id,
-            details: details
-          };
+          delete info._attachments;
+          delete info.preview;
 
-          ActivityService.addWarning(info).then(() => {
+          $scope.writeLog('warning', info).then(() => {
+            $scope.notify('Document deleted successfully', info.description);
             $state.go('^.view');
           });
 
+        }).catch((err) => {
+          $scope.setError(err);
         });
       });
     });
 
     $scope.$on('export-document', (event, args) => {
 
-      var targetPath = dialog.showOpenDialog(app.getMainWindow(), {
-        title: 'Please select destination folder:',
-        defaultPath: app.getPath('home'),
-        properties: ['openDirectory', 'createDirectory']
-      });
+      var targetPath = DocumentSharingService.requestFolder();
 
       if (targetPath !== undefined) {
-        this.isBusy = true;
-        this.statusMessage = 'Exporting Document...';
-        DocumentSharingService.export([this.document], targetPath[0]).then((result) => {
 
-          var details = angular.copy(this.document);
-          delete details._attachments;
-          delete details.preview;
+        $scope.setBusy('Exporting Document...');
 
-          angular.merge(details, result);
+        DocumentSharingService.export([this.document], targetPath).then((result) => {
 
-          var info = {
-            type: 'export',
-            id: details._id,
-            details: details
-          };
+          var info = angular.copy(this.document);
+          info.icon = 'share';
+          info.type = 'export';
+          info.description = `Document <i>${info.title}</i> exported successfully.`;
 
-          this.isBusy = false;
-          return ActivityService.addInfo(info);
+          delete info._attachments;
+          delete info.preview;
+
+          angular.merge(info, result);
+
+          $scope.writeLog('info', info).then(() => {
+            $scope.notify('Document exported successfully', info.description);
+            $scope.setReady(false);
+          });
+        }).catch((err) => {
+          $scope.setError(err);
         });
       }
     });
@@ -139,4 +116,4 @@
 
   module.exports = LibraryWebViewerController;
 
-})();
+})(global.angular);

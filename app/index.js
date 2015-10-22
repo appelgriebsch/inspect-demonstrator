@@ -115,7 +115,7 @@
       webWnd.loadUrl(url);
 
       webWnd.webContents.on('dom-ready', () => {
-        webWnd.capturePage(function (thumbnail) {
+        webWnd.capturePage(function(thumbnail) {
           var tempPath = app.getPath('temp');
           var filenamifyUrl = require('filenamify-url');
           var rm = require('rimraf');

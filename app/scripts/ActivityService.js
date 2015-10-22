@@ -1,4 +1,4 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
@@ -16,6 +16,9 @@
       doc.createdAt = today.toISOString();
       doc.createdBy = sysCfg.user;
       doc.createdOn = sysCfg.host;
+
+      delete doc._id;
+      delete doc._rev;
 
       return doc;
     };
@@ -51,4 +54,4 @@
 
   module.exports = ActivityService;
 
-})();
+})(global.angular);

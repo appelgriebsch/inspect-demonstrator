@@ -1,34 +1,18 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
-  function LibraryCaptureController($scope, $state, $q, $notification, ActivityService, DocumentCaptureService, LibraryDataService) {
+  function LibraryCaptureController($scope, $state, $q, DocumentCaptureService, LibraryDataService) {
 
-    this.isBusy = false;
     this.document;
     this.url;
-    this.statusMessage;
 
     var uuid = require('uuid').v1();
     var webViewer = document.getElementById('viewer');
 
-    var setBusy = (msg) => {
-      $q.when(true).then(() => {
-        this.isBusy = true;
-        this.statusMessage = msg;
-      });
-    };
-
-    var setReady = () => {
-      $q.when(true).then(() => {
-        this.isBusy = false;
-        this.statusMessage = '';
-      });
-    };
-
     $scope.$on('submit', (event, args) => {
 
-      setBusy('Snapshotting Web Site...');
+      $scope.setBusy('Snapshotting Web Site...');
 
       DocumentCaptureService.captureWebSite(this.url).then((result) => {
 
@@ -54,38 +38,34 @@
           info.icon = 'public';
           info.description = `Web Site <i>${info.title}</i> captured successfully!`;
 
-          console.log(info);
-
-          ActivityService.addInfo(info).then(() => {
+          $scope.writeLog('info', info).then(() => {
+            $scope.notify('Document created successfully', info.description);
             this.document = null;
             this.url = null;
-            setReady();
+            $scope.setReady(true);
             $state.go('^.view');
-          }).catch((err) => {
-            console.log(err);
           });
         }).catch((err) => {
-          console.log(err);
+          $scope.setError(err);
         });
       }).catch((err) => {
-        console.log(err);
+        $scope.setError(err);
       });
     });
 
     $scope.$on('cancel', (event, args) => {
-
       $q.when(true).then(() => {
         this.document = null;
         this.url = null;
-        setReady();
+        $scope.setReady(false);
         $state.go('^.view');
       });
-
     });
 
     webViewer.addEventListener('load-commit', (evt) => {
       if (evt.isMainFrame) {
         $q.when(true).then(() => {
+          $scope.setBusy('Loading Web Site...');
           this.url = evt.url;
         });
       }
@@ -101,8 +81,9 @@
       doc.id = doc.title;
       doc.createdAt = today.toISOString();
       doc.type = 'website';
-      $q.when(true).then(() =>{
+      $q.when(true).then(() => {
         this.document = doc;
+        $scope.setReady(true);
       });
     });
 
@@ -125,7 +106,7 @@
     };
 
     this.initialize = function() {
-      var init = [$notification.requestPermission(), ActivityService.initialize(), LibraryDataService.initialize()];
+      var init = [LibraryDataService.initialize()];
       return Promise.all(init);
     };
 
@@ -135,8 +116,7 @@
         $q.when(true).then(() => {
           webViewer.src = this.url;
         });
-      }
-      else if ((evt.type) && (evt.type === 'click')) {
+      } else if ((evt.type) && (evt.type === 'click')) {
         $q.when(true).then(() => {
           webViewer.src = this.url;
         });
@@ -146,4 +126,4 @@
 
   module.exports = LibraryCaptureController;
 
-})();
+})(global.angular);

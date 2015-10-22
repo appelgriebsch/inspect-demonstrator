@@ -1,89 +1,29 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
-  function LibraryUploadController($scope, $state, $q, $http, $notification, ActivityService, FileUploadService) {
+  function LibraryUploadController($scope, $state, $q, DocumentCaptureService, LibraryDataService) {
 
-    var remote = require('remote');
-    var app = remote.require('app');
-    
     var fileSelector;
+    this.files = [];
 
-    var calcUnitSize = function(fileSize) {
+    $scope.$on('submit', (evt, args) => {
 
-      var result = {
-        unit: 'bytes',
-        number: fileSize
-      };
+      $scope.setBusy('Uploading Files...');
 
-      if (fileSize > (1024 * 1024)) {
-        result.number = Math.round(fileSize / (1024 * 1024));
-        result.unit = 'mb';
-      } else if (fileSize > 1024) {
-        result.number = Math.round(fileSize / 1024);
-        result.unit = 'kb';
-      }
-
-      return result;
-    };
-
-    $scope.$on('submit', () => {
-
-      this.isBusy = true;
-
-      FileUploadService.upload(this.files)
-        .then((uploadedFiles) => {
-
-          var info = uploadedFiles.map(function(uploadedFile) {
-            return {
-              file: 1,
-              size: uploadedFile.file.size
-            };
-          }).reduce(function(sum, elem) {
-            return {
-              files: sum.files + elem.file,
-              size: sum.size + elem.size
-            };
-          }, {
-            files: 0,
-            size: 0
-          });
-
-          info.type = 'upload';
-          info.details = uploadedFiles;
-          info.displaySize = calcUnitSize(info.size);
-
-          $notification('Files uploaded', {
-            body: `${info.files} file(s) (${info.displaySize.number} ${info.displaySize.unit}) have been uploaded.`,
-            delay: 2000
-          });
-
-          ActivityService.addInfo(info).then(() => {
-            $q.when(true).then(() => {
-              this.isBusy = false;
-              $state.go('^.view');
-            });
-          });
-        });
     });
 
     $scope.$on('cancel', () => {
-
       $q.when(true).then(() => {
         this.files = [];
-        this.isBusy = false;
+        $scope.setReady(false);
         $state.go('^.view');
       });
-
     });
 
-    this.files = [];
-    this.isBusy = false;
-
     this.initialize = function() {
-      $notification.requestPermission().then(() => {
-        return ActivityService.initialize();
-      });
+      var init = [LibraryDataService.initialize()];
+      return Promise.all(init);
     };
 
     this.selectItem = function(item) {
@@ -136,22 +76,9 @@
         newRequests.push(uploadRequest);
         this.files.push(uploadRequest);
       }
-
-      newRequests.forEach((request) => {
-        app.pdfViewerService().preview({
-          id: request.name,
-          path: request.path
-        }).then((result) => {
-          $q.when(true).then(() => {
-            angular.merge(request, result);
-            request.status = 'ready';
-            request.type = 'document';
-          });
-        });
-      });
     };
   }
 
   module.exports = LibraryUploadController;
 
-})();
+})(global.angular);

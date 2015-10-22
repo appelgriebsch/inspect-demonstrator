@@ -1,4 +1,4 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
@@ -27,21 +27,12 @@
               }
             }
           });
-
       });
 
-    var ActivityDataService = require('./services/ActivityDataService.js');
-    var ActivityService = require('./services/ActivityService.js');
-
     var ActivitiesViewController = require('./controllers/ActivitiesViewController');
-
-    angular.module('inspectApp').service('ActivityDataService', ['PouchDBService', ActivityDataService]);
-    angular.module('inspectApp').service('ActivityService', ['ActivityDataService', ActivityService]);
-
-    angular.module('inspectApp').controller('ActivitiesViewController', ['$state', '$log', '$q', 'ActivityDataService', ActivitiesViewController]);
-
+    angular.module('inspectApp').controller('ActivitiesViewController', ['$scope', '$state', '$q', 'ActivityDataService', ActivitiesViewController]);
   }
 
   module.exports = ActivityModule;
 
-})();
+})(global.angular);

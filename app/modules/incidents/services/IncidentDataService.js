@@ -6,6 +6,30 @@
 
     var db = PouchDBService.initialize('incidents');
 
+    var saveDoc = function(doc) {
+
+      var promise = Promise.resolve(
+        db.get(doc._id)
+        .then(function(result) {
+
+          if (result) {
+            doc._rev = result._rev;
+          }
+          return db.put(doc);
+        })
+        .catch(function(err) {
+
+          if (err.status == 404) {
+            return db.put(doc);
+          } else {
+            throw err;
+          }
+        })
+      );
+
+      return promise;
+    };
+
     return {
 
       initialize: function() {
@@ -21,21 +45,7 @@
           }
         };
 
-        db.get('_design/incidents')
-          .then(function(result) {
-            if (result) {
-              ddoc._rev = result._rev;
-            }
-            return db.put(ddoc);
-          })
-          .catch(function(err) {
-            if (err.status == 404) {
-              // view did not exists, save to create new one
-              return db.put(ddoc);
-            } else {
-              throw err;
-            }
-          });
+        return saveDoc(ddoc);
       },
 
       incidents: function() {

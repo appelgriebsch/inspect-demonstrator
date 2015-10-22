@@ -1,4 +1,4 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
@@ -34,14 +34,13 @@
       });
 
     var IncidentDataService = require('./services/IncidentDataService');
-
     var IncidentViewController = require('./controllers/IncidentViewController');
 
     angular.module('inspectApp').service('IncidentDataService', ['PouchDBService', IncidentDataService]);
-    angular.module('inspectApp').controller('IncidentViewController', ['$scope', '$q', 'ActivityService', 'IncidentDataService', IncidentViewController]);
+    angular.module('inspectApp').controller('IncidentViewController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentViewController]);
 
   }
 
   module.exports = IncidentModule;
 
-})();
+})(global.angular);
