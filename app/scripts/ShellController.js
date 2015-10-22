@@ -1,4 +1,4 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
@@ -34,7 +34,13 @@
 
     $scope.setError = (error) => {
       $scope.notify('An error occured!', error.message);
-      return $scope.writeLog('error', error);
+
+      var info = angular.copy(error);
+      info.type = 'error';
+      info.icon = 'error';
+      info.description = `Error: ${error.message}`;
+
+      return $scope.writeLog('error', info);
     };
 
     $scope.writeLog = (type, info) => {
@@ -72,4 +78,4 @@
 
   module.exports = ShellController;
 
-})();
+})(global.angular);
