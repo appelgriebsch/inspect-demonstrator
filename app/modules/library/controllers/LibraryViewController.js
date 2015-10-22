@@ -1,34 +1,14 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
-  function LibraryViewController($scope, $state, $q, LibraryDataService, DocumentSharingService, ActivityService) {
-
-    var remote = require('remote');
-    var app = remote.require('app');
-    var dialog = remote.require('dialog');
-
-    var setBusy = function(msg) {
-      $q.when(true).then(() => {
-        this.isBusy = true;
-        this.statusMessage = msg;
-      });
-    }.bind(this);
-
-    var setReady = function() {
-      $q.when(true).then(() => {
-        this.isBusy = false;
-        this.statusMessage = '';
-      });
-    }.bind(this);
+  function LibraryViewController($scope, $state, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     this.items = [];
-    this.isBusy = false;
-    this.statusMessage = '';
 
     this.initialize = function() {
 
-      var init = [ActivityService.initialize(), LibraryDataService.initialize()];
+      var init = [LibraryDataService.initialize()];
       Promise.all(init).then(() => {
         return LibraryDataService.library().then((result) => {
           $q.when(true).then(() => {
@@ -53,36 +33,30 @@
 
     $scope.$on('import-documents', () => {
 
-      var targetPath = dialog.showOpenDialog(app.getMainWindow(), {
-        title: 'Please select target folder:',
-        defaultPath: app.getPath('home'),
-        properties: ['openDirectory']
-      });
+      var targetPath = DocumentSharingService.requestFolder();
 
       if (targetPath !== undefined) {
 
-        setBusy('Importing Document(s)...');
+        $scope.setBusy('Importing Document(s)...');
 
-        DocumentSharingService.import(targetPath[0]).then((results) => {
+        DocumentSharingService.import(targetPath).then((results) => {
 
           results.forEach((result) => {
 
             LibraryDataService.save(result).then(() => {
 
-              var doc = angular.copy(result);
-              delete doc._attachments;
-              delete doc.preview;
+              var info = angular.copy(result);
+              info.type = 'import';
+              info.icon = 'import_export';
+              info.description = `<i>${result.title}</i> has been imported successfully.`;
 
-              var info = {
-                type: 'import',
-                id: doc._id,
-                details: doc
-              };
+              delete info._attachments;
+              delete info.preview;
 
-              return ActivityService.addInfo(info);
+              return $scope.writeLog('info', info);
             }).then(() => {
               this.items.push(result);
-              setReady();
+              $scope.setReady();
             });
           });
         });
@@ -91,42 +65,34 @@
 
     $scope.$on('export-documents', () => {
 
-      var targetPath = dialog.showOpenDialog(app.getMainWindow(), {
-        title: 'Please select destination folder:',
-        defaultPath: app.getPath('home'),
-        properties: ['openDirectory', 'createDirectory']
-      });
+      var targetPath = DocumentSharingService.requestFolder();
 
       if (targetPath !== undefined) {
 
-        setBusy('Exporting Document(s)...');
+        $scope.setBusy('Exporting Document(s)...');
 
-        DocumentSharingService.export(this.items, targetPath[0]).then((results) => {
+        DocumentSharingService.export(this.items, targetPath).then((results) => {
 
           var p = [];
 
           results.forEach((result) => {
 
-            var doc = angular.copy(result.doc);
-            doc.target = result.target;
+            var info = angular.copy(result.doc);
+            info.target = result.target;
+            info.type = 'export';
+            info.icon = 'import_export';
+            info.description = `<i>${info.title}</i> has been exported successfully.`;
 
-            delete doc._attachments;
-            delete doc.preview;
+            delete info._attachments;
+            delete info.preview;
 
-            var info = {
-              type: 'export',
-              id: doc._id,
-              details: doc
-            };
-
-            p.push(ActivityService.addInfo(info));
-
+            p.push($scope.writeLog('info', info));
           });
 
           return Promise.all(p);
 
         }).then(() => {
-          setReady();
+          $scope.setReady();
         });
       }
     });
@@ -134,4 +100,4 @@
 
   module.exports = LibraryViewController;
 
-})();
+})(global.angular);

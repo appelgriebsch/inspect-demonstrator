@@ -6,11 +6,23 @@
 
     var remote = require('remote');
     var app = remote.require('app');
+    var dialog = remote.require('dialog');
 
     var fs = require('fs');
     var path = require('path');
     var asar = require('asar');
     var rm = require('rimraf');
+
+    var _requestFolder = function() {
+
+      var targetPath = dialog.showOpenDialog(app.getMainWindow(), {
+        title: 'Please select destination folder:',
+        defaultPath: app.getPath('home'),
+        properties: ['openDirectory', 'createDirectory']
+      });
+
+      return targetPath[0];
+    };
 
     var _import = function(targetFolder) {
 
@@ -133,7 +145,8 @@
     return {
       import: _import,
       export: _export,
-      replicate: _replicate
+      replicate: _replicate,
+      requestFolder: _requestFolder
     };
   }
 

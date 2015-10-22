@@ -1,67 +1,65 @@
-(function() {
+(function(angular, PDFJS) {
 
   'use strict';
 
-  function LibraryPDFViewerController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService, DocumentSharingService) {
-
-    var remote = require('remote');
-    var app = remote.require('app');
-    var dialog = remote.require('dialog');
+  function LibraryPDFViewerController($scope, $state, $stateParams, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     var docID = $stateParams.doc;
 
     this.document;
     this.pdfData;
     this.sidebarOpened = false;
-    this.isBusy = true;
-    this.statusMessage = 'Loading Document...';
 
     this.initialize = function() {
 
-      $q.when(LibraryDataService.initialize())
-        .then(() => {
-          $q.when(LibraryDataService.item(docID))
-            .then((result) => {
+      var init = [LibraryDataService.initialize()];
 
-              if (result._attachments) {
-                this.pdfData = result._attachments[result.name].data;
-              }
+      $scope.setBusy('Loading Document...');
 
-              var container = document.getElementById('pdfViewerContainer');
+      Promise.all(init).then(() => {
+        return LibraryDataService.item(docID);
+      }).then((result) => {
 
-              // (Optionally) enable hyperlinks within PDF files.
-              var pdfLinkService = new PDFJS.PDFLinkService();
+        if (result._attachments) {
+          this.pdfData = result._attachments[result.name].data;
+        }
 
-              var pdfViewer = new PDFJS.PDFViewer({
-                container: container,
-                linkService: pdfLinkService,
-                // We can enable text/annotations layers, if needed
-                textLayerFactory: new PDFJS.DefaultTextLayerFactory(),
-                annotationsLayerFactory: new PDFJS.DefaultAnnotationsLayerFactory()
-              });
+        var container = document.getElementById('pdfViewerContainer');
 
-              pdfLinkService.setViewer(pdfViewer);
+        // (Optionally) enable hyperlinks within PDF files.
+        var pdfLinkService = new PDFJS.PDFLinkService();
 
-              container.addEventListener('pagesinit', function () {
-              // We can use pdfViewer now, e.g. let's change default scale.
-                pdfViewer.currentScaleValue = 'page-width';
-              });
-
-              // Loading document.
-              PDFJS.getDocument({ data: this.pdfData }).then(function (pdfDocument) {
-                // Document loaded, specifying document for the viewer and
-                // the (optional) linkService.
-                pdfViewer.setDocument(pdfDocument);
-                pdfLinkService.setDocument(pdfDocument, null);
-              });
-
-              result.custom_tags = result.custom_tags || [];
-              result.annotations = result.annotations || [];
-
-              this.document = result;
-              this.isBusy = false;
-            });
+        var pdfViewer = new PDFJS.PDFViewer({
+          container: container,
+          linkService: pdfLinkService,
+          // We can enable text/annotations layers, if needed
+          textLayerFactory: new PDFJS.DefaultTextLayerFactory(),
+          annotationsLayerFactory: new PDFJS.DefaultAnnotationsLayerFactory()
         });
+
+        pdfLinkService.setViewer(pdfViewer);
+
+        container.addEventListener('pagesinit', function() {
+          // We can use pdfViewer now, e.g. let's change default scale.
+          pdfViewer.currentScaleValue = 'page-width';
+        });
+
+        // Loading document.
+        PDFJS.getDocument({
+          data: this.pdfData
+        }).then(function(pdfDocument) {
+          // Document loaded, specifying document for the viewer and
+          // the (optional) linkService.
+          pdfViewer.setDocument(pdfDocument);
+          pdfLinkService.setDocument(pdfDocument, null);
+        });
+
+        result.custom_tags = result.custom_tags || [];
+        result.annotations = result.annotations || [];
+
+        this.document = result;
+        $scope.setReady(false);
+      });
     };
 
     this.openSidebar = function() {
@@ -89,17 +87,16 @@
       $mdDialog.show(confirm).then(() => {
         LibraryDataService.delete(this.document).then(() => {
 
-          var details = angular.copy(this.document);
-          details.status = 'deleted';
-          delete details._attachments;
-          delete details.preview;
+          var info = angular.copy(this.document);
+          info.type = 'delete';
+          info.status = 'deleted';
+          info.icon = 'delete';
+          info.description = `<i>${info.title}</i> has been deleted.`;
+          delete info._attachments;
+          delete info.preview;
 
-          var info = {
-            type: 'delete',
-            id: details._id,
-            details: details
-          };
-          ActivityService.addWarning(info).then(() => {
+          $scope.writeLog('warning', info).then(() => {
+            $scope.notify('Document deleted successfully', info.description);
             $state.go('^.view');
           });
         });
@@ -108,31 +105,27 @@
 
     $scope.$on('export-document', (event, args) => {
 
-      var targetPath = dialog.showOpenDialog(app.getMainWindow(), {
-        title: 'Please select destination folder:',
-        defaultPath: app.getPath('home'),
-        properties: ['openDirectory', 'createDirectory']
-      });
+      var targetPath = DocumentSharingService.requestFolder();
 
       if (targetPath !== undefined) {
-        this.isBusy = true;
-        this.statusMessage = 'Exporting Document...';
-        DocumentSharingService.export([this.document], targetPath[0]).then((result) => {
 
-          var details = angular.copy(this.document);
-          delete details._attachments;
-          delete details.preview;
+        $scope.setBusy('Exporting Document...');
 
-          angular.merge(details, result);
+        DocumentSharingService.export([this.document], targetPath).then((result) => {
 
-          var info = {
-            type: 'export',
-            id: details._id,
-            details: details
-          };
+          var info = angular.copy(this.document);
+          info.icon = 'export';
+          info.type = 'export';
+          info.description = `<i>${info.title}</i> exported successfully.`;
+          delete info._attachments;
+          delete info.preview;
 
-          this.isBusy = false;
-          return ActivityService.addInfo(info);
+          angular.merge(info, result);
+
+          $scope.writeLog('info', info).then(() => {
+            $scope.notify('Document exported successfully', info.description);
+            $scope.setReady(false);
+          });
         });
       }
     });
@@ -140,4 +133,4 @@
 
   module.exports = LibraryPDFViewerController;
 
-})();
+})(global.angular, global.PDFJS);

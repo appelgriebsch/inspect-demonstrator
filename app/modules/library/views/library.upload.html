@@ -1,10 +1,4 @@
-<div layout-fill layout="column" ng-init="ctl.initialize()">
-  <centered ng-if="ctl.isBusy">
-    <div layout-align="space-around center" layout="row">
-      <h3>Uploading files...</h3>
-      <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
-    </div>
-  </centered>
+<div layout-fill layout="column" ng-init="ctl.initialize()">  
   <md-grid-list md-cols-gt-md="8" md-cols-md="2" md-cols-sm="1" md-gutter-gt-sm="6px" md-gutter="12px" md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="2" ng-class="{ 'selected': file.isSelected }" ng-click="ctl.selectItem(file)" ng-repeat="file in ctl.files">
       <md-progress-circular md-mode="indeterminate" ng-if="file.status === 'unknown'"></md-progress-circular>

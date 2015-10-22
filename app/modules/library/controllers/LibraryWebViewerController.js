@@ -1,43 +1,27 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
-  function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, ActivityService, LibraryDataService, DocumentSharingService) {
-
-    var remote = require('remote');
-    var app = remote.require('app');
-    var dialog = remote.require('dialog');
-
-    var path = require('path');
-    var fs = require('fs');
+  function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     var uuid = require('uuid').v1();
     var webViewer = document.getElementById('viewer');
     var docID = $stateParams.doc;
 
-    var setBusy = (msg) => {
-      $q.when(true).then(() => {
-        this.isBusy = true;
-        this.statusMessage = msg;
-      });
-    };
-
-    var setReady = () => {
-      $q.when(true).then(() => {
-        this.isBusy = false;
-        this.statusMessage = '';
-      });
-    };
-
     this.document;
-    this.action;
     this.sidebarOpened = false;
-    this.isBusy = true;
-    this.statusMessage = 'Loading Document...';
+
+    webViewer.addEventListener('load-commit', (evt) => {
+      if (evt.isMainFrame) {
+        evt.preventDefault();
+      }
+    });
 
     this.initialize = function() {
 
-      var ps = [LibraryDataService.initialize(), ActivityService.initialize()];
+      var ps = [LibraryDataService.initialize()];
+
+      $scope.setBusy(this.statusMessage);
 
       Promise.all(ps).then(() => {
         return LibraryDataService.item(docID);
@@ -51,7 +35,7 @@
         result.custom_tags = result.custom_tags || [];
         result.annotations = result.annotations || [];
         this.document = result;
-        setReady();
+        $scope.setReady(false);
       });
     };
 
@@ -130,7 +114,7 @@
             details: details
           };
 
-          this.isBusy = false;
+          $scope.setReady(false);
           return ActivityService.addInfo(info);
         });
       }
@@ -139,4 +123,4 @@
 
   module.exports = LibraryWebViewerController;
 
-})();
+})(global.angular);
