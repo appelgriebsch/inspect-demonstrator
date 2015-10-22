@@ -7,12 +7,12 @@
     var docID = $stateParams.doc;
 
     this.document;
-    this.pdfData;
     this.sidebarOpened = false;
 
     this.initialize = function() {
 
       var init = [LibraryDataService.initialize()];
+      var pdfData;
 
       $scope.setBusy('Loading Document...');
 
@@ -21,7 +21,7 @@
       }).then((result) => {
 
         if (result._attachments) {
-          this.pdfData = result._attachments[result.name].data;
+          pdfData = result._attachments[result.name].data;
         }
 
         var container = document.getElementById('pdfViewerContainer');
@@ -46,12 +46,14 @@
 
         // Loading document.
         PDFJS.getDocument({
-          data: this.pdfData
+          data: pdfData
         }).then(function(pdfDocument) {
           // Document loaded, specifying document for the viewer and
           // the (optional) linkService.
           pdfViewer.setDocument(pdfDocument);
           pdfLinkService.setDocument(pdfDocument, null);
+        }).catch((err) => {
+          $scope.setError(err);
         });
 
         result.custom_tags = result.custom_tags || [];
@@ -99,6 +101,8 @@
             $scope.notify('Document deleted successfully', info.description);
             $state.go('^.view');
           });
+        }).catch((err) => {
+          $scope.setError(err);
         });
       });
     });
@@ -114,7 +118,7 @@
         DocumentSharingService.export([this.document], targetPath).then((result) => {
 
           var info = angular.copy(this.document);
-          info.icon = 'export';
+          info.icon = 'share';
           info.type = 'export';
           info.description = `<i>${info.title}</i> exported successfully.`;
           delete info._attachments;
@@ -126,6 +130,8 @@
             $scope.notify('Document exported successfully', info.description);
             $scope.setReady(false);
           });
+        }).catch((err) => {
+          $scope.setError(err);
         });
       }
     });

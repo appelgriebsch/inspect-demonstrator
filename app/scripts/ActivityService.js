@@ -17,6 +17,9 @@
       doc.createdBy = sysCfg.user;
       doc.createdOn = sysCfg.host;
 
+      delete doc._id;
+      delete doc._rev;
+
       return doc;
     };
 

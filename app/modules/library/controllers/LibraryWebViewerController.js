@@ -11,11 +11,6 @@
     this.document;
     this.sidebarOpened = false;
 
-    webViewer.addEventListener('load-commit', (evt) => {
-      evt.preventDefault();
-      evt.stopPropagation();
-    });
-
     this.initialize = function() {
 
       var ps = [LibraryDataService.initialize()];
@@ -68,21 +63,22 @@
 
         LibraryDataService.delete(this.document).then(() => {
 
-          var details = angular.copy(this.document);
-          details.status = 'deleted';
-          delete details._attachments;
-          delete details.preview;
+          var info = angular.copy(this.document);
+          info.type = 'delete';
+          info.status = 'deleted';
+          info.icon = 'delete';
+          info.description = `Document <i>${info.title}</i> has been deleted.`;
 
-          var info = {
-            type: 'delete',
-            id: details._id,
-            details: details
-          };
+          delete info._attachments;
+          delete info.preview;
 
           $scope.writeLog('warning', info).then(() => {
+            $scope.notify('Document deleted successfully', info.description);
             $state.go('^.view');
           });
 
+        }).catch((err) => {
+          $scope.setError(err);
         });
       });
     });
@@ -97,20 +93,22 @@
 
         DocumentSharingService.export([this.document], targetPath).then((result) => {
 
-          var details = angular.copy(this.document);
-          delete details._attachments;
-          delete details.preview;
+          var info = angular.copy(this.document);
+          info.icon = 'share';
+          info.type = 'export';
+          info.description = `Document <i>${info.title}</i> exported successfully.`;
 
-          angular.merge(details, result);
+          delete info._attachments;
+          delete info.preview;
 
-          var info = {
-            type: 'export',
-            id: details._id,
-            details: details
-          };
+          angular.merge(info, result);
 
-          $scope.setReady(false);
-          return $scope.writeLog('info', info);
+          $scope.writeLog('info', info).then(() => {
+            $scope.notify('Document exported successfully', info.description);
+            $scope.setReady(false);
+          });
+        }).catch((err) => {
+          $scope.setError(err);
         });
       }
     });
