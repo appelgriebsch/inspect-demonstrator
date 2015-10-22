@@ -1,4 +1,4 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
@@ -31,26 +31,32 @@
         });
     })
     .run(['$rootScope', '$state', '$stateParams',
-        function($rootScope, $state, $stateParams) {
-          // It's very handy to add references to $state and $stateParams to the $rootScope
-          // so that you can access them from any scope within your applications.For example,
-          // <li ng-class="{ active: $state.includes('contacts.list') }"> will set the <li>
-          // to active whenever 'contacts.list' or one of its decendents is active.
-          $rootScope.$state = $state;
-          $rootScope.$stateParams = $stateParams;
-        }
-      ]);
+      function($rootScope, $state, $stateParams) {
+        // It's very handy to add references to $state and $stateParams to the $rootScope
+        // so that you can access them from any scope within your applications.For example,
+        // <li ng-class="{ active: $state.includes('contacts.list') }"> will set the <li>
+        // to active whenever 'contacts.list' or one of its decendents is active.
+        $rootScope.$state = $state;
+        $rootScope.$stateParams = $stateParams;
+      }
+    ]);
 
   var ShellController = require('./scripts/ShellController');
   var PouchDBService = require('./scripts/PouchDBService');
+  var ActivityDataService = require('./scripts/ActivityDataService.js');
+  var ActivityService = require('./scripts/ActivityService.js');
+
   var ModuleProvider = require('./scripts/ModuleProvider');
 
   // hint: has to initialize modules here, otherwise controller objects are not found :(
   ModuleProvider.loadModules();
 
-  angular.module('inspectApp').service('PouchDBService', [PouchDBService]);
   angular.module('inspectApp').provider('modules', [ModuleProvider]);
 
-  angular.module('inspectApp').controller('ShellController', ['$scope', '$log', '$q', 'modules', ShellController]);
+  angular.module('inspectApp').service('PouchDBService', [PouchDBService]);
+  angular.module('inspectApp').service('ActivityDataService', ['PouchDBService', ActivityDataService]);
+  angular.module('inspectApp').service('ActivityService', ['ActivityDataService', ActivityService]);
 
-})();
+  angular.module('inspectApp').controller('ShellController', ['$scope', '$log', '$q', '$notification', 'modules', 'ActivityService', ShellController]);
+
+})(global.angular);

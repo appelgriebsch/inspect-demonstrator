@@ -2,10 +2,11 @@
 
   'use strict';
 
-  function IncidentViewController($state, $q, ActivityService, IncidentDataService) {
+  function IncidentViewController($scope, $state, $q, IncidentDataService) {
 
     this.initialize = function() {
-      return IncidentDataService.initialize();
+      var init = [IncidentDataService.initialize()];
+      return Promise.all(init);
     };
   }
 

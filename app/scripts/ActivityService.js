@@ -1,4 +1,4 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
@@ -51,4 +51,4 @@
 
   module.exports = ActivityService;
 
-})();
+})(global.angular);
