@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function ShellController($scope, $log, $q, $notification, modulesProvider, ActivityService) {
+  function ShellController($scope, $log, $q, $notification, $mdToast, modulesProvider, ActivityService) {
 
     this.modules = [];
     this.isBusy = false;
@@ -26,10 +26,16 @@
     };
 
     $scope.notify = (title, message) => {
-      $notification(title, {
-        body: message,
-        delay: 2000
-      });
+
+      if (process.platform === 'win32') {
+        $mdToast.show(
+          $mdToast.simple().content(message).position('bottom right').hideDelay(2000));
+      } else {
+        $notification(title, {
+          body: message,
+          delay: 2000
+        });
+      }
     };
 
     $scope.setError = (error) => {
