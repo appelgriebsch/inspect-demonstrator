@@ -26,7 +26,7 @@
         .state('app', {
           url: '/app',
           abstract: true,
-          templateUrl: './templates/shell.html',
+          templateUrl: './shell/views/shell.html',
           controller: 'ShellController as shell'
         });
     })
@@ -41,12 +41,12 @@
       }
     ]);
 
-  var ShellController = require('./scripts/ShellController');
-  var PouchDBService = require('./scripts/PouchDBService');
-  var ActivityDataService = require('./scripts/ActivityDataService.js');
-  var ActivityService = require('./scripts/ActivityService.js');
+  var PouchDBService = require('./shell/services/PouchDBService');
+  var ActivityDataService = require('./shell/services/ActivityDataService');
+  var ActivityService = require('./shell/services/ActivityService');
 
   var ModuleProvider = require('./scripts/ModuleProvider');
+  var ShellController = require('./shell/controllers/ShellController');
 
   // hint: has to initialize modules here, otherwise controller objects are not found :(
   ModuleProvider.loadModules();

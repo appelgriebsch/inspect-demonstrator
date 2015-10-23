@@ -30,18 +30,14 @@
       return promise;
     };
 
-    var _capturePDF = function(uri) {
+    var _capturePDF = function(req) {
 
       var promise = new Promise((resolve, reject) => {
-
-        if (_isWebResource(uri)) {
-
-          $http.get(uri).then((result) => {
-            console.log(result);
-            resolve(result);
-          });
-        }
-
+        app.createPDFPreview(req.url).then((result) => {
+          resolve(result);
+        }).catch((err) => {
+          reject(err);
+        });
       });
 
       return promise;

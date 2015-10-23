@@ -67,15 +67,43 @@
       for (var i = 0; i < files.length; ++i) {
         var file = files[i];
         var uploadRequest = {
+          type: 'file',
           name: file.name,
-          path: file.path,
           mime: file.type,
           size: file.size,
-          status: 'unknown'
+          status: 'unknown',
+          url: `file:///${file.path}`
         };
         newRequests.push(uploadRequest);
         this.files.push(uploadRequest);
       }
+
+      var p = [];
+
+      newRequests.forEach((file) => {
+        p.push(DocumentCaptureService.capturePDF(file));
+      });
+
+      Promise.all(p).then((results) => {
+
+        console.log(results);
+
+        results.forEach((result) => {
+
+          var idx = this.files.findIndex((elem) => {
+            return (result.url === elem.url);
+          });
+
+          if (idx !== -1) {
+            var request = this.files[idx];
+            angular.merge(request, result);
+            request.title = request.title || request.name;
+            request.status = 'ready';
+          }
+        });
+      }).catch((err) => {
+        $scope.setError(err);
+      });
     };
   }
 

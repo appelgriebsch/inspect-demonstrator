@@ -38,7 +38,7 @@
                 controller: 'LibraryUploadController as ctl'
               },
               'actions@app': {
-                templateUrl: 'templates/shell.submit.html'
+                templateUrl: 'shell/views/shell.submit.html'
               }
             }
           })
@@ -50,7 +50,7 @@
                 controller: 'LibraryCaptureController as ctl'
               },
               'actions@app': {
-                templateUrl: 'templates/shell.submit.html'
+                templateUrl: 'shell/views/shell.submit.html'
               }
             }
           })

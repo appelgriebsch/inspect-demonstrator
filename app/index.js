@@ -30,10 +30,6 @@
     // deref the window
     // for multiple windows store them in an array
     mainWindow = null;
-
-    if (pdfViewerService) {
-      pdfViewerService.close();
-    }
   }
 
   // prevent window being GC'd
@@ -51,12 +47,10 @@
 
   app.on('ready', function() {
     mainWindow = createMainWindow();
-    pdfViewerService = new PDFViewer();
   });
 
   // initialize service finder module
   var ServiceFinder = require('node-servicefinder').ServiceFinder;
-  var PDFViewer = require('./modules/pdf-viewer/PDFViewerModule');
 
   var path = require('path');
   var os = require('os');
@@ -68,8 +62,6 @@
   const homeDir = app.getPath('home') + path.sep;
   const hostname = os.hostname();
   const username = (process.platform === 'win32') ? process.env.USERNAME : process.env.USER;
-
-  var pdfViewerService;
 
   app.serviceFinder = function(serviceName, protocol, subTypes, includeLocal) {
     return new ServiceFinder(serviceName, protocol, subTypes, includeLocal);
@@ -90,10 +82,6 @@
 
   app.getMainWindow = function() {
     return mainWindow;
-  };
-
-  app.pdfViewerService = function() {
-    return pdfViewerService;
   };
 
   app.snapshotWebSite = function(url) {
@@ -143,4 +131,39 @@
     return promise;
   };
 
+  var pdfAnalyzer = fs.readFileSync(path.join(__dirname, 'scripts', 'pdfanalyzer.js'));
+  var ipc = require('ipc');
+
+  app.createPDFPreview = function(url) {
+
+    var promise = new Promise((resolve, reject) => {
+
+      var pdfPreviewWnd = new BrowserWindow({
+        x: 0,
+        y: 0,
+        width: 1280,
+        height: 720,
+        resizable: false,
+        'skip-taskbar': true,
+        show: false,
+        'accept-first-mouse': false,
+        'enable-larger-than-screen': true
+      });
+
+      pdfPreviewWnd.loadUrl(`file://${__dirname}/templates/pdfanalyzer.html?pdf=${url}`);
+
+      ipc.on('analyze-pdf-result', (evt, result) => {
+        if (result.url === url) {
+          pdfPreviewWnd.destroy();
+          resolve(result);
+        }
+      });
+
+      pdfPreviewWnd.webContents.on('dom-ready', () => {
+        pdfPreviewWnd.webContents.executeJavaScript(pdfAnalyzer.toString());
+      });
+    });
+
+    return promise;
+  };
 })();

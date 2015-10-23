@@ -1,4 +1,4 @@
-<div layout-fill layout="column" ng-init="ctl.initialize()">  
+<div layout-fill layout="column" ng-init="ctl.initialize()">
   <md-grid-list md-cols-gt-md="8" md-cols-md="2" md-cols-sm="1" md-gutter-gt-sm="6px" md-gutter="12px" md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="2" ng-class="{ 'selected': file.isSelected }" ng-click="ctl.selectItem(file)" ng-repeat="file in ctl.files">
       <md-progress-circular md-mode="indeterminate" ng-if="file.status === 'unknown'"></md-progress-circular>
@@ -13,7 +13,7 @@
       </md-grid-tile-footer>
     </md-grid-tile>
     <md-grid-tile md-colspan="1" md-rowspan="2" layout-align="center center">
-      <input accept=".pdf, image/*" class="hidden" id="fileSelector" type="file"></input>
+      <input accept=".pdf, image/*" class="hidden" id="fileSelector" type="file" multiple="multiple"></input>
       <md-menu>
         <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
           <md-icon md-menu-origin>add_circle_outline</md-icon>
