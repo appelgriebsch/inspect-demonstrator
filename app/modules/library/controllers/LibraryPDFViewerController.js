@@ -21,7 +21,7 @@
       }).then((result) => {
 
         if (result._attachments) {
-          pdfData = result._attachments[result.name].data;
+          pdfData = result._attachments[result.title].data;
         }
 
         var container = document.getElementById('pdfViewerContainer');

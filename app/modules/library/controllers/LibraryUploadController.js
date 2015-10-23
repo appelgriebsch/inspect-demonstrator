@@ -10,7 +10,53 @@
     $scope.$on('submit', (evt, args) => {
 
       $scope.setBusy('Uploading Files...');
+      var p = [];
 
+      this.files.forEach((file) => {
+
+        var fp = DocumentCaptureService.requestFileData(file).then((data) => {
+
+          var attachments = file._attachments || {};
+          attachments[file.attachment.id] = {
+            content_type: file.attachment.content_type,
+            data: data
+          };
+
+          file._id = file.title;
+          file._attachments = attachments;
+
+          delete file.attachment;
+          delete file.path;
+          delete file.mime;
+          delete file.size;
+
+          return LibraryDataService.save(file).then((result) => {
+
+            var info = angular.copy(file);
+            delete info._attachments;
+            delete info.preview;
+
+            info._id = result.id;
+            info._rev = result.rev;
+            info.icon = 'file_upload';
+            info.description = `Document <i>${info.title}</i> uploaded successfully!`;
+
+            return $scope.writeLog('info', info);
+          });
+        }).catch((err) => {
+          $scope.setError(err);
+        });
+
+        p.push(fp);
+
+      });
+
+      Promise.all(p).then((results) => {
+        $scope.notify('Documents created successfully', `${results.length} documents have been uploaded.`);
+        this.files = [];
+        $scope.setReady(false);
+        $state.go('^.view');
+      });
     });
 
     $scope.$on('cancel', () => {
@@ -24,16 +70,6 @@
     this.initialize = function() {
       var init = [LibraryDataService.initialize()];
       return Promise.all(init);
-    };
-
-    this.selectItem = function(item) {
-
-      var idx = this.files.indexOf(item);
-      var selected = this.files[idx].isSelected;
-
-      $q.when(true).then(() => {
-        this.files[idx].isSelected = !selected;
-      });
     };
 
     this.showFileSelector = function() {
@@ -67,16 +103,18 @@
       for (var i = 0; i < files.length; ++i) {
         var file = files[i];
         var uploadRequest = {
-          type: 'file',
           name: file.name,
           mime: file.type,
           size: file.size,
           status: 'unknown',
+          path: file.path,
           url: `file:///${file.path}`
         };
         newRequests.push(uploadRequest);
         this.files.push(uploadRequest);
       }
+
+      $scope.setBusy('Analyzing files...');
 
       var p = [];
 
@@ -85,8 +123,6 @@
       });
 
       Promise.all(p).then((results) => {
-
-        console.log(results);
 
         results.forEach((result) => {
 
@@ -97,10 +133,12 @@
           if (idx !== -1) {
             var request = this.files[idx];
             angular.merge(request, result);
-            request.title = request.title || request.name;
             request.status = 'ready';
           }
         });
+
+        $scope.setReady(true);
+
       }).catch((err) => {
         $scope.setError(err);
       });

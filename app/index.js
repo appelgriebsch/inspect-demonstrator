@@ -84,6 +84,8 @@
     return mainWindow;
   };
 
+  var webAnalyzer = fs.readFileSync(path.join(__dirname, 'scripts', 'webanalyzer.js'));
+
   app.snapshotWebSite = function(url) {
 
     var promise = new Promise((resolve, reject) => {
@@ -154,7 +156,7 @@
 
       ipc.on('analyze-pdf-result', (evt, result) => {
         if (result.url === url) {
-          pdfPreviewWnd.destroy();
+          pdfPreviewWnd.destroy();          
           resolve(result);
         }
       });

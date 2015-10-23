@@ -1,7 +1,7 @@
 <div layout-fill layout="column" ng-init="ctl.initialize()">
   <md-grid-list md-cols-gt-md="8" md-cols-md="2" md-cols-sm="1" md-gutter-gt-sm="6px" md-gutter="12px" md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="2" ng-class="{ 'selected': file.isSelected }" ng-click="ctl.selectItem(file)" ng-repeat="file in ctl.files">
-      <md-progress-circular md-mode="indeterminate" ng-if="file.status === 'unknown'"></md-progress-circular>
+      <md-icon ng-if="file.status !== 'ready'" class="md-48">insert_drive_file</md-icon>
       <img class="pagePrev" ng-if="file.status === 'ready'" ng-src="{{ file.preview }}"></img>
       <md-grid-tile-footer ns-popover ns-popover-popup-delay="0.7" ns-popover-template="pdfMetadata" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-timeout="0.2" ns-popover-trigger="mouseenter">
         <h3>

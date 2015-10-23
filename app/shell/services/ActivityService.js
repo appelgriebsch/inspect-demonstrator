@@ -46,7 +46,7 @@
     this.addError = function(entry) {
 
       var doc = _prefill(entry);
-      doc.class = 'error';
+      doc.class = 'danger';
 
       return ActivityDataService.writeEntry(doc);
     };

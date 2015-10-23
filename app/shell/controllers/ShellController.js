@@ -57,7 +57,7 @@
         break;
 
       case 'error':
-        result = ActivityService.addWarning(info);
+        result = ActivityService.addError(info);
         break;
       }
 

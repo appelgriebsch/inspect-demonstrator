@@ -7,6 +7,9 @@
     var remote = require('remote');
     var app = remote.require('app');
 
+    var path = require('path');
+    var fs = require('fs');
+
     var _isWebResource = function(uri) {
 
       var r = /^(ftp|http|https):\/\/[^ "]+$/;
@@ -30,11 +33,44 @@
       return promise;
     };
 
+    var _requestFileData = function(uri) {
+
+      var promise = new Promise((resolve, reject) => {
+
+        if (_isWebResource(uri.url)) {
+          $http.get(uri.url).then((result) => {
+            resolve(result);
+          }).catch((err) => {
+            reject(err);
+          });
+        } else {
+          fs.readFile(uri.path, (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(data);
+            }
+          });
+        }
+      });
+
+      return promise;
+    };
+
     var _capturePDF = function(req) {
 
       var promise = new Promise((resolve, reject) => {
+
         app.createPDFPreview(req.url).then((result) => {
+
+          result.type = 'document';
+          result.title = result.title || path.basename(req.name, path.extname(req.name));
+          result.attachment = {
+            id: result.title,
+            content_type: req.mime
+          };
           resolve(result);
+
         }).catch((err) => {
           reject(err);
         });
@@ -65,7 +101,8 @@
 
       captureWebSite: _captureWebSite,
       capturePDF: _capturePDF,
-      captureImage: _captureImage
+      captureImage: _captureImage,
+      requestFileData: _requestFileData
     };
   }
 
