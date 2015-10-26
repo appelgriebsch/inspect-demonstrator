@@ -9,6 +9,8 @@
 
     var _doSearch = () => {
 
+      this.items = [];
+
       $scope.setBusy('Searching documents...');
 
       LibraryDataService.search(this.query).then((results) => {
