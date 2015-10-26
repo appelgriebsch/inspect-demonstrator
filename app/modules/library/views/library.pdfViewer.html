@@ -45,13 +45,24 @@
               </md-chips>
             </md-input-container>
           </md-tab>
-        <md-tab label="Outline">
-          <md-content class="md-padding">
-            Hello World
+        <md-tab label="Outline" ng-disabled="ctl.document.outline.length === 0">
+          <md-content class="md-padding tabContent">
+            <div ng-repeat="chapter in ctl.document.outline">
+              <h3>
+                <span>{{ chapter.title }}</span>
+                <span ng-if="chapter.items.length === 1">: {{ chapter.items[0].title }}</span>
+              </h3>
+              <div ng-if="chapter.items.length === 1" ng-repeat="subc in chapter.items[0].items">
+                <h4>{{ subc.title }}</h4>
+              </div>
+              <div ng-if="chapter.items.length > 1" ng-repeat="subc in chapter.items">
+                <h4>{{ subc.title }}</h4>
+              </div>
+            </div>
           </md-content>
         </md-tab>
-        <md-tab label="Annotations">
-          <md-content class="md-padding">
+        <md-tab label="Annotations" ng-disabled="ctl.document.annotations.length === 0">
+          <md-content class="md-padding tabContent">
             Page 1
           </md-content>
         </md-tab>

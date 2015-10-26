@@ -60,6 +60,7 @@
         result.annotations = result.annotations || [];
 
         this.document = result;
+        console.log(this.document);
         $scope.setReady(false);
       });
     };
