@@ -5,17 +5,26 @@
   function LibraryDataService(PouchDBService) {
 
     var db = PouchDBService.initialize('library');
-    
+
+    var buildSearchIndex = function() {
+
+      return db.search({
+        fields: ['title', 'description', 'author', 'subject', 'tags'],
+        build: true
+      });
+    };
+
     var saveDoc = function(doc) {
 
       var promise = Promise.resolve(
       db.get(doc._id)
         .then(function(result) {
 
-          if (result) {
+          if ((result) && (result.version !== doc.version)) {
             doc._rev = result._rev;
+            return db.put(doc);
           }
-          return db.put(doc);
+          return true;
         })
         .catch(function(err) {
 
@@ -37,6 +46,7 @@
 
         var documents = {
           _id: '_design/docs',
+          version: '0.1.0',
           views: {
             all: {
               map: function mapFun(doc) {
@@ -65,6 +75,7 @@
         };
         var websites = {
           _id: '_design/web',
+          version: '0.1.0',
           views: {
             all: {
               map: function mapFun(doc) {
@@ -93,6 +104,7 @@
         };
         var library = {
           _id: '_design/lib',
+          version: '0.1.0',
           views: {
             all: {
               map: function mapFun(doc) {
@@ -105,8 +117,9 @@
         var p1 = saveDoc(library);
         var p2 = saveDoc(websites);
         var p3 = saveDoc(documents);
+        var p4 = buildSearchIndex();
 
-        return Promise.all([p1, p2, p3]);
+        return Promise.all([p1, p2, p3, p4]);
       },
 
       library: function() {
@@ -129,6 +142,15 @@
 
       delete: function(doc) {
         return db.remove(doc);
+      },
+
+      search: function(query) {
+
+        return db.search({
+          query: query,
+          fields: ['title', 'description', 'author', 'subject', 'tags'],
+          include_docs: true
+        });
       }
     };
   }

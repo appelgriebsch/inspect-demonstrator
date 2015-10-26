@@ -12,10 +12,11 @@
         db.get(doc._id)
         .then(function(result) {
 
-          if (result) {
+          if ((result) && (result.version !== doc.version)) {
             doc._rev = result._rev;
+            return db.put(doc);
           }
-          return db.put(doc);
+          return true;
         })
         .catch(function(err) {
 
@@ -36,6 +37,7 @@
 
         var ddoc = {
           _id: '_design/audits',
+          version: '0.1.0',
           views: {
             all: {
               map: function mapFun(doc) {
