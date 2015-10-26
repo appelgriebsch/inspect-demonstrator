@@ -14,6 +14,9 @@
       }).then((result) => {
         $q.when(true).then(() => {
           result.rows.forEach((item) => {
+            if (Array.isArray(item.doc.author)) {
+              item.doc.author = item.doc.author.join(', ');
+            }
             this.items.push(item.doc);
           });
         });
@@ -54,7 +57,7 @@
           return Promise.all(p);
 
         }).then((results) => {
-          $scope.notify('Import finished successfully', `${results.length} documents have been imported successfully.`);          
+          $scope.notify('Import finished successfully', `${results.length} documents have been imported successfully.`);
           $scope.setReady();
         }).catch((err) => {
           $scope.setError(err);
