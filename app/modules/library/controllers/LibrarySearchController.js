@@ -1,4 +1,4 @@
-(function() {
+(function(angular) {
 
   'use strict';
 
@@ -29,6 +29,43 @@
       });
     };
 
+    $scope.$on('export-documents', () => {
+
+      var targetPath = DocumentSharingService.requestFolder();
+
+      if (targetPath !== undefined) {
+
+        $scope.setBusy('Exporting Document(s)...');
+
+        DocumentSharingService.export(this.items, targetPath).then((results) => {
+
+          var p = [];
+
+          results.forEach((result) => {
+
+            var info = angular.copy(result.doc);
+            info.target = result.target;
+            info.type = 'export';
+            info.icon = 'share';
+            info.description = `Document <i>${info.title}</i> has been exported successfully.`;
+
+            delete info._attachments;
+            delete info.preview;
+
+            p.push($scope.writeLog('info', info));
+          });
+
+          return Promise.all(p);
+
+        }).then((results) => {
+          $scope.notify('Export finished successfully', `${results.length} documents have been exported successfully.`);
+          $scope.setReady();
+        }).catch((err) => {
+          $scope.setError(err);
+        });
+      }
+    });
+
     this.initialize = function() {
 
       var init = [LibraryDataService.initialize()];
@@ -51,4 +88,4 @@
 
   module.exports = LibrarySearchController;
 
-})();
+})(global.angular);
