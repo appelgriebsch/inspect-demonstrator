@@ -64,7 +64,8 @@
         app.createPDFPreview(req.url).then((result) => {
 
           result.type = 'document';
-          result.title = result.title || path.basename(req.name, path.extname(req.name));
+          result.id = path.basename(req.name, path.extname(req.name));
+          result.title = result.title || result.id;
           result.attachment = {
             id: result.title,
             content_type: req.mime

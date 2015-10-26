@@ -40,7 +40,7 @@
   <div class="triangle"></div>
   <div class="ns-popover-tooltip">
     <div layout-fill layout="row" ng-if="file.author !== ''">
-      <h2>{{ file.author.join(' ') }}</h2>
+      <h2>{{ file.author.join(', ') }}</h2>
       <span flex></span>
       <small>{{ file.publicationDate | date: 'short' }}</small>
     </div>

@@ -46,7 +46,7 @@
                 publicationDate: date ? date.substr(0, 4) + '-' + date.substr(4, 2) + '-' + date.substr(6, 2) + 'T' + date.substr(8, 2) + ':' + date.substr(10, 2) + ':' + date.substr(12, 2) : null,
                 author: pdfMeta.Author ? pdfMeta.Author.split(/\s*,\s*/) : '',
                 title: pdfMeta.Title || '',
-                subject: pdfMeta.Subject || '',
+                description: pdfMeta.Subject || '',
                 tags: pdfMeta.Keywords ? pdfMeta.Keywords.split(/\s*,\s*/) : [],
                 outline: outline || [],
                 createdAt: today.toISOString(),

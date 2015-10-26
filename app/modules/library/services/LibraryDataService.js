@@ -9,7 +9,7 @@
     var buildSearchIndex = function() {
 
       return db.search({
-        fields: ['title', 'description', 'author', 'subject', 'tags'],
+        fields: ['title', 'description', 'author', 'custom_tags', 'tags'],
         build: true
       });
     };
