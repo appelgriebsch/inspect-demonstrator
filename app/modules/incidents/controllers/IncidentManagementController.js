@@ -4,6 +4,7 @@
 
   function IncidentManagementController($scope, $state, $stateParams, $q, IncidentDataService) {
 
+    var uuid = require('uuid').v1();
     var docID = $stateParams.doc;
     var terminalTypes = ['NFC', 'Contact'];
     var usageTypes = ['EMV', 'Magnetic Stripe'];
@@ -17,10 +18,23 @@
       Promise.all(init).then(() => {
         if (docID) {
           return IncidentDataService.get(docID);
+        } else {
+          return {
+            title: '',
+            terminal: '',
+            connectivity: 'offline',
+            usage: '',
+            customerVerification: ''
+          };
         }
       }).then((result) => {
-        console.log(result);
-        this.document = result.rows[0].doc;
+        $q.when(true).then(() => {
+          if (result.rows) {
+            this.document = result.rows[0].doc;
+          } else {
+            this.document = result;
+          }
+        });
       }).catch((err) => {
         $scope.setError(err);
       });
@@ -44,10 +58,21 @@
       });
     };
 
+    this.enableSave = function() {
+      $scope.setReady(true);
+    };
+
     $scope.$on('submit', (event, args) => {
-      
+
       $scope.setBusy('Saving incident data...');
 
+      this.document._id = uuid;
+
+      IncidentDataService.save(this.document).then((result) => {
+        console.log(result);
+        $scope.setReady(false);
+        $state.go('^.view');
+      });
     });
 
     $scope.$on('cancel', (event, args) => {

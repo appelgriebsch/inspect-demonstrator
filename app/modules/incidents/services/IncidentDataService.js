@@ -62,6 +62,14 @@
 
       get: function(docID) {
         return db.get(docID);
+      },
+
+      save: function(doc) {
+        return saveDoc(doc);
+      },
+
+      delete: function(doc) {
+        return db.remove(doc);
       }
     };
   }

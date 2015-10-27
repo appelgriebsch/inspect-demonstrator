@@ -1,5 +1,9 @@
 <div layout="column" layout-align="space-between start" ng-init="ctl.initialize()" ng-cloak>
-  <form id="emv" flex layout="column" layout-fill layout-padding ng-submit="ctl.save()">
+  <form id="emv" flex layout="column" layout-fill layout-padding>
+    <md-input-container flex>
+      <label>Title</label>
+      <input type="text" ng-model="ctl.document.title" required="required"></input>
+    </md-input-container>
     <md-input-container flex>
       <label>Terminal Type</label>
       <md-select ng-model="ctl.document.terminal" autofocus="autofocus" required="required">
@@ -26,7 +30,7 @@
     </md-input-container>
     <md-input-container flex>
       <label>Customer Verification</label>
-      <md-select ng-model="ctl.document.customerVerification" required="required">
+      <md-select ng-model="ctl.document.customerVerification" required="required" ng-change="ctl.enableSave()">
           <md-option ng-repeat="verification in ctl.verificationTypes()" value="{{ verification }}">
             {{ verification }}
           </md-option>
