@@ -1,8 +1,8 @@
 <div layout="column" layout-align="space-between start" ng-init="ctl.initialize()" ng-cloak>
-  <form id="emv" flex layout="column" layout-fill layout-padding>
+  <form id="emv" flex layout="column" layout-fill layout-padding ng-submit="ctl.save()">
     <md-input-container flex>
       <label>Terminal Type</label>
-      <md-select ng-model="ctl.document.terminal">
+      <md-select ng-model="ctl.document.terminal" autofocus="autofocus" required="required">
         <md-option ng-repeat="termType in ctl.terminalTypes()" value="{{ termType }}">
           {{ termType }}
         </md-option>
@@ -11,17 +11,26 @@
     <span flex></span>
     <md-input-container flex>
       <label class="md-no-float">Connectivity Status</label>
-      <md-switch ng-model="ctl.connectivity" ng-change="ctl.toggleConnectivity()">
+      <md-switch ng-model="ctl.connectivity" ng-change="ctl.toggleConnectivity()" required="required">
         {{ ctl.document.connectivity }}
       </md-switch>
     </md-input-container>
-    <md-input-container flex ng-if="ctl.document.terminal === 'Contact' &amp;&amp; ctl.document.connectivity === 'online'">
+    <md-input-container flex ng-if="ctl.document.terminal === 'Contact' &amp;&amp; ctl.document.connectivity === 'online'"
+                             ng-required="ctl.document.terminal === 'Contact' &amp;&amp; ctl.document.connectivity === 'online'">
       <label>Usage Type</label>
       <md-select ng-model="ctl.document.usage">
         <md-option ng-repeat="useType in ctl.usageTypes()" value="{{ useType }}">
           {{ useType }}
         </md-option>
-      </md-select>      
+      </md-select>
+    </md-input-container>
+    <md-input-container flex>
+      <label>Customer Verification</label>
+      <md-select ng-model="ctl.document.customerVerification" required="required">
+          <md-option ng-repeat="verification in ctl.verificationTypes()" value="{{ verification }}">
+            {{ verification }}
+          </md-option>
+      </md-select>
     </md-input-container>
   </form>
 </div>

@@ -36,6 +36,9 @@
               'content': {
                 templateUrl: `${moduleConfig.path}/views/incidents.mgmt.html`,
                 controller: 'IncidentManagementController as ctl'
+              },
+              'actions@app': {
+                templateUrl: 'shell/views/shell.submit.html'
               }
             }
           })
