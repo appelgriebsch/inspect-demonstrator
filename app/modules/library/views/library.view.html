@@ -1,10 +1,4 @@
 <div flex layout-fill layout="column" ng-init="ctl.initialize()">
-  <centered ng-if="ctl.isBusy">
-    <div layout="row" layout-align="space-around center">
-      <h3>{{ ctl.statusMessage }}</h3>
-      <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
-    </div>
-  </centered>
   <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1"
                 md-gutter-gt-sm="6px" md-gutter-gt-md="12px"
                 md-row-height-gt-md="1:1" md-row-height="4:3">

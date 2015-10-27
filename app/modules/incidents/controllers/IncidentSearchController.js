@@ -33,6 +33,14 @@
       return Promise.all(init);
     };
 
+    this.search = (evt) => {
+      if ((evt.type) && (evt.type === 'submit')) {
+        evt.preventDefault();
+        $q.when(true).then(() => {
+          _doSearch();
+        });
+      }
+    };
   }
 
   module.exports = IncidentSearchController;
