@@ -1,3 +1,12 @@
 <div layout="column" layout-align="space-between start" ng-init="ctl.initialize()" ng-cloak>
-
+  <form id="emv" flex layout="row" layout-fill layout-padding>
+    <md-input-container flex>
+      <label>Terminal Type</label>
+      <md-select ng-model="ctl.document.terminal">
+        <md-option ng-repeat="termType in ctl.terminalTypes()" value="{{ termType }}">
+          {{ termType }}
+        </md-option>
+      </md-select>
+    </md-input-container>    
+  </form>
 </div>
