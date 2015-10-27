@@ -31,7 +31,7 @@
             }
           })
           .state(`${moduleConfig.state}.edit`, {
-            url: '/edit',
+            url: '/edit/:doc',
             views: {
               'content': {
                 templateUrl: `${moduleConfig.path}/views/incidents.mgmt.html`,
@@ -57,7 +57,7 @@
 
     angular.module('inspectApp').service('IncidentDataService', ['PouchDBService', IncidentDataService]);
     angular.module('inspectApp').controller('IncidentViewController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentViewController]);
-    angular.module('inspectApp').controller('IncidentManagementController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentManagementController]);
+    angular.module('inspectApp').controller('IncidentManagementController', ['$scope', '$state', '$stateParams', '$q', 'IncidentDataService', IncidentManagementController]);
     angular.module('inspectApp').controller('IncidentSearchController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentSearchController]);
 
   }

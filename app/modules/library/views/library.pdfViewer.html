@@ -1,4 +1,4 @@
-<div layout="column" layout-fill ng-init="ctl.initialize()">
+<div layout="column" layout-fill ng-init="ctl.initialize()" ng-cloak>
   <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
     <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
       <md-icon>chevron_right</md-icon>
