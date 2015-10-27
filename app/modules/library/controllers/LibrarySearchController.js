@@ -76,11 +76,8 @@
 
     this.search = (evt) => {
 
-      if ((evt.keyCode) && (evt.keyCode == 13)) {
-        $q.when(true).then(() => {
-          _doSearch();
-        });
-      } else if ((evt.type) && (evt.type === 'click')) {
+      if ((evt.type) && (evt.type === 'submit')) {
+        evt.preventDefault();
         $q.when(true).then(() => {
           _doSearch();
         });

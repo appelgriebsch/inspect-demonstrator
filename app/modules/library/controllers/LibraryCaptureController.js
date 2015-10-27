@@ -5,7 +5,7 @@
   function LibraryCaptureController($scope, $state, $q, DocumentCaptureService, LibraryDataService) {
 
     this.document;
-    this.url;
+    this.url = 'http://';
 
     var uuid = require('uuid').v1();
     var webViewer = document.getElementById('viewer');
@@ -41,7 +41,7 @@
           $scope.writeLog('info', info).then(() => {
             $scope.notify('Document created successfully', info.description);
             this.document = null;
-            this.url = null;
+            this.url = 'http://';
             $scope.setReady(true);
             $state.go('^.view');
           });
@@ -56,7 +56,7 @@
     $scope.$on('cancel', (event, args) => {
       $q.when(true).then(() => {
         this.document = null;
-        this.url = null;
+        this.url = 'http://';
         $scope.setReady(false);
         $state.go('^.view');
       });
@@ -112,11 +112,8 @@
 
     this.loadUrl = (evt) => {
 
-      if ((evt.keyCode) && (evt.keyCode == 13)) {
-        $q.when(true).then(() => {
-          webViewer.src = this.url;
-        });
-      } else if ((evt.type) && (evt.type === 'click')) {
+      if ((evt.type) && (evt.type === 'submit')) {
+        evt.preventDefault();
         $q.when(true).then(() => {
           webViewer.src = this.url;
         });

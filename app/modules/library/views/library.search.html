@@ -1,14 +1,14 @@
 <div layout="column" layout-fill ng-init="ctl.initialize()">
-  <div flex layout="row" layout-fill layout-padding>
+  <form id="query" flex layout="row" layout-fill layout-padding ng-submit="ctl.search($event)">
     <md-input-container layout-fill>
       <label>Search Term</label>
-      <input ng-model="ctl.query" ng-keypress="ctl.search($event)" autofocus="autofocus">
+      <input ng-model="ctl.query" autofocus="autofocus" required="required">
     </md-input-container>
     <span flex></span>
-    <md-button class="md-icon-button" ng-click="ctl.search($event)">
-      <md-icon>send</md-icon>
+    <md-button class="md-icon-button" type="submit">
+      <md-icon>search</md-icon>
     </md-button>
-  </div>
+  </form>
   <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1"
                 md-gutter-gt-sm="6px" md-gutter-gt-md="12px"
                 md-row-height-gt-md="1:1" md-row-height="4:3">
