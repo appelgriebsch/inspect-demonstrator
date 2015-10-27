@@ -13,7 +13,7 @@
       </md-grid-tile-footer>
     </md-grid-tile>
     <md-grid-tile md-colspan="1" md-rowspan="2" layout-align="center center">
-      <input accept=".pdf, image/*" class="hidden" id="fileSelector" type="file" multiple="multiple"></input>
+      <input accept=".pdf" class="hidden" id="fileSelector" type="file" multiple="multiple"></input>
       <md-menu>
         <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
           <md-icon md-menu-origin>add_circle_outline</md-icon>
@@ -22,19 +22,22 @@
           <md-menu-item>
             <md-button ng-click="ctl.showFileSelector($event)">
               <md-icon md-menu-align-target>insert_drive_file</md-icon>
-              Upload PDF File
+              Upload PDF Files
             </md-button>
           </md-menu-item>
-          <md-menu-item>
+          <!--md-menu-item>
             <md-button ng-click="ctl.downloadFile($event)">
               <md-icon md-menu-align-target>public</md-icon>
               Get PDF File from Internet
             </md-button>
-          </md-menu-item>
+          </md-menu-item-->
         </md-menu-content>
       </md-menu>
     </md-grid-tile>
   </md-grid-list>
+  <md-whiteframe id="dropZone" layout layout-align="center center">
+    <span>Drop your files and/or folders here...</span>
+  </md-whiteframe>
 </div>
 <script id="pdfMetadata" type="text/ng-template">
   <div class="triangle"></div>

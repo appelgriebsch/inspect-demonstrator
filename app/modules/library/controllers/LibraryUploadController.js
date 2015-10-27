@@ -4,7 +4,7 @@
 
   function LibraryUploadController($scope, $state, $q, DocumentCaptureService, LibraryDataService) {
 
-    var fileSelector;
+    var dropZone, fileSelector;
     this.files = [];
 
     $scope.$on('submit', (evt, args) => {
@@ -69,6 +69,28 @@
 
     this.initialize = function() {
       var init = [LibraryDataService.initialize()];
+
+      dropZone = document.querySelector('#dropZone');
+
+      dropZone.ondragover = (e) => {
+        e.dataTransfer.dropEffect = 'copy';
+        return false;
+      };
+
+      dropZone.ondragleave = dropZone.ondragend = function() {
+        return false;
+      };
+
+      dropZone.ondrop = (e) => {
+        e.preventDefault();
+        var files = e.dataTransfer.files;
+        console.log('dropped:', files);
+        $q.when(true).then(() => {
+          this.addFiles(files);
+        });
+        return false;
+      };
+
       return Promise.all(init);
     };
 
