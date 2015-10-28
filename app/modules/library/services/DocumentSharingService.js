@@ -103,7 +103,7 @@
 
           var name = doc.id || doc._id;
 
-          var capturePath = path.join(tempPath, name.substr(0, name.lastIndexOf('.')));
+          var capturePath = path.join(tempPath, name);
           var attachmentPath = path.join(capturePath, 'attachments');
 
           if (!fs.existsSync(capturePath)) fs.mkdirSync(capturePath);
