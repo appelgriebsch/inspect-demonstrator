@@ -1,10 +1,14 @@
 var grunt = require('grunt');
 var nconf = require('nconf');
+var path = require('path');
 
-nconf.file('build-env.json');
+nconf.use('file', {
+  file: path.join(__dirname, 'build-env.json')
+});
 
-var electron_disturl = nconf.get('electron:disturl');
-var electron_version = nconf.get('electron:version');
+var electron_cfg = nconf.get('electron');
+var electron_disturl = electron_cfg.disturl;
+var electron_version = electron_cfg.version;
 
 var app_name = nconf.get('app:name');
 var app_description = nconf.get('app:description');
@@ -26,46 +30,49 @@ grunt.initConfig({
       src: ['**', '!node_modules/**/*'],
       dest: 'build/osx/'
     },
-    win32Build: {
+    win64Build: {
       expand: true,
       cwd: 'app',
       src: ['**', '!node_modules/**/*'],
-      dest: 'build/win32/'
+      dest: 'build/win64/'
     },
-    linuxBuild: {
+    linux64Build: {
       expand: true,
       cwd: 'app',
       src: ['**', '!node_modules/**/*'],
-      dest: 'build/linux/'
+      dest: 'build/linux64/'
     }
   },
 
   'npm-install': {
     osxBuild: {
       options: {
-        cwd: 'build/osx',
+        cwd: path.join(__dirname, 'build/osx'),
         disturl: electron_disturl,
         distver: electron_version,
         target: 'darwin',
-        arch: 'x64'
+        arch: 'x64',
+        runtime: 'electron'
       }
     },
-    win32Build: {
+    win64Build: {
       options: {
-        cwd: 'build/win32',
+        cwd: path.join(__dirname, 'build/win64'),
         disturl: electron_disturl,
         distver: electron_version,
         target: 'win32',
-        arch: 'ia32'
+        arch: 'x64',
+        runtime: 'electron'
       }
     },
-    linuxBuild: {
+    linux64Build: {
       options: {
-        cwd: 'build/linux',
+        cwd: path.join(__dirname, 'build/linux64'),
         disturl: electron_disturl,
         distver: electron_version,
         target: 'linux',
-        arch: 'x64'
+        arch: 'x64',
+        runtime: 'electron'
       }
     }
   },
@@ -84,23 +91,23 @@ grunt.initConfig({
         asar: true
       }
     },
-    win32Build: {
+    win64Build: {
       options: {
         name: app_name,
-        dir: 'build/win32',
+        dir: 'build/win64',
         out: 'build',
         version: electron_version,
         platform: 'win32',
-        arch: 'ia32',
+        arch: 'x64',
         icon: app_icons.ico,
         prune: true,
         asar: true
       }
     },
-    linuxBuild: {
+    linux64Build: {
       options: {
         name: app_name,
-        dir: 'build/linux',
+        dir: 'build/linux64',
         out: 'build',
         version: electron_version,
         platform: 'linux',
@@ -202,8 +209,8 @@ grunt.initConfig({
         return dest + src;
       }
     },
-    win32: {
-      src: 'build/' + app_name + '-win32-ia32/',
+    win64: {
+      src: 'build/' + app_name + '-win32-x64/',
       dest: 'build/pkg/'
     }
   }
@@ -211,5 +218,6 @@ grunt.initConfig({
 });
 
 grunt.registerTask('osx', ['clean:build', 'copy:osxBuild', 'npm-install:osxBuild', 'electron:osxBuild', 'appdmg']);
-grunt.registerTask('win32', ['clean:build', 'copy:win32Build', 'npm-install:win32Build', 'electron:win32Build', 'electron-windows-installer']);
-grunt.registerTask('linux', ['clean:build', 'copy:linuxBuild', 'npm-install:linuxBuild', 'electron:linuxBuild', 'electron-redhat-installer', 'electron-debian-installer']);
+grunt.registerTask('win', ['clean:build', 'copy:win64Build', 'npm-install:win64Build', 'electron:win64Build', 'electron-windows-installer:win64']);
+grunt.registerTask('linux', ['clean:build', 'copy:linux64Build', 'npm-install:linux64Build', 'electron:linux64Build',
+                             'electron-redhat-installer:linux64', 'electron-debian-installer:linux64']);
