@@ -1,7 +1,7 @@
 {
   "name": "inspect-demonstrator",
   "productName": "inspect-demonstrator",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A demonstrator for the funded INSPECT project",
   "main": "index.js",
   "scripts": {
@@ -33,7 +33,7 @@
     "angular-timeline": "^1.2.1",
     "angular-ui-router": "^0.2.15",
     "asar": "^0.8.1",
-    "electron-debug": "^0.3.0",
+    "electron-debug": "^0.4.0",
     "filenamify-url": "^1.0.0",
     "geopouch": "^2.0.0",
     "jsonld": "^0.4.1",
@@ -43,7 +43,7 @@
     "node-servicefinder": "appelgriebsch/node-servicefinder",
     "ns-popover": "^0.6.8",
     "pdfjs-dist": "^1.2.32",
-    "pouchdb": "^5.0.0",
+    "pouchdb": "^5.1.0",
     "pouchdb-auth": "^1.0.5",
     "pouchdb-find": "^0.6.0",
     "pouchdb-quick-search": "^1.1.0",

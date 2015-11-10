@@ -32,6 +32,64 @@
     mainWindow = null;
   }
 
+  var handleStartupEvent = function() {
+
+    if (process.platform !== 'win32') {
+      return false;
+    }
+
+    var cp = require('child_process');
+    var path = require('path');
+    var updateDotExe = path.resolve(path.dirname(process.execPath), '..', 'update.exe');
+    var target = path.basename(process.execPath);
+
+    var squirrelCommand = process.argv[1];
+    switch (squirrelCommand) {
+      case '--squirrel-install':
+      case '--squirrel-updated':
+
+        // Optionally do things such as:
+        //
+        // - Install desktop and start menu shortcuts
+        // - Add your .exe to the PATH
+        // - Write to the registry for things like file associations and
+        //   explorer context menus
+
+        // create shortcuts
+        cp.spawnSync(updateDotExe, ["--createShortcut", target], {
+          detached: true
+        });
+
+        // Always quit when done
+        app.quit();
+        return true;
+
+      case '--squirrel-uninstall':
+        // Undo anything you did in the --squirrel-install and
+        // --squirrel-updated handlers
+
+        cp.spawnSync(updateDotExe, ["--removeShortcut", target], {
+          detached: true
+        });
+
+        // Always quit when done
+        app.quit();
+        return true;
+
+      case '--squirrel-obsolete':
+        // This is called on the outgoing version of your app before
+        // we update to the new version - it's the opposite of
+        // --squirrel-updated
+        app.quit();
+        return true;
+    }
+  };
+
+  // check if we are being called by insaller routine
+  if (handleStartupEvent()) {
+    return;
+  }
+
   // prevent window being GC'd
   var mainWindow;
 
