@@ -17,6 +17,27 @@
         </h3>
       </md-grid-tile-footer>
     </md-grid-tile>
+    <md-grid-tile md-colspan="1" md-rowspan="1" layout-align="center center">
+      <md-menu>
+        <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
+          <md-icon md-menu-origin>add_circle_outline</md-icon>
+        </md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ui-sref="^.upload" ui-sref-opts="{reload: true}">
+              <md-icon md-menu-align-target>insert_drive_file</md-icon>
+              Add local document...
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ui-sref="^.capture" ui-sref-opts="{reload: true}">
+              <md-icon md-menu-align-target>public</md-icon>
+              Add from Internet...
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
+    </md-grid-tile>
   </md-grid-list>
 </div>
 <script type="text/ng-template" id="itemMetadata">

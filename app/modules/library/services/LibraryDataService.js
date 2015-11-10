@@ -17,7 +17,7 @@
     var saveDoc = function(doc) {
 
       var promise = Promise.resolve(
-      db.get(doc._id)
+        db.get(doc._id)
         .then(function(result) {
 
           if ((result) && (result.version !== doc.version)) {
@@ -30,8 +30,7 @@
 
           if (err.status == 404) {
             return db.put(doc);
-          }
-          else {
+          } else {
             throw err;
           }
         })
@@ -46,19 +45,19 @@
 
         var documents = {
           _id: '_design/docs',
-          version: '0.1.0',
+          version: '1.0',
           views: {
             all: {
               map: function mapFun(doc) {
-                if (doc.type === 'document') {
+                if ((doc.meta) && (doc.meta['@type'] !== 'WebSite')) {
                   emit(doc.createdAt);
                 }
               }.toString()
             },
             byTag: {
               map: function mapFun(doc) {
-                if (doc.type === 'document') {
-                  doc.tags.forEach(function(elem) {
+                if ((doc.meta) && (doc.meta['@type'] !== 'WebSite')) {
+                  doc.meta.keywords.split(',').forEach(function(elem) {
                     emit(elem);
                   });
                 }
@@ -66,8 +65,8 @@
             },
             byAuthor: {
               map: function mapFun(doc) {
-                if (doc.type === 'document') {
-                  emit(doc.author);
+                if ((doc.meta) && (doc.meta['@type'] !== 'WebSite')) {
+                  emit(doc.meta.author);
                 }
               }.toString()
             }
@@ -75,19 +74,19 @@
         };
         var websites = {
           _id: '_design/web',
-          version: '0.1.0',
+          version: '1.0',
           views: {
             all: {
               map: function mapFun(doc) {
-                if (doc.type === 'website') {
+                if ((doc.meta) && (doc.meta['@type'] === 'WebSite')) {
                   emit(doc.createdAt);
                 }
               }.toString()
             },
             byTag: {
               map: function mapFun(doc) {
-                if (doc.type === 'website') {
-                  doc.tags.forEach(function(elem) {
+                if ((doc.meta) && (doc.meta['@type'] === 'WebSite')) {
+                  doc.meta.keywords.split(',').forEach(function(elem) {
                     emit(elem);
                   });
                 }
@@ -95,8 +94,8 @@
             },
             byAuthor: {
               map: function mapFun(doc) {
-                if (doc.type === 'website') {
-                  emit(doc.author);
+                if ((doc.meta['@type']) && (doc.meta['@type'] === 'WebSite')) {
+                  emit(doc.meta.author);
                 }
               }.toString()
             }
@@ -104,22 +103,121 @@
         };
         var library = {
           _id: '_design/lib',
-          version: '0.1.0',
+          version: '1.0',
           views: {
             all: {
               map: function mapFun(doc) {
-                emit(doc.createdAt);
+                if (doc.meta) {
+                  emit(doc.createdAt);
+                }
               }.toString()
             }
           }
         };
+        var templates = {
+          _id: '_design/templates',
+          version: '1.0',
+          book: {
+            '@context': 'http://schema.org',
+            '@type': 'Book',
+            about: '${subject}',                      // subject
+            alternativeHeadline: '${headline2}',
+            author: '${author}',
+            bookEdition: '${bookEdition}',
+            bookFormat: '${bookFormat}',
+            datePublished: '${publishDate}',
+            description: '${description}',
+            fileFormat: '${mimeType}',                 // mime type
+            headline: '${headline}',                   // title
+            isbn: '${isbn}',
+            keywords: '${tags}',                       // separated by comma
+            name: '${name}',
+            numberOfPages: '${noOfPages}',
+            publisher: '${publisher}',
+            thumbnailUrl: {
+              '@context': 'http://schema.org',
+              '@type': 'ImageObject',
+              caption: '${caption}',
+              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}'          // mime type
+            },
+            url: '${url}'                                   // origin of book
+          },
+          article: {
+            '@context': 'http://schema.org',
+            '@type': 'Article',
+            about: '${subject}',                      // subject
+            alternativeHeadline: '${headline2}',
+            author: '${author}',
+            datePublished: '${publishDate}',
+            description: '${description}',
+            fileFormat: '${mimeType}',                 // mime type
+            headline: '${headline}',                   // title
+            keywords: '${tags}',                       // separated by comma
+            name: '${name}',
+            publisher: '${publisher}',
+            thumbnailUrl: {
+              '@context': 'http://schema.org',
+              '@type': 'ImageObject',
+              caption: '${caption}',
+              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}'          // mime type
+            },
+            url: '${url}'                                   // origin of book
+          },
+          website: {
+            '@context': 'http://schema.org',
+            '@type': 'WebSite',
+            about: '${subject}',                      // subject
+            alternativeHeadline: '${headline2}',
+            author: '${author}',
+            datePublished: '${publishDate}',
+            description: '${description}',
+            fileFormat: '${mimeType}',                 // mime type
+            headline: '${headline}',                   // title
+            keywords: '${tags}',                       // separated by comma
+            name: '${name}',
+            thumbnailUrl: {
+              '@context': 'http://schema.org',
+              '@type': 'ImageObject',
+              caption: '${caption}',
+              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}'          // mime type
+            },
+            url: '${url}'                                   // origin of book
+          },
+          person: {
+            '@context': 'http://schema.org',
+            '@type': 'Person',
+            email: '${email}',
+            familyName: '${familyName}',
+            givenName: '${givenName}',
+            honorificPrefix: '${honorPrefix}',          // Dr./Mrs./Mr.
+            honorificSuffix: '${honorSuffix}',          // M.D./PhD/MSCSW
+            jobTitle: '${jobTitle}'
+          },
+          organization: {
+            '@context': 'http://schema.org',
+            '@type': 'Organization',
+            email: '${email}',
+            legalName: '${legalName}',
+            logo: {
+              '@context': 'http://schema.org',
+              '@type': 'ImageObject',
+              caption: '${caption}',
+              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}'          // mime type
+            }
+          }
+        };
 
-        var p1 = saveDoc(library);
-        var p2 = saveDoc(websites);
-        var p3 = saveDoc(documents);
-        var p4 = buildSearchIndex();
-
-        return Promise.all([p1, p2, p3, p4]);
+        return Promise.all([
+          saveDoc(templates),
+          saveDoc(library),
+          saveDoc(websites),
+          saveDoc(documents),
+          buildSearchIndex()
+        ]);
       },
 
       library: function() {
@@ -133,7 +231,10 @@
       },
 
       item: function(docID) {
-        return db.get(docID, { attachments: true, binary: true });
+        return db.get(docID, {
+          attachments: true,
+          binary: true
+        });
       },
 
       save: function(doc) {
