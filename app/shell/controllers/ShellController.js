@@ -54,17 +54,17 @@
       var result;
 
       switch (type) {
-      case 'info':
-        result = ActivityService.addInfo(info);
-        break;
+        case 'info':
+          result = ActivityService.addInfo(info);
+          break;
 
-      case 'warning':
-        result = ActivityService.addWarning(info);
-        break;
+        case 'warning':
+          result = ActivityService.addWarning(info);
+          break;
 
-      case 'error':
-        result = ActivityService.addError(info);
-        break;
+        case 'error':
+          result = ActivityService.addError(info);
+          break;
       }
 
       return result;
@@ -72,7 +72,10 @@
 
     this.initialize = function() {
       this.modules = modulesProvider.modules;
-      return $notification.requestPermission();
+      return Promise.all([
+        $notification.requestPermission(),
+        ActivityService.initialize()
+      ]);
     };
 
     this.sendEvent = (event, arg) => {

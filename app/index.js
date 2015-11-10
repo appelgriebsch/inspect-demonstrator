@@ -3,7 +3,23 @@
   'use strict';
 
   var app = require('app');
+  var ipc = require('ipc');
+
+  var path = require('path');
+  var os = require('os');
+  var fs = require('fs');
+
   var BrowserWindow = require('browser-window');
+
+  // initialize service finder module
+  var ServiceFinder = require('node-servicefinder').ServiceFinder;
+
+  const dataDir = app.getPath('userData') + path.sep;
+  const cacheDir = app.getPath('userCache') + path.sep;
+  const tempDir = app.getPath('temp') + path.sep;
+  const homeDir = app.getPath('home') + path.sep;
+  const hostname = os.hostname();
+  const username = (process.platform === 'win32') ? process.env.USERNAME : process.env.USER;
 
   // report crashes to the Electron project
   require('crash-reporter').start();
@@ -17,11 +33,11 @@
     var win = new BrowserWindow({
       width: 1280,
       height: 800,
-      resizable: true
+      frame: false
     });
 
     win.loadUrl('file://' + __dirname + '/main.html');
-    win.on('closed', onClosed);
+    win.on('close', onClosed);
 
     return win;
   }
@@ -29,6 +45,9 @@
   function onClosed() {
     // deref the window
     // for multiple windows store them in an array
+    if (mainWindow) {
+      mainWindow.webContents.send('app-closed');
+    }
     mainWindow = null;
   }
 
@@ -107,20 +126,6 @@
     mainWindow = createMainWindow();
   });
 
-  // initialize service finder module
-  var ServiceFinder = require('node-servicefinder').ServiceFinder;
-
-  var path = require('path');
-  var os = require('os');
-  var fs = require('fs');
-
-  const dataDir = app.getPath('userData') + path.sep;
-  const cacheDir = app.getPath('userCache') + path.sep;
-  const tempDir = app.getPath('temp') + path.sep;
-  const homeDir = app.getPath('home') + path.sep;
-  const hostname = os.hostname();
-  const username = (process.platform === 'win32') ? process.env.USERNAME : process.env.USER;
-
   app.serviceFinder = function(serviceName, protocol, subTypes, includeLocal) {
     return new ServiceFinder(serviceName, protocol, subTypes, includeLocal);
   };
@@ -192,7 +197,6 @@
   };
 
   var pdfAnalyzer = fs.readFileSync(path.join(__dirname, 'scripts', 'pdfanalyzer.js'));
-  var ipc = require('ipc');
 
   app.createPDFPreview = function(url) {
 
