@@ -45,9 +45,6 @@
   function onClosed() {
     // deref the window
     // for multiple windows store them in an array
-    if (mainWindow) {
-      mainWindow.webContents.send('app-closed');
-    }
     mainWindow = null;
   }
 
@@ -64,43 +61,43 @@
 
     var squirrelCommand = process.argv[1];
     switch (squirrelCommand) {
-      case '--squirrel-install':
-      case '--squirrel-updated':
+    case '--squirrel-install':
+    case '--squirrel-updated':
 
-        // Optionally do things such as:
-        //
-        // - Install desktop and start menu shortcuts
-        // - Add your .exe to the PATH
-        // - Write to the registry for things like file associations and
-        //   explorer context menus
+      // Optionally do things such as:
+      //
+      // - Install desktop and start menu shortcuts
+      // - Add your .exe to the PATH
+      // - Write to the registry for things like file associations and
+      //   explorer context menus
 
-        // create shortcuts
-        cp.spawnSync(updateDotExe, ["--createShortcut", target], {
-          detached: true
-        });
+      // create shortcuts
+      cp.spawnSync(updateDotExe, ['--createShortcut', target], {
+        detached: true
+      });
 
-        // Always quit when done
-        app.quit();
-        return true;
+      // Always quit when done
+      app.quit();
+      return true;
 
-      case '--squirrel-uninstall':
-        // Undo anything you did in the --squirrel-install and
-        // --squirrel-updated handlers
+    case '--squirrel-uninstall':
+      // Undo anything you did in the --squirrel-install and
+      // --squirrel-updated handlers
 
-        cp.spawnSync(updateDotExe, ["--removeShortcut", target], {
-          detached: true
-        });
+      cp.spawnSync(updateDotExe, ['--removeShortcut', target], {
+        detached: true
+      });
 
-        // Always quit when done
-        app.quit();
-        return true;
+      // Always quit when done
+      app.quit();
+      return true;
 
-      case '--squirrel-obsolete':
-        // This is called on the outgoing version of your app before
-        // we update to the new version - it's the opposite of
-        // --squirrel-updated
-        app.quit();
-        return true;
+    case '--squirrel-obsolete':
+      // This is called on the outgoing version of your app before
+      // we update to the new version - it's the opposite of
+      // --squirrel-updated
+      app.quit();
+      return true;
     }
   };
 
@@ -146,6 +143,32 @@
   app.getMainWindow = function() {
     return mainWindow;
   };
+
+  app.close = function() {
+    if (mainWindow) {
+      mainWindow.close();
+    }
+    app.quit();
+  };
+
+  app.isInFullscreen = function() {
+    if (mainWindow) {
+      return mainWindow.isFullScreen();
+    }
+    return false;
+  };
+
+  app.enterFullscreen = function() {
+    if (mainWindow) {
+      mainWindow.setFullScreen(true);
+    }
+  };
+
+  app.leaveFullscreen = function() {
+    if (mainWindow) {
+      mainWindow.setFullScreen(false);
+    }
+  }
 
   var webAnalyzer = fs.readFileSync(path.join(__dirname, 'scripts', 'webanalyzer.js'));
 

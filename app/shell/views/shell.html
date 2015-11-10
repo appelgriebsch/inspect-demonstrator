@@ -6,11 +6,26 @@
     </div>
   </centered>
   <md-toolbar class="md-whiteframe-z3">
+    <div class="md-toolbar-tools window-controls" flex layout-align="end end">
+      <span class="draggable" flex></span>
+      <md-button ng-if="!shell.isInFullscreen" class="md-icon-button window-control" md-no-ink ng-click="shell.switchFullscreen()">
+        <md-icon id="fullscreen">fullscreen</md-icon>
+        <md-tooltip>Switch to fullscreen</md-tooltip>
+      </md-button>
+      <md-button ng-if="shell.isInFullscreen" class="md-icon-button window-control" md-no-ink ng-click="shell.leaveFullscreen()">
+        <md-icon id="fullscreen_exit">fullscreen_exit</md-icon>
+        <md-tooltip>Exit from fullscreen</md-tooltip>
+      </md-button>
+      <md-button class="md-icon-button window-control" md-no-ink ng-click="shell.closeApp()">
+        <md-icon id="close">close</md-icon>
+        <md-tooltip>Close</md-tooltip>
+      </md-button>
+    </div>
     <div class="md-toolbar-tools">
       <h1>
         <span>Inspect Demonstrator</span>
       </h1>
-      <span flex></span>
+      <span class="draggable" flex></span>
       <md-button class="md-icon-button" md-no-ink ng-repeat="module in shell.modules" ng-href="#{{ module.info.url }}" ng-class="{ selected: $state.includes('{{ module.info.state }}') }">
         <md-icon>{{ module.info.icon }}</md-icon>
         <md-tooltip>{{ module.info.tooltip }}</md-tooltip>

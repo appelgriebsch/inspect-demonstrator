@@ -7,7 +7,6 @@
     var remote = require('remote');
     var app = remote.require('app');
     var sysCfg = app.sysConfig();
-    var ipc = require('ipc');
 
     var _prefill = function(event) {
 
@@ -35,11 +34,9 @@
     };
 
     this.close = function() {
-      this.addWarning({
+      return this.addWarning({
         icon: 'power_settings_new',
         description: 'Application shutted down!'
-      }).then(() => {
-        return;
       });
     };
 
@@ -66,10 +63,6 @@
 
       return ActivityDataService.writeEntry(doc);
     };
-
-    ipc.on('app-closed', () => {
-      this.close();
-    });
   }
 
   module.exports = ActivityService;

@@ -5,13 +5,36 @@ html, body {
   overflow: none;
   -webkit-user-select: none;
 }
+div.md-toolbar-tools.window-controls {
+  height: 24px;
+}
+.draggable {
+  -webkit-app-region: drag;
+  height: 100%;
+}
 md-toolbar .md-button:not(.selected) md-icon {
   color: #bdbdbd;
+}
+md-toolbar.md-whiteframe-z3 {
+  min-height: 88px;
 }
 md-toolbar h1 {
   margin: auto;
   font-size: 1.25em;
   font-weight: 400;
+}
+button.md-icon-button.window-control.md-button {
+  height: 24px;
+  width: 24px;
+}
+#fullscreen:hover {
+  color: #FAFAFA;
+}
+#fullscreen_exit:hover {
+  color: #FAFAFA;
+}
+#close:hover {
+  color: #FF0000;
 }
 #dropZone {
   background: #FAFAFA;

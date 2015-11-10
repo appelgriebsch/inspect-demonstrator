@@ -4,10 +4,14 @@
 
   function ShellController($scope, $log, $q, $notification, $mdToast, modulesProvider, ActivityService) {
 
+    var remote = require('remote');
+    var app = remote.require('app');
+
     this.modules = [];
     this.isBusy = false;
     this.statusMessage = '';
     this.isDirty = false;
+    this.isInFullscreen = false;
 
     $scope.setBusy = (msg) => {
       $q.when(true).then(() => {
@@ -54,17 +58,17 @@
       var result;
 
       switch (type) {
-        case 'info':
-          result = ActivityService.addInfo(info);
-          break;
+      case 'info':
+        result = ActivityService.addInfo(info);
+        break;
 
-        case 'warning':
-          result = ActivityService.addWarning(info);
-          break;
+      case 'warning':
+        result = ActivityService.addWarning(info);
+        break;
 
-        case 'error':
-          result = ActivityService.addError(info);
-          break;
+      case 'error':
+        result = ActivityService.addError(info);
+        break;
       }
 
       return result;
@@ -76,6 +80,22 @@
         $notification.requestPermission(),
         ActivityService.initialize()
       ]);
+    };
+
+    this.switchFullscreen = function() {
+      app.enterFullscreen();
+      this.isInFullscreen = app.isInFullscreen();
+    };
+
+    this.leaveFullscreen = function() {
+      app.leaveFullscreen();
+      this.isInFullscreen = app.isInFullscreen();
+    };
+
+    this.closeApp = function() {
+      ActivityService.close().then(() => {
+        app.close();
+      });
     };
 
     this.sendEvent = (event, arg) => {
