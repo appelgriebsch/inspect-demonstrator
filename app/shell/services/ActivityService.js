@@ -10,58 +10,52 @@
 
     var _prefill = function(event) {
 
-      var doc = angular.copy(event);
       var today = new Date();
 
-      doc.createdAt = today.toISOString();
-      doc.createdBy = sysCfg.user;
-      doc.createdOn = sysCfg.host;
-
-      delete doc._id;
-      delete doc._rev;
-
-      return doc;
+      event.endTime = today.toISOString();
+      event.startTime = today.toISOString();
+      event.agent = {
+        name: sysCfg.user
+      };
+      event.instrument = {
+        name: sysCfg.host
+      };
     };
 
     this.initialize = function() {
-      return Promise.all([
-        ActivityDataService.initialize(),
-        this.addWarning({
-          icon: 'flash_on',
-          description: 'Application started!'
-        })
-      ]);
-    };
 
-    this.close = function() {
-      return this.addWarning({
-        icon: 'power_settings_new',
-        description: 'Application shutted down!'
+      ActivityDataService.initialize().then(() => {
+        var event = ActivityDataService.createFromTemplate('ControlAction', 'flight_takeoff');
+        event.description = 'Application has been started.';
+
+        delete event.result;
+        delete event.object;
+        return this.addWarning(event);
       });
     };
 
-    this.addInfo = function(entry) {
+    this.close = function() {
+      var event = ActivityDataService.createFromTemplate('ControlAction', 'flight_land');
+      event.description = 'Application has been stopped.';
 
-      var doc = _prefill(entry);
-      doc.class = 'info';
-
-      return ActivityDataService.writeEntry(doc);
+      delete event.result;
+      delete event.object;
+      return this.addWarning(event);
     };
 
-    this.addWarning = function(entry) {
-
-      var doc = _prefill(entry);
-      doc.class = 'warning';
-
-      return ActivityDataService.writeEntry(doc);
+    this.addInfo = function(event) {
+      _prefill(event);
+      return ActivityDataService.writeEntry('info', event);
     };
 
-    this.addError = function(entry) {
+    this.addWarning = function(event) {
+      _prefill(event);
+      return ActivityDataService.writeEntry('warning', event);
+    };
 
-      var doc = _prefill(entry);
-      doc.class = 'danger';
-
-      return ActivityDataService.writeEntry(doc);
+    this.addError = function(event) {
+      _prefill(event);
+      return ActivityDataService.writeEntry('danger', event);
     };
   }
 

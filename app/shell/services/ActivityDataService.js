@@ -5,6 +5,7 @@
   function ActivityDataService(PouchDBService) {
 
     var db = PouchDBService.initialize('activities');
+    var uuid = require('uuid');
 
     var saveDoc = function(doc) {
 
@@ -36,12 +37,27 @@
       initialize: function() {
 
         var ddoc = {
-          _id: '_design/audits',
+          _id: '_design/activities',
           version: '1.0',
           views: {
             all: {
               map: function mapFun(doc) {
-                emit(doc.createdAt);
+                emit(doc.activity.endTime);
+              }.toString()
+            },
+            byDate: {
+              map: function mapFun(doc) {
+                emit(doc.activity.endTime);
+              }.toString()
+            },
+            byType: {
+              map: function mapFun(doc) {
+                emit(doc.activity['@type']);
+              }.toString()
+            },
+            bySeverity: {
+              map: function mapFun(doc) {
+                emit(doc.class);
               }.toString()
             }
           }
@@ -54,41 +70,66 @@
             '@context': 'http://schema.org',
             '@type': '${actionType}',
             actionStatus: '${actionStatus}',
-            agent: '${agent}',                                        // either person or organization
-            description: '${description}',                            // a printable description of the activity
-            endTime: '${endDateTime}',                                // end date time
-            error: {                                                  // error if it has happened
+            agent: {
+              name: '${userName}'
+            },
+            description: '${description}', // a printable description of the activity
+            endTime: '${endDateTime}', // end date time
+            error: { // error if it has happened
               description: '${errorDescription}',
               name: '${errorName}'
             },
-            image: '${icon}',                                         // the icon for the activity display
-            instrument: {                                             // the PC or notebook used
+            image: '${icon}', // the icon for the activity display
+            instrument: { // the PC or notebook used
               description: '${PCDescription}',
               name: '${PCName}'
             },
-            object: '${object}',                                      // the meta data of the thing that was worked on
-            result: '${result}',                                      // result of the activity
-            startTime: '${startTime}'                                 // when the activity has been started
+            object: '${object}', // the meta data of the thing that was worked on
+            result: '${result}', // result of the activity
+            startTime: '${startTime}' // when the activity has been started
           },
           actionStatus: [
-            'CompletedActionStatus',                                  // action was successfull
-            'FailedActionStatus'                                      // action was not successfull
+            'CompletedActionStatus', // action was successfull
+            'FailedActionStatus' // action was not successfull
           ],
           actionTypes: [
-            'ControlAction',                                          // startup/shutdown activity
-            'AddAction',                                              // create documents
-            'DeleteAction',                                           // remove documents
-            'ReplaceAction',                                          // update documents
-            'SendAction',                                             // export documents / replicate to action
-            'ReceiveAction',                                          // import documents / replicate from action
-            'SearchAction'                                            // search for documents
+            'ControlAction', // startup/shutdown activity
+            'AddAction', // create documents
+            'DeleteAction', // remove documents
+            'ReplaceAction', // update documents
+            'SendAction', // export documents / replicate to action
+            'ReceiveAction', // import documents / replicate from action
+            'SearchAction' // search for documents
           ]
         };
+
+        this.templates = template;
 
         return Promise.all([
           saveDoc(ddoc),
           saveDoc(template)
         ]);
+      },
+
+      createFromTemplate: function(type, icon, error) {
+
+        var idx = this.templates.actionTypes.indexOf(type);
+        if (idx == -1) return null;
+
+        var clone = JSON.parse(JSON.stringify(this.templates.action));
+        clone['@type'] = type;
+        clone.image = icon;
+
+        if (error) {
+          clone.actionStatus = 'FailedActionStatus';
+          clone.error.description = error.message;
+          clone.error.name = error.name;
+        } else {
+          clone.actionStatus = 'CompletedActionStatus';
+          delete clone.error;
+        }
+
+        return clone;
       },
 
       events: function() {
@@ -98,7 +139,7 @@
           include_docs: true
         };
 
-        return db.query('audits/all', options);
+        return db.query('activities/all', options);
       },
 
       search: function(filter) {
@@ -107,12 +148,18 @@
           descending: true
         };
 
-        return db.allDocs(options);
+        return db.query('activities/all', options);
       },
 
-      writeEntry: function(doc) {
+      writeEntry: function(severity, event) {
 
-        return db.post(doc);
+        var doc = {
+          _id: uuid.v4(),
+          class: severity,
+          activity: event
+        };
+
+        return saveDoc(doc);
       }
     };
   }

@@ -5,6 +5,7 @@
   function LibraryDataService(PouchDBService) {
 
     var db = PouchDBService.initialize('library');
+    var uuid = require('uuid');
 
     var buildSearchIndex = function() {
 
@@ -190,16 +191,19 @@
             '@context': 'http://schema.org',
             '@type': 'Person',
             additionalName: '${additionalName}',        // middle name
+            description: '${description}',
             email: '${email}',
             familyName: '${familyName}',
             givenName: '${givenName}',
             honorificPrefix: '${honorPrefix}',          // Dr./Mrs./Mr.
             honorificSuffix: '${honorSuffix}',          // M.D./PhD/MSCSW
-            jobTitle: '${jobTitle}'
+            jobTitle: '${jobTitle}',
+            name: '${name}'
           },
           organization: {
             '@context': 'http://schema.org',
             '@type': 'Organization',
+            description: '${description}',
             email: '${email}',
             legalName: '${legalName}',
             logo: {
@@ -208,7 +212,8 @@
               caption: '${caption}',
               contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
               encodingFormat: '${thumbnailFormat}'          // mime type
-            }
+            },
+            name: '${name}'
           },
           bookFormats: [
             'Paperback',
@@ -244,6 +249,11 @@
       },
 
       save: function(doc) {
+
+        if (!doc._id) {
+          doc._id = uuid.v4();
+        }
+
         return saveDoc(doc);
       },
 
