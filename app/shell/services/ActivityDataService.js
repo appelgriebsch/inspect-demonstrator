@@ -37,7 +37,7 @@
 
         var ddoc = {
           _id: '_design/audits',
-          version: '0.1.0',
+          version: '1.0',
           views: {
             all: {
               map: function mapFun(doc) {
@@ -47,7 +47,48 @@
           }
         };
 
-        return saveDoc(ddoc);
+        var template = {
+          _id: '_design/templates',
+          version: '1.0',
+          action: {
+            '@context': 'http://schema.org',
+            '@type': '${actionType}',
+            actionStatus: '${actionStatus}',
+            agent: '${agent}',                                        // either person or organization
+            description: '${description}',                            // a printable description of the activity
+            endTime: '${endDateTime}',                                // end date time
+            error: {                                                  // error if it has happened
+              description: '${errorDescription}',
+              name: '${errorName}'
+            },
+            image: '${icon}',                                         // the icon for the activity display
+            instrument: {                                             // the PC or notebook used
+              description: '${PCDescription}',
+              name: '${PCName}'
+            },
+            object: '${object}',                                      // the meta data of the thing that was worked on
+            result: '${result}',                                      // result of the activity
+            startTime: '${startTime}'                                 // when the activity has been started
+          },
+          actionStatus: [
+            'CompletedActionStatus',                                  // action was successfull
+            'FailedActionStatus'                                      // action was not successfull
+          ],
+          actionTypes: [
+            'ControlAction',                                          // startup/shutdown activity
+            'AddAction',                                              // create documents
+            'DeleteAction',                                           // remove documents
+            'ReplaceAction',                                          // update documents
+            'SendAction',                                             // export documents / replicate to action
+            'ReceiveAction',                                          // import documents / replicate from action
+            'SearchAction'                                            // search for documents
+          ]
+        };
+
+        return Promise.all([
+          saveDoc(ddoc),
+          saveDoc(template)
+        ]);
       },
 
       events: function() {

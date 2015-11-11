@@ -122,7 +122,7 @@
             '@type': 'Book',
             about: '${subject}',                      // subject
             alternativeHeadline: '${headline2}',
-            author: '${author}',
+            author: '${author}',                      // person or organization
             bookEdition: '${bookEdition}',
             bookFormat: '${bookFormat}',
             datePublished: '${publishDate}',
@@ -133,7 +133,7 @@
             keywords: '${tags}',                       // separated by comma
             name: '${name}',
             numberOfPages: '${noOfPages}',
-            publisher: '${publisher}',
+            publisher: '${publisher}',                // person or organization
             thumbnailUrl: {
               '@context': 'http://schema.org',
               '@type': 'ImageObject',
@@ -148,14 +148,14 @@
             '@type': 'Article',
             about: '${subject}',                      // subject
             alternativeHeadline: '${headline2}',
-            author: '${author}',
+            author: '${author}',                      // person or organization
             datePublished: '${publishDate}',
             description: '${description}',
             fileFormat: '${mimeType}',                 // mime type
             headline: '${headline}',                   // title
             keywords: '${tags}',                       // separated by comma
             name: '${name}',
-            publisher: '${publisher}',
+            publisher: '${publisher}',                 // person or organization
             thumbnailUrl: {
               '@context': 'http://schema.org',
               '@type': 'ImageObject',
@@ -170,7 +170,7 @@
             '@type': 'WebSite',
             about: '${subject}',                      // subject
             alternativeHeadline: '${headline2}',
-            author: '${author}',
+            author: '${author}',                      // person or organization
             datePublished: '${publishDate}',
             description: '${description}',
             fileFormat: '${mimeType}',                 // mime type
@@ -189,6 +189,7 @@
           person: {
             '@context': 'http://schema.org',
             '@type': 'Person',
+            additionalName: '${additionalName}',        // middle name
             email: '${email}',
             familyName: '${familyName}',
             givenName: '${givenName}',
@@ -208,7 +209,12 @@
               contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
               encodingFormat: '${thumbnailFormat}'          // mime type
             }
-          }
+          },
+          bookFormats: [
+            'Paperback',
+            'Hardcover',
+            'EBook'
+          ]
         };
 
         return Promise.all([
