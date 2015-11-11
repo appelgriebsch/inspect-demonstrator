@@ -142,6 +142,7 @@ md-content[ui-view='content'], md-content[ui-view='module'] {
   height: 100%;
   min-width: 99%;
   width: 99%;
+  overflow: hidden;
 }
 md-content[ui-view='content'] {
   padding: 20px;
@@ -173,7 +174,7 @@ md-input-container .md-input[disabled] {
 }
 .sidebar {
   position: absolute;
-  height: 100%;
+  height: 55vh;
   z-index: 1;
   width: 2em;
   overflow: hidden;
@@ -214,7 +215,7 @@ md-input-container .md-input[disabled] {
 }
 #pdfViewerContainer {
   overflow: auto;
-  height: 80vh;
+  height: 55vh;
   /* Viewport-relative units */
   width: 95vw;
 }
@@ -223,7 +224,7 @@ webview {
   /* iframes are inline by default */
   border: none;
   /* Reset default border */
-  height: 80vh;
+  height: 55vh;
   /* Viewport-relative units */
   width: 95vw;
 }
