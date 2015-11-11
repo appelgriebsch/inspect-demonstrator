@@ -86,8 +86,11 @@
     };
 
     this.platform = function() {
-      console.log(app.sysConfig().platform);
       return app.sysConfig().platform;
+    };
+
+    this.minimizeApp = function() {
+      app.minimizeAppToSysTray();
     };
 
     this.closeApp = function() {

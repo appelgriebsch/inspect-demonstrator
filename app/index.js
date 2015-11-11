@@ -158,6 +158,13 @@
     }
   };
 
+  app.minimizeAppToSysTray = function() {
+    if (mainWindow) {
+      mainWindow.minimize();
+    }
+    // TODO: systray
+  };
+
   var webAnalyzer = fs.readFileSync(path.join(__dirname, 'scripts', 'webanalyzer.js'));
 
   app.snapshotWebSite = function(url) {

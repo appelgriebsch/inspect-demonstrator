@@ -5,7 +5,7 @@ html, body {
   overflow: none;
   -webkit-user-select: none;
 }
-div.md-toolbar-tools.window-controls {
+div.md-toolbar-tools.windows-controls {
   height: 24px;
 }
 .draggable {
@@ -23,25 +23,68 @@ md-toolbar h1 {
   font-size: 1.25em;
   font-weight: 400;
 }
+a.md-icon-button.osx-control {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-bottom: 0.5px;
+  margin-left: 4px;
+  margin-right: 4px;
+  line-height: 0;
+}
+a.md-icon-button.osx-control svg {
+  opacity: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 2px;
+  margin-left: 2px;
+}
+a.md-icon-button.osx-control:hover svg {
+  opacity: 100;
+}
+a.md-icon-button.osx-control.close {
+  background-color: #ff5f57;
+  border-color: #e2463f;
+}
+a.md-icon-button.osx-control.close:active {
+  background-color: #bf4943;
+  border-color: #ad3934;
+}
+a.md-icon-button.osx-control.minimize {
+  background-color: #ffbd2e;
+  border-color: #e1a116;
+}
+a.md-icon-button.osx-control.minimize:active {
+  background-color: #bf9123;
+  border-color: #ad7d15;
+}
+a.md-icon-button.osx-control.fullscreen {
+  background-color: #28c940;
+  border-color: #12ac28;
+}
+a.md-icon-button.osx-control.fullscreen:active {
+  background-color: #1f9a31;
+  border-color: #128622;
+}
 a.md-icon-button.window-control.md-button {
   height: 24px;
   width: 24px;
   border-radius: 10%;
 }
-
+a.md-icon-button.window-control.md-button svg {
+  width: 10px;
+  height: 10px;
+}
 a.md-icon-button.window-control.md-button:active {
   background-color: rgba(255, 255, 255, .23);
 }
-
 a.md-icon-button.window-control.md-button:hover {
   transition: background-color 0.1s;
   background-color: rgba(255, 255, 255, .13);
 }
-
 a.md-icon-button.window-control.close.md-button:active {
   background-color: #f1707a;
 }
-
 a.md-icon-button.window-control.close.md-button:hover {
   transition: background-color 0.1s;
   background-color: #e81123;
@@ -116,7 +159,7 @@ md-content[ui-view='content'] {
   width: 32px;
 }
 md-input-container .md-input[disabled] {
-  color: rgba(0,0,0,0.87);
+  color: rgba(0, 0, 0, 0.87);
 }
 .sidebar {
   position: absolute;
@@ -124,7 +167,7 @@ md-input-container .md-input[disabled] {
   z-index: 1;
   width: 2em;
   overflow: hidden;
-	background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.9);
 }
 .sidebar-open {
   width: 33%;
@@ -161,23 +204,25 @@ md-input-container .md-input[disabled] {
 }
 #pdfViewerContainer {
   overflow: auto;
-  height: 80vh;        /* Viewport-relative units */
+  height: 80vh;
+  /* Viewport-relative units */
   width: 95vw;
 }
 webview {
-    display: block;       /* iframes are inline by default */
-    border: none;         /* Reset default border */
-    height: 80vh;        /* Viewport-relative units */
-    width: 95vw;
+  display: block;
+  /* iframes are inline by default */
+  border: none;
+  /* Reset default border */
+  height: 80vh;
+  /* Viewport-relative units */
+  width: 95vw;
 }
 md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active {
   color: #607D8B;
 }
-
 md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {
   color: #BDBDBD;
 }
-
 .tabContent {
   background-color: transparent;
 }
