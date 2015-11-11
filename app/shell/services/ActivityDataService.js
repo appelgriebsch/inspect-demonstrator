@@ -113,12 +113,14 @@
 
       createFromTemplate: function(type, icon, error) {
 
+        var today = new Date();
         var idx = this.templates.actionTypes.indexOf(type);
         if (idx == -1) return null;
 
         var clone = JSON.parse(JSON.stringify(this.templates.action));
         clone['@type'] = type;
         clone.image = icon;
+        clone.startTime = today.toISOString();
 
         if (error) {
           clone.actionStatus = 'FailedActionStatus';

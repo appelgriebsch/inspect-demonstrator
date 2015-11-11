@@ -13,7 +13,6 @@
       var today = new Date();
 
       event.endTime = today.toISOString();
-      event.startTime = today.toISOString();
       event.agent = {
         name: sysCfg.user
       };
