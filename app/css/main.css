@@ -23,18 +23,28 @@ md-toolbar h1 {
   font-size: 1.25em;
   font-weight: 400;
 }
-button.md-icon-button.window-control.md-button {
+a.md-icon-button.window-control.md-button {
   height: 24px;
   width: 24px;
+  border-radius: 10%;
 }
-#fullscreen:hover {
-  color: #FAFAFA;
+
+a.md-icon-button.window-control.md-button:active {
+  background-color: rgba(255, 255, 255, .23);
 }
-#fullscreen_exit:hover {
-  color: #FAFAFA;
+
+a.md-icon-button.window-control.md-button:hover {
+  transition: background-color 0.1s;
+  background-color: rgba(255, 255, 255, .13);
 }
-#close:hover {
-  color: #FF0000;
+
+a.md-icon-button.window-control.close.md-button:active {
+  background-color: #f1707a;
+}
+
+a.md-icon-button.window-control.close.md-button:hover {
+  transition: background-color 0.1s;
+  background-color: #e81123;
 }
 #dropZone {
   background: #FAFAFA;

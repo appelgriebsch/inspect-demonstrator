@@ -11,7 +11,6 @@
     this.isBusy = false;
     this.statusMessage = '';
     this.isDirty = false;
-    this.isInFullscreen = false;
 
     $scope.setBusy = (msg) => {
       $q.when(true).then(() => {
@@ -82,14 +81,13 @@
       ]);
     };
 
-    this.switchFullscreen = function() {
-      app.enterFullscreen();
-      this.isInFullscreen = app.isInFullscreen();
+    this.toggleFullscreen = function() {
+      app.toggleFullscreen();
     };
 
-    this.leaveFullscreen = function() {
-      app.leaveFullscreen();
-      this.isInFullscreen = app.isInFullscreen();
+    this.platform = function() {
+      console.log(app.sysConfig().platform);
+      return app.sysConfig().platform;
     };
 
     this.closeApp = function() {
