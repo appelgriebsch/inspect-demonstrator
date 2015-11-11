@@ -10,10 +10,13 @@
   var fs = require('fs');
 
   var BrowserWindow = require('browser-window');
+  var Tray = require('tray');
 
   // initialize service finder module
   var ServiceFinder = require('node-servicefinder').ServiceFinder;
 
+  const appName = app.getName();
+  const appVersion = app.getVersion();
   const dataDir = app.getPath('userData') + path.sep;
   const cacheDir = app.getPath('userCache') + path.sep;
   const tempDir = app.getPath('temp') + path.sep;
@@ -37,7 +40,7 @@
     });
 
     win.loadUrl('file://' + __dirname + '/main.html');
-    win.on('close', onClosed);
+    win.on('closed', onClosed);
 
     return win;
   }
@@ -61,43 +64,43 @@
 
     var squirrelCommand = process.argv[1];
     switch (squirrelCommand) {
-      case '--squirrel-install':
-      case '--squirrel-updated':
+    case '--squirrel-install':
+    case '--squirrel-updated':
 
-        // Optionally do things such as:
-        //
-        // - Install desktop and start menu shortcuts
-        // - Add your .exe to the PATH
-        // - Write to the registry for things like file associations and
-        //   explorer context menus
+      // Optionally do things such as:
+      //
+      // - Install desktop and start menu shortcuts
+      // - Add your .exe to the PATH
+      // - Write to the registry for things like file associations and
+      //   explorer context menus
 
-        // create shortcuts
-        cp.spawnSync(updateDotExe, ['--createShortcut', target], {
-          detached: true
-        });
+      // create shortcuts
+      cp.spawnSync(updateDotExe, ['--createShortcut', target], {
+        detached: true
+      });
 
-        // Always quit when done
-        app.quit();
-        return true;
+      // Always quit when done
+      app.quit();
+      return true;
 
-      case '--squirrel-uninstall':
-        // Undo anything you did in the --squirrel-install and
-        // --squirrel-updated handlers
+    case '--squirrel-uninstall':
+      // Undo anything you did in the --squirrel-install and
+      // --squirrel-updated handlers
 
-        cp.spawnSync(updateDotExe, ['--removeShortcut', target], {
-          detached: true
-        });
+      cp.spawnSync(updateDotExe, ['--removeShortcut', target], {
+        detached: true
+      });
 
-        // Always quit when done
-        app.quit();
-        return true;
+      // Always quit when done
+      app.quit();
+      return true;
 
-      case '--squirrel-obsolete':
-        // This is called on the outgoing version of your app before
-        // we update to the new version - it's the opposite of
-        // --squirrel-updated
-        app.quit();
-        return true;
+    case '--squirrel-obsolete':
+      // This is called on the outgoing version of your app before
+      // we update to the new version - it's the opposite of
+      // --squirrel-updated
+      app.quit();
+      return true;
     }
   };
 
@@ -108,10 +111,7 @@
 
   // prevent window being GC'd
   var mainWindow;
-
-  app.on('window-all-closed', function() {
-    app.quit();
-  });
+  var trayIcon;
 
   app.on('activate-with-no-open-windows', function() {
     if (!mainWindow) {
@@ -129,6 +129,10 @@
 
   app.sysConfig = function() {
     return {
+      app: {
+        name: appName,
+        version: appVersion
+      },
       host: hostname,
       platform: process.platform,
       user: username,
@@ -159,10 +163,18 @@
   };
 
   app.minimizeAppToSysTray = function() {
+
+    trayIcon = new Tray(path.join(__dirname, 'assets', 'demonstrator.png'));
+    trayIcon.setToolTip('App is running in background mode.');
+    trayIcon.on('clicked', () => {
+      if (mainWindow) {
+        mainWindow.show();
+        trayIcon.destroy();
+      }
+    });
     if (mainWindow) {
-      mainWindow.minimize();
+      mainWindow.hide();
     }
-    // TODO: systray
   };
 
   var webAnalyzer = fs.readFileSync(path.join(__dirname, 'scripts', 'webanalyzer.js'));

@@ -6,7 +6,9 @@
 
     var remote = require('remote');
     var app = remote.require('app');
+    var appCfg = app.sysConfig();
 
+    this.appName = `${appCfg.app.name} v${appCfg.app.version}`;
     this.modules = [];
     this.isBusy = false;
     this.statusMessage = '';
@@ -86,7 +88,7 @@
     };
 
     this.platform = function() {
-      return app.sysConfig().platform;
+      return appCfg.platform;
     };
 
     this.minimizeApp = function() {
