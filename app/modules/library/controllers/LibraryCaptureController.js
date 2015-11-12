@@ -16,7 +16,9 @@
 
       DocumentCaptureService.captureWebSite(this.url).then((result) => {
 
-        this.document.meta.thumbnailUrl.encodingFormat = result.content_type;
+        this.document.meta.name = result.id;
+
+        this.document.meta.thumbnailUrl.encodingFormat = 'image/png';
         this.document.meta.thumbnailUrl.contentUrl = result.preview;
 
         var _attachments = this.document._attachments || {};
@@ -26,6 +28,8 @@
         };
 
         this.document._attachments = _attachments;
+        delete this.document.tags;
+
         LibraryDataService.save(this.document).then((result) => {
 
           var info = $scope.createEventFromTemplate('AddAction', 'public');
@@ -41,10 +45,10 @@
             $state.go('^.view');
           });
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('AddAction', 'public', err);
         });
       }).catch((err) => {
-        $scope.setError(err);
+        $scope.setError('AddAction', 'public', err);
       });
     });
 
