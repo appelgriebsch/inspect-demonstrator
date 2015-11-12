@@ -43,14 +43,14 @@
       }
     };
 
-    $scope.setError = (error) => {
+    $scope.createEventFromTemplate = (template, icon, error) => {
+      return ActivityService.createEventFromTemplate(template, icon, error);
+    };
+
+    $scope.setError = (template, icon, error) => {
       $scope.notify('An error occured!', error.message);
 
-      var info = angular.copy(error);
-      info.type = 'error';
-      info.icon = 'error';
-      info.description = `Error: ${error.message}`;
-
+      var info = $scope.createEventFromTemplate(template, icon, error);
       return $scope.writeLog('error', info);
     };
 

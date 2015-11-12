@@ -199,6 +199,8 @@
           ]
         };
 
+        this.templates = templates;
+
         return Promise.all([
           saveDoc(templates),
           saveDoc(library),
@@ -243,6 +245,11 @@
           fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'meta.keywords'],
           include_docs: true
         });
+      },
+
+      createMetadataFromTemplate: function(template) {
+        var doc = this.templates[template] || {};
+        return JSON.parse(JSON.stringify(doc));
       }
     };
   }

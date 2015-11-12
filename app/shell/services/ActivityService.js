@@ -33,6 +33,10 @@
       });
     };
 
+    this.createEventFromTemplate = function(template, icon, error) {
+      return ActivityDataService.createFromTemplate(template, icon, error);
+    };
+
     this.close = function() {
       var event = ActivityDataService.createFromTemplate('ControlAction', 'flight_land');
       event.description = 'Application has been stopped.';

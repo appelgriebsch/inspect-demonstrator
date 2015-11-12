@@ -16,8 +16,6 @@
 
       DocumentCaptureService.captureWebSite(this.url).then((result) => {
 
-        this.document._id = result.id;
-        this.document.id = result.id;
         this.document.preview = result.preview;
 
         var _attachments = this.document._attachments || {};
@@ -29,14 +27,10 @@
         this.document._attachments = _attachments;
         LibraryDataService.save(this.document).then((result) => {
 
-          var info = angular.copy(this.document);
-          delete info._attachments;
-          delete info.preview;
-
-          info._id = result.id;
-          info._rev = result.rev;
-          info.icon = 'public';
-          info.description = `Web Site <i>${info.title}</i> captured successfully!`;
+          var info = $scope.createEventFromTemplate('AddAction', 'public');
+          info.description = `Web Site <i>${result.meta.name}</i> captured successfully!`;
+          info.object = this.document;
+          delete info.result;
 
           $scope.writeLog('info', info).then(() => {
             $scope.notify('Document created successfully', info.description);
@@ -76,13 +70,42 @@
     });
 
     webViewer.addEventListener('ipc-message', (evt, args) => {
-      var doc = evt.channel;
-      var today = new Date();
-      doc.id = doc.title;
-      doc.createdAt = today.toISOString();
-      doc.type = 'website';
+      var meta = evt.channel;
+      var template = LibraryDataService.createMetadataFromTemplate('website');
+      template.author = LibraryDataService.createMetadataFromTemplate('person');
+
+      var author = meta.author.split(/\s*,\s*/);
+      if (author.length > 1) {
+        template.author.familyName = author[0];
+        template.author.givenName = author[1];
+        template.author.name = `${author[1]} ${author[0]}`;
+      } else {
+        author = meta.author.split(" ");
+        template.author.name = meta.author;
+        if (author.length > 0) {
+          template.author.familyName = author[1];
+          template.author.givenName = author[0];
+        }
+        else {
+          delete template.author.familyName;
+          delete template.author.givenName;
+        }
+      }
+
+      template.datePublished = meta.publicationDate;
+      template.description = meta.description;
+      template.headline = meta.title;
+      template.keywords = meta.tags.join(',');
+      template.url = meta.url;
+
+      console.log(template);
+      
       $q.when(true).then(() => {
-        this.document = doc;
+        this.document = {
+          meta: template,
+          status: 'new',
+          tags: template.keywords.split(/\s*,\s*/)
+        };
         $scope.setReady(true);
       });
     });
