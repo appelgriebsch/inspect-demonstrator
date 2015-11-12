@@ -10,7 +10,7 @@
     var buildSearchIndex = function() {
 
       return db.search({
-        fields: ['title', 'description', 'author', 'custom_tags', 'tags'],
+        fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'meta.keywords'],
         build: true
       });
     };
@@ -44,66 +44,8 @@
 
       initialize: function() {
 
-        var documents = {
-          _id: '_design/docs',
-          version: '1.0',
-          views: {
-            all: {
-              map: function mapFun(doc) {
-                if ((doc.meta) && (doc.meta['@type'] !== 'WebSite')) {
-                  emit(doc.createdAt);
-                }
-              }.toString()
-            },
-            byTag: {
-              map: function mapFun(doc) {
-                if ((doc.meta) && (doc.meta['@type'] !== 'WebSite')) {
-                  doc.meta.keywords.split(',').forEach(function(elem) {
-                    emit(elem);
-                  });
-                }
-              }.toString()
-            },
-            byAuthor: {
-              map: function mapFun(doc) {
-                if ((doc.meta) && (doc.meta['@type'] !== 'WebSite')) {
-                  emit(doc.meta.author);
-                }
-              }.toString()
-            }
-          }
-        };
-        var websites = {
-          _id: '_design/web',
-          version: '1.0',
-          views: {
-            all: {
-              map: function mapFun(doc) {
-                if ((doc.meta) && (doc.meta['@type'] === 'WebSite')) {
-                  emit(doc.createdAt);
-                }
-              }.toString()
-            },
-            byTag: {
-              map: function mapFun(doc) {
-                if ((doc.meta) && (doc.meta['@type'] === 'WebSite')) {
-                  doc.meta.keywords.split(',').forEach(function(elem) {
-                    emit(elem);
-                  });
-                }
-              }.toString()
-            },
-            byAuthor: {
-              map: function mapFun(doc) {
-                if ((doc.meta['@type']) && (doc.meta['@type'] === 'WebSite')) {
-                  emit(doc.meta.author);
-                }
-              }.toString()
-            }
-          }
-        };
         var library = {
-          _id: '_design/lib',
+          _id: '_design/library',
           version: '1.0',
           views: {
             all: {
@@ -113,6 +55,41 @@
                 }
               }.toString()
             }
+          },
+          byTag: {
+            map: function mapFun(doc) {
+              if (doc.meta) {
+                doc.meta.keywords.split(',').forEach(function(elem) {
+                  emit(elem);
+                });
+              }
+            }.toString()
+          },
+          byAuthor: {
+            map: function mapFun(doc) {
+              if (doc.meta) {
+                emit(doc.meta.author);
+              }
+            }.toString()
+          },
+          byType: {
+            map: function mapFun(doc) {
+              if (doc.meta) {
+                emit(doc.meta['@type']);
+              }
+            }.toString()
+          },
+          byPublishDate: {
+            map: function mapFun(doc) {
+              if (doc.meta) {
+                emit(doc.meta.datePublished);
+              }
+            }.toString()
+          },
+          byStatus: {
+            map: function mapFun(doc) {
+              emit(doc.status);
+            }.toString()
           }
         };
         var templates = {
@@ -225,8 +202,6 @@
         return Promise.all([
           saveDoc(templates),
           saveDoc(library),
-          saveDoc(websites),
-          saveDoc(documents),
           buildSearchIndex()
         ]);
       },
@@ -238,7 +213,7 @@
           include_docs: true
         };
 
-        return db.query('lib/all', options);
+        return db.query('library/all', options);
       },
 
       item: function(docID) {
@@ -265,7 +240,7 @@
 
         return db.search({
           query: query,
-          fields: ['title', 'description', 'author', 'subject', 'tags'],
+          fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'meta.keywords'],
           include_docs: true
         });
       }
