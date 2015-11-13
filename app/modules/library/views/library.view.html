@@ -44,11 +44,11 @@
 <script type="text/ng-template" id="itemMetadata">
   <div class="triangle"></div>
   <div class="ns-popover-tooltip">
-    <div ng-if="item.author !== ''" layout="row" layout-fill>
-      <h2>{{ item.author }}</h2>
+    <div ng-if="item.meta.author !== undefined" layout="row" layout-fill>
+      <h2>{{ item.meta.author.name }}</h2>
       <span flex></span>
-      <small>{{ item.publicationDate | date: 'short' }}</small>
+      <small>{{ item.meta.datePublished | date: 'short' }}</small>
     </div>
-    <h3>{{ item.title }}</h3>
+    <h3>{{ item.meta.headline }}</h3>
   </div>
 </script>

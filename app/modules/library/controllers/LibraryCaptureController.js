@@ -46,9 +46,11 @@
           });
         }).catch((err) => {
           $scope.setError('AddAction', 'public', err);
+          $scope.setReady(true);
         });
       }).catch((err) => {
         $scope.setError('AddAction', 'public', err);
+        $scope.setReady(true);
       });
     });
 

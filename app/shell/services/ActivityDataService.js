@@ -126,6 +126,7 @@
           clone.actionStatus = 'FailedActionStatus';
           clone.error.description = error.message;
           clone.error.name = error.name;
+          clone.description = `${error.name}: ${error.message}`;
         } else {
           clone.actionStatus = 'CompletedActionStatus';
           delete clone.error;

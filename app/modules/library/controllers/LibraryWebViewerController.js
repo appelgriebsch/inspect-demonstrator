@@ -20,11 +20,12 @@
       Promise.all(ps).then(() => {
         return LibraryDataService.item(docID);
       }).then((result) => {
-        var archive = result._attachments[result.id] || undefined;
+        var archive = result._attachments[result.meta.name] || undefined;
         if (archive) {
-          var fileName = DocumentSharingService.requestTemporaryFile(result.id, archive);
+          var fileName = DocumentSharingService.requestTemporaryFile(result.meta.name, archive);
           webViewer.src = `file://${fileName}`;
         }
+        result.tags = result.meta.keywords.split(/\s*,\s*/);
         result.custom_tags = result.custom_tags || [];
         result.annotations = result.annotations || [];
         this.document = result;
@@ -54,7 +55,7 @@
 
       var confirm = $mdDialog.confirm()
         .title('Would you like to delete this document?')
-        .content(this.document.title)
+        .content(this.document.meta.headline)
         .targetEvent(args)
         .ok('Yes, delete it')
         .cancel('No, please keep it');

@@ -138,15 +138,13 @@ a.md-icon-button.window-control.close.md-button:hover {
   object-position: center;
 }
 md-content[ui-view='content'], md-content[ui-view='module'] {
-  min-height: 100%;
   height: 100%;
-  min-width: 99%;
   width: 99%;
   overflow: hidden;
 }
 md-content[ui-view='content'] {
   padding: 20px;
-  overflow: auto;
+  height: 75vh;
 }
 .timeline-badge {
   z-index: 1 !important;
@@ -174,7 +172,7 @@ md-input-container .md-input[disabled] {
 }
 .sidebar {
   position: absolute;
-  height: 55vh;
+  height: 90%;
   z-index: 1;
   width: 2em;
   overflow: hidden;
@@ -215,7 +213,7 @@ md-input-container .md-input[disabled] {
 }
 #pdfViewerContainer {
   overflow: auto;
-  height: 55vh;
+  height: 90%;
   /* Viewport-relative units */
   width: 95vw;
 }
@@ -224,9 +222,9 @@ webview {
   /* iframes are inline by default */
   border: none;
   /* Reset default border */
-  height: 55vh;
+  height: 90%;
   /* Viewport-relative units */
-  width: 95vw;
+  width: 100%;
 }
 md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active {
   color: #607D8B;
