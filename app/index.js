@@ -39,7 +39,7 @@
       frame: false
     });
 
-    win.loadUrl('file://' + __dirname + '/main.html');
+    win.loadURL('file://' + __dirname + '/main.html');
     win.on('closed', onClosed);
 
     return win;
@@ -166,7 +166,7 @@
 
     trayIcon = new Tray(path.join(__dirname, 'assets', 'demonstrator.png'));
     trayIcon.setToolTip('App is running in background mode.');
-    trayIcon.on('clicked', () => {
+    trayIcon.on('click', () => {
       if (mainWindow) {
         mainWindow.show();
         trayIcon.destroy();

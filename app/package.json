@@ -33,7 +33,7 @@
     "angular-timeline": "^1.2.1",
     "angular-ui-router": "^0.2.15",
     "asar": "^0.8.1",
-    "electron-debug": "^0.4.0",
+    "electron-debug": "^0.5.0",
     "filenamify-url": "^1.0.0",
     "geopouch": "^2.0.0",
     "jsonld": "^0.4.1",

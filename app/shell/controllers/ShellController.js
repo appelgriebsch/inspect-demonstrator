@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function ShellController($scope, $log, $q, $notification, $mdToast, modulesProvider, ActivityService) {
+  function ShellController($scope, $log, $q, $mdSidenav, $notification, $mdToast, modulesProvider, ActivityService) {
 
     var remote = require('remote');
     var app = remote.require('app');
@@ -104,6 +104,13 @@
     this.sendEvent = (event, arg) => {
       $q.when(true).then(() => {
         $scope.$broadcast(event, arg);
+      });
+    };
+
+    this.toggleSidebar = function() {
+      var pending = $q.when(true);
+      pending.then(() => {
+        $mdSidenav('sidebar').toggle();
       });
     };
   }
