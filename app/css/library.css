@@ -1,0 +1,92 @@
+#dropZone {
+  background: #FAFAFA;
+  margin: 15px;
+  padding: 15px;
+  border: 2px dashed #DCDCDC;
+  border-radius: 5px;
+  line-height: 34px;
+  min-height: 128px;
+}
+.filename, .fileinfo {
+  overflow: hidden;
+  max-height: 2.5em;
+}
+.filename a {
+  color: white;
+  text-decoration: none;
+  text-shadow: 1px 1px rgb(107, 104, 104);
+  font-weight: 500;
+}
+.thumbnail {
+  width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: 0 0;
+}
+.pagePrev {
+  width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.tag-item {
+  background: #FFF none repeat scroll 0% 0%;
+  margin: 15px;
+  height: 50px;
+}
+md-input-container .md-input[disabled] {
+  color: rgba(0, 0, 0, 0.87);
+}
+.sidebar {
+  position: absolute;
+  height: 90%;
+  z-index: 1;
+  width: 2em;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+.sidebar-open {
+  width: 33%;
+  overflow-y: auto;
+}
+.md-icon-button.sidebar-btn {
+  height: 32px;
+  line-height: 32px;
+  width: 32px;
+  margin-left: -8px;
+}
+.md-icon-button.sidebar-btn-opened {
+  height: 32px;
+  line-height: 32px;
+  width: 32px;
+  float: right;
+  margin-top: 8px;
+}
+.selected {
+  border-color: #607D8B;
+  border-width: 1px;
+}
+#pdfViewerContainer {
+  overflow: auto;
+  height: 90%;
+  /* Viewport-relative units */
+  width: 95vw;
+}
+webview {
+  display: block;
+  /* iframes are inline by default */
+  border: none;
+  /* Reset default border */
+  height: 90%;
+  /* Viewport-relative units */
+  width: 100%;
+}
+md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active {
+  color: #607D8B;
+}
+md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]) {
+  color: #BDBDBD;
+}
+.tabContent {
+  background-color: transparent;
+}
