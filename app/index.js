@@ -2,15 +2,16 @@
 
   'use strict';
 
-  var app = require('app');
-  var ipc = require('ipc');
+  var electron = require('electron');
+  var app = electron.app;
+  var ipc = electron.ipcMain;
 
   var path = require('path');
   var os = require('os');
   var fs = require('fs');
 
-  var BrowserWindow = require('browser-window');
-  var Tray = require('tray');
+  var BrowserWindow = electron.BrowserWindow;
+  var Tray = electron.Tray;
 
   // initialize service finder module
   var ServiceFinder = require('node-servicefinder').ServiceFinder;
@@ -164,7 +165,7 @@
 
   app.minimizeAppToSysTray = function() {
 
-    trayIcon = new Tray(path.join(__dirname, 'assets', 'demonstrator.png'));
+    trayIcon = new Tray(path.join(__dirname, 'assets', 'demonstrator_tray.png'));
     trayIcon.setToolTip('App is running in background mode.');
     trayIcon.on('click', () => {
       if (mainWindow) {
@@ -195,7 +196,7 @@
         'enable-larger-than-screen': true
       });
 
-      webWnd.loadUrl(url);
+      webWnd.loadURL(url);
 
       webWnd.webContents.on('dom-ready', () => {
         webWnd.capturePage(function(thumbnail) {
@@ -244,7 +245,7 @@
         'enable-larger-than-screen': true
       });
 
-      pdfPreviewWnd.loadUrl(`file://${__dirname}/templates/pdfanalyzer.html?pdf=${url}`);
+      pdfPreviewWnd.loadURL(`file://${__dirname}/templates/pdfanalyzer.html?pdf=${url}`);
 
       ipc.on('analyze-pdf-result', (evt, result) => {
         if (result.url === url) {

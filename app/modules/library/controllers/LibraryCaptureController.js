@@ -111,8 +111,6 @@
       template.keywords = meta.tags.join(',');
       template.url = meta.url;
 
-      console.log(template);
-
       $q.when(true).then(() => {
         this.document = {
           meta: template,
