@@ -1,20 +1,20 @@
-<div flex layout="column" layout-fill ng-init="ctl.initialize()" ng-cloak>
+<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
   <form id="webUrl" layout="row" ng-submit="ctl.loadUrl($event)">
     <md-input-container layout-fill>
       <label>Website URL</label>
-      <input type="url" ng-model="ctl.url" autofocus="autofocus" required="required">
+      <input autofocus="autofocus" ng-model="ctl.url" required="required" type="url">
     </md-input-container>
     <span flex></span>
     <md-button class="md-icon-button" type="submit">
       <md-icon>forward</md-icon>
     </md-button>
-  </div>
-  <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
-    <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
+  </form>
+  <md-content class="sidebar" layout-padding layout-sm="column" layout-wrap layout="column" ng-if="ctl.document">
+    <md-button class='md-icon-button sidebar-btn' ng-click="ctl.openSidebar()" ng-if="!ctl.sidebarOpened">
       <md-icon>chevron_right</md-icon>
     </md-button>
     <div ng-if="ctl.sidebarOpened">
-      <div layout-align="space-between start" layout="row" layout-fill>
+      <div layout-align="space-between start" layout-fill layout="row">
         <h3>Document Information</h3>
         <md-button class='md-icon-button sidebar-btn-opened' ng-click="ctl.closeSidebar()">
           <md-icon>chevron_left</md-icon>
@@ -22,55 +22,32 @@
       </div>
       <md-input-container>
         <label>Title</label>
-        <textarea ng-model="ctl.document.title" ng-disabled="ctl.document.title !== ''"></textarea>
+        <textarea ng-disabled="ctl.document.meta.headline !== ''" ng-model="ctl.document.meta.headline"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Description</label>
-        <textarea ng-model="ctl.document.description" ng-disabled="ctl.document.description !== ''"></textarea>
+        <textarea ng-disabled="ctl.document.meta.description !== ''" ng-model="ctl.document.meta.description"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Author</label>
-        <input ng-model="ctl.document.author" ng-disabled="ctl.document.author !== ''"></input>
+        <input ng-disabled="ctl.document.meta.author.name !== ''" ng-model="ctl.document.meta.author.name"></input>
       </md-input-container>
       <md-input-container>
         <label>Publication Date</label>
-        <input ng-model="ctl.document.publicationDate" disabled></input>
+        <input disabled ng-model="ctl.document.meta.datePublished"></input>
+      </md-input-container>
+      <md-input-container>
+        <label>Page URL</label>
+        <input disabled ng-model="ctl.document.meta.url"></input>
       </md-input-container>
       <md-input-container>
         <label>Tags</label>
-        <md-chips ng-if="ctl.document.tags"
-          ng-model="ctl.document.tags"
-          readonly="true">
-        </md-chips>
+        <md-chips ng-if="ctl.document.meta.keywords" ng-model="ctl.document.tags" readonly="true"></md-chips>
       </md-input-container>
     </div>
   </md-content>
-  <webview id='viewer' nodeintegration partition="{{ ctl.getUniqueId() }}" />
+  <webview id="viewer" nodeintegration partition="{{ ctl.getUniqueId() }}" />
 </div>
 <script id="capture-metadata" type="text/template">
-  (function() {
-
-    var _tag = document.querySelector("meta[name='parsely-page']");
-    var _parsely = _tag ? JSON.parse(_tag.content) : null;
-
-    var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title");
-    var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description");
-    var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']");
-    var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']");
-    var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']");
-    var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']");
-
-    var result = {
-      title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''),
-      description: _description ? (_description.content ? _description.content : _description.text) : '',
-      url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''),
-      publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''),
-      author: _parsely ? _parsely.author : (_author ? _author.content : ''),
-      tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : _tags.map((elem) => { return elem.content }) ) : []
-    };
-
-    var ipc = require('ipc');
-    ipc.sendToHost(result);
-  })();
-
+  (function() { var _tag = document.querySelector("meta[name='parsely-page']"); var _parsely = _tag ? JSON.parse(_tag.content) : null; var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title"); var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description"); var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']"); var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']"); var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']"); var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']"); var result = { title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''), description: _description ? (_description.content ? _description.content : _description.text) : '', url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''), publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''), author: _parsely ? _parsely.author : (_author ? _author.content : ''), tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : _tags.map((elem) => { return elem.content }) ) : [] }; var ipc = require('ipc'); ipc.sendToHost(result); })();
 </script>

@@ -2,8 +2,13 @@
 
   'use strict';
 
-  function ShellController($scope, $log, $q, $notification, $mdToast, modulesProvider, ActivityService) {
+  function ShellController($scope, $log, $q, $mdSidenav, $notification, $mdToast, modulesProvider, ActivityService) {
 
+    var remote = require('remote');
+    var app = remote.require('app');
+    var appCfg = app.sysConfig();
+
+    this.appName = `${appCfg.app.name} v${appCfg.app.version}`;
     this.modules = [];
     this.isBusy = false;
     this.statusMessage = '';
@@ -38,14 +43,14 @@
       }
     };
 
-    $scope.setError = (error) => {
+    $scope.createEventFromTemplate = (template, icon, error) => {
+      return ActivityService.createEventFromTemplate(template, icon, error);
+    };
+
+    $scope.setError = (template, icon, error) => {
       $scope.notify('An error occured!', error.message);
 
-      var info = angular.copy(error);
-      info.type = 'error';
-      info.icon = 'error';
-      info.description = `Error: ${error.message}`;
-
+      var info = $scope.createEventFromTemplate(template, icon, error);
       return $scope.writeLog('error', info);
     };
 
@@ -72,12 +77,40 @@
 
     this.initialize = function() {
       this.modules = modulesProvider.modules;
-      return $notification.requestPermission();
+      return Promise.all([
+        $notification.requestPermission(),
+        ActivityService.initialize()
+      ]);
+    };
+
+    this.toggleFullscreen = function() {
+      app.toggleFullscreen();
+    };
+
+    this.platform = function() {
+      return appCfg.platform;
+    };
+
+    this.minimizeApp = function() {
+      app.minimizeAppToSysTray();
+    };
+
+    this.closeApp = function() {
+      ActivityService.close().then(() => {
+        app.close();
+      });
     };
 
     this.sendEvent = (event, arg) => {
       $q.when(true).then(() => {
         $scope.$broadcast(event, arg);
+      });
+    };
+
+    this.toggleSidebar = function() {
+      var pending = $q.when(true);
+      pending.then(() => {
+        $mdSidenav('sidebar').toggle();
       });
     };
   }

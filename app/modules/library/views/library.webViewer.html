@@ -1,4 +1,4 @@
-<div layout="column" layout-fill ng-init="ctl.initialize()" ng-cloak>
+<div flex layout="column" layout-fill ng-init="ctl.initialize()" ng-cloak>
   <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
     <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
       <md-icon>chevron_right</md-icon>
@@ -12,19 +12,19 @@
       </div>
       <md-input-container>
         <label>Title</label>
-        <textarea ng-model="ctl.document.title" ng-disabled="ctl.document.title !== ''"></textarea>
+        <textarea ng-model="ctl.document.meta.headline" ng-disabled="ctl.document.meta.headline !== ''"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Description</label>
-        <textarea ng-model="ctl.document.description" ng-disabled="ctl.document.description !== ''"></textarea>
+        <textarea ng-model="ctl.document.meta.description" ng-disabled="ctl.document.meta.description !== ''"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Author</label>
-        <input ng-model="ctl.document.author" ng-disabled="ctl.document.author !== ''"></input>
+        <input ng-model="ctl.document.meta.author.name" ng-disabled="ctl.document.meta.author !== ''"></input>
       </md-input-container>
       <md-input-container>
         <label>Publication Date</label>
-        <input ng-model="ctl.document.publicationDate" disabled></input>
+        <input ng-model="ctl.document.datePublished" disabled></input>
       </md-input-container>
       <md-input-container>
         <label>Tags</label>
@@ -43,5 +43,5 @@
       </md-input-container>
     </div>
   </md-content>
-  <webview id='viewer' nodeintegration partition="{{ ctl.getUniqueId() }}" />
+  <webview id="viewer" nodeintegration partition="{{ ctl.getUniqueId() }}" />
 </div>

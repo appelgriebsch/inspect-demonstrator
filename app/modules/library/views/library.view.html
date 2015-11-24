@@ -4,7 +4,8 @@
                 md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1"
                   ng-repeat="item in ctl.items">
-      <img ng-class="{ 'thumbnail': item.type === 'website', 'pagePrev': item.type === 'document' }" ng-src="{{ item.preview }}"></img>
+      <img ng-class="{ 'thumbnail': item.meta['@type'] === 'WebSite', 'pagePrev': item.meta['@type'] !== 'WebSite' }"
+           ng-src="{{ item.meta.thumbnailUrl.contentUrl }}"></img>
       <md-grid-tile-footer ns-popover
                       ns-popover-template="itemMetadata"
                       ns-popover-trigger="mouseenter"
@@ -12,21 +13,42 @@
                       ns-popover-popup-delay="0.7"
                       ns-popover-theme="ns-popover-tooltip-theme">
         <h3 class="filename">
-          <a ng-if="item.type === 'website'" ui-sref="^.webview({ doc: item._id })">{{ item.title }}</a>
-          <a ng-if="item.type === 'document'" ui-sref="^.pdfview({ doc: item._id })">{{ item.title }}</a>
+          <a ng-if="item.meta['@type'] === 'WebSite'" ui-sref="^.webview({ doc: item._id })">{{ item.meta.headline }}</a>
+          <a ng-if="item.meta['@type'] !== 'WebSite'" ui-sref="^.pdfview({ doc: item._id })">{{ item.meta.headline }}</a>
         </h3>
       </md-grid-tile-footer>
+    </md-grid-tile>
+    <md-grid-tile md-colspan="1" md-rowspan="1" layout-align="center center">
+      <md-menu>
+        <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
+          <md-icon md-menu-origin>add_circle_outline</md-icon>
+        </md-button>
+        <md-menu-content width="4">
+          <md-menu-item>
+            <md-button ui-sref="^.upload">
+              <md-icon md-menu-align-target>insert_drive_file</md-icon>
+              Add local document...
+            </md-button>
+          </md-menu-item>
+          <md-menu-item>
+            <md-button ui-sref="^.capture">
+              <md-icon md-menu-align-target>public</md-icon>
+              Add from Internet...
+            </md-button>
+          </md-menu-item>
+        </md-menu-content>
+      </md-menu>
     </md-grid-tile>
   </md-grid-list>
 </div>
 <script type="text/ng-template" id="itemMetadata">
   <div class="triangle"></div>
   <div class="ns-popover-tooltip">
-    <div ng-if="item.author !== ''" layout="row" layout-fill>
-      <h2>{{ item.author }}</h2>
+    <div ng-if="item.meta.author !== undefined" layout="row" layout-fill>
+      <h2>{{ item.meta.author.name }}</h2>
       <span flex></span>
-      <small>{{ item.publicationDate | date: 'short' }}</small>
+      <small>{{ item.meta.datePublished | date: 'short' }}</small>
     </div>
-    <h3>{{ item.title }}</h3>
+    <h3>{{ item.meta.headline }}</h3>
   </div>
 </script>

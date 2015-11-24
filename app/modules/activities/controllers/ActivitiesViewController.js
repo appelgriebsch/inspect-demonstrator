@@ -14,10 +14,10 @@
         return ActivityDataService.events();
       }).then((events) => {
         events.rows.map((event) => {
-          var evt = event.doc;
+          var doc = event.doc;
           var direction = (this.events.length % 2 == 0 ? 'left' : 'right');
-          evt.direction = direction;
-          this.events.push(evt);
+          doc.direction = direction;
+          this.events.push(doc);
         });
       });
     };

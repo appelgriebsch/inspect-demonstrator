@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'angular-timeline', 'ui.router', 'angular-centered', 'notification', 'nsPopover'])
+  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'ui.router', 'angular-timeline', 'angular-centered', 'notification', 'nsPopover'])
     .config(function($mdThemingProvider) {
       $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
@@ -57,6 +57,6 @@
   angular.module('inspectApp').service('ActivityDataService', ['PouchDBService', ActivityDataService]);
   angular.module('inspectApp').service('ActivityService', ['ActivityDataService', ActivityService]);
 
-  angular.module('inspectApp').controller('ShellController', ['$scope', '$log', '$q', '$notification', '$mdToast', 'modules', 'ActivityService', ShellController]);
+  angular.module('inspectApp').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', '$notification', '$mdToast', 'modules', 'ActivityService', ShellController]);
 
 })(global.angular);

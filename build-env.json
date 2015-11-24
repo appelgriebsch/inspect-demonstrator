@@ -1,7 +1,7 @@
 {
   "electron": {
     "disturl": "https://atom.io/download/atom-shell",
-    "version": "0.34.3"
+      "version": "0.35.1"
   },
   "app": {
     "id": "com.wincornixdorf.inspect-demonstrator",
