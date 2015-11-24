@@ -33,7 +33,7 @@
         LibraryDataService.save(this.document).then((result) => {
 
           var info = $scope.createEventFromTemplate('AddAction', 'public');
-          info.description = `Web Site <i>${result.meta.name}</i> captured successfully!`;
+          info.description = `Web Site <i>${this.document.meta.name}</i> captured successfully!`;
           info.object = this.document.meta;
           delete info.result;
 
