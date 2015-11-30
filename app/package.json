@@ -1,7 +1,7 @@
 {
   "name": "inspect-demonstrator",
   "productName": "inspect-demonstrator",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A demonstrator for the funded INSPECT project",
   "main": "index.js",
   "scripts": {

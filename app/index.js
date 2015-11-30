@@ -114,7 +114,7 @@
   var mainWindow;
   var trayIcon;
 
-  app.on('activate-with-no-open-windows', function() {
+  app.on('activate', function() {
     if (!mainWindow) {
       mainWindow = createMainWindow();
     }
