@@ -1,42 +1,34 @@
-<div layout="column" layout-fill ng-init="ctl.initialize()" ng-cloak>
-  <form id="query" flex layout="row" layout-fill layout-padding ng-submit="ctl.search($event)">
+<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
+  <form id="query" layout-padding layout="row" ng-submit="ctl.search($event)">
     <md-input-container layout-fill>
       <label>Search Term</label>
-      <input ng-model="ctl.query" autofocus="autofocus" required="required">
+      <input autofocus="autofocus" ng-model="ctl.query" required="required">
     </md-input-container>
     <span flex></span>
     <md-button class="md-icon-button" type="submit">
       <md-icon>search</md-icon>
     </md-button>
   </form>
-  <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1"
-                md-gutter-gt-sm="6px" md-gutter-gt-md="12px"
-                md-row-height-gt-md="1:1" md-row-height="4:3">
-    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1"
-                  ng-repeat="item in ctl.items">
-      <img ng-class="{ 'thumbnail': item.type === 'website', 'pagePrev': item.type === 'document' }" ng-src="{{ item.preview }}"></img>
-      <md-grid-tile-footer ns-popover
-                      ns-popover-template="itemMetadata"
-                      ns-popover-trigger="mouseenter"
-                      ns-popover-timeout="0.2"
-                      ns-popover-popup-delay="0.7"
-                      ns-popover-theme="ns-popover-tooltip-theme">
-        <h3 class="filename">
-          <a ng-if="item.type === 'website'" ui-sref="^.webview({ doc: item._id })">{{ item.title }}</a>
-          <a ng-if="item.type === 'document'" ui-sref="^.pdfview({ doc: item._id })">{{ item.title }}</a>
+  <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1" md-gutter-gt-md="12px" md-gutter-gt-sm="6px" md-row-height-gt-md="1:1" md-row-height="4:3">
+    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1" ng-repeat="item in ctl.items">
+      <img ng-class="{ 'thumbnail': item.meta['@type'] === 'WebSite', 'pagePrev': item.meta['@type'] !== 'WebSite' }" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}" ns-popover ns-popover-popup-delay="0.7" ns-popover-template="itemMetadata" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-timeout="0.2" ns-popover-trigger="mouseenter"></img>
+      <md-grid-tile-footer>
+        <h3 class="filename" ns-popover ns-popover-popup-delay="0.7" ns-popover-template="itemMetadata" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-timeout="0.2" ns-popover-trigger="mouseenter">
+          <a ng-if="item.meta['@type'] === 'WebSite'" ui-sref="^.webview({ doc: item._id })">{{ item.meta.headline }}</a>
+          <a ng-if="item.meta['@type'] !== 'WebSite'" ui-sref="^.pdfview({ doc: item._id })">{{ item.meta.headline }}</a>
         </h3>
       </md-grid-tile-footer>
     </md-grid-tile>
   </md-grid-list>
 </div>
-<script type="text/ng-template" id="itemMetadata">
+<script id="itemMetadata" type="text/ng-template">
   <div class="triangle"></div>
   <div class="ns-popover-tooltip">
-    <div ng-if="item.author !== ''" layout="row" layout-fill>
-      <h2>{{ item.author }}</h2>
+    <div layout-fill layout="row" ng-if="item.meta.author !== undefined">
+      <h2>{{ item.meta.author.name }}</h2>
       <span flex></span>
-      <small>{{ item.publicationDate | date: 'short' }}</small>
+      <small>{{ item.meta.datePublished | date: 'short' }}</small>
     </div>
-    <h3>{{ item.title }}</h3>
+    <h3>{{ item.meta.headline }}</h3>
   </div>
 </script>
