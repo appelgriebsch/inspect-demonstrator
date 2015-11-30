@@ -5,7 +5,10 @@
   function LibraryUploadController($scope, $state, $q, DocumentCaptureService, LibraryDataService) {
 
     var dropZone, fileSelector;
-    this.files = [];
+    this.document = {
+      tags: [],
+      files: []
+    };
 
     $scope.$on('submit', (evt, args) => {
 
@@ -61,13 +64,14 @@
 
     $scope.$on('cancel', () => {
       $q.when(true).then(() => {
-        this.files = [];
+        this.document = {};
         $scope.setReady(false);
         $state.go('^.view');
       });
     });
 
     this.initialize = function() {
+
       var init = [LibraryDataService.initialize()];
 
       dropZone = document.querySelector('#dropZone');
@@ -84,7 +88,6 @@
       dropZone.ondrop = (e) => {
         e.preventDefault();
         var files = e.dataTransfer.files;
-        console.log('dropped:', files);
         $q.when(true).then(() => {
           this.addFiles(files);
         });
@@ -112,12 +115,6 @@
       });
     };
 
-    this.downloadFile = function(evt) {
-
-      evt.preventDefault();
-
-    };
-
     this.addFiles = function(files) {
 
       var newRequests = [];
@@ -133,36 +130,65 @@
           url: `file:///${file.path}`
         };
         newRequests.push(uploadRequest);
-        this.files.push(uploadRequest);
+        this.document.files.push(uploadRequest);
       }
 
-      $scope.setBusy('Analyzing files...');
+      $scope.setBusy('Analyzing document...');
 
-      var p = [];
+      DocumentCaptureService.capturePDF(this.document.files[0]).then((meta) => {
 
-      newRequests.forEach((file) => {
-        p.push(DocumentCaptureService.capturePDF(file));
-      });
+        var template = LibraryDataService.createMetadataFromTemplate('book');
+        template.author = LibraryDataService.createMetadataFromTemplate('person');
 
-      Promise.all(p).then((results) => {
+        delete template.author.description;
+        delete template.author.email;
+        delete template.author.honorificPrefix;
+        delete template.author.honorificSuffix;
+        delete template.author.jobTitle;
 
-        results.forEach((result) => {
-
-          var idx = this.files.findIndex((elem) => {
-            return (result.url === elem.url);
-          });
-
-          if (idx !== -1) {
-            var request = this.files[idx];
-            angular.merge(request, result);
-            request.status = 'ready';
+        var author = meta.author !== undefined ? meta.author.split(/\s*,\s*/) : '';
+        if (author.length > 1) {
+          template.author.familyName = author[0];
+          template.author.givenName = author[1];
+          template.author.name = `${author[1]} ${author[0]}`;
+        } else {
+          author = meta.author.split(' ');
+          template.author.name = meta.author;
+          if (author.length > 0) {
+            template.author.familyName = author[1];
+            template.author.givenName = author[0];
           }
+          else {
+            delete template.author.familyName;
+            delete template.author.givenName;
+          }
+        }
+
+        template.datePublished = meta.publicationDate;
+        template.description = meta.description;
+        template.headline = meta.title;
+        template.keywords = meta.tags.join(',');
+        template.url = meta.url;
+
+        console.log(template);
+
+        $q.when(true).then(() => {
+          this.document = {
+            meta: template,
+            status: 'new',
+            tags: template.keywords.split(/\s*,\s*/)
+          };
+
+          this.document.meta.name = meta.id;
+
+          this.document.meta.thumbnailUrl.encodingFormat = 'image/png';
+          this.document.meta.thumbnailUrl.contentUrl = meta.preview;
+
+          $scope.setReady(true);
         });
 
-        $scope.setReady(true);
-
       }).catch((err) => {
-        $scope.setError(err);
+        $scope.setError('Examine Document', 'file_upload', err);
       });
     };
   }

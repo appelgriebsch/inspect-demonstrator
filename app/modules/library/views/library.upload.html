@@ -1,52 +1,38 @@
-<div layout-fill layout="column" ng-init="ctl.initialize()" ng-cloak>
-  <md-grid-list md-cols-gt-md="8" md-cols-md="2" md-cols-sm="1" md-gutter-gt-sm="6px" md-gutter="12px" md-row-height-gt-md="1:1" md-row-height="4:3">
-    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="2" ng-class="{ 'selected': file.isSelected }" ng-click="ctl.selectItem(file)" ng-repeat="file in ctl.files">
-      <md-icon ng-if="file.status !== 'ready'" class="md-48">insert_drive_file</md-icon>
-      <img class="pagePrev" ng-if="file.status === 'ready'" ng-src="{{ file.preview }}"></img>
-      <md-grid-tile-footer ns-popover ns-popover-popup-delay="0.7" ns-popover-template="pdfMetadata" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-timeout="0.2" ns-popover-trigger="mouseenter">
-        <h3>
-          <div class="filename" ng-if="file.status === 'unknown'">{{ file.name }}</div>
-          <div class="filename" ng-if="file.status === 'ready'">
-            <a>{{ file.title }}</a>
-          </div>
-        </h3>
-      </md-grid-tile-footer>
-    </md-grid-tile>
-    <md-grid-tile md-colspan="1" md-rowspan="2" layout-align="center center">
-      <input accept=".pdf" class="hidden" id="fileSelector" type="file" multiple="multiple"></input>
-      <md-menu>
-        <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
-          <md-icon md-menu-origin>add_circle_outline</md-icon>
-        </md-button>
-        <md-menu-content width="4">
-          <md-menu-item>
-            <md-button ng-click="ctl.showFileSelector($event)">
-              <md-icon md-menu-align-target>insert_drive_file</md-icon>
-              Upload PDF Files
-            </md-button>
-          </md-menu-item>
-          <!--md-menu-item>
-            <md-button ng-click="ctl.downloadFile($event)">
-              <md-icon md-menu-align-target>public</md-icon>
-              Get PDF File from Internet
-            </md-button>
-          </md-menu-item-->
-        </md-menu-content>
-      </md-menu>
-    </md-grid-tile>
-  </md-grid-list>
-  <md-whiteframe id="dropZone" layout layout-align="center center">
-    <span>Drop your files and/or folders here...</span>
-  </md-whiteframe>
-</div>
-<script id="pdfMetadata" type="text/ng-template">
-  <div class="triangle"></div>
-  <div class="ns-popover-tooltip">
-    <div layout-fill layout="row" ng-if="file.author !== ''">
-      <h2>{{ file.author.join(', ') }}</h2>
-      <span flex></span>
-      <small>{{ file.publicationDate | date: 'short' }}</small>
+<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
+  <form flex id="docMeta" layout="row" ng-submit="ctl.uploadDocument($event)">
+    <div class="layout-padding" flex>
+      <md-input-container>
+        <label>Title</label>
+        <textarea ng-model="ctl.document.meta.headline"></textarea>
+      </md-input-container>
+      <md-input-container>
+        <label>Description</label>
+        <textarea ng-model="ctl.document.meta.description"></textarea>
+      </md-input-container>
+      <md-input-container>
+        <label>Author</label>
+        <input ng-model="ctl.document.meta.author.name"></input>
+      </md-input-container>
+      <md-input-container>
+        <label>Publication Date</label>
+        <input ng-model="ctl.document.meta.datePublished"></input>
+      </md-input-container>
+      <md-input-container>
+        <label>Tags</label>
+        <md-chips ng-model="ctl.document.tags"></md-chips>
+      </md-input-container>
+      <md-whiteframe id="dropZone" ng-if="ctl.document.files.length === 0" layout layout-align="center center">
+        <span>Drop your file into this area...</span>
+        <span>
+          <span>...or</span>
+          <md-button ng-click="ctl.showFileSelector($event)">click here</md-button>
+          <span>...</span>
+        </span>
+        <input accept=".pdf" class="hidden" id="fileSelector" type="file"></input>
+      </md-whiteframe>
     </div>
-    <h3>{{ file.title }}</h3>
-  </div>
-</script>
+    <div class="layout-padding" flex>
+      <img class="thumbnail" ng-if="ctl.document.status !== undefined" ng-src="{{ ctl.document.meta.thumbnailUrl.contentUrl }}"></img>
+    </div>
+  </form>
+</div>
