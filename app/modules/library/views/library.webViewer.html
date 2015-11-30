@@ -1,4 +1,8 @@
-<div flex layout="column" layout-fill ng-init="ctl.initialize()" ng-cloak>
+<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
+  <md-input-container>
+    <label>Website URL</label>
+    <input ng-disabled="ctl.document !== undefined" ng-model="ctl.document.meta.url" required="required" type="url">
+  </md-input-container>
   <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
     <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
       <md-icon>chevron_right</md-icon>
