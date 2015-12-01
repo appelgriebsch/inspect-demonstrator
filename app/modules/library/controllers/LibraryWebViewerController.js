@@ -79,7 +79,7 @@
           });
 
         }).catch((err) => {
-          $scope.setError('Remove Document', 'delete', err);
+          $scope.setError('DeleteAction', 'delete', err);
           $scope.setReady(true);
         });
       });
@@ -110,7 +110,7 @@
             $scope.setReady(false);
           });
         }).catch((err) => {
-          $scope.setError('Export Document', 'share', err);
+          $scope.setError('SendAction', 'share', err);
           $scope.setReady(true);
         });
       }

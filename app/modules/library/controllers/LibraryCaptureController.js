@@ -83,7 +83,9 @@
       template.author = LibraryDataService.buildAuthorInformation(meta.author);
       template.datePublished = meta.publicationDate;
       template.description = meta.description;
+      template.about = meta.title;
       template.headline = meta.title;
+      template.fileFormat = 'multipart/related';
       template.keywords = meta.tags.join(',');
       template.url = meta.url;
 

@@ -51,7 +51,7 @@
               p.push($scope.writeLog('info', info));
 
             }).catch((error) => {
-              $scope.setError('Import Documents', 'import_export', err);
+              $scope.setError('ReceiveAction', 'import_export', err);
               $scope.setReady(true);
             });
           });
@@ -62,7 +62,7 @@
           $scope.notify('Import finished successfully', `${results.length} documents have been imported successfully.`);
           $scope.setReady();
         }).catch((err) => {
-          $scope.setError('Import Documents', 'import_export', err);
+          $scope.setError('ReceiveAction', 'import_export', err);
           $scope.setReady(true);
         });
       }
@@ -100,7 +100,7 @@
           $scope.notify('Export finished successfully', `${results.length} documents have been exported successfully.`);
           $scope.setReady();
         }).catch((err) => {
-          $scope.setError('Export Documents', 'share', err);
+          $scope.setError('SendAction', 'share', err);
           $scope.setReady(true);
         });
       }

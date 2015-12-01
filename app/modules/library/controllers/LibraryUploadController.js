@@ -47,7 +47,8 @@
             return $scope.writeLog('info', info);
           });
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('AddAction', 'file_upload', err);
+          $scope.setReady(true);
         });
 
         p.push(fp);
@@ -138,39 +139,13 @@
       DocumentCaptureService.capturePDF(this.document.files[0]).then((meta) => {
 
         var template = LibraryDataService.createMetadataFromTemplate('book');
-        template.author = LibraryDataService.createMetadataFromTemplate('person');
-
-        delete template.author.description;
-        delete template.author.email;
-        delete template.author.honorificPrefix;
-        delete template.author.honorificSuffix;
-        delete template.author.jobTitle;
-
-        var author = meta.author !== undefined ? meta.author.split(/\s*,\s*/) : '';
-        if (author.length > 1) {
-          template.author.familyName = author[0];
-          template.author.givenName = author[1];
-          template.author.name = `${author[1]} ${author[0]}`;
-        } else {
-          author = meta.author.split(' ');
-          template.author.name = meta.author;
-          if (author.length > 0) {
-            template.author.familyName = author[1];
-            template.author.givenName = author[0];
-          }
-          else {
-            delete template.author.familyName;
-            delete template.author.givenName;
-          }
-        }
+        template.author = LibraryDataService.buildAuthorInformation(meta.author);
 
         template.datePublished = meta.publicationDate;
         template.description = meta.description;
         template.headline = meta.title;
         template.keywords = meta.tags.join(',');
         template.url = meta.url;
-
-        console.log(template);
 
         $q.when(true).then(() => {
           this.document = {
@@ -188,7 +163,8 @@
         });
 
       }).catch((err) => {
-        $scope.setError('Examine Document', 'file_upload', err);
+        $scope.setError('AddAction', 'file_upload', err);
+        $scope.setReady(true);
       });
     };
   }

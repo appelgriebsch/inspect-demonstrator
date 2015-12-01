@@ -27,7 +27,7 @@
         $scope.setReady(false);
 
       }).catch((err) => {
-        $scope.setError('Search Library', 'search', err);
+        $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
       });
     };
@@ -64,7 +64,7 @@
           $scope.notify('Export finished successfully', `${results.length} documents have been exported successfully.`);
           $scope.setReady();
         }).catch((err) => {
-          $scope.setError('Export Documents', 'share', err);
+          $scope.setError('SendAction', 'share', err);
           $scope.setReady(true);
         });
       }

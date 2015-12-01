@@ -21,7 +21,7 @@
       }).then((result) => {
 
         if (result._attachments) {
-          pdfData = result._attachments[result.title].data;
+          pdfData = result._attachments[result.meta.name].data;
         }
 
         var container = document.getElementById('pdfViewerContainer');
@@ -52,15 +52,22 @@
           // the (optional) linkService.
           pdfViewer.setDocument(pdfDocument);
           pdfLinkService.setDocument(pdfDocument, null);
+
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('ReceiveAction', 'insert_drive_file', err);
+          $scope.setReady(true);
         });
 
+        result.tags = result.meta.keywords.split(/\s*,\s*/);
         result.custom_tags = result.custom_tags || [];
         result.annotations = result.annotations || [];
 
         this.document = result;
         $scope.setReady(false);
+
+      }).catch((err) => {
+        $scope.setError('ReceiveAction', 'insert_drive_file', err);
+        $scope.setReady(true);
       });
     };
 
@@ -87,6 +94,7 @@
         .ok('Yes, delete it')
         .cancel('No, please keep it');
       $mdDialog.show(confirm).then(() => {
+
         LibraryDataService.delete(this.document).then(() => {
 
           var info = angular.copy(this.document);
@@ -102,8 +110,10 @@
             $scope.notify('Document deleted successfully', info.description);
             $state.go('^.view');
           });
+
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('DeleteAction', 'delete', err);
+          $scope.setReady(true);
         });
       });
     });
@@ -132,8 +142,10 @@
             $scope.notify('Document exported successfully', info.description);
             $scope.setReady(false);
           });
+
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('SendAction', 'share', err);
+          $scope.setReady(true);
         });
       }
     });
