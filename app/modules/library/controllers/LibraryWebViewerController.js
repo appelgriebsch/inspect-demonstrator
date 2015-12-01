@@ -79,7 +79,8 @@
           });
 
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('Remove Document', 'delete', err);
+          $scope.setReady(true);
         });
       });
     });
@@ -109,7 +110,8 @@
             $scope.setReady(false);
           });
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('Export Document', 'share', err);
+          $scope.setReady(true);
         });
       }
     });

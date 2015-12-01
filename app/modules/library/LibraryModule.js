@@ -64,6 +64,9 @@
                 templateUrl: `${moduleConfig.path}/views/library.search.html`,
                 controller: 'LibrarySearchController as ctl'
               },
+              'header@app': {
+                template: `<a ui-sref="^.view"><md-icon>chevron_left</md-icon>${moduleConfig.label}</a>`
+              },
               'actions@app': {
                 templateUrl: `${moduleConfig.path}/views/library.search.actions.html`
               }
@@ -76,6 +79,9 @@
                 templateUrl: `${moduleConfig.path}/views/library.webViewer.html`,
                 controller: 'LibraryWebViewerController as ctl'
               },
+              'header@app': {
+                template: `<a ui-sref="^.view"><md-icon>chevron_left</md-icon>${moduleConfig.label}</a>`
+              },
               'actions@app': {
                 templateUrl: `${moduleConfig.path}/views/library.webViewer.actions.html`
               }
@@ -87,6 +93,9 @@
               'content': {
                 templateUrl: `${moduleConfig.path}/views/library.pdfViewer.html`,
                 controller: 'LibraryPDFViewerController as ctl'
+              },
+              'header@app': {
+                template: `<a ui-sref="^.view"><md-icon>chevron_left</md-icon>${moduleConfig.label}</a>`
               },
               'actions@app': {
                 templateUrl: `${moduleConfig.path}/views/library.pdfViewer.actions.html`

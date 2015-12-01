@@ -1,9 +1,9 @@
 <div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
   <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1" md-gutter-gt-md="12px" md-gutter-gt-sm="6px" md-row-height-gt-md="1:1" md-row-height="4:3">
-    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1" ng-repeat="item in ctl.items">
-      <img ng-class="{ 'thumbnail': item.meta['@type'] === 'WebSite', 'pagePrev': item.meta['@type'] !== 'WebSite' }" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}" ns-popover ns-popover-popup-delay="0.7" ns-popover-template="itemMetadata" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-timeout="0.2" ns-popover-trigger="mouseenter"></img>
+    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1" ng-repeat="item in ctl.items" ng-click="ctl.selectItem($event, item)">
+      <img ng-class="{ 'thumbnail': item.meta['@type'] === 'WebSite', 'pagePrev': item.meta['@type'] !== 'WebSite' }" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}"></img>
       <md-grid-tile-footer>
-        <h3 class="filename" ns-popover ns-popover-popup-delay="0.7" ns-popover-template="itemMetadata" ns-popover-theme="ns-popover-tooltip-theme" ns-popover-timeout="0.2" ns-popover-trigger="mouseenter">
+        <h3 class="filename">
           <a ng-if="item.meta['@type'] === 'WebSite'" ui-sref="^.webview({ doc: item._id })">{{ item.meta.headline }}</a>
           <a ng-if="item.meta['@type'] !== 'WebSite'" ui-sref="^.pdfview({ doc: item._id })">{{ item.meta.headline }}</a>
         </h3>
@@ -32,14 +32,3 @@
     </md-grid-tile>
   </md-grid-list>
 </div>
-<script id="itemMetadata" type="text/ng-template">
-  <div class="triangle"></div>
-  <div class="ns-popover-tooltip">
-    <div layout-fill layout="row" ng-if="item.meta.author !== undefined">
-      <h2>{{ item.meta.author.name }}</h2>
-      <span flex></span>
-      <small>{{ item.meta.datePublished | date: 'short' }}</small>
-    </div>
-    <h3>{{ item.meta.headline }}</h3>
-  </div>
-</script>

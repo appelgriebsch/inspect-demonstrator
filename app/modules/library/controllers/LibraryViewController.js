@@ -49,8 +49,10 @@
 
               this.items.push(result);
               p.push($scope.writeLog('info', info));
+
             }).catch((error) => {
-              $scope.setError(error);
+              $scope.setError('Import Documents', 'import_export', err);
+              $scope.setReady(true);
             });
           });
 
@@ -60,7 +62,8 @@
           $scope.notify('Import finished successfully', `${results.length} documents have been imported successfully.`);
           $scope.setReady();
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('Import Documents', 'import_export', err);
+          $scope.setReady(true);
         });
       }
     });
@@ -97,7 +100,8 @@
           $scope.notify('Export finished successfully', `${results.length} documents have been exported successfully.`);
           $scope.setReady();
         }).catch((err) => {
-          $scope.setError(err);
+          $scope.setError('Export Documents', 'share', err);
+          $scope.setReady(true);
         });
       }
     });
