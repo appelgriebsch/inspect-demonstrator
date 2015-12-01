@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function DocumentSharingService() {
+  function DocumentSharingService(LibraryDataService) {
 
     var remote = require('remote');
     var app = remote.require('app');
@@ -101,45 +101,50 @@
 
         documents.forEach((doc) => {
 
-          var name = doc.meta.name || doc._id;
+          LibraryDataService.item(doc._id).then((result) => {
 
-          var capturePath = path.join(tempPath, name);
-          var attachmentPath = path.join(capturePath, 'attachments');
+            var name = result.meta.name || doc._id;
 
-          if (!fs.existsSync(capturePath)) fs.mkdirSync(capturePath);
-          if (!fs.existsSync(attachmentPath)) fs.mkdirSync(attachmentPath);
+            var capturePath = path.join(tempPath, name);
+            var attachmentPath = path.join(capturePath, 'attachments');
 
-          for (var attName in doc._attachments) {
-            var attachment = doc._attachments[attName];
+            if (!fs.existsSync(capturePath)) fs.mkdirSync(capturePath);
+            if (!fs.existsSync(attachmentPath)) fs.mkdirSync(attachmentPath);
 
-            fs.writeFileSync(path.join(attachmentPath, attName), attachment.data);
-            delete attachment.data;
-          }
+            for (var attName in result._attachments) {
+              var attachment = result._attachments[attName];
 
-          fs.writeFileSync(path.join(capturePath, 'attachments.json'), JSON.stringify(doc._attachments));
-
-          delete doc._attachments;
-          delete doc._rev;
-
-          fs.writeFileSync(path.join(capturePath, 'metadata.json'), JSON.stringify(doc));
-
-          var asarFile = path.join(targetFolder, name + '.archive');
-          asar.createPackage(capturePath, asarFile, function(err) {
-
-            if (err) {
-              reject(err);
+              fs.writeFileSync(path.join(attachmentPath, attName), attachment.data);
+              delete attachment.data;
             }
 
-            rm(capturePath, () => {
-              results.push({
-                doc: doc,
-                target: asarFile
-              });
+            fs.writeFileSync(path.join(capturePath, 'attachments.json'), JSON.stringify(result._attachments));
 
-              if (results.length === documents.length) {
-                resolve(results);
+            delete result._attachments;
+            delete result._rev;
+
+            fs.writeFileSync(path.join(capturePath, 'metadata.json'), JSON.stringify(result));
+
+            var asarFile = path.join(targetFolder, name + '.archive');
+            asar.createPackage(capturePath, asarFile, function(err) {
+
+              if (err) {
+                reject(err);
               }
+
+              rm(capturePath, () => {
+                results.push({
+                  doc: result,
+                  target: asarFile
+                });
+
+                if (results.length === documents.length) {
+                  resolve(results);
+                }
+              });
             });
+          }).catch((err) => {
+            reject(err);
           });
         });
       });

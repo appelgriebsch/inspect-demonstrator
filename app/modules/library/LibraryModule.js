@@ -116,7 +116,7 @@
     var LibraryWebViewerController = require('./controllers/LibraryWebViewerController');
 
     angular.module('inspectApp').service('DocumentCaptureService', ['$http', DocumentCaptureService]);
-    angular.module('inspectApp').service('DocumentSharingService', [DocumentSharingService]);
+    angular.module('inspectApp').service('DocumentSharingService', ['LibraryDataService', DocumentSharingService]);
     angular.module('inspectApp').service('LibraryDataService', ['PouchDBService', LibraryDataService]);
 
     angular.module('inspectApp').controller('LibraryCaptureController', ['$scope', '$state', '$q', 'DocumentCaptureService', 'LibraryDataService', LibraryCaptureController]);
