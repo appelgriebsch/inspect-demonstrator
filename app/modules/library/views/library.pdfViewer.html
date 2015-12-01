@@ -1,75 +1,66 @@
-<div layout="column" layout-fill ng-init="ctl.initialize()" ng-cloak>
-  <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
-    <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
+<div layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
+  <md-content class="sidebar" layout-padding layout-sm="column" layout-wrap layout="column" ng-if="ctl.document">
+    <md-button class='md-icon-button sidebar-btn' ng-click="ctl.openSidebar()" ng-if="!ctl.sidebarOpened">
       <md-icon>chevron_right</md-icon>
     </md-button>
     <div ng-if="ctl.sidebarOpened">
-      <div layout-align="space-between start" layout="row" layout-fill>
+      <div layout-align="space-between start" layout-fill layout="row">
         <h3>Document Information</h3>
         <md-button class='md-icon-button sidebar-btn-opened' ng-click="ctl.closeSidebar()">
           <md-icon>chevron_left</md-icon>
         </md-button>
       </div>
-      <md-tabs md-dynamic-height md-border-bottom>
+      <md-tabs md-border-bottom md-dynamic-height>
         <md-tab label="Meta">
           <md-content class="md-padding tabContent">
             <md-input-container>
               <label>Title</label>
-              <textarea ng-model="ctl.document.title" ng-disabled="ctl.document.title !== ctl.document.id"></textarea>
+              <textarea ng-model="ctl.document.meta.headline"></textarea>
             </md-input-container>
             <md-input-container>
               <label>Description</label>
-              <textarea ng-model="ctl.document.description" ng-disabled="ctl.document.description !== ''"></textarea>
+              <textarea ng-model="ctl.document.meta.description"></textarea>
             </md-input-container>
             <md-input-container>
               <label>Author</label>
-              <input ng-model="ctl.document.author" ng-disabled="ctl.document.author !== ''"></input>
+              <input ng-model="ctl.document.meta.author.name"></input>
             </md-input-container>
             <md-input-container>
               <label>Publication Date</label>
-              <input ng-model="ctl.document.publicationDate" disabled></input>
+              <input disabled ng-model="ctl.document.meta.datePublished"></input>
             </md-input-container>
             <md-input-container>
               <label>Tags</label>
-              <md-chips ng-if="ctl.document.tags"
-                ng-model="ctl.document.tags"
-                readonly="true">
-              </md-chips>
-              <md-chips class="md-chips-readonly"
-                ng-model="ctl.document.custom_tags"
-                readonly="false"
-                placeholder="Enter a tag"
-                delete-button-label="Remove Tag"
-                delete-hint="Press delete to remove tag"
-                secondary-placeholder="+Tag">
-              </md-chips>
+              <md-chips ng-if="ctl.document.tags" ng-model="ctl.document.tags" readonly="true"></md-chips>
+              <md-chips class="md-chips-readonly" delete-button-label="Remove Tag" delete-hint="Press delete to remove tag" ng-model="ctl.document.custom_tags" placeholder="Enter a tag" readonly="false" secondary-placeholder="+Tag"></md-chips>
             </md-input-container>
           </md-tab>
-        <md-tab label="Outline" ng-disabled="ctl.document.outline.length === 0">
-          <md-content class="md-padding tabContent">
-            <div ng-repeat="chapter in ctl.document.outline">
-              <h3>
-                <span>{{ chapter.title }}</span>
-                <span ng-if="chapter.items.length === 1">: {{ chapter.items[0].title }}</span>
-              </h3>
-              <div ng-if="chapter.items.length === 1" ng-repeat="subc in chapter.items[0].items">
-                <h4>{{ subc.title }}</h4>
+          <md-tab label="Outline" ng-disabled="ctl.document.outline.length === 0">
+            <md-content class="md-padding tabContent">
+              <div ng-repeat="chapter in ctl.document.outline">
+                <h3>
+                  <span>{{ chapter.title }}</span>
+                  <span ng-if="chapter.items.length === 1">:
+                    {{ chapter.items[0].title }}</span>
+                </h3>
+                <div ng-if="chapter.items.length === 1" ng-repeat="subc in chapter.items[0].items">
+                  <h4>{{ subc.title }}</h4>
+                </div>
+                <div ng-if="chapter.items.length > 1" ng-repeat="subc in chapter.items">
+                  <h4>{{ subc.title }}</h4>
+                </div>
               </div>
-              <div ng-if="chapter.items.length > 1" ng-repeat="subc in chapter.items">
-                <h4>{{ subc.title }}</h4>
-              </div>
-            </div>
-          </md-content>
-        </md-tab>
-        <md-tab label="Annotations" ng-disabled="ctl.document.annotations.length === 0">
-          <md-content class="md-padding tabContent">
-            Page 1
-          </md-content>
-        </md-tab>
-      </md-tabs>
+            </md-content>
+          </md-tab>
+          <md-tab label="Annotations" ng-disabled="ctl.document.annotations.length === 0">
+            <md-content class="md-padding tabContent">
+              Page 1
+            </md-content>
+          </md-tab>
+        </md-tabs>
+      </div>
+    </md-content>
+    <div id="pdfViewerContainer">
+      <div class="pdfViewer" id="pdfViewer"></div>
     </div>
-  </md-content>
-  <div id="pdfViewerContainer">
-    <div id="pdfViewer" class="pdfViewer"></div>
   </div>
-</div>

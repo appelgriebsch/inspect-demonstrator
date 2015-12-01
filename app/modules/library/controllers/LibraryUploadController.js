@@ -15,15 +15,13 @@
       $scope.setBusy('Uploading Files...');
       var p = [];
 
-      console.log(this.document.files);
-
       this.document.files.forEach((file) => {
 
         var fp = DocumentCaptureService.requestFileData(file).then((data) => {
 
           var _attachments = this.document._attachments || {};
           _attachments[this.document.meta.name] = {
-            content_type: file.attachment.content_type,
+            content_type: file.mime,
             data: data
           };
 
@@ -35,6 +33,7 @@
         });
 
         p.push(fp);
+
       });
 
       Promise.all(p).then((results) => {
@@ -127,7 +126,6 @@
           name: file.name,
           mime: file.type,
           size: file.size,
-          status: 'unknown',
           path: file.path,
           url: `file:///${file.path}`
         };

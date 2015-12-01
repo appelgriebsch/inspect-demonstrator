@@ -1,8 +1,4 @@
-<div flex layout-fill layout="column" ng-init="ctl.initialize()" ng-cloak>
-  <md-input-container>
-    <label>Website URL</label>
-    <input ng-disabled="ctl.document !== undefined" ng-model="ctl.document.meta.url" required="required" type="url">
-  </md-input-container>
+<div layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
   <md-content ng-if="ctl.document" layout-padding layout-wrap layout="column" layout-sm="column" class="sidebar">
     <md-button class='md-icon-button sidebar-btn' ng-if="!ctl.sidebarOpened" ng-click="ctl.openSidebar()">
       <md-icon>chevron_right</md-icon>
@@ -31,6 +27,10 @@
         <input ng-model="ctl.document.datePublished" disabled></input>
       </md-input-container>
       <md-input-container>
+        <label>Page URL</label>
+        <input disabled ng-model="ctl.document.meta.url"></input>
+      </md-input-container>
+      <md-input-container>
         <label>Tags</label>
         <md-chips ng-if="ctl.document.tags"
           ng-model="ctl.document.tags"
@@ -47,5 +47,5 @@
       </md-input-container>
     </div>
   </md-content>
-  <webview id="viewer" nodeintegration partition="{{ ctl.getUniqueId() }}" />
+  <webview id="webViewer" nodeintegration partition="{{ ctl.getUniqueId() }}" />
 </div>

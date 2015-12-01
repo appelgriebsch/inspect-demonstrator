@@ -5,7 +5,7 @@
   function LibraryWebViewerController($scope, $state, $stateParams, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     var uuid = require('uuid').v1();
-    var webViewer = document.getElementById('viewer');
+    var webViewer = document.getElementById('webViewer');
     var docID = $stateParams.doc;
 
     var disableAllLinks = function() {
