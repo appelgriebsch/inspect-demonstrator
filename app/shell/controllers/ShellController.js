@@ -34,7 +34,11 @@
 
       if (process.platform === 'win32') {
         $mdToast.show(
-          $mdToast.simple().content(message).position('bottom right').hideDelay(2000));
+          $mdToast.show({
+            template: `<md-toast><span flex>${message}</span></md-toast>`,
+            position: 'bottom right',
+            hideDelay: 2000
+          });
       } else {
         $notification(title, {
           body: message,
