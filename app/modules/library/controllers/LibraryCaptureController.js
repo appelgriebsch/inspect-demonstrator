@@ -28,7 +28,6 @@
         };
 
         this.document._attachments = _attachments;
-        delete this.document.tags;
 
         LibraryDataService.save(this.document).then((result) => {
 
@@ -93,6 +92,7 @@
         this.document = {
           meta: template,
           status: 'new',
+          createdAt: new Date(),
           tags: template.keywords.split(/\s*,\s*/)
         };
         $scope.setReady(true);

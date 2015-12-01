@@ -7,15 +7,15 @@
     var db = PouchDBService.initialize('library');
     var uuid = require('uuid');
 
-    var buildSearchIndex = function() {
+    var _buildSearchIndex = function() {
 
       return db.search({
-        fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'meta.keywords'],
+        fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
         build: true
       });
     };
 
-    var saveDoc = function(doc) {
+    var _saveDoc = function(doc) {
 
       var promise = Promise.resolve(
         db.get(doc._id)
@@ -38,6 +38,17 @@
       );
 
       return promise;
+    };
+
+    var _scanObject = function(doc) {
+      for (var key in doc) {
+        if (doc[key] === Object(doc[key])) {
+          _scanObject(doc[key]);
+        } else if ((typeof doc[key] === 'string') && (doc[key].substring(0, 2) === '${')) {
+          console.log(key + ': ' + doc[key]);
+          delete doc[key]; // remove any placeholder from outgoing stream
+        }
+      }
     };
 
     return {
@@ -98,82 +109,82 @@
           book: {
             '@context': 'http://schema.org',
             '@type': 'Book',
-            about: '${subject}',                      // subject
+            about: '${subject}', // subject
             alternativeHeadline: '${headline2}',
-            author: '${author}',                      // person or organization
+            author: '${author}', // person or organization
             bookEdition: '${bookEdition}',
             bookFormat: '${bookFormat}',
             datePublished: '${publishDate}',
             description: '${description}',
-            fileFormat: '${mimeType}',                 // mime type
-            headline: '${headline}',                   // title
+            fileFormat: '${mimeType}', // mime type
+            headline: '${headline}', // title
             isbn: '${isbn}',
-            keywords: '${tags}',                       // separated by comma
+            keywords: '${tags}', // separated by comma
             name: '${name}',
             numberOfPages: '${noOfPages}',
-            publisher: '${publisher}',                // person or organization
+            publisher: '${publisher}', // person or organization
             thumbnailUrl: {
               '@context': 'http://schema.org',
               '@type': 'ImageObject',
               caption: '${caption}',
-              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
-              encodingFormat: '${thumbnailFormat}'          // mime type
+              contentUrl: '${thumbnailUrl}', // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}' // mime type
             },
-            url: '${url}'                                   // origin of book
+            url: '${url}' // origin of book
           },
           article: {
             '@context': 'http://schema.org',
             '@type': 'Article',
-            about: '${subject}',                      // subject
+            about: '${subject}', // subject
             alternativeHeadline: '${headline2}',
-            author: '${author}',                      // person or organization
+            author: '${author}', // person or organization
             datePublished: '${publishDate}',
             description: '${description}',
-            fileFormat: '${mimeType}',                 // mime type
-            headline: '${headline}',                   // title
-            keywords: '${tags}',                       // separated by comma
+            fileFormat: '${mimeType}', // mime type
+            headline: '${headline}', // title
+            keywords: '${tags}', // separated by comma
             name: '${name}',
-            publisher: '${publisher}',                 // person or organization
+            publisher: '${publisher}', // person or organization
             thumbnailUrl: {
               '@context': 'http://schema.org',
               '@type': 'ImageObject',
               caption: '${caption}',
-              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
-              encodingFormat: '${thumbnailFormat}'          // mime type
+              contentUrl: '${thumbnailUrl}', // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}' // mime type
             },
-            url: '${url}'                                   // origin of book
+            url: '${url}' // origin of book
           },
           website: {
             '@context': 'http://schema.org',
             '@type': 'WebSite',
-            about: '${subject}',                      // subject
+            about: '${subject}', // subject
             alternativeHeadline: '${headline2}',
-            author: '${author}',                      // person or organization
+            author: '${author}', // person or organization
             datePublished: '${publishDate}',
             description: '${description}',
-            fileFormat: '${mimeType}',                 // mime type
-            headline: '${headline}',                   // title
-            keywords: '${tags}',                       // separated by comma
+            fileFormat: '${mimeType}', // mime type
+            headline: '${headline}', // title
+            keywords: '${tags}', // separated by comma
             name: '${name}',
             thumbnailUrl: {
               '@context': 'http://schema.org',
               '@type': 'ImageObject',
               caption: '${caption}',
-              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
-              encodingFormat: '${thumbnailFormat}'          // mime type
+              contentUrl: '${thumbnailUrl}', // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}' // mime type
             },
-            url: '${url}'                                   // origin of book
+            url: '${url}' // origin of book
           },
           person: {
             '@context': 'http://schema.org',
             '@type': 'Person',
-            additionalName: '${additionalName}',        // middle name
+            additionalName: '${additionalName}', // middle name
             description: '${description}',
             email: '${email}',
             familyName: '${familyName}',
             givenName: '${givenName}',
-            honorificPrefix: '${honorPrefix}',          // Dr./Mrs./Mr.
-            honorificSuffix: '${honorSuffix}',          // M.D./PhD/MSCSW
+            honorificPrefix: '${honorPrefix}', // Dr./Mrs./Mr.
+            honorificSuffix: '${honorSuffix}', // M.D./PhD/MSCSW
             jobTitle: '${jobTitle}',
             name: '${name}'
           },
@@ -187,8 +198,8 @@
               '@context': 'http://schema.org',
               '@type': 'ImageObject',
               caption: '${caption}',
-              contentUrl: '${thumbnailUrl}',                // could be embedded base64 encoded
-              encodingFormat: '${thumbnailFormat}'          // mime type
+              contentUrl: '${thumbnailUrl}', // could be embedded base64 encoded
+              encodingFormat: '${thumbnailFormat}' // mime type
             },
             name: '${name}'
           },
@@ -202,9 +213,9 @@
         this.templates = templates;
 
         return Promise.all([
-          saveDoc(templates),
-          saveDoc(library),
-          buildSearchIndex()
+          _saveDoc(templates),
+          _saveDoc(library),
+          _buildSearchIndex()
         ]);
       },
 
@@ -231,7 +242,9 @@
           doc._id = uuid.v4();
         }
 
-        return saveDoc(doc);
+        _scanObject(doc);
+        console.log(doc);
+        return _saveDoc(doc);
       },
 
       delete: function(doc) {
@@ -242,7 +255,7 @@
 
         return db.search({
           query: query,
-          fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'meta.keywords'],
+          fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
           include_docs: true
         });
       },
@@ -266,11 +279,8 @@
             template.familyName = author[1];
             template.givenName = author[0];
           }
-          else {
-            delete template.familyName;
-            delete template.givenName;
-          }
         }
+        _scanObject(template);
         return template;
       }
     };

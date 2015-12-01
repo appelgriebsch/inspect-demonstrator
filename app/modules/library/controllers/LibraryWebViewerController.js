@@ -8,8 +8,20 @@
     var webViewer = document.getElementById('viewer');
     var docID = $stateParams.doc;
 
+    var disableAllLinks = function() {
+      var links = document.querySelectorAll('a[href]');
+      for (var link in links) {
+        links[link].href='javascript:void(0)';
+      }
+    }.toString();
+
     this.document;
     this.sidebarOpened = false;
+
+    webViewer.addEventListener('dom-ready', () => {
+      var code = `(${disableAllLinks})();`;
+      webViewer.executeJavaScript(code);
+    });
 
     this.initialize = function() {
 
@@ -28,8 +40,10 @@
         result.tags = result.meta.keywords.split(/\s*,\s*/);
         result.custom_tags = result.custom_tags || [];
         result.annotations = result.annotations || [];
-        this.document = result;
-        $scope.setReady(false);
+        $q.when(true).then(() => {
+          this.document = result;
+          $scope.setReady(false);
+        });
       });
     };
 
