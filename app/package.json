@@ -41,7 +41,6 @@
     "leveldown": "appelgriebsch/leveldown",
     "mime": "^1.3.4",
     "node-servicefinder": "appelgriebsch/node-servicefinder",
-    "ns-popover": "^0.6.8",
     "pdfjs-dist": "^1.2.32",
     "pouchdb": "^5.1.0",
     "pouchdb-auth": "^1.0.5",
