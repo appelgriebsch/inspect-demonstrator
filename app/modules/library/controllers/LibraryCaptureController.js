@@ -77,34 +77,10 @@
     });
 
     webViewer.addEventListener('ipc-message', (evt, args) => {
+
       var meta = evt.channel;
       var template = LibraryDataService.createMetadataFromTemplate('website');
-      template.author = LibraryDataService.createMetadataFromTemplate('person');
-
-      delete template.author.description;
-      delete template.author.email;
-      delete template.author.honorificPrefix;
-      delete template.author.honorificSuffix;
-      delete template.author.jobTitle;
-
-      var author = meta.author.split(/\s*,\s*/);
-      if (author.length > 1) {
-        template.author.familyName = author[0];
-        template.author.givenName = author[1];
-        template.author.name = `${author[1]} ${author[0]}`;
-      } else {
-        author = meta.author.split(' ');
-        template.author.name = meta.author;
-        if (author.length > 0) {
-          template.author.familyName = author[1];
-          template.author.givenName = author[0];
-        }
-        else {
-          delete template.author.familyName;
-          delete template.author.givenName;
-        }
-      }
-
+      template.author = LibraryDataService.buildAuthorInformation(meta.author);
       template.datePublished = meta.publicationDate;
       template.description = meta.description;
       template.headline = meta.title;

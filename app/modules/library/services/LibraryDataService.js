@@ -250,6 +250,28 @@
       createMetadataFromTemplate: function(template) {
         var doc = this.templates[template] || {};
         return JSON.parse(JSON.stringify(doc));
+      },
+
+      buildAuthorInformation: function(info) {
+        var template = this.templates['person'];
+        var author = info.split(/\s*,\s*/);
+        if (author.length > 1) {
+          template.familyName = author[0];
+          template.givenName = author[1];
+          template.name = `${author[1]} ${author[0]}`;
+        } else {
+          author = info.split(' ');
+          template.name = info;
+          if (author.length > 0) {
+            template.familyName = author[1];
+            template.givenName = author[0];
+          }
+          else {
+            delete template.familyName;
+            delete template.givenName;
+          }
+        }
+        return template;
       }
     };
   }
