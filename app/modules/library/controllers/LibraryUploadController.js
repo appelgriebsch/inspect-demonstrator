@@ -15,51 +15,49 @@
       $scope.setBusy('Uploading Files...');
       var p = [];
 
-      this.files.forEach((file) => {
+      console.log(this.document.files);
+
+      this.document.files.forEach((file) => {
 
         var fp = DocumentCaptureService.requestFileData(file).then((data) => {
 
-          var attachments = file._attachments || {};
-          attachments[file.attachment.id] = {
+          var _attachments = this.document._attachments || {};
+          _attachments[this.document.meta.name] = {
             content_type: file.attachment.content_type,
             data: data
           };
 
-          file._id = file.title;
-          file._attachments = attachments;
+          this.document._attachments = _attachments;
 
-          delete file.attachment;
-          delete file.path;
-          delete file.mime;
-          delete file.size;
-
-          return LibraryDataService.save(file).then((result) => {
-
-            var info = angular.copy(file);
-            delete info._attachments;
-            delete info.preview;
-
-            info._id = result.id;
-            info._rev = result.rev;
-            info.icon = 'file_upload';
-            info.description = `Document <i>${info.title}</i> uploaded successfully!`;
-
-            return $scope.writeLog('info', info);
-          });
         }).catch((err) => {
           $scope.setError('AddAction', 'file_upload', err);
           $scope.setReady(true);
         });
 
         p.push(fp);
-
       });
 
       Promise.all(p).then((results) => {
-        $scope.notify('Documents created successfully', `${results.length} documents have been uploaded.`);
-        this.files = [];
-        $scope.setReady(false);
-        $state.go('^.view');
+
+        delete this.document.files;
+
+        return LibraryDataService.save(this.document).then((result) => {
+
+          var info = $scope.createEventFromTemplate('AddAction', 'file_upload');
+          info.description = `Document <i>${this.document.meta.name}</i> created successfully!`;
+          info.object = this.document.meta;
+          delete info.result;
+
+          $scope.writeLog('info', info).then(() => {
+            $scope.notify('Document created successfully', info.description);
+            this.document = null;
+            $scope.setReady(true);
+            $state.go('^.view');
+          });
+        }).catch((err) => {
+          $scope.setError('AddAction', 'file_upload', err);
+          $scope.setReady(true);
+        });
       });
     });
 
@@ -75,25 +73,28 @@
 
       var init = [LibraryDataService.initialize()];
 
-      dropZone = document.querySelector('#dropZone');
+      dropZone = document.getElementById('dropZone');
 
-      dropZone.ondragover = (e) => {
-        e.dataTransfer.dropEffect = 'copy';
-        return false;
-      };
+      if (dropZone) {
 
-      dropZone.ondragleave = dropZone.ondragend = function() {
-        return false;
-      };
+        dropZone.ondragover = (e) => {
+          e.dataTransfer.dropEffect = 'copy';
+          return false;
+        };
 
-      dropZone.ondrop = (e) => {
-        e.preventDefault();
-        var files = e.dataTransfer.files;
-        $q.when(true).then(() => {
-          this.addFiles(files);
-        });
-        return false;
-      };
+        dropZone.ondragleave = dropZone.ondragend = function() {
+          return false;
+        };
+
+        dropZone.ondrop = (e) => {
+          e.preventDefault();
+          var files = e.dataTransfer.files;
+          $q.when(true).then(() => {
+            this.addFiles(files);
+          });
+          return false;
+        };
+      }
 
       return Promise.all(init);
     };
@@ -139,20 +140,19 @@
       DocumentCaptureService.capturePDF(this.document.files[0]).then((meta) => {
 
         var template = LibraryDataService.createMetadataFromTemplate('book');
-        template.author = LibraryDataService.buildAuthorInformation(meta.author);
+        template.author = LibraryDataService.buildAuthorInformation(meta.author || '');
 
         template.datePublished = meta.publicationDate;
         template.description = meta.description;
         template.headline = meta.title;
-        template.keywords = meta.tags.join(',');
+        template.keywords = meta.tags ? meta.tags.join(',') : '';
         template.url = meta.url;
 
         $q.when(true).then(() => {
-          this.document = {
-            meta: template,
-            status: 'new',
-            tags: template.keywords.split(/\s*,\s*/)
-          };
+
+          this.document.meta = template;
+          this.document.status = 'new';
+          this.document.tags = template.keywords.split(/\s*,\s*/);
 
           this.document.meta.name = meta.id;
 

@@ -1,4 +1,4 @@
-<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
+<div flex layout-fill layout="column" ng-init="ctl.initialize()" ng-cloak>
   <form flex id="docMeta" layout="row" ng-submit="ctl.uploadDocument($event)">
     <div class="layout-padding" flex>
       <md-input-container>
@@ -21,18 +21,18 @@
         <label>Tags</label>
         <md-chips ng-model="ctl.document.tags"></md-chips>
       </md-input-container>
-      <md-whiteframe id="dropZone" ng-if="ctl.document.files.length === 0" layout layout-align="center center">
-        <span>Drop your file into this area...</span>
-        <span>
-          <span>...or</span>
-          <md-button ng-click="ctl.showFileSelector($event)">click here</md-button>
-          <span>...</span>
-        </span>
-        <input accept=".pdf" class="hidden" id="fileSelector" type="file"></input>
-      </md-whiteframe>
     </div>
     <div class="layout-padding" flex>
       <img class="thumbnail" ng-if="ctl.document.status !== undefined" ng-src="{{ ctl.document.meta.thumbnailUrl.contentUrl }}"></img>
     </div>
   </form>
+  <md-whiteframe id="dropZone" ng-if="ctl.document.files.length === 0" layout layout-align="center center">
+    <span>Drop your file into this area...</span>
+    <span>
+      <span>...or</span>
+      <md-button ng-click="ctl.showFileSelector($event)">click here</md-button>
+      <span>...</span>
+    </span>
+    <input accept=".pdf" class="hidden" id="fileSelector" type="file"></input>
+  </md-whiteframe>
 </div>
