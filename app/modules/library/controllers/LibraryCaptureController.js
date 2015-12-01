@@ -8,7 +8,7 @@
     this.url = 'http://';
 
     var uuid = require('uuid').v1();
-    var webViewer = document.getElementById('viewer');
+    var webViewer = document.getElementById('webCapture');
 
     $scope.$on('submit', (event, args) => {
 

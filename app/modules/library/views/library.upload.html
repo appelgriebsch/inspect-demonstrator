@@ -23,16 +23,16 @@
       </md-input-container>
     </div>
     <div class="layout-padding" flex>
-      <img class="thumbnail" ng-if="ctl.document.status !== undefined" ng-src="{{ ctl.document.meta.thumbnailUrl.contentUrl }}"></img>
+      <img class="pagePrev" ng-if="ctl.document.status !== undefined" ng-src="{{ ctl.document.meta.thumbnailUrl.contentUrl }}"></img>
+      <md-whiteframe id="dropZone" layout layout-align="center center" ng-disabled="ctl.document.files.length > 0">
+        <span>Drop your file into this area...</span>
+        <span>
+          <span>...or</span>
+          <md-button ng-click="ctl.showFileSelector($event)">click here</md-button>
+          <span>...</span>
+        </span>
+        <input accept=".pdf" class="hidden" id="fileSelector" type="file"></input>
+      </md-whiteframe>
     </div>
   </form>
-  <md-whiteframe id="dropZone" ng-if="ctl.document.files.length === 0" layout layout-align="center center">
-    <span>Drop your file into this area...</span>
-    <span>
-      <span>...or</span>
-      <md-button ng-click="ctl.showFileSelector($event)">click here</md-button>
-      <span>...</span>
-    </span>
-    <input accept=".pdf" class="hidden" id="fileSelector" type="file"></input>
-  </md-whiteframe>
 </div>

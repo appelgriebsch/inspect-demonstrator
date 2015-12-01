@@ -1,4 +1,4 @@
-<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
+<div layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
   <form id="webUrl" layout="row" ng-submit="ctl.loadUrl($event)">
     <md-input-container layout-fill>
       <label>Website URL</label>
@@ -9,7 +9,7 @@
       <md-icon>forward</md-icon>
     </md-button>
   </form>
-  <md-content class="sidebar" layout-padding layout-sm="column" layout-wrap layout="column" ng-if="ctl.document">
+  <md-content class="sidebar capture" layout-padding layout-sm="column" layout-wrap layout="column" ng-if="ctl.document">
     <md-button class='md-icon-button sidebar-btn' ng-click="ctl.openSidebar()" ng-if="!ctl.sidebarOpened">
       <md-icon>chevron_right</md-icon>
     </md-button>
@@ -46,7 +46,7 @@
       </md-input-container>
     </div>
   </md-content>
-  <webview id="viewer" nodeintegration partition="{{ ctl.getUniqueId() }}" />
+  <webview id="webCapture" nodeintegration partition="{{ ctl.getUniqueId() }}" />
 </div>
 <script id="capture-metadata" type="text/template">
   (function() { var _tag = document.querySelector("meta[name='parsely-page']"); var _parsely = _tag ? JSON.parse(_tag.content) : null; var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title"); var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description"); var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']"); var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']"); var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']"); var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']"); var result = { title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''), description: _description ? (_description.content ? _description.content : _description.text) : '', url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''), publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''), author: _parsely ? _parsely.author : (_author ? _author.content : ''), tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : _tags.map((elem) => { return elem.content }) ) : [] }; var ipc = require('ipc'); ipc.sendToHost(result); })();

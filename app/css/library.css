@@ -1,11 +1,11 @@
 #dropZone {
   background: #FAFAFA;
-  margin: 15px;
-  padding: 15px;
+  margin: 10px;
+  padding: 10px;
   border: 2px dashed #DCDCDC;
   border-radius: 5px;
-  line-height: 34px;
-  min-height: 128px;
+  line-height: 28px;
+  min-height: 100px;
 }
 .filename, .fileinfo {
   overflow: hidden;
@@ -28,6 +28,7 @@
   max-height: 100%;
   object-fit: contain;
   object-position: center;
+  height: 50vh;
 }
 .tag-item {
   background: #FFF none repeat scroll 0% 0%;
@@ -47,6 +48,9 @@ md-input-container .md-input[disabled] {
   width: 2em;
   overflow: hidden;
   background-color: rgba(255, 255, 255, 0.9);
+}
+.sidebar.capture {
+  height: 80%;
 }
 .sidebar-open {
   width: 33%;
@@ -83,12 +87,12 @@ md-input-container .md-input[disabled] {
   height: 100%;
   width: 99%;
 }
-webview {
+#webCapture {
   display: block;
   /* iframes are inline by default */
   border: none;
   /* Reset default border */
-  height: 90%;
+  height: 85%;
   /* Viewport-relative units */
   width: 100%;
 }
