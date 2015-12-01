@@ -101,7 +101,7 @@
 
         documents.forEach((doc) => {
 
-          var name = doc.id || doc._id;
+          var name = doc.meta.name || doc._id;
 
           var capturePath = path.join(tempPath, name);
           var attachmentPath = path.join(capturePath, 'attachments');

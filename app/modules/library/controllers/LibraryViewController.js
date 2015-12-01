@@ -39,18 +39,15 @@
 
             LibraryDataService.save(result).then(() => {
 
-              var info = angular.copy(result);
-              info.type = 'import';
-              info.icon = 'import_export';
-              info.description = `Document <i>${result.title}</i> has been imported successfully.`;
-
-              delete info._attachments;
-              delete info.preview;
+              var info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
+              info.description = `Document <i>${result.meta.name}</i> has been imported successfully.`;
+              info.object = result.meta;
+              delete info.result;
 
               this.items.push(result);
               p.push($scope.writeLog('info', info));
 
-            }).catch((error) => {
+            }).catch((err) => {
               $scope.setError('ReceiveAction', 'import_export', err);
               $scope.setReady(true);
             });
@@ -82,16 +79,13 @@
 
           results.forEach((result) => {
 
-            var info = angular.copy(result.doc);
-            info.target = result.target;
-            info.type = 'export';
-            info.icon = 'share';
-            info.description = `Document <i>${info.title}</i> has been exported successfully.`;
-
-            delete info._attachments;
-            delete info.preview;
+            var info = $scope.createEventFromTemplate('SendAction', 'share');
+            info.description = `Document <i>${result.doc.meta.name}</i> has been exported successfully.`;
+            info.object = result.doc.meta;
+            info.result = result;
 
             p.push($scope.writeLog('info', info));
+
           });
 
           return Promise.all(p);

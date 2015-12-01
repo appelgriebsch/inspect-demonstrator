@@ -46,14 +46,10 @@
 
           results.forEach((result) => {
 
-            var info = angular.copy(result.doc);
-            info.target = result.target;
-            info.type = 'export';
-            info.icon = 'share';
-            info.description = `Document <i>${info.title}</i> has been exported successfully.`;
-
-            delete info._attachments;
-            delete info.preview;
+            var info = $scope.createEventFromTemplate('SendAction', 'share');
+            info.description = `Document <i>${result.doc.meta.name}</i> has been exported successfully.`;
+            info.object = result.doc.meta;
+            info.result = result;
 
             p.push($scope.writeLog('info', info));
           });
