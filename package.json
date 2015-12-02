@@ -1,6 +1,6 @@
 {
-  "name": "inspect-demonstrator",
-  "productName": "inspect-demonstrator",
+  "name": "inspect_demonstrator",
+  "productName": "inspect_demonstrator",
   "version": "0.6.0",
   "description": "A demonstrator for the funded INSPECT project",
   "main": "index.js",

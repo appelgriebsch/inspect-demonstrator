@@ -12,7 +12,7 @@
         tooltip: 'Access your library',
         icon: 'local_library'
       },
-      incidents: {
+      /*incidents: {
         path: 'modules/incidents',
         name: 'IncidentModule',
         url: '/app/incidents/view',
@@ -20,7 +20,7 @@
         label: 'Incidents',
         tooltip: 'Access your incidents',
         icon: 'content_copy'
-      },
+      },*/
       activities: {
         path: 'modules/activities',
         name: 'ActivityModule',

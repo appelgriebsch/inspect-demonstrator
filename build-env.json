@@ -5,7 +5,7 @@
   },
   "app": {
     "id": "com.wincornixdorf.inspect-demonstrator",
-    "name": "inspect-demonstrator",
+    "name": "inspect_demonstrator",
     "description": "A demonstrator for the funded INSPECT project",
     "version": "0.6.0",
     "author": "Wincor Nixdorf",
