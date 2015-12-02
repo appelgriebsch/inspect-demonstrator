@@ -127,17 +127,12 @@
 
         $scope.setBusy('Exporting Document...');
 
-        DocumentSharingService.export([this.document], targetPath).then((result) => {
-
-          var info = angular.copy(this.document);
-          info.icon = 'share';
-          info.type = 'export';
-          info.description = `Document <i>${info.title}</i> exported successfully.`;
-
-          delete info._attachments;
-          delete info.preview;
-
-          angular.merge(info, result);
+        DocumentSharingService.export([this.document], targetPath).then((results) => {
+          var result = results[0];
+          var info = $scope.createEventFromTemplate('SendAction', 'share');
+          info.description = `Document <i>${result.doc.meta.name}</i> has been exported successfully.`;
+          info.object = result.doc.meta;
+          info.result = result;
 
           $scope.writeLog('info', info).then(() => {
             $scope.notify('Document exported successfully', info.description);
