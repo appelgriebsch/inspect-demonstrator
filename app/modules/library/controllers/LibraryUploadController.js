@@ -138,19 +138,19 @@
       DocumentCaptureService.capturePDF(this.document.files[0]).then((meta) => {
 
         var template = LibraryDataService.createMetadataFromTemplate('book');
-        template.author = LibraryDataService.buildAuthorInformation(meta.author || '');
+        template.author = LibraryDataService.buildAuthorInformation(meta.author);
 
         template.datePublished = meta.publicationDate;
         template.description = meta.description;
         template.headline = meta.title;
-        template.keywords = meta.tags ? meta.tags.join(',') : '';
+        template.keywords = meta.tags.length > 0 ? meta.tags.join(',') : '';
         template.url = meta.url;
 
         $q.when(true).then(() => {
 
           this.document.meta = template;
           this.document.status = 'new';
-          this.document.tags = template.keywords.split(/\s*,\s*/);
+          this.document.tags = template.keywords.length > 0 ? template.keywords.split(/\s*,\s*/) : [];
 
           this.document.meta.name = meta.id;
 

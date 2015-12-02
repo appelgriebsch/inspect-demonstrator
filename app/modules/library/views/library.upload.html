@@ -24,7 +24,7 @@
     </div>
     <div class="layout-padding" flex>
       <img class="pagePrev" ng-if="ctl.document.status !== undefined" ng-src="{{ ctl.document.meta.thumbnailUrl.contentUrl }}"></img>
-      <md-whiteframe id="dropZone" layout layout-align="center center" ng-disabled="ctl.document.files.length > 0">
+      <md-whiteframe id="dropZone" layout layout-align="center center" ng-class="{ hidden: ctl.document.files.length > 0 }">
         <span>Drop your file into this area...</span>
         <span>
           <span>...or</span>
