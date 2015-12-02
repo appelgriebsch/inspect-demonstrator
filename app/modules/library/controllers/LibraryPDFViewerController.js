@@ -67,8 +67,6 @@
           result.annotations = result.annotations || [];
           result.outline = result.outline || [];
 
-          console.log(this.document);
-
           $scope.setReady(false);
         });
       }).catch((err) => {

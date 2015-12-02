@@ -78,20 +78,18 @@
 
         LibraryDataService.delete(this.document).then(() => {
 
-          var info = angular.copy(this.document);
-          info.type = 'delete';
-          info.status = 'deleted';
-          info.icon = 'delete';
-          info.description = `Document <i>${info.title}</i> has been deleted.`;
-
-          delete info._attachments;
-          delete info.preview;
+          var info = $scope.createEventFromTemplate('DeleteAction', 'delete');
+          info.description = `Document <i>${this.document.meta.name}</i> has been deleted.`;
+          info.object = this.document.meta;
+          delete info.result;
 
           $scope.writeLog('warning', info).then(() => {
             $scope.notify('Document deleted successfully', info.description);
+            this.document = null;
+            $scope.setReady(true);
             $state.go('^.view');
           });
-
+                    
         }).catch((err) => {
           $scope.setError('DeleteAction', 'delete', err);
           $scope.setReady(true);

@@ -37,7 +37,7 @@
 
           results.forEach((result) => {
 
-            LibraryDataService.save(result).then(() => {
+            var ps = LibraryDataService.save(result).then(() => {
 
               var info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
               info.description = `Document <i>${result.meta.name}</i> has been imported successfully.`;
@@ -45,12 +45,15 @@
               delete info.result;
 
               this.items.push(result);
-              p.push($scope.writeLog('info', info));
+              return $scope.writeLog('info', info);
 
             }).catch((err) => {
               $scope.setError('ReceiveAction', 'import_export', err);
               $scope.setReady(true);
             });
+
+            p.push(ps);
+            
           });
 
           return Promise.all(p);
