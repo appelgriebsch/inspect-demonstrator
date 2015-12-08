@@ -36,6 +36,7 @@
     "electron-debug": "^0.5.0",
     "filenamify-url": "^1.0.0",
     "geopouch": "^2.0.0",
+    "heliosdb": "appelgriebsch/heliosdb",
     "level-js": "^2.2.2",
     "leveldown": "appelgriebsch/leveldown",
     "mime": "^1.3.4",
