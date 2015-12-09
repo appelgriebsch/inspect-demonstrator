@@ -57,6 +57,6 @@
   angular.module('inspectApp').service('ActivityDataService', ['PouchDBService', ActivityDataService]);
   angular.module('inspectApp').service('ActivityService', ['ActivityDataService', ActivityService]);
 
-  angular.module('inspectApp').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', '$notification', '$mdToast', 'modules', 'ActivityService', ShellController]);
+  angular.module('inspectApp').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', '$notification', '$mdToast', '$mdConstant', 'modules', 'ActivityService', ShellController]);
 
 })(global.angular);

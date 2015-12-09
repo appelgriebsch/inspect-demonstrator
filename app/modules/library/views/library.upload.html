@@ -1,25 +1,28 @@
 <div flex layout-fill layout="column" ng-init="ctl.initialize()" ng-cloak>
   <form flex id="docMeta" layout="row" ng-submit="ctl.uploadDocument($event)">
     <div class="layout-padding" flex>
-      <md-input-container>
+      <md-input-container layout-fill>
         <label>Title</label>
         <textarea ng-model="ctl.document.meta.headline"></textarea>
       </md-input-container>
-      <md-input-container>
+      <md-input-container layout-fill>
         <label>Description</label>
         <textarea ng-model="ctl.document.meta.description"></textarea>
       </md-input-container>
-      <md-input-container>
+      <md-input-container layout-fill>
         <label>Author</label>
         <input ng-model="ctl.document.meta.author.name"></input>
       </md-input-container>
-      <md-input-container>
+      <md-input-container layout-fill>
         <label>Publication Date</label>
         <input ng-model="ctl.document.meta.datePublished"></input>
       </md-input-container>
-      <md-input-container>
+      <md-input-container layout-fill>
         <label>Tags</label>
-        <md-chips ng-model="ctl.document.tags"></md-chips>
+        <md-chips ng-model="ctl.document.tags"
+                  md-separator-keys="shell.tagSeperatorKeys"
+                  placeholder="Enter a tag"
+                  secondary-placeholder="TAB separated tags"></md-chips>
       </md-input-container>
     </div>
     <div class="layout-padding" flex>

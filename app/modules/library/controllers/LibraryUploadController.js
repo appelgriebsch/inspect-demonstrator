@@ -142,7 +142,8 @@
 
         template.datePublished = meta.publicationDate;
         template.description = meta.description;
-        template.headline = meta.title;
+        template.about = meta.title.trim();
+        template.headline = meta.title.trim();
         template.keywords = meta.tags.length > 0 ? meta.tags.join(',') : '';
         template.url = meta.url;
 
