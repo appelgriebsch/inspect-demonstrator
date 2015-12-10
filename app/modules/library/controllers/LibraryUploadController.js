@@ -77,7 +77,11 @@
       if (dropZone) {
 
         dropZone.ondragover = (e) => {
-          e.dataTransfer.dropEffect = 'copy';
+          if (e.dataTransfer.files.length > 1) {
+            e.dataTransfer.dropEffect = 'none';
+          } else {
+            e.dataTransfer.dropEffect = (e.dataTransfer.files[0].type === 'application/pdf' ? 'copy' : 'none');
+          }
           return false;
         };
 
@@ -138,13 +142,13 @@
       DocumentCaptureService.capturePDF(this.document.files[0]).then((meta) => {
 
         var template = LibraryDataService.createMetadataFromTemplate('book');
-        template.author = LibraryDataService.buildAuthorInformation(meta.author);
+        template.author = LibraryDataService.buildAuthorInformation(this.document.meta ? this.document.meta.author : meta.author);
 
-        template.datePublished = meta.publicationDate;
-        template.description = meta.description;
-        template.about = meta.title.trim();
-        template.headline = meta.title.trim();
-        template.keywords = meta.tags.length > 0 ? meta.tags.join(',') : '';
+        template.datePublished = this.document.meta ? this.document.meta.datePublished : meta.publicationDate;
+        template.description = this.document.meta ? this.document.meta.description : meta.description;
+        template.about = this.document.meta ? this.document.meta.about : meta.title.trim();
+        template.headline = this.document.meta ? this.document.meta.headline : meta.title.trim();
+        template.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : (meta.tags.length > 0 ? meta.tags.join(',') : '');
         template.url = meta.url;
 
         $q.when(true).then(() => {
