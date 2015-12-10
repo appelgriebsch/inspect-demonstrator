@@ -8,20 +8,8 @@
     var webViewer = document.getElementById('webViewer');
     var docID = $stateParams.doc;
 
-    var disableAllLinks = function() {
-      var links = document.querySelectorAll('a[href]');
-      for (var link in links) {
-        links[link].href='javascript:void(0)';
-      }
-    }.toString();
-
     this.document;
     this.sidebarOpened = false;
-
-    webViewer.addEventListener('dom-ready', () => {
-      var code = `(${disableAllLinks})();`;
-      webViewer.executeJavaScript(code);
-    });
 
     this.initialize = function() {
 
