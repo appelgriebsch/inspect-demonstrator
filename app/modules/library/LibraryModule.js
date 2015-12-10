@@ -6,7 +6,7 @@
 
     var moduleConfig = config;
 
-    angular.module('inspectApp')
+    angular.module('electron-app')
       .config(function($stateProvider, $urlRouterProvider) {
 
         $stateProvider
@@ -115,18 +115,18 @@
     var LibraryViewController = require('./controllers/LibraryViewController');
     var LibraryWebViewerController = require('./controllers/LibraryWebViewerController');
 
-    angular.module('inspectApp').service('DocumentCaptureService', ['$http', DocumentCaptureService]);
-    angular.module('inspectApp').service('DocumentSharingService', ['LibraryDataService', DocumentSharingService]);
-    angular.module('inspectApp').service('LibraryDataService', ['PouchDBService', LibraryDataService]);
+    angular.module('electron-app').service('DocumentCaptureService', ['$http', DocumentCaptureService]);
+    angular.module('electron-app').service('DocumentSharingService', ['LibraryDataService', DocumentSharingService]);
+    angular.module('electron-app').service('LibraryDataService', ['PouchDBService', LibraryDataService]);
 
-    angular.module('inspectApp').controller('LibraryCaptureController', ['$scope', '$state', '$q', 'DocumentCaptureService', 'LibraryDataService', LibraryCaptureController]);
-    angular.module('inspectApp').controller('LibraryUploadController', ['$scope', '$state', '$q', 'DocumentCaptureService', 'LibraryDataService', LibraryUploadController]);
+    angular.module('electron-app').controller('LibraryCaptureController', ['$scope', '$state', '$q', 'DocumentCaptureService', 'LibraryDataService', LibraryCaptureController]);
+    angular.module('electron-app').controller('LibraryUploadController', ['$scope', '$state', '$q', 'DocumentCaptureService', 'LibraryDataService', LibraryUploadController]);
 
-    angular.module('inspectApp').controller('LibraryViewController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryViewController]);
-    angular.module('inspectApp').controller('LibrarySearchController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibrarySearchController]);
+    angular.module('electron-app').controller('LibraryViewController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryViewController]);
+    angular.module('electron-app').controller('LibrarySearchController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibrarySearchController]);
 
-    angular.module('inspectApp').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryPDFViewerController]);
-    angular.module('inspectApp').controller('LibraryWebViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryWebViewerController]);
+    angular.module('electron-app').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryPDFViewerController]);
+    angular.module('electron-app').controller('LibraryWebViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryWebViewerController]);
   }
 
   module.exports = LibraryModule;

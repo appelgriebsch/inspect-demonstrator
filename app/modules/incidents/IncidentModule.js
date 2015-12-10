@@ -6,7 +6,7 @@
 
     var moduleConfig = config;
 
-    angular.module('inspectApp')
+    angular.module('electron-app')
       .config(function($stateProvider, $urlRouterProvider) {
 
         $stateProvider
@@ -61,10 +61,10 @@
     var IncidentManagementController = require('./controllers/IncidentManagementController');
     var IncidentSearchController = require('./controllers/IncidentSearchController');
 
-    angular.module('inspectApp').service('IncidentDataService', ['PouchDBService', IncidentDataService]);
-    angular.module('inspectApp').controller('IncidentViewController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentViewController]);
-    angular.module('inspectApp').controller('IncidentManagementController', ['$scope', '$state', '$stateParams', '$q', 'IncidentDataService', IncidentManagementController]);
-    angular.module('inspectApp').controller('IncidentSearchController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentSearchController]);
+    angular.module('electron-app').service('IncidentDataService', ['PouchDBService', IncidentDataService]);
+    angular.module('electron-app').controller('IncidentViewController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentViewController]);
+    angular.module('electron-app').controller('IncidentManagementController', ['$scope', '$state', '$stateParams', '$q', 'IncidentDataService', IncidentManagementController]);
+    angular.module('electron-app').controller('IncidentSearchController', ['$scope', '$state', '$q', 'IncidentDataService', IncidentSearchController]);
 
   }
 
