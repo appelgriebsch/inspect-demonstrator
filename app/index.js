@@ -199,6 +199,10 @@
       webWnd.loadURL(url);
 
       webWnd.webContents.on('dom-ready', () => {
+        webWnd.webContents.executeJavaScript(webAnalyzer.toString());
+      });
+
+      webWnd.webContents.on('did-finish-load', () => {
         webWnd.capturePage(function(thumbnail) {
           var tempPath = app.getPath('temp');
           var filenamifyUrl = require('filenamify-url');

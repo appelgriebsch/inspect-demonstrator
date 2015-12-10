@@ -79,6 +79,10 @@
       webViewer.executeJavaScript(document.getElementById('capture-metadata').innerText);
     });
 
+    webViewer.addEventListener('console-message', function(e) {
+      console.log(e);
+    });
+
     webViewer.addEventListener('ipc-message', (evt, args) => {
 
       var meta = evt.channel;
