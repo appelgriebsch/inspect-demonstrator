@@ -1,12 +1,12 @@
 <div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
   <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1" md-gutter-gt-md="12px" md-gutter-gt-sm="6px" md-row-height-gt-md="1:1" md-row-height="4:3">
-    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1" ng-repeat="item in ctl.items" ng-click="ctl.selectItem($event, item)">
-      <img ng-if="item.meta['@type'] === 'WebSite'" ng-dblclick="$state.go('^.webview', { doc: item._id })" class="thumbnail" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}"></img>
-      <img ng-if="item.meta['@type'] !== 'WebSite'" ng-dblclick="$state.go('^.pdfview', { doc: item._id })" class="pagePrev" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}"></img>
+    <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1" ng-repeat="item in ctl.items" ng-click="$state.go('.itemSelected', { doc: item._id }, { relative: ctl.state })">
+      <img ng-if="item.meta['@type'] === 'WebSite'" ng-dblclick="$state.go('^.webview', { doc: item._id }, { relative: ctl.state })" class="thumbnail" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}"></img>
+      <img ng-if="item.meta['@type'] !== 'WebSite'" ng-dblclick="$state.go('^.pdfview', { doc: item._id }, { relative: ctl.state })" class="pagePrev" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}"></img>
       <md-grid-tile-footer>
         <h3 class="filename">
-          <a ng-if="item.meta['@type'] === 'WebSite'" ui-sref="^.webview({ doc: item._id })">{{ item.meta.headline }}</a>
-          <a ng-if="item.meta['@type'] !== 'WebSite'" ui-sref="^.pdfview({ doc: item._id })">{{ item.meta.headline }}</a>
+          <a ng-if="item.meta['@type'] === 'WebSite'" ui-sref="{{ ctl.baseState }}.webview({ doc: item._id })">{{ item.meta.headline }}</a>
+          <a ng-if="item.meta['@type'] !== 'WebSite'" ui-sref="{{ ctl.baseState }}.pdfview({ doc: item._id })">{{ item.meta.headline }}</a>
         </h3>
       </md-grid-tile-footer>
     </md-grid-tile>

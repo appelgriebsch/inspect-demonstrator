@@ -236,6 +236,10 @@
         });
       },
 
+      itemMeta: function(docID) {
+        return db.get(docID);
+      },
+
       save: function(doc) {
 
         if (!doc._id) {

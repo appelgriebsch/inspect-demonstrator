@@ -33,6 +33,15 @@
               }
             }
           })
+          .state(`${moduleConfig.state}.view.itemSelected`, {
+            url: '/itemSelected/:doc',
+            views: {
+              'status@app': {
+                templateUrl: `${moduleConfig.path}/views/library.view.status.html`,
+                controller: 'LibraryViewStatusController as ctl'
+              }
+            }
+          })
           .state(`${moduleConfig.state}.upload`, {
             url: '/upload',
             views: {
@@ -113,6 +122,7 @@
     var LibrarySearchController = require('./controllers/LibrarySearchController');
     var LibraryUploadController = require('./controllers/LibraryUploadController');
     var LibraryViewController = require('./controllers/LibraryViewController');
+    var LibraryViewStatusController = require('./controllers/LibraryViewStatusController');
     var LibraryWebViewerController = require('./controllers/LibraryWebViewerController');
 
     angular.module('electron-app').service('DocumentCaptureService', ['$http', DocumentCaptureService]);
@@ -124,6 +134,7 @@
 
     angular.module('electron-app').controller('LibraryViewController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryViewController]);
     angular.module('electron-app').controller('LibrarySearchController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibrarySearchController]);
+    angular.module('electron-app').controller('LibraryViewStatusController', ['$scope', '$state', '$stateParams', '$q', 'LibraryDataService', LibraryViewStatusController]);
 
     angular.module('electron-app').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryPDFViewerController]);
     angular.module('electron-app').controller('LibraryWebViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryWebViewerController]);

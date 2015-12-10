@@ -5,6 +5,8 @@
   function LibraryViewController($scope, $state, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     this.items = [];
+    this.state = $state.$current;
+    this.baseState = this.state.parent.toString();
 
     this.initialize = function() {
 
