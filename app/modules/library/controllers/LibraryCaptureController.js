@@ -17,6 +17,10 @@
       DocumentCaptureService.captureWebSite(this.url).then((result) => {
 
         this.document.meta.name = result.id;
+        this.document.meta.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : this.document.meta.keywords;
+
+        var author = LibraryDataService.buildAuthorInformation(this.document.meta.author.name);
+        this.document.meta.author = author;
 
         this.document.meta.thumbnailUrl.encodingFormat = 'image/png';
         this.document.meta.thumbnailUrl.contentUrl = result.preview;
@@ -82,10 +86,10 @@
       template.author = LibraryDataService.buildAuthorInformation(meta.author);
       template.datePublished = meta.publicationDate;
       template.description = meta.description;
-      template.about = meta.title;
-      template.headline = meta.title;
+      template.about =  meta.title.trim();
+      template.headline =  meta.title.trim();
       template.fileFormat = 'multipart/related';
-      template.keywords = meta.tags.join(',');
+      template.keywords = meta.tags.length > 0 ? meta.tags.join(',') : '';
       template.url = meta.url;
 
       $q.when(true).then(() => {
@@ -93,7 +97,7 @@
           meta: template,
           status: 'new',
           createdAt: new Date(),
-          tags: template.keywords.split(/\s*,\s*/)
+          tags: template.keywords.length > 0 ? template.keywords.split(/\s*,\s*/) : []
         };
         $scope.setReady(true);
       });

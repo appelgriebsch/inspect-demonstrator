@@ -22,7 +22,7 @@
       </div>
       <md-input-container>
         <label>Title</label>
-        <textarea ng-disabled="ctl.document.meta.headline !== ''" ng-model="ctl.document.meta.headline"></textarea>
+        <textarea ng-disabled="ctl.document.meta.headline !== ''" ng-model="ctl.document.meta.headline" required></textarea>
       </md-input-container>
       <md-input-container>
         <label>Description</label>
@@ -34,20 +34,22 @@
       </md-input-container>
       <md-input-container>
         <label>Publication Date</label>
-        <input disabled ng-model="ctl.document.meta.datePublished"></input>
+        <input ng-disabled="ctl.document.meta.datePublished !== ''" ng-model="ctl.document.meta.datePublished"></input>
       </md-input-container>
       <md-input-container>
         <label>Page URL</label>
-        <input disabled ng-model="ctl.document.meta.url"></input>
+        <input ng-disabled="ctl.document.meta.url !== ''" ng-model="ctl.document.meta.url" required type="url"></input>
       </md-input-container>
       <md-input-container>
         <label>Tags</label>
-        <md-chips ng-if="ctl.document.meta.keywords" ng-model="ctl.document.tags" readonly="true"></md-chips>
+        <md-chips ng-model="ctl.document.tags"
+                  placeholder="Enter a tag">
+        </md-chips>
       </md-input-container>
     </div>
   </md-content>
   <webview id="webCapture" nodeintegration partition="{{ ctl.getUniqueId() }}" />
 </div>
 <script id="capture-metadata" type="text/template">
-  (function() { var _tag = document.querySelector("meta[name='parsely-page']"); var _parsely = _tag ? JSON.parse(_tag.content) : null; var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title"); var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description"); var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']"); var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']"); var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']"); var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']"); var result = { title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''), description: _description ? (_description.content ? _description.content : _description.text) : '', url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''), publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''), author: _parsely ? _parsely.author : (_author ? _author.content : ''), tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : _tags.map((elem) => { return elem.content }) ) : [] }; var ipc = require('ipc'); ipc.sendToHost(result); })();
+  (function() { var _tag = document.querySelector("meta[name='parsely-page']"); var _parsely = _tag ? JSON.parse(_tag.content) : null; var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title"); var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description"); var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']") || document.location; var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']"); var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']"); var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']"); var result = { title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''), description: _description ? (_description.content ? _description.content : _description.text) : '', url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''), publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''), author: _parsely ? _parsely.author : (_author ? _author.content : ''), tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : _tags.map((elem) => { return elem.content }) ) : [] }; var ipc = require('ipc'); ipc.sendToHost(result); })();
 </script>
