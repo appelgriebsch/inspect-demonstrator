@@ -156,6 +156,8 @@
           this.document.meta = template;
           this.document.status = 'new';
           this.document.createdAt = new Date();
+          this.document.datePublished = template.datePublished ? Date.parse(template.datePublished) : new Date();
+
           this.document.tags = template.keywords.length > 0 ? template.keywords.split(/\s*,\s*/) : [];
 
           this.document.meta.name = meta.id;

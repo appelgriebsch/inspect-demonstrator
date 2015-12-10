@@ -25,9 +25,12 @@
           var fileName = DocumentSharingService.requestTemporaryFile(result.meta.name, archive);
           webViewer.src = `file://${fileName}`;
         }
-        result.tags = result.meta.keywords.split(/\s*,\s*/);
+
+        result.datePublished = result.meta.datePublished ? new Date(result.meta.datePublished) : null,
+
+        result.tags = result.tags || result.meta.keywords.split(/\s*,\s*/);
         result.annotations = result.annotations || [];
-        
+
         $q.when(true).then(() => {
           this.document = result;
           $scope.setReady(false);

@@ -28,24 +28,13 @@
             <md-input-container>
               <label>Publication Date</label>
               <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
-            </md-input-container>            
+            </md-input-container>
             <md-input-container>
               <label>Tags</label>
               <md-chips ng-model="ctl.document.tags"
                         placeholder="Enter a tag">
               </md-chips>
-            </md-input-container>
-            <div layout="row" layout-align="end start" layout-margin>
-              <md-button class="md-fab md-warn" ng-click="ctl.cancelEdit($event)">
-                <md-tooltip md-direction="top">Undo changes</md-tooltip>
-                <md-icon>cancel</md-icon>
-              </md-button>
-              <span></span>
-              <md-button class="md-fab md-primary" ng-click="ctl.saveEdit($event)">
-                <md-tooltip md-direction="top">Save changes</md-tooltip>
-                <md-icon>save</md-icon>
-              </md-button>
-            </div>
+            </md-input-container>            
           </md-tab>
           <md-tab label="Outline" ng-disabled="ctl.document.outline.length === 0">
             <md-content class="md-padding tabContent">

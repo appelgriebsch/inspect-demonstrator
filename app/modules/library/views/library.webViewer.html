@@ -25,7 +25,7 @@
       <md-input-container>
         <label>Publication Date</label>
         <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
-      </md-input-container>      
+      </md-input-container>
       <md-input-container>
         <label>Page URL</label>
         <input disabled required type="url" ng-model="ctl.document.meta.url"></input>
@@ -35,18 +35,7 @@
         <md-chips ng-model="ctl.document.tags"
                   placeholder="Enter a tag">
         </md-chips>
-      </md-input-container>
-      <div layout="row" layout-align="end start" layout-margin>
-        <md-button class="md-fab md-warn" ng-click="ctl.cancelEdit($event)">
-          <md-tooltip md-direction="top">Undo changes</md-tooltip>
-          <md-icon>cancel</md-icon>
-        </md-button>
-        <span></span>
-        <md-button class="md-fab md-primary" ng-click="ctl.saveEdit($event)">
-          <md-tooltip md-direction="top">Save changes</md-tooltip>
-          <md-icon>save</md-icon>
-        </md-button>
-      </div>
+      </md-input-container>      
     </div>
   </md-content>
   <webview id="webViewer" nodeintegration partition="{{ ctl.getUniqueId() }}" />

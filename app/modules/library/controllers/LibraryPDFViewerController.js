@@ -62,6 +62,8 @@
             $scope.setReady(true);
           });
 
+          result.datePublished = result.meta.datePublished ? new Date(result.meta.datePublished) : null,
+
           result.tags = result.tags || result.meta.keywords.split(/\s*,\s*/);
           result.annotations = result.annotations || [];
           result.outline = result.outline || [];

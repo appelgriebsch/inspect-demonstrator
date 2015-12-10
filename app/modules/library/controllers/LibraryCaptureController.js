@@ -18,6 +18,7 @@
 
         this.document.meta.name = result.id;
         this.document.meta.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : this.document.meta.keywords;
+        this.document.meta.datePublished = this.document.datePublished ? this.document.datePublished.toISOString() : this.document.meta.datePublished;
 
         var author = LibraryDataService.buildAuthorInformation(this.document.meta.author.name);
         this.document.meta.author = author;
@@ -32,6 +33,8 @@
         };
 
         this.document._attachments = _attachments;
+
+        delete this.document.datePublished;
 
         LibraryDataService.save(this.document).then((result) => {
 
@@ -88,7 +91,7 @@
       var meta = evt.channel;
       var template = LibraryDataService.createMetadataFromTemplate('website');
       template.author = LibraryDataService.buildAuthorInformation(meta.author);
-      template.datePublished = meta.publicationDate;
+      template.datePublished = meta.publicationDate.indexOf('Z') > 0 ? meta.publicationDate : `${meta.publicationDate}Z`;
       template.description = meta.description;
       template.about =  meta.title.trim();
       template.headline =  meta.title.trim();
@@ -101,8 +104,10 @@
           meta: template,
           status: 'new',
           createdAt: new Date(),
+          datePublished: template.datePublished ? new Date(template.datePublished) : null,
           tags: template.keywords.length > 0 ? template.keywords.split(/\s*,\s*/) : []
         };
+        console.log(this.document);
         $scope.setReady(true);
       });
     });
