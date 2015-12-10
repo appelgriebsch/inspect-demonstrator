@@ -38,6 +38,13 @@
 
       Promise.all(p).then((results) => {
 
+        this.document.meta.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : this.document.meta.keywords;
+        this.document.meta.datePublished = this.document.datePublished ? this.document.datePublished.toISOString() : this.document.meta.datePublished;
+        delete this.document.datePublished;
+
+        var author = LibraryDataService.buildAuthorInformation(this.document.meta.author.name);
+        this.document.meta.author = author;
+
         delete this.document.files;
 
         return LibraryDataService.save(this.document).then((result) => {
@@ -144,7 +151,7 @@
         var template = LibraryDataService.createMetadataFromTemplate('book');
         template.author = LibraryDataService.buildAuthorInformation(this.document.meta ? this.document.meta.author : meta.author);
 
-        template.datePublished = this.document.meta ? this.document.meta.datePublished : meta.publicationDate;
+        template.datePublished = meta.publicationDate.indexOf('Z') > 0 ? meta.publicationDate : (meta.publicationDate.length > 0 ? `${meta.publicationDate}Z` : '');
         template.description = this.document.meta ? this.document.meta.description : meta.description;
         template.about = this.document.meta ? this.document.meta.about : meta.title.trim();
         template.headline = this.document.meta ? this.document.meta.headline : meta.title.trim();
@@ -156,7 +163,7 @@
           this.document.meta = template;
           this.document.status = 'new';
           this.document.createdAt = new Date();
-          this.document.datePublished = template.datePublished ? Date.parse(template.datePublished) : new Date();
+          this.document.datePublished = template.datePublished ? new Date(template.datePublished) : null,
 
           this.document.tags = template.keywords.length > 0 ? template.keywords.split(/\s*,\s*/) : [];
 

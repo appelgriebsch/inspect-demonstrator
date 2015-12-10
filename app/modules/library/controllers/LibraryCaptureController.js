@@ -19,6 +19,7 @@
         this.document.meta.name = result.id;
         this.document.meta.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : this.document.meta.keywords;
         this.document.meta.datePublished = this.document.datePublished ? this.document.datePublished.toISOString() : this.document.meta.datePublished;
+        delete this.document.datePublished;
 
         var author = LibraryDataService.buildAuthorInformation(this.document.meta.author.name);
         this.document.meta.author = author;
@@ -33,8 +34,6 @@
         };
 
         this.document._attachments = _attachments;
-
-        delete this.document.datePublished;
 
         LibraryDataService.save(this.document).then((result) => {
 
