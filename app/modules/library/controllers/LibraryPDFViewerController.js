@@ -63,7 +63,6 @@
           });
 
           result.tags = result.tags || result.meta.keywords.split(/\s*,\s*/);
-          result.custom_tags = result.custom_tags || [];
           result.annotations = result.annotations || [];
           result.outline = result.outline || [];
 

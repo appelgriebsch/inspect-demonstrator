@@ -22,23 +22,23 @@
       </div>
       <md-input-container>
         <label>Title</label>
-        <textarea ng-disabled="ctl.document.meta.headline !== ''" ng-model="ctl.document.meta.headline" required></textarea>
+        <textarea ng-model="ctl.document.meta.headline" required></textarea>
       </md-input-container>
       <md-input-container>
         <label>Description</label>
-        <textarea ng-disabled="ctl.document.meta.description !== ''" ng-model="ctl.document.meta.description"></textarea>
+        <textarea ng-model="ctl.document.meta.description"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Author</label>
-        <input ng-disabled="ctl.document.meta.author.name !== ''" ng-model="ctl.document.meta.author.name"></input>
+        <input ng-model="ctl.document.meta.author.name"></input>
       </md-input-container>
       <md-input-container>
         <label>Publication Date</label>
-        <input ng-disabled="ctl.document.meta.datePublished !== ''" ng-model="ctl.document.meta.datePublished"></input>
+        <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
       </md-input-container>
       <md-input-container>
         <label>Page URL</label>
-        <input ng-disabled="ctl.document.meta.url !== ''" ng-model="ctl.document.meta.url" required type="url"></input>
+        <input ng-model="ctl.document.meta.url" required disabled type="url"></input>
       </md-input-container>
       <md-input-container>
         <label>Tags</label>

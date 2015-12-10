@@ -26,8 +26,8 @@
           webViewer.src = `file://${fileName}`;
         }
         result.tags = result.meta.keywords.split(/\s*,\s*/);
-        result.custom_tags = result.custom_tags || [];
         result.annotations = result.annotations || [];
+        
         $q.when(true).then(() => {
           this.document = result;
           $scope.setReady(false);

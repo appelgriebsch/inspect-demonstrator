@@ -12,39 +12,41 @@
       </div>
       <md-input-container>
         <label>Title</label>
-        <textarea ng-model="ctl.document.meta.headline" ng-disabled="ctl.document.meta.headline !== ''"></textarea>
+        <textarea ng-model="ctl.document.meta.headline" required></textarea>
       </md-input-container>
       <md-input-container>
         <label>Description</label>
-        <textarea ng-model="ctl.document.meta.description" ng-disabled="ctl.document.meta.description !== ''"></textarea>
+        <textarea ng-model="ctl.document.meta.description"></textarea>
       </md-input-container>
       <md-input-container>
         <label>Author</label>
-        <input ng-model="ctl.document.meta.author.name" ng-disabled="ctl.document.meta.author !== ''"></input>
+        <input ng-model="ctl.document.meta.author.name"></input>
       </md-input-container>
       <md-input-container>
         <label>Publication Date</label>
-        <input ng-model="ctl.document.datePublished" disabled></input>
-      </md-input-container>
+        <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
+      </md-input-container>      
       <md-input-container>
         <label>Page URL</label>
-        <input disabled ng-model="ctl.document.meta.url"></input>
+        <input disabled required type="url" ng-model="ctl.document.meta.url"></input>
       </md-input-container>
       <md-input-container>
         <label>Tags</label>
-        <md-chips ng-if="ctl.document.tags"
-          ng-model="ctl.document.tags"
-          readonly="true">
-        </md-chips>
-        <md-chips class="md-chips-readonly"
-          ng-model="ctl.document.custom_tags"
-          readonly="false"
-          placeholder="Enter a tag"
-          delete-button-label="Remove Tag"
-          delete-hint="Press delete to remove tag"
-          secondary-placeholder="+Tag">
+        <md-chips ng-model="ctl.document.tags"
+                  placeholder="Enter a tag">
         </md-chips>
       </md-input-container>
+      <div layout="row" layout-align="end start" layout-margin>
+        <md-button class="md-fab md-warn" ng-click="ctl.cancelEdit($event)">
+          <md-tooltip md-direction="top">Undo changes</md-tooltip>
+          <md-icon>cancel</md-icon>
+        </md-button>
+        <span></span>
+        <md-button class="md-fab md-primary" ng-click="ctl.saveEdit($event)">
+          <md-tooltip md-direction="top">Save changes</md-tooltip>
+          <md-icon>save</md-icon>
+        </md-button>
+      </div>
     </div>
   </md-content>
   <webview id="webViewer" nodeintegration partition="{{ ctl.getUniqueId() }}" />
