@@ -21,11 +21,23 @@
       return fileName;
     };
 
-    var _requestFiles = function() {
+    var _requestFiles = function(filter) {
+
+      var filters = [];
+
+      if (filter) {
+        filters.push(filter);
+      } else {
+        filters.push({
+          name: 'All Files',
+          extensions: ['*']
+        });
+      }
 
       var files = dialog.showOpenDialog(app.getMainWindow(), {
         title: 'Please select files:',
         defaultPath: app.getPath('home'),
+        filters: filters,
         properties: ['openFile', 'multiSelections']
       });
 

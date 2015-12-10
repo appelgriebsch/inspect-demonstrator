@@ -25,7 +25,10 @@
 
     $scope.$on('import-documents', () => {
 
-      var files = DocumentSharingService.requestFiles();
+      var files = DocumentSharingService.requestFiles({
+        name: 'Document Archive',
+        extensions: ['archive']
+      });
 
       if (files !== undefined) {
 
@@ -53,7 +56,7 @@
             });
 
             p.push(ps);
-            
+
           });
 
           return Promise.all(p);
