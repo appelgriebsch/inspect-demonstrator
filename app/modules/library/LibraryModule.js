@@ -81,6 +81,15 @@
               }
             }
           })
+          .state(`${moduleConfig.state}.search.itemSelected`, {
+            url: '/itemSelected/:doc',
+            views: {
+              'status@app': {
+                templateUrl: `${moduleConfig.path}/views/library.view.status.html`,
+                controller: 'LibraryViewStatusController as ctl'
+              }
+            }
+          })
           .state(`${moduleConfig.state}.webview`, {
             url: '/webview/:doc',
             views: {

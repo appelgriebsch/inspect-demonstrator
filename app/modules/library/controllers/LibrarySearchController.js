@@ -6,7 +6,9 @@
 
     this.items = [];
     this.query = '';
-
+    this.state = $state.$current;
+    this.baseState = this.state.parent.toString();
+    
     var _doSearch = () => {
 
       this.items = [];
