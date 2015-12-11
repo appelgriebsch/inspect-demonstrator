@@ -96,8 +96,8 @@
         .title('Would you like to delete this document?')
         .content(this.document.meta.headline)
         .targetEvent(args)
-        .ok('Yes, delete it')
-        .cancel('No, please keep it');
+        .ok('Delete')
+        .cancel('Cancel');
       $mdDialog.show(confirm).then(() => {
 
         LibraryDataService.delete(this.document).then(() => {
