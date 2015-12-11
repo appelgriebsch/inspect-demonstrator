@@ -71,6 +71,41 @@
       });
     };
 
+    this.removeDocument = (evt, doc) => {
+
+      var confirm = $mdDialog.confirm()
+        .title('Would you like to delete this document?')
+        .content(doc.meta.headline)
+        .targetEvent(evt)
+        .ok('Yes, delete it')
+        .cancel('No, please keep it');
+
+      $mdDialog.show(confirm).then(() => {
+
+        LibraryDataService.delete(doc).then(() => {
+
+          var info = $scope.createEventFromTemplate('DeleteAction', 'delete');
+          info.description = `Document <i>${doc.meta.name}</i> has been deleted.`;
+          info.object = doc.meta;
+          delete info.result;
+
+          $scope.writeLog('warning', info).then(() => {
+            $scope.notify('Document deleted successfully', info.description);
+
+            var idx = this.items.indexOf(doc);
+            if (idx > -1) {
+              this.items.splice(idx, 1);
+            }
+            $scope.setReady(true);
+          });
+
+        }).catch((err) => {
+          $scope.setError('DeleteAction', 'delete', err);
+          $scope.setReady(true);
+        });
+      });
+    }
+
     $scope.$on('import-documents', () => {
 
       var files = DocumentSharingService.requestFiles({

@@ -109,3 +109,15 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
   width: 95%;
   overflow: hidden;
 }
+
+.hover-button {
+  z-index: 1;
+  position: absolute;
+  right: 0;
+  top: 0;
+  visibility: hidden;
+}
+
+.doc-tile:hover .hover-button {
+  visibility: visible;
+}
