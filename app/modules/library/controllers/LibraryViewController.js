@@ -5,8 +5,34 @@
   function LibraryViewController($scope, $state, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     this.items = [];
+    this.query = '';
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
+
+    var _doSearch = () => {
+
+      this.items = [];
+
+      $scope.setBusy('Searching documents...');
+
+      LibraryDataService.search(this.query).then((results) => {
+
+        $q.when(true).then(() => {
+          results.rows.forEach((item) => {
+            if (Array.isArray(item.doc.author)) {
+              item.doc.author = item.doc.author.join(', ');
+            }
+            this.items.push(item.doc);
+          });
+        });
+
+        $scope.setReady(false);
+
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
+      });
+    };
 
     this.initialize = function() {
 
@@ -25,6 +51,16 @@
       });
     };
 
+    this.search = (evt) => {
+
+      if ((evt.type) && (evt.type === 'submit')) {
+        evt.preventDefault();
+        $q.when(true).then(() => {
+          _doSearch();
+        });
+      }
+    };
+    
     $scope.$on('import-documents', () => {
 
       var files = DocumentSharingService.requestFiles({

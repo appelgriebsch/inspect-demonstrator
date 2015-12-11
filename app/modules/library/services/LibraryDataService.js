@@ -257,11 +257,16 @@
 
       search: function(query) {
 
-        return db.search({
-          query: query,
-          fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
-          include_docs: true
-        });
+        if (query && query.length > 0) {
+          return db.search({
+            query: query,
+            fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
+            include_docs: true
+          });
+        }
+        else {
+          return this.library();
+        }
       },
 
       createMetadataFromTemplate: function(template) {

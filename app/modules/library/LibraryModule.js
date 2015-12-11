@@ -66,30 +66,6 @@
               }
             }
           })
-          .state(`${moduleConfig.state}.search`, {
-            url: '/search',
-            views: {
-              'content': {
-                templateUrl: `${moduleConfig.path}/views/library.search.html`,
-                controller: 'LibrarySearchController as ctl'
-              },
-              'header@app': {
-                template: `<a ui-sref="^.view"><md-icon>chevron_left</md-icon>${moduleConfig.label}</a>`
-              },
-              'actions@app': {
-                templateUrl: `${moduleConfig.path}/views/library.search.actions.html`
-              }
-            }
-          })
-          .state(`${moduleConfig.state}.search.itemSelected`, {
-            url: '/itemSelected/:doc',
-            views: {
-              'status@app': {
-                templateUrl: `${moduleConfig.path}/views/library.view.status.html`,
-                controller: 'LibraryViewStatusController as ctl'
-              }
-            }
-          })
           .state(`${moduleConfig.state}.webview`, {
             url: '/webview/:doc',
             views: {
@@ -128,7 +104,6 @@
 
     var LibraryCaptureController = require('./controllers/LibraryCaptureController');
     var LibraryPDFViewerController = require('./controllers/LibraryPDFViewerController');
-    var LibrarySearchController = require('./controllers/LibrarySearchController');
     var LibraryUploadController = require('./controllers/LibraryUploadController');
     var LibraryViewController = require('./controllers/LibraryViewController');
     var LibraryViewStatusController = require('./controllers/LibraryViewStatusController');
@@ -142,7 +117,6 @@
     angular.module('electron-app').controller('LibraryUploadController', ['$scope', '$state', '$q', 'DocumentCaptureService', 'LibraryDataService', LibraryUploadController]);
 
     angular.module('electron-app').controller('LibraryViewController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryViewController]);
-    angular.module('electron-app').controller('LibrarySearchController', ['$scope', '$state', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibrarySearchController]);
     angular.module('electron-app').controller('LibraryViewStatusController', ['$scope', '$state', '$stateParams', '$q', 'LibraryDataService', LibraryViewStatusController]);
 
     angular.module('electron-app').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryPDFViewerController]);
