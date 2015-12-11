@@ -2,7 +2,7 @@
   <div layout="row">
     <md-input-container layout-fill>
       <label>Search Term</label>
-      <input ng-model="ctl.query" ng-keypress="ctl.search($event)">
+      <input ng-model="ctl.query" ng-keydown="ctl.search($event)">
     </md-input-container>
     <span flex></span>
     <md-button ng-if="ctl.query.length > 0" class="md-icon-button" ng-click="ctl.reset()">

@@ -53,14 +53,15 @@
 
     this.search = (evt) => {
 
-      if ((evt) && (evt.keyCode !== 13)) {
-        return;
+      if ((evt === undefined) || (evt.keyCode === 13)) {
+        _doSearch();
       }
-      else {
-        $q.when(true).then(() => {
-          _doSearch();
-        });
+      else if ((evt !== undefined) && (evt.keyCode === 27)) {
+        this.query = '';
+        _doSearch();
       }
+
+      return;
     };
 
     this.reset = () => {
