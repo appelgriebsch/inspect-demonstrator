@@ -62,8 +62,9 @@
             $scope.setReady(true);
           });
 
+          result.datePublished = result.meta.datePublished ? new Date(result.meta.datePublished) : null,
+
           result.tags = result.tags || result.meta.keywords.split(/\s*,\s*/);
-          result.custom_tags = result.custom_tags || [];
           result.annotations = result.annotations || [];
           result.outline = result.outline || [];
 
@@ -95,8 +96,8 @@
         .title('Would you like to delete this document?')
         .content(this.document.meta.headline)
         .targetEvent(args)
-        .ok('Yes, delete it')
-        .cancel('No, please keep it');
+        .ok('Delete')
+        .cancel('Cancel');
       $mdDialog.show(confirm).then(() => {
 
         LibraryDataService.delete(this.document).then(() => {

@@ -1,9 +1,9 @@
 <div flex layout-fill layout="column" ng-init="ctl.initialize()" ng-cloak>
-  <form flex id="docMeta" layout="row" ng-submit="ctl.uploadDocument($event)">
+  <div flex id="docMeta" layout="row">
     <div class="layout-padding" flex>
       <md-input-container layout-fill>
         <label>Title</label>
-        <textarea ng-model="ctl.document.meta.headline"></textarea>
+        <textarea ng-model="ctl.document.meta.headline" required></textarea>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Description</label>
@@ -15,7 +15,7 @@
       </md-input-container>
       <md-input-container layout-fill>
         <label>Publication Date</label>
-        <input ng-model="ctl.document.meta.datePublished"></input>
+        <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Tags</label>
@@ -37,5 +37,5 @@
         <input accept=".pdf" class="hidden" id="fileSelector" type="file"></input>
       </md-whiteframe>
     </div>
-  </form>
+  </div>
 </div>

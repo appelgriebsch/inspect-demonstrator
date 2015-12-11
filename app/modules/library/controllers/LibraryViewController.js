@@ -5,6 +5,34 @@
   function LibraryViewController($scope, $state, $q, $mdDialog, DocumentSharingService, LibraryDataService) {
 
     this.items = [];
+    this.query = '';
+    this.state = $state.$current;
+    this.baseState = this.state.parent.toString();
+
+    var _doSearch = () => {
+
+      this.items = [];
+
+      $scope.setBusy('Searching documents...');
+
+      LibraryDataService.search(this.query).then((results) => {
+
+        $q.when(true).then(() => {
+          results.rows.forEach((item) => {
+            if (Array.isArray(item.doc.author)) {
+              item.doc.author = item.doc.author.join(', ');
+            }
+            this.items.push(item.doc);
+          });
+        });
+
+        $scope.setReady(false);
+
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
+      });
+    };
 
     this.initialize = function() {
 
@@ -23,9 +51,67 @@
       });
     };
 
+    this.search = (evt) => {
+
+      if ((evt === undefined) || (evt.keyCode === 13)) {
+        _doSearch();
+      }
+      else if ((evt !== undefined) && (evt.keyCode === 27)) {
+        this.query = '';
+        _doSearch();
+      }
+
+      return;
+    };
+
+    this.reset = () => {
+      $q.when(true).then(() => {
+        this.query = '';
+        _doSearch();
+      });
+    };
+
+    this.removeDocument = (evt, doc) => {
+
+      var confirm = $mdDialog.confirm()
+        .title('Would you like to delete this document?')
+        .content(doc.meta.headline)
+        .targetEvent(evt)
+        .ok('Delete')
+        .cancel('Cancel');
+
+      $mdDialog.show(confirm).then(() => {
+
+        LibraryDataService.delete(doc).then(() => {
+
+          var info = $scope.createEventFromTemplate('DeleteAction', 'delete');
+          info.description = `Document <i>${doc.meta.name}</i> has been deleted.`;
+          info.object = doc.meta;
+          delete info.result;
+
+          $scope.writeLog('warning', info).then(() => {
+            $scope.notify('Document deleted successfully', info.description);
+
+            var idx = this.items.indexOf(doc);
+            if (idx > -1) {
+              this.items.splice(idx, 1);
+            }
+            $scope.setReady(true);
+          });
+
+        }).catch((err) => {
+          $scope.setError('DeleteAction', 'delete', err);
+          $scope.setReady(true);
+        });
+      });
+    }
+
     $scope.$on('import-documents', () => {
 
-      var files = DocumentSharingService.requestFiles();
+      var files = DocumentSharingService.requestFiles({
+        name: 'Document Archive',
+        extensions: ['archive']
+      });
 
       if (files !== undefined) {
 
@@ -53,7 +139,7 @@
             });
 
             p.push(ps);
-            
+
           });
 
           return Promise.all(p);

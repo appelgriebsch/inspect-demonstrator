@@ -22,35 +22,35 @@
       </div>
       <md-input-container layout-fill>
         <label>Title</label>
-        <textarea ng-disabled="ctl.document.meta.headline !== ''" ng-model="ctl.document.meta.headline" required></textarea>
+        <textarea ng-model="ctl.document.meta.headline" required></textarea>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Description</label>
-        <textarea ng-disabled="ctl.document.meta.description !== ''" ng-model="ctl.document.meta.description"></textarea>
+        <textarea ng-model="ctl.document.meta.description"></textarea>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Author</label>
-        <input ng-disabled="ctl.document.meta.author.name !== ''" ng-model="ctl.document.meta.author.name"></input>
+        <input ng-model="ctl.document.meta.author.name"></input>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Publication Date</label>
-        <input ng-disabled="ctl.document.meta.datePublished !== ''" ng-model="ctl.document.meta.datePublished"></input>
+        <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Page URL</label>
-        <input disabled ng-model="ctl.document.meta.url" required type="url"></input>
+        <input ng-model="ctl.document.meta.url" required disabled type="url"></input>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Tags</label>
         <md-chips ng-model="ctl.document.tags"
                   md-separator-keys="shell.tagSeperatorKeys"
-                  placeholder="Enter a tag"
-                  secondary-placeholder="TAB separated tags"></md-chips>
+                  placeholder="Enter a tag">
+        </md-chips>
       </md-input-container>
     </div>
   </md-content>
   <webview id="webCapture" nodeintegration partition="{{ ctl.getUniqueId() }}" />
 </div>
 <script id="capture-metadata" type="text/template">
-  (function() { var _tag = document.querySelector("meta[name='parsely-page']"); var _parsely = _tag ? JSON.parse(_tag.content) : null; var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title"); var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description"); var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']") || document.location; var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']"); var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']"); var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']"); var result = { title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''), description: _description ? (_description.content ? _description.content : _description.text) : '', url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''), publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''), author: _parsely ? _parsely.author : (_author ? _author.content : ''), tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : _tags.map((elem) => { return elem.content }) ) : [] }; var ipc = require('ipc'); ipc.sendToHost(result); })();
+  (function() { var _tag = document.querySelector("meta[name='parsely-page']"); var _parsely = _tag ? JSON.parse(_tag.content) : null; var _title = document.querySelector("meta[property='og:title']") || document.querySelector("meta[name='title']") || document.querySelector("title"); var _description = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']") || document.querySelector("description"); var _url = document.querySelector("meta[property='og:url']") || document.querySelector("link[rel='canonical']") || document.location; var _pubDate = document.querySelector("meta[property='article:published_time']") || document.querySelector("meta[name='date']"); var _author = document.querySelector("meta[property='article:author']") || document.querySelector("meta[name='author']") || document.querySelector("meta[property='og:site_name']"); var _tags = document.querySelectorAll("meta[property='article:tag']").length ? document.querySelectorAll("meta[property='article:tag']") : document.querySelector("meta[name='keywords']"); var result = { title: _parsely ? _parsely.title : (_title ? (_title.content ? _title.content : _title.text) : ''), description: _description ? (_description.content ? _description.content : _description.text) : '', url: _parsely ? _parsely.link : (_url ? (_url.content ? _url.content : _url.href) : ''), publicationDate: _parsely ? _parsely.pub_date : (_pubDate ? _pubDate.content : ''), author: _parsely ? _parsely.author : (_author ? _author.content : ''), tags: _parsely ? _parsely.tags : _tags ? ( _tags.content ? _tags.content.split(/\s*,\s*/) : Array.prototype.map.call(_tags, (elem) => { return elem.content }) ) : [] }; var ipc = require('ipc'); ipc.sendToHost(result); })();
 </script>

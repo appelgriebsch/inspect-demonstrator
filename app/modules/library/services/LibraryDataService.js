@@ -8,9 +8,8 @@
     var uuid = require('uuid');
 
     var _buildSearchIndex = function() {
-
       return db.search({
-        fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
+        fields: ['meta.about', 'meta.name', 'meta.description', 'meta.headline', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
         build: true
       });
     };
@@ -236,6 +235,10 @@
         });
       },
 
+      itemMeta: function(docID) {
+        return db.get(docID);
+      },
+
       save: function(doc) {
 
         if (!doc._id) {
@@ -253,11 +256,16 @@
 
       search: function(query) {
 
-        return db.search({
-          query: query,
-          fields: ['meta.name', 'meta.description', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
-          include_docs: true
-        });
+        if (query && query.length > 0) {
+          return db.search({
+            query: query,
+            fields: ['meta.about', 'meta.name', 'meta.description', 'meta.headline', 'meta.author.name', 'meta.about', 'tags', 'custom_tags'],
+            include_docs: true
+          });
+        }
+        else {
+          return this.library();
+        }
       },
 
       createMetadataFromTemplate: function(template) {

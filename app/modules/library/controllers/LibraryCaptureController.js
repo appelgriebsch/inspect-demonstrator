@@ -18,6 +18,8 @@
 
         this.document.meta.name = result.id;
         this.document.meta.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : this.document.meta.keywords;
+        this.document.meta.datePublished = this.document.datePublished ? this.document.datePublished.toISOString() : this.document.meta.datePublished;
+        delete this.document.datePublished;
 
         var author = LibraryDataService.buildAuthorInformation(this.document.meta.author.name);
         this.document.meta.author = author;
@@ -79,15 +81,22 @@
       webViewer.executeJavaScript(document.getElementById('capture-metadata').innerText);
     });
 
+    webViewer.addEventListener('console-message', function(e) {
+      console.log(e);
+    });
+
     webViewer.addEventListener('ipc-message', (evt, args) => {
 
       var meta = evt.channel;
       var template = LibraryDataService.createMetadataFromTemplate('website');
       template.author = LibraryDataService.buildAuthorInformation(meta.author);
-      template.datePublished = meta.publicationDate;
+
+      var dateTimeOffset = new Date().toString().match(/([-\+][0-9]+)\s/)[1];
+      template.datePublished = meta.publicationDate.indexOf('+') > 0 ? meta.publicationDate : (meta.publicationDate.length > 0 ? `${meta.publicationDate}${dateTimeOffset}` : '');
+
       template.description = meta.description;
-      template.about = meta.title.trim();
-      template.headline = meta.title.trim();
+      template.about =  meta.title.trim();
+      template.headline =  meta.title.trim();
       template.fileFormat = 'multipart/related';
       template.keywords = meta.tags.length > 0 ? meta.tags.join(',') : '';
       template.url = meta.url;
@@ -97,8 +106,10 @@
           meta: template,
           status: 'new',
           createdAt: new Date(),
+          datePublished: template.datePublished ? new Date(template.datePublished) : null,
           tags: template.keywords.length > 0 ? template.keywords.split(/\s*,\s*/) : []
         };
+        console.log(this.document);
         $scope.setReady(true);
       });
     });

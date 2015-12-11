@@ -8,20 +8,8 @@
     var webViewer = document.getElementById('webViewer');
     var docID = $stateParams.doc;
 
-    var disableAllLinks = function() {
-      var links = document.querySelectorAll('a[href]');
-      for (var link in links) {
-        links[link].href='javascript:void(0)';
-      }
-    }.toString();
-
     this.document;
     this.sidebarOpened = false;
-
-    webViewer.addEventListener('dom-ready', () => {
-      var code = `(${disableAllLinks})();`;
-      webViewer.executeJavaScript(code);
-    });
 
     this.initialize = function() {
 
@@ -37,9 +25,12 @@
           var fileName = DocumentSharingService.requestTemporaryFile(result.meta.name, archive);
           webViewer.src = `file://${fileName}`;
         }
-        result.tags = result.meta.keywords.split(/\s*,\s*/);
-        result.custom_tags = result.custom_tags || [];
+
+        result.datePublished = result.meta.datePublished ? new Date(result.meta.datePublished) : null,
+
+        result.tags = result.tags || result.meta.keywords.split(/\s*,\s*/);
         result.annotations = result.annotations || [];
+
         $q.when(true).then(() => {
           this.document = result;
           $scope.setReady(false);
@@ -71,8 +62,8 @@
         .title('Would you like to delete this document?')
         .content(this.document.meta.headline)
         .targetEvent(args)
-        .ok('Yes, delete it')
-        .cancel('No, please keep it');
+        .ok('Delete')
+        .cancel('Cancel');
 
       $mdDialog.show(confirm).then(() => {
 

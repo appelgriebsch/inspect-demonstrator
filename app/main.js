@@ -2,7 +2,7 @@
 
   'use strict';
 
-  angular.module('inspectApp', ['ngMaterial', 'ngSanitize', 'ui.router', 'angular-timeline', 'angular-centered', 'notification'])
+  angular.module('electron-app', ['ngMaterial', 'ngSanitize', 'ui.router', 'angular-timeline', 'angular-centered', 'notification'])
     .config(function($mdThemingProvider) {
       $mdThemingProvider.theme('default')
         .primaryPalette('blue-grey')
@@ -51,12 +51,12 @@
   // hint: has to initialize modules here, otherwise controller objects are not found :(
   ModuleProvider.loadModules();
 
-  angular.module('inspectApp').provider('modules', [ModuleProvider]);
+  angular.module('electron-app').provider('modules', [ModuleProvider]);
 
-  angular.module('inspectApp').service('PouchDBService', [PouchDBService]);
-  angular.module('inspectApp').service('ActivityDataService', ['PouchDBService', ActivityDataService]);
-  angular.module('inspectApp').service('ActivityService', ['ActivityDataService', ActivityService]);
+  angular.module('electron-app').service('PouchDBService', [PouchDBService]);
+  angular.module('electron-app').service('ActivityDataService', ['PouchDBService', ActivityDataService]);
+  angular.module('electron-app').service('ActivityService', ['ActivityDataService', ActivityService]);
 
-  angular.module('inspectApp').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', '$notification', '$mdToast', '$mdConstant', 'modules', 'ActivityService', ShellController]);
+  angular.module('electron-app').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', '$notification', '$mdToast', 'modules', 'ActivityService', ShellController]);
 
 })(global.angular);

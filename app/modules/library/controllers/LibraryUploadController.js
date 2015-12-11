@@ -38,6 +38,13 @@
 
       Promise.all(p).then((results) => {
 
+        this.document.meta.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : this.document.meta.keywords;
+        this.document.meta.datePublished = this.document.datePublished ? this.document.datePublished.toISOString() : this.document.meta.datePublished;
+        delete this.document.datePublished;
+
+        var author = LibraryDataService.buildAuthorInformation(this.document.meta.author.name);
+        this.document.meta.author = author;
+
         delete this.document.files;
 
         return LibraryDataService.save(this.document).then((result) => {
@@ -77,7 +84,11 @@
       if (dropZone) {
 
         dropZone.ondragover = (e) => {
-          e.dataTransfer.dropEffect = 'copy';
+          if (e.dataTransfer.files.length > 1) {
+            e.dataTransfer.dropEffect = 'none';
+          } else {
+            e.dataTransfer.dropEffect = (e.dataTransfer.files[0].type === 'application/pdf' ? 'copy' : 'none');
+          }
           return false;
         };
 
@@ -138,25 +149,32 @@
       DocumentCaptureService.capturePDF(this.document.files[0]).then((meta) => {
 
         var template = LibraryDataService.createMetadataFromTemplate('book');
-        template.author = LibraryDataService.buildAuthorInformation(meta.author);
+        template.author = LibraryDataService.buildAuthorInformation(this.document.meta ? this.document.meta.author : meta.author);
 
-        template.datePublished = meta.publicationDate;
-        template.description = meta.description;
-        template.about = meta.title.trim();
-        template.headline = meta.title.trim();
-        template.keywords = meta.tags.length > 0 ? meta.tags.join(',') : '';
+        var dateTimeOffset = new Date().toString().match(/([-\+][0-9]+)\s/)[1];
+        template.datePublished = meta.publicationDate.indexOf('+') > 0 ? meta.publicationDate : (meta.publicationDate.length > 0 ? `${meta.publicationDate}${dateTimeOffset}` : '');
+
+        template.description = this.document.meta ? this.document.meta.description : meta.description;
+        template.about = this.document.meta ? this.document.meta.about : meta.title.trim();
+        template.headline = this.document.meta ? this.document.meta.headline : meta.title.trim();
+        template.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : (meta.tags.length > 0 ? meta.tags.join(',') : '');
         template.url = meta.url;
 
         $q.when(true).then(() => {
 
           this.document.meta = template;
           this.document.status = 'new';
+          this.document.createdAt = new Date();
+          this.document.datePublished = template.datePublished ? new Date(template.datePublished) : null,
+
           this.document.tags = template.keywords.length > 0 ? template.keywords.split(/\s*,\s*/) : [];
 
           this.document.meta.name = meta.id;
 
           this.document.meta.thumbnailUrl.encodingFormat = 'image/png';
           this.document.meta.thumbnailUrl.contentUrl = meta.preview;
+
+          console.log(this.document);
 
           $scope.setReady(true);
         });

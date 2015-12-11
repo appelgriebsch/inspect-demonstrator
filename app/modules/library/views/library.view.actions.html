@@ -6,16 +6,12 @@
   </md-fab-trigger>
   <md-fab-actions>
     <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('import-documents', $event)">
-      <md-tooltip md-direction="left">Import Documents</md-tooltip>
+      <md-tooltip md-direction="left">Import archived Documents</md-tooltip>
       <md-icon>import_export</md-icon>
     </md-button>
     <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('export-documents', $event)">
-      <md-tooltip md-direction="left">Share Documents</md-tooltip>
+      <md-tooltip md-direction="left">Share current Documents</md-tooltip>
       <md-icon>share</md-icon>
-    </md-button>
-    <md-button class="md-fab md-raised md-mini" ui-sref="^.search">
-      <md-tooltip md-direction="left">Search Library</md-tooltip>
-      <md-icon>search</md-icon>
     </md-button>
   </md-fab-actions>
 </md-fab-speed-dial>

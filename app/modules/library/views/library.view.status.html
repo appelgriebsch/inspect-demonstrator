@@ -1,0 +1,10 @@
+<div class="statusLine" layout="column" layout-fill ng-init="ctl.initialize()">
+  <md-divider layout-fill layout-padding></md-divider>
+  <div layout-fill layout="row" ng-if="ctl.document.meta.author !== undefined">
+    <span><b>{{ ctl.document.meta.author.name }}</b></span>
+    <span flex></span>
+    <small>{{ ctl.document.meta.datePublished | date: 'short' }}</small>
+  </div>
+  <span>{{ ctl.document.meta.headline }}</span>
+  <span>{{ ctl.document.meta.description }}</span>
+</div>
