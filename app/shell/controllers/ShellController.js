@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function ShellController($scope, $log, $q, $mdSidenav, $notification, $mdToast, $mdConstant, modulesProvider, ActivityService) {
+  function ShellController($scope, $log, $q, $mdSidenav, $notification, $mdToast, modulesProvider, ActivityService) {
 
     var remote = require('remote');
     var app = remote.require('app');
@@ -14,7 +14,6 @@
     this.statusMessage = '';
     this.isDirty = false;
     this.fabOpen = false;
-    this.tagSeperatorKeys = [$mdConstant.KEY_CODE.TAB];
 
     $scope.setBusy = (msg) => {
       $q.when(true).then(() => {
