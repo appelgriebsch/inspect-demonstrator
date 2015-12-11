@@ -90,7 +90,10 @@
       var meta = evt.channel;
       var template = LibraryDataService.createMetadataFromTemplate('website');
       template.author = LibraryDataService.buildAuthorInformation(meta.author);
-      template.datePublished = meta.publicationDate.indexOf('Z') > 0 ? meta.publicationDate : (meta.publicationDate.length > 0 ? `${meta.publicationDate}Z` : '');
+
+      var dateTimeOffset = new Date().toString().match(/([-\+][0-9]+)\s/)[1];
+      template.datePublished = meta.publicationDate.indexOf('+') > 0 ? meta.publicationDate : (meta.publicationDate.length > 0 ? `${meta.publicationDate}${dateTimeOffset}` : '');
+
       template.description = meta.description;
       template.about =  meta.title.trim();
       template.headline =  meta.title.trim();
