@@ -7,7 +7,7 @@
     "id": "com.wincornixdorf.inspect-demonstrator",
     "name": "inspect.demonstrator",
     "description": "A demonstrator for the funded INSPECT project",
-    "version": "0.6.6",
+    "version": "0.6.8",
     "author": "Wincor Nixdorf",
     "icons": {
       "ico": "app/assets/demonstrator.ico",

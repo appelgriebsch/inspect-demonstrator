@@ -53,14 +53,23 @@
 
     this.search = (evt) => {
 
-      if ((evt.type) && (evt.type === 'submit')) {
-        evt.preventDefault();
+      if ((evt) && (evt.keyCode !== 13)) {
+        return;
+      }
+      else {
         $q.when(true).then(() => {
           _doSearch();
         });
       }
     };
-    
+
+    this.reset = () => {
+      $q.when(true).then(() => {
+        this.query = '';
+        _doSearch();
+      });
+    };
+
     $scope.$on('import-documents', () => {
 
       var files = DocumentSharingService.requestFiles({

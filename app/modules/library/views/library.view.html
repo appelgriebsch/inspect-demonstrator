@@ -1,14 +1,17 @@
 <div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
-  <form id="query" layout="row" ng-submit="ctl.search($event)">
+  <div layout="row">
     <md-input-container layout-fill>
       <label>Search Term</label>
-      <input ng-model="ctl.query">
+      <input ng-model="ctl.query" ng-keypress="ctl.search($event)">
     </md-input-container>
     <span flex></span>
-    <md-button class="md-icon-button" type="submit">
+    <md-button ng-if="ctl.query.length > 0" class="md-icon-button" ng-click="ctl.reset()">
+      <md-icon>close</md-icon>
+    </md-button>
+    <md-button class="md-icon-button" ng-click="ctl.search()">
       <md-icon>search</md-icon>
     </md-button>
-  </form>
+  </div>
   <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1" md-gutter-gt-md="12px" md-gutter-gt-sm="6px" md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile md-colspan-sm="1" md-colspan="2" md-rowspan="1" ng-repeat="item in ctl.items" ng-click="$state.go('.itemSelected', { doc: item._id }, { relative: ctl.state })">
       <img ng-if="item.meta['@type'] === 'WebSite'" ng-dblclick="$state.go('^.webview', { doc: item._id }, { relative: ctl.state })" class="thumbnail" ng-src="{{ item.meta.thumbnailUrl.contentUrl }}"></img>
