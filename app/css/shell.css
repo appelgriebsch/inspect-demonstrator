@@ -3,7 +3,7 @@ html, body {
   margin: 0px;
   height: 100%;
   width: 100%;
-  overflow: none;
+  overflow: hidden;
   -webkit-user-select: none;
 }
 md-content[ui-view='content'], md-content[ui-view='module'] {
@@ -38,4 +38,13 @@ md-content[ui-view='content'] {
   text-decoration: none;
   text-shadow: 1px 1px rgb(107, 104, 104);
   font-weight: 500;
+}
+.statusLine {
+  width: 95%;
+  overflow: hidden;
+}
+
+.statusLine.animated {
+  -webkit-animation-duration: .5s;
+  animation-duration: .5s;
 }

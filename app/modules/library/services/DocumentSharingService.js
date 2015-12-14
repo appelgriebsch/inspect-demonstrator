@@ -52,7 +52,7 @@
         properties: ['openDirectory', 'createDirectory']
       });
 
-      return targetPath[0];
+      return (targetPath ? targetPath[0] : undefined);
     };
 
     var _import = function(files) {

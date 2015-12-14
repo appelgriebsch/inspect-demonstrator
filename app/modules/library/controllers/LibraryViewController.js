@@ -71,6 +71,28 @@
       });
     };
 
+    this.selectDocument = (evt, doc) => {
+
+      var statusElem = document.querySelectorAll('.statusLine');
+
+      if (statusElem.length > 0) {
+
+        angular.element(statusElem[0]).removeClass('fadeInUp');
+        angular.element(statusElem[0]).addClass('fadeOutDown');
+
+        angular.element(statusElem[0]).one('webkitAnimationEnd', () => {
+          $q.when(true).then(() => {
+            $state.go('.itemSelected', { doc: doc._id }, { relative: this.state });
+          });
+        });
+      }
+      else {
+        $q.when(true).then(() => {
+          $state.go('.itemSelected', { doc: doc._id }, { relative: this.state });
+        });
+      }
+    };
+
     this.removeDocument = (evt, doc) => {
 
       var confirm = $mdDialog.confirm()
