@@ -14,8 +14,6 @@
 
       $scope.setBusy('Saving changes...');
 
-      console.log(this.document);
-
       this.document.meta.keywords = this.document.tags.length > 0 ? this.document.tags.join(',') : this.document.meta.keywords;
       this.document.meta.datePublished = this.document.datePublished ? this.document.datePublished.toISOString() : this.document.meta.datePublished;
       delete this.document.datePublished;
@@ -24,8 +22,6 @@
       this.document.meta.author = author;
 
       LibraryDataService.save(this.document).then((result) => {
-
-        console.log(result);
 
         var info = $scope.createEventFromTemplate('AddAction', 'mode_edit');
         info.description = `Document <i>${this.document.meta.name}</i> updated successfully!`;
