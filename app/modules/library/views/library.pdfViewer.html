@@ -10,58 +10,69 @@
           <md-icon>chevron_left</md-icon>
         </md-button>
       </div>
-      <md-tabs md-border-bottom md-dynamic-height>
-        <md-tab label="Meta">
-          <md-content class="md-padding tabContent">
-            <md-input-container>
+      <md-tabs md-border-bottom md-dynamic-height md-stretch-tabs="always">
+        <md-tab>
+          <md-tab-label>
+            <md-tooltip md-direction="bottom">Document Outline</md-tooltip>
+            <md-icon>info_outline</md-icon>
+          </md-tab-label>
+          <md-tab-body class="md-padding tabContent">
+            <md-input-container layout-fill>
               <label>Title</label>
-              <textarea ng-model="ctl.document.meta.headline" required></textarea>
+              <textarea ng-model="ctl.document.meta.headline" readonly required></textarea>
             </md-input-container>
-            <md-input-container>
+            <md-input-container layout-fill>
               <label>Description</label>
-              <textarea ng-model="ctl.document.meta.description"></textarea>
+              <textarea ng-model="ctl.document.meta.description" readonly></textarea>
             </md-input-container>
-            <md-input-container>
+            <md-input-container layout-fill>
               <label>Author</label>
-              <input ng-model="ctl.document.meta.author.name"></input>
+              <input ng-model="ctl.document.meta.author.name" readonly></input>
             </md-input-container>
-            <md-input-container>
+            <md-input-container layout-fill>
               <label>Publication Date</label>
-              <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
+              <input ng-model="ctl.document.datePublished" readonly type="datetime-local"></input>
             </md-input-container>
-            <md-input-container>
+            <md-input-container layout-fill>
               <label>Tags</label>
-              <md-chips ng-model="ctl.document.tags"
-                        placeholder="Enter a tag">
-              </md-chips>
-            </md-input-container>            
-          </md-tab>
-          <md-tab label="Outline" ng-disabled="ctl.document.outline.length === 0">
-            <md-content class="md-padding tabContent">
-              <div ng-repeat="chapter in ctl.document.outline">
-                <h3>
-                  <span>{{ chapter.title }}</span>
-                  <span ng-if="chapter.items.length === 1">:
-                    {{ chapter.items[0].title }}</span>
-                </h3>
-                <div ng-if="chapter.items.length === 1" ng-repeat="subc in chapter.items[0].items">
-                  <h4>{{ subc.title }}</h4>
-                </div>
-                <div ng-if="chapter.items.length > 1" ng-repeat="subc in chapter.items">
-                  <h4>{{ subc.title }}</h4>
-                </div>
+              <md-chips ng-model="ctl.document.tags" placeholder="Enter a tag" readonly="true"></md-chips>
+            </md-input-container>
+          </md-tab-body>
+        </md-tab>
+        <md-tab ng-disabled="ctl.document.outline.length === 0">
+          <md-tab-label>
+            <md-tooltip md-direction="bottom">Table of Content</md-tooltip>
+            <md-icon>toc</md-icon>
+          </md-tab-label>
+          <md-tab-body class="md-padding tabContent">
+            <div ng-repeat="chapter in ctl.document.outline">
+              <h3>
+                <span>{{ chapter.title }}</span>
+                <span ng-if="chapter.items.length === 1">:
+                  {{ chapter.items[0].title }}</span>
+              </h3>
+              <div ng-if="chapter.items.length === 1" ng-repeat="subc in chapter.items[0].items">
+                <h4>{{ subc.title }}</h4>
               </div>
-            </md-content>
-          </md-tab>
-          <md-tab label="Annotations" ng-disabled="ctl.document.annotations.length === 0">
-            <md-content class="md-padding tabContent">
-              Page 1
-            </md-content>
-          </md-tab>
-        </md-tabs>
-      </div>
-    </md-content>
-    <div id="pdfViewerContainer">
-      <div class="pdfViewer" id="pdfViewer"></div>
+              <div ng-if="chapter.items.length > 1" ng-repeat="subc in chapter.items">
+                <h4>{{ subc.title }}</h4>
+              </div>
+            </div>
+          </md-tab-body>
+        </md-tab>
+        <md-tab ng-disabled="ctl.document.annotations.length === 0">
+          <md-tab-label>
+            <md-tooltip md-direction="bottom">Bookmarks &amp; Annotations</md-tooltip>
+            <md-icon>bookmark</md-icon>
+          </md-tab-label>
+          <md-tab-body class="md-padding tabContent">
+            Page 1
+          </md-tab-body>
+        </md-tab>
+      </md-tabs>
     </div>
+  </md-content>
+  <div id="pdfViewerContainer">
+    <div class="pdfViewer" id="pdfViewer"></div>
   </div>
+</div>
