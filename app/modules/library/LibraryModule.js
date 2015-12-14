@@ -95,6 +95,18 @@
                 templateUrl: `${moduleConfig.path}/views/library.pdfViewer.actions.html`
               }
             }
+          })
+          .state(`${moduleConfig.state}.editmeta`, {
+            url: '/editmeta/:doc',
+            views: {
+              'content': {
+                templateUrl: `${moduleConfig.path}/views/library.edit.meta.html`,
+                controller: 'LibraryEditMetaController as ctl'
+              },
+              'actions@app': {
+                templateUrl: 'shell/views/shell.submit.html'
+              }
+            }
           });
       });
 
@@ -108,6 +120,7 @@
     var LibraryViewController = require('./controllers/LibraryViewController');
     var LibraryViewStatusController = require('./controllers/LibraryViewStatusController');
     var LibraryWebViewerController = require('./controllers/LibraryWebViewerController');
+    var LibraryEditMetaController = require('./controllers/LibraryEditMetaController');
 
     angular.module('electron-app').service('DocumentCaptureService', ['$http', DocumentCaptureService]);
     angular.module('electron-app').service('DocumentSharingService', ['LibraryDataService', DocumentSharingService]);
@@ -121,6 +134,7 @@
 
     angular.module('electron-app').controller('LibraryPDFViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryPDFViewerController]);
     angular.module('electron-app').controller('LibraryWebViewerController', ['$scope', '$state', '$stateParams', '$q', '$mdDialog', 'DocumentSharingService', 'LibraryDataService', LibraryWebViewerController]);
+    angular.module('electron-app').controller('LibraryEditMetaController', ['$scope', '$state', '$stateParams', '$q', 'LibraryDataService', LibraryEditMetaController]);
   }
 
   module.exports = LibraryModule;

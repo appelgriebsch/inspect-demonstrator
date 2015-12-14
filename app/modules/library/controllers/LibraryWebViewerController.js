@@ -114,6 +114,12 @@
         });
       }
     });
+    
+    $scope.$on('edit-metadata', (event, args) => {
+      $q.when(true).then(() => {
+        $state.go('^.editmeta', { doc: this.document._id });
+      });
+    });
   }
 
   module.exports = LibraryWebViewerController;
