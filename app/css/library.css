@@ -107,7 +107,6 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
 .tabContent {
   background-color: transparent;
 }
-
 .hover-button {
   z-index: 1;
   position: absolute;
@@ -118,11 +117,14 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
   visibility: hidden;
   border-radius: 50%;
 }
-
 .hover-button md-icon {
   color: white;
 }
-
+.doc-placeholder {
+  background: #FAFAFA;
+  border: 2px dashed #DCDCDC;
+  border-radius: 5px;
+}
 .doc-tile:hover .hover-button {
   visibility: visible;
   margin-right: -20px;
