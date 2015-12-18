@@ -23,7 +23,7 @@
 
         var author = LibraryDataService.buildAuthorInformation(this.document.meta.author.name);
         this.document.meta.author = author;
-        
+
         this.document.meta.thumbnailUrl.encodingFormat = 'image/png';
         this.document.meta.thumbnailUrl.contentUrl = result.preview;
 
@@ -92,7 +92,7 @@
       template.author = LibraryDataService.buildAuthorInformation(meta.author);
 
       var dateTimeOffset = new Date().toString().match(/([-\+][0-9]+)\s/)[1];
-      template.datePublished = meta.publicationDate.indexOf('+') > 0 ? meta.publicationDate : (meta.publicationDate.length > 0 ? `${meta.publicationDate}${dateTimeOffset}` : '');
+      template.datePublished = meta.publicationDate ? (meta.publicationDate.indexOf('+') > 0 ? meta.publicationDate : (meta.publicationDate.length > 0 ? `${meta.publicationDate}${dateTimeOffset}` : '')) : '';
 
       template.description = meta.description;
       template.about =  meta.title.trim();

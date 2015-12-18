@@ -208,19 +208,26 @@
           var filenamifyUrl = require('filenamify-url');
           var rm = require('rimraf');
           var fileName = filenamifyUrl(url);
-          webWnd.webContents.savePage(path.join(tempPath, fileName), 'MHTML', function(err) {
+          var tmpArchive = path.join(tempPath, fileName).substr(0, 200) + '.mhtml';
+          webWnd.webContents.savePage(tmpArchive, 'MHTML', function(err) {
             if (err) {
               reject(err);
             } else {
-              var archive = fs.readFileSync(path.join(tempPath, fileName));
-              webWnd.destroy();
-              rm(path.join(tempPath, fileName), () => {
-                resolve({
-                  id: fileName,
-                  content_type: 'application/x-mimearchive',
-                  preview: thumbnail.toDataUrl(),
-                  data: archive
-                });
+              fs.readFile(tmpArchive, (err, archive) => {
+                if (err) {
+                  reject(err);
+                }
+                else {
+                  webWnd.destroy();
+                  rm(tmpArchive, () => {
+                    resolve({
+                      id: fileName,
+                      content_type: 'application/x-mimearchive',
+                      preview: thumbnail.toDataUrl(),
+                      data: archive
+                    });
+                  });
+                }
               });
             }
           });
