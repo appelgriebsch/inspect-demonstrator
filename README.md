@@ -18,7 +18,7 @@ A demonstrator for the funded INSPECT project
 
 ## Screenshot
 
-![screenshot](https://github.com/appelgriebsch/inspect-demonstrator/blob/master/screenshot.png)
+![screenshot](screenshot.png)
 
 ## Build Distributable Packages
 
