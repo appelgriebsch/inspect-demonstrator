@@ -38,7 +38,7 @@
             linkService: pdfLinkService,
             // We can enable text/annotations layers, if needed
             textLayerFactory: new PDFJS.DefaultTextLayerFactory(),
-            annotationsLayerFactory: new PDFJS.DefaultAnnotationsLayerFactory()
+            annotationsLayerFactory: new PDFJS.DefaultAnnotationLayerFactory()
           });
 
           pdfLinkService.setViewer(pdfViewer);
