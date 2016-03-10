@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/appelgriebsch/inspect-demonstrator.git"
+    "url": "git+https://gitlab.com/appelgriebsch/inspect-demonstrator.git"
   },
   "keywords": [
     "electron",
@@ -19,16 +19,16 @@
   "author": "Andreas Gerlach <andi@appelgriebsch.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/appelgriebsch/inspect-demonstrator/issues"
+    "url": "https://gitlab.com/appelgriebsch/inspect-demonstrator/issues"
   },
-  "homepage": "https://github.com/appelgriebsch/inspect-demonstrator#readme",
+  "homepage": "https://gitlab.com/appelgriebsch/inspect-demonstrator#readme",
   "dependencies": {
     "angular": "^1.4.5",
     "angular-animate": "^1.4.5",
     "angular-aria": "^1.4.5",
     "angular-centered": "^1.0.0",
     "angular-material": "^0.11.0",
-    "angular-notification": "gitlab:appelgriebsch/angular-notification",
+    "angular-notification": "^1.1.0",
     "angular-sanitize": "^1.4.5",
     "angular-timeline": "^1.2.1",
     "angular-ui-router": "^0.2.15",
@@ -37,12 +37,12 @@
     "electron-debug": "^0.5.0",
     "filenamify-url": "^1.0.0",
     "geopouch": "^2.0.0",
-    "heliosdb": "gitlab:appelgriebsch/heliosdb",
+    "heliosdb": "appelgriebsch/heliosdb",
     "level-js": "^2.2.2",
     "leveldown": "^1.4.4",
     "mime": "^1.3.4",
     "node-ensure": "0.0.0",
-    "node-servicefinder": "gitlab:appelgriebsch/node-servicefinder",
+    "node-servicefinder": "appelgriebsch/node-servicefinder",
     "pdfjs-dist": "^1.2.32",
     "pouchdb": "^5.1.0",
     "pouchdb-auth": "^2.0.0",

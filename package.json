@@ -6,7 +6,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/appelgriebsch/inspect-demonstrator.git"
+    "url": "git+https://gitlab.com/appelgriebsch/inspect-demonstrator.git"
   },
   "keywords": [
     "electron",
@@ -16,9 +16,9 @@
   "author": "Andreas Gerlach <andi@appelgriebsch.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/appelgriebsch/inspect-demonstrator/issues"
+    "url": "https://gitlab.com/appelgriebsch/inspect-demonstrator/issues"
   },
-  "homepage": "https://github.com/appelgriebsch/inspect-demonstrator#readme",
+  "homepage": "https://gitlab.com/appelgriebsch/inspect-demonstrator#readme",
   "scripts": {
     "start": "electron app/",
     "postinstall": "node ./tasks/app_npm_install",
@@ -30,7 +30,7 @@
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-electron": "^2.0.0",
-    "grunt-npm-install": "gitlab:appelgriebsch/grunt-npm-install",
+    "grunt-npm-install": "appelgriebsch/grunt-npm-install",
     "load-grunt-tasks": "^3.2.0",
     "nconf": "^0.8.0"
   },
