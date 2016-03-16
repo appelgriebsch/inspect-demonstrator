@@ -10,8 +10,8 @@ A demonstrator for the funded INSPECT project
 
 ## Getting started
 * install latest node.js from [here](http://www.nodejs.org)
-* install GitHub desktop from [here](https://desktop.github.com/) (optional)
-* clone git repository (```git clone https://github.com/appelgriebsch/inspect-demonstrator.git```)
+* install Git from [here](https://git-scm.com/)
+* clone git repository (```git clone https://gitlab.com/appelgriebsch/inspect-demonstrator.git```)
 * define 2 new system environment variables for proxy use ```HTTPS_PROXY=http://proxy.wincor-nixdorf.com:81``` and ```HTTP_PROXY=http://proxy.wincor-nixdorf.com:81``` and restart the PC
 * open terminal and run ```npm install``` to install dependencies
 * start application in debug by executing ```npm start``` in terminal
