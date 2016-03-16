@@ -16,34 +16,37 @@
     var app = remote.require('app');
 
     var sysCfg = app.sysConfig();
-    var settings = { prefix: sysCfg.paths.data };
+    var settings = { adapter: 'leveldb', prefix: sysCfg.paths.data };
 
     function DataService(dbName) {
 
-      var _db;
+      var promise = new Promise((resolve, reject) => {
 
-      try {
-        settings.adapter = 'leveldb';
-        _db = new PouchDB(dbName, settings);
-      } catch (err) {
-        console.log('leveldb-adapter is not working, fallback to SQLite (websql)');
-        require('pouchdb/extras/websql');
-        settings.adapter = 'websql';
-        _db = new PouchDB(dbName, settings);
-      }
+        new PouchDB(dbName, settings).then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          console.log('leveldb-adapter is not working, fallback to SQLite (websql)');
+          require('pouchdb/extras/websql');
+          settings.adapter = 'websql';
+          new PouchDB(dbName, settings)
+          .then((result2) => {
+            resolve(result2);
+          })
+          .catch((err2) => {
+            console.log('websql-adapter is also not working. have to stop!');
+            reject(err2);
+          });
+        });
+      });
 
-      return {
-
-        instance: function() {
-          return _db;
-        }
-      };
+      return promise;
     }
 
     return {
 
       initialize: function(dbName) {
-        return new DataService(dbName).instance();
+        return new DataService(dbName);
       }
     };
   }

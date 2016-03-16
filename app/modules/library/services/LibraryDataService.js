@@ -4,7 +4,7 @@
 
   function LibraryDataService(PouchDBService) {
 
-    var db = PouchDBService.initialize('library');
+    var db;
     var uuid = require('uuid');
 
     var _buildSearchIndex = function() {
@@ -211,11 +211,16 @@
 
         this.templates = templates;
 
-        return Promise.all([
-          _saveDoc(templates),
-          _saveDoc(library),
-          _buildSearchIndex()
-        ]);
+        return PouchDBService.initialize('library').then((pouchdb) => {
+
+          db = pouchdb;
+
+          return Promise.all([
+            _saveDoc(templates),
+            _saveDoc(library),
+            _buildSearchIndex()
+          ]);
+        });
       },
 
       library: function() {
