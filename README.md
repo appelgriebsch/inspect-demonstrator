@@ -17,11 +17,12 @@ A demonstrator for the funded INSPECT project
  * restart of the PC might be necessary to get these system settings become valid
 * start Git GUI and clone Git repository
  *  select "Source Location" for Git clone -> (```https://gitlab.com/appelgriebsch/inspect-demonstrator.git```)
- *  select a local "Target Directory" (it will be created automatically if it does not exist)
+ *  select a local "Target Directory" (`e.g. C:\_Project\CTO\Inspect`; directories will be created automatically if not existing)
  *  hit "Clone" (if unexpected error "Location C:/... already exists" occurs, delete last path entry via Windows Explorer and try again)
  *  if error "... Failed to connect to gitlab.com port 443: Timed out" occurs, Proxy settings are not correctly set (see above) or restart might be initiated
  *  if no error, several popup window for username and password verification appear
-* open terminal and run ```npm install``` to install dependencies
+* open terminal (e.g. via CMD.exe) and run ```npm install``` to install dependencies (based on your Working Directoy)
+ * for example type `npm install C:\_Project\CTO\Inspect` (loading dependencies is automatically done)
 * start application in debug by executing ```npm start``` in terminal
 
 ## Screenshot
