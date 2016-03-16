@@ -13,9 +13,9 @@ A demonstrator for the funded INSPECT project
 * install Git from [here](https://git-scm.com/)
 * define 2 new system environment variables for proxy use ```HTTPS_PROXY=http://proxy.wincor-nixdorf.com:81``` and ```HTTP_PROXY=http://proxy.wincor-nixdorf.com:81``` and restart the PC
 * start Git GUI and clone Git repository
-*   select for "Source Location" -> (```git clone https://gitlab.com/appelgriebsch/inspect-demonstrator.git```)
-*   select a local "Target Directory" (it will be created automatically if it does not exist)
-*   hit "Clone" (if unexpected error (Location C:/... already exists) occurs, delete last path entry via Windows Explorer and try again)
+ *  select "Source Location" for Git clone -> (```https://gitlab.com/appelgriebsch/inspect-demonstrator.git```)
+ *  select a local "Target Directory" (it will be created automatically if it does not exist)
+ *  hit "Clone" (if unexpected error "Location C:/... already exists" occurs, delete last path entry via Windows Explorer and try again)
 * open terminal and run ```npm install``` to install dependencies
 * start application in debug by executing ```npm start``` in terminal
 
