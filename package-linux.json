@@ -1,6 +1,6 @@
 {
-  "icon": "app/assets/boilerplate.png",
-  "bin": "Boilerplate",
+  "icon": "app/assets/demonstrator.png",
+  "bin": "inspect.demonstrator",
   "categories": [
     "Utility"
   ]

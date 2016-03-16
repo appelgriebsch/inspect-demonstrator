@@ -1,6 +1,6 @@
 {
   "title": "Boilerplate",
-  "icon": "app/assets/boilerplate.icns",
+  "icon": "app/assets/demonstrator.icns",
   "background": "app/assets/installer.png",
   "icon-size": 80,
   "contents": [
@@ -14,7 +14,7 @@
       "x": 120,
       "y": 130,
       "type": "file",
-      "path": "build/Boilerplate-darwin-x64/Boilerplate.app"
+      "path": "build/inspect.demonstrator-darwin-x64/inspect.demonstrator.app"
     }
   ]
 }
