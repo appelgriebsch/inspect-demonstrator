@@ -22,7 +22,7 @@ A demonstrator for the funded INSPECT project
  *  if error "... Failed to connect to gitlab.com port 443: Timed out" occurs, Proxy settings are not correctly set (see above) or restart might be initiated
  *  if no error, several popup window for username and password verification appear
 * open terminal (e.g. via CMD.exe) and run ```npm install``` to install dependencies (based on your Working Directoy)
- * for example type `npm install C:\_Project\CTO\Inspect` (loading dependencies is automatically done)
+ * for example type `npm install C:\_Project\CTO\Inspect` (initiates loading of dependencies)
 * start application in debug by executing ```npm start``` in terminal
 
 ## Screenshot
