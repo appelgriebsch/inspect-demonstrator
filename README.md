@@ -2,11 +2,11 @@
 A demonstrator for the funded INSPECT project
 
 ## Included modules
-* Electron
-* Angular
-* Angular Material Design
-* Angular UI Router
-* PouchDB + Plugins (geo-spatial, MongoDB-style query language and full-text search engine support)
+* [Electron](http://electron.atom.io)
+* [AngularJS 1.5](https://angularjs.org/)
+* [Angular Material Design](https://material.angularjs.org/)
+* [Angular UI Router](http://angular-ui.github.io/ui-router/site)
+* [PouchDB](https://pouchdb.com/) + Plugins (geo-spatial, MongoDB-style query language and full-text search engine support)
 
 ## Getting started
 * install node.js (at least Node 4.4.x+ and NPM 2.14.x+ required) from [here](http://www.nodejs.org)
