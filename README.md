@@ -9,8 +9,11 @@ A demonstrator for the funded INSPECT project
 * PouchDB + Plugins (geo-spatial, MongoDB-style query language and full-text search engine support)
 
 ## Getting started
-* install latest node.js from [here](http://www.nodejs.org)
+* install node.js (at least Node 4.4.x+ and NPM 2.14.x+ required) from [here](http://www.nodejs.org)
 * install Git from [here](https://git-scm.com/)
+* install Python 2.7 from [here](http://www.python.org) and add the installation directory to your system path variable
+* For Windows, install Windows SDK for Windows Server 2008 and .NET Framework 3.5 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=11310)
+* For Windows, install Visual Studio 2013/2015 (Express for Desktop is sufficient).
 * define 2 new system environment variables for proxy use
  * Variable -> ```HTTPS_PROXY```, Value -> ```http://proxy.wincor-nixdorf.com:81``` 
  * Variable -> ```HTTP_PROXY```, Value -> ```http://proxy.wincor-nixdorf.com:81``` 
