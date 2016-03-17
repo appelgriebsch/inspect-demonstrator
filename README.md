@@ -23,7 +23,7 @@ A demonstrator for the funded INSPECT project
  *  select a local "Target Directory" (`e.g. C:\_Project\CTO\Inspect`; directories will be created automatically if not existing)
  *  hit "Clone" (if unexpected error "Location C:/... already exists" occurs, delete last path entry via Windows Explorer and try again)
  *  if error "... Failed to connect to gitlab.com port 443: Timed out" occurs, Proxy settings are not correctly set (see above) or restart might be initiated
- *  if no error, several popup window for username and password verification appear
+ *  if no error, several popup window for username and password verification appear (when running it for the first time)
 * open terminal (e.g. via CMD.exe) and run ```npm install``` to install dependencies (based on package.json in your Working Directoy)
  * go into your "Working directory", for example type `cd C:\_Project\CTO\Inspect` (because file "package.json" is located here)
  * start `npm install`
