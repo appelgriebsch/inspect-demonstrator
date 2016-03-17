@@ -62,6 +62,7 @@
     "setup:win32-x64": "electron-installer-windows --src build/inspect.demonstrator-win32-x64/ --dest dist/win64 --arch amd64 --config package-win32.json"
   },
   "dependencies": {
+    "bower": "^1.7.7",
     "electron-packager": "^5.2.1",
     "electron-prebuilt": "^0.36.9",
     "electron-rebuild": "^1.1.3",
