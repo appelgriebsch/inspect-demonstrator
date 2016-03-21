@@ -42,6 +42,9 @@
     var _scanObject = function(doc) {
       for (var key in doc) {
         if (doc[key] === Object(doc[key])) {
+          if (key === '_attachments') {
+            continue;
+          }
           _scanObject(doc[key]);
         } else if ((typeof doc[key] === 'string') && (doc[key].substring(0, 2) === '${')) {
           console.log(key + ': ' + doc[key]);
