@@ -82,14 +82,14 @@ md-input-container .md-input[disabled] {
   width: 95vw;
   -webkit-user-select: all;
 }
-#webViewer {
+#webViewer, #webCapture::shadow object, #webViewer::shadow object {
   display: block;
   /* iframes are inline by default */
   border: none;
   height: 100%;
   width: 99%;
 }
-#webCapture {
+#webCapture  {
   display: block;
   /* iframes are inline by default */
   border: none;
@@ -98,6 +98,7 @@ md-input-container .md-input[disabled] {
   /* Viewport-relative units */
   width: 100%;
 }
+
 md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item:not([disabled]).md-active {
   color: #607D8B;
 }
