@@ -1,5 +1,5 @@
 <div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
-  <div layout="row">
+  <div layout="row" class="search">
     <md-input-container layout-fill>
       <label>Search Term</label>
       <input ng-model="ctl.query" ng-keydown="ctl.search($event)">
@@ -12,7 +12,7 @@
       <md-icon>search</md-icon>
     </md-button>
   </div>
-  <md-grid-list md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1" md-gutter-gt-md="12px" md-gutter-gt-sm="6px" md-row-height-gt-md="1:1" md-row-height="4:3">
+  <md-grid-list flex md-cols-gt-lg="8" md-cols-gt-md="6" md-cols-gt-sm="2" md-cols-sm="1" md-gutter-gt-md="12px" md-gutter-gt-sm="6px" md-row-height-gt-md="1:1" md-row-height="4:3">
     <md-grid-tile class="doc-placeholder" layout-align="center center" md-colspan-sm="1" md-colspan="2" md-rowspan="1">
       <md-menu>
         <md-button class="md-icon-button" ng-click="$mdOpenMenu($event)">
