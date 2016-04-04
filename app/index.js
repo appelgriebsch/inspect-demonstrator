@@ -2,19 +2,19 @@
 
   'use strict';
 
-  var electron = require('electron');
-  var app = electron.app;
-  var ipc = electron.ipcMain;
+  const electron = require('electron');
+  const app = electron.app;
+  const ipc = electron.ipcMain;
 
-  var path = require('path');
-  var os = require('os');
-  var fs = require('fs');
+  const path = require('path');
+  const os = require('os');
+  const fs = require('fs');
 
-  var BrowserWindow = electron.BrowserWindow;
-  var Tray = electron.Tray;
+  const BrowserWindow = electron.BrowserWindow;
+  const Tray = electron.Tray;
 
   // initialize service finder module
-  var ServiceFinder = require('node-servicefinder').ServiceFinder;
+  const ServiceFinder = require('node-servicefinder').ServiceFinder;
 
   const appName = app.getName();
   const appVersion = app.getVersion();
