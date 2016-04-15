@@ -31,7 +31,7 @@ A demonstrator for the funded INSPECT project
 
 ## Screenshot
 
-![screenshot](screenshot.png)
+![screenshot](./screenshot.png)
 
 ## Build Distributable Packages
 
