@@ -50,7 +50,7 @@
     "levelgraph-n3": "^1.0.0",
     "mime": "^1.3.4",
     "node-servicefinder": "appelgriebsch/node-servicefinder",
-    "pdfjs-dist": "^1.2.32",
+    "pdfjs-dist": "~1.3.233",
     "pouchdb": "^5.1.0",
     "pouchdb-find": "^0.9.0",
     "pouchdb-quick-search": "^1.1.0",
