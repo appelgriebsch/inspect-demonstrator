@@ -20,7 +20,6 @@
 
       var db = new Level(path.join(sysCfg.paths.data, dbName));
       var lDB = LevelN3(LevelJSONLD(LevelGraph(db)));
-      console.log(lDB);
       return lDB;
     }
 
