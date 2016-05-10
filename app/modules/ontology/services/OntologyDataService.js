@@ -31,8 +31,10 @@
 
       initialize: function() {
 
-        db = LevelGraphDBService.initialize('ontology');
-
+        if (!db) {
+          db = LevelGraphDBService.initialize('ontology');
+        }
+        
         return Promise.all([
           _importTTL(path.join(__dirname, 'ontologie.ttl'))
         ]);
