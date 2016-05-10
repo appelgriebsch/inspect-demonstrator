@@ -10,30 +10,63 @@
     };
 
     this.network = undefined;
-
-    this.nodes = [];
     this.query = '';
-
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
 
-    var _findNode = (nodeLabel) => {
+    var _findNode = (label) => {
 
-      return this.nodes.find((node) => {
-        return node.label === nodeLabel;
+      return this.data.nodes.get({
+        filter: function (item) {
+          return item.label === label;
+        }
       });
     };
 
-    var _createNode = (nodeLabel) => {
+    var _createNode = (label) => {
 
-      var node = {
-        id: this.nodes.length + 1,
-        label: nodeLabel,
-        isNew: true
-      };
+      var node = _findNode(label);
 
-      this.nodes.push(node);
-      return node;
+      if (node.length == 0) {
+
+        var newNode = {
+          id: this.data.nodes.length + 1,
+          label: label
+        };
+
+        this.data.nodes.add(newNode);
+        node = _findNode(label);
+      }
+
+      return node[0];
+    };
+
+    var _findEdge = (from, to, label) => {
+
+      return this.data.edges.get({
+        filter: function(item) {
+          return ((item.from == from) && (item.to == to) && (item.label === label));
+        }
+      });
+    };
+
+    var _createEdge = (from, to, label) => {
+
+      var edge = _findEdge(from, to, label);
+
+      if (edge.length == 0) {
+
+        var newEdge = {
+          from: from,
+          to: to,
+          label: label
+        };
+
+        this.data.edges.add(newEdge);
+        edge = _findEdge(from, to, label);
+      }
+
+      return edge[0];
     };
 
     var _loadNode = (nodeLabel) => {
@@ -44,29 +77,12 @@
          $q.when(true).then(() => {
            results.map((item) => {
 
-             var subjNode = _findNode(item.subject) || _createNode(item.subject);
-             var objNode = _findNode(item.object) || _createNode(item.object);
+             var subjNode = _createNode(item.subject);
+             var objNode = _createNode(item.object);
 
-             var edge = {
-               from: subjNode.id,
-               to: objNode.id,
-               label: item.predicate
-             };
-
-             if (subjNode.isNew) {
-               delete subjNode.isNew;
-               this.data.nodes.add(subjNode);
-             }
-
-             if (objNode.isNew) {
-               delete objNode.isNew;
-               this.data.nodes.add(objNode);
-             }
-
-             this.data.edges.add(edge);
+             _createEdge(subjNode.id, objNode.id, item.predicate);
+             this.network.fit();
            });
-
-           this.network.setData(this.data);
          });
        });
     };
@@ -74,7 +90,7 @@
     var _createGraph = () => {
 
       var container = document.getElementById('ontology-graph');
-      this.network = new vis.Network(container, { }, { });
+      this.network = new vis.Network(container, this.data, { });
 
       this.network.on('selectNode', (params) => {
         var selectedNodeId = params.nodes[0];
