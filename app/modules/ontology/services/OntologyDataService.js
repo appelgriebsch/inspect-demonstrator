@@ -34,7 +34,7 @@
         if (!db) {
           db = LevelGraphDBService.initialize('ontology');
         }
-        
+
         return Promise.all([
           _importTTL(path.join(__dirname, 'ontologie.ttl'))
         ]);
@@ -43,11 +43,23 @@
       node: function(uri) {
 
         var promise = new Promise((resolve, reject) => {
-          db.get({ subject: uri }, function(err, nodes) {
+
+          var nodes = [];
+
+          db.get({ subject: uri }, function(err, subjNodes) {
             if (err) {
               reject(err);
             } else {
-              resolve(nodes);
+              nodes = nodes.concat(subjNodes);
+              db.get({ object: uri }, function(err, objNodes) {
+                if (err) {
+                  reject(err);
+                }
+                else {
+                  nodes = nodes.concat(objNodes);
+                  resolve(nodes);
+                }
+              });
             }
           });
         });
