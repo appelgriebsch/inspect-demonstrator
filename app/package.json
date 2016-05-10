@@ -35,6 +35,8 @@
     "angular-centered": "^1.0.0",
     "angular-material": "^1.0.0",
     "angular-messages": "^1.5.3",
+    "angular-mocks": "^1.5.0",
+    "angular-route": "^1.5.0",
     "angular-sanitize": "^1.4.5",
     "angular-timeline": "^1.2.1",
     "angular-ui-router": "^0.2.15",
