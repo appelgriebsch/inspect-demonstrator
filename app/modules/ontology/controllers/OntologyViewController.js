@@ -9,6 +9,27 @@
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
 
+    this._createNode = function(nodeLabel) {
+
+      var node = this._findNode(nodeLabel) || {
+        id: this.nodes.length + 1,
+        label: nodeLabel
+      };
+
+      if (node.id > this.nodes.length) {
+        this.nodes.push(node);
+      }
+
+      return node;
+    };
+
+    this._findNode = function(nodeLabel) {
+
+      return this.nodes.find((node) => {
+        return node.label === nodeLabel;
+      });
+    };
+
     this.initialize = function() {
 
       var init = [OntologyDataService.initialize()];
@@ -16,18 +37,9 @@
         return OntologyDataService.node('http://www.AMSL/GDK/ontologie#Skimmer');
       }).then((results) => {
         $q.when(true).then(() => {
-          var i = 0;
           results.map((item) => {
-            var subjNode = {
-              id: ++i,
-              label: item.subject
-            };
-            var objNode = {
-              id: ++i,
-              label: item.object
-            };
-            this.nodes.push(subjNode);
-            this.nodes.push(objNode);
+            var subjNode = this._createNode(item.subject);
+            var objNode = this._createNode(item.object);
             this.edges.push({
               from: subjNode.id,
               to: objNode.id,
