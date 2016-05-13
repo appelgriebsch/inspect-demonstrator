@@ -4,9 +4,9 @@
 
   function DocumentSharingService(LibraryDataService) {
 
-    var remote = require('remote');
-    var app = remote.require('app');
-    var dialog = remote.require('dialog');
+    var electron = require('electron');
+    var app = electron.remote.app;
+    var dialog = electron.remote.dialog;
 
     var fs = require('fs');
     var path = require('path');

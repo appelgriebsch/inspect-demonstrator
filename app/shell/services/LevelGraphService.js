@@ -11,9 +11,7 @@
     var LevelJSONLD = require ('levelgraph-jsonld');
 
     var path = require('path');
-    var remote = require('remote');
-    var app = remote.require('app');
-
+    var app = require('electron').remote.app;
     var sysCfg = app.sysConfig();
 
     function DataService(dbName) {

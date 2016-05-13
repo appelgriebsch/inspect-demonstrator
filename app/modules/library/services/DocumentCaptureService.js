@@ -4,9 +4,7 @@
 
   function DocumentCaptureService($http) {
 
-    var remote = require('remote');
-    var app = remote.require('app');
-
+    var app = require('electron').remote.app;
     var path = require('path');
     var fs = require('fs');
 
