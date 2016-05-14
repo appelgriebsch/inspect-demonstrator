@@ -40,15 +40,13 @@ owl2:attackiert rdf:type owl:ObjectProperty ;
                 
                 rdfs:domain owl2:Angriffswerkzeuge_AW ;
                 
-                rdfs:range owl2:Angriffsziel_AZ .
+                rdfs:range owl2:Angegriffener_AF .
 
 
 
 ###  http://www.AMSL/GDK/ontologie#beguenstigen
 
 owl2:beguenstigen rdf:type owl:ObjectProperty ;
-                  
-                  rdfs:domain owl2:GDK_Fluesse_FL ;
                   
                   rdfs:range owl2:Straftatentdeckung_SE .
 
@@ -68,9 +66,9 @@ owl2:besteht_aus rdf:type owl:ObjectProperty ;
 
 owl2:erfordern rdf:type owl:ObjectProperty ;
                
-               rdfs:domain owl2:Folgen_FG ;
+               rdfs:domain owl2:Konsequenzen_KQ ;
                
-               rdfs:range owl2:Abwehrmechanismen_AM .
+               rdfs:range owl2:Abwehrmassnahmen_AM .
 
 
 
@@ -88,7 +86,7 @@ owl2:ermoeglichen rdf:type owl:ObjectProperty ;
 
 owl2:erschweren rdf:type owl:ObjectProperty ;
                 
-                rdfs:domain owl2:Abwehrmechanismen_AM ;
+                rdfs:domain owl2:Abwehrmassnahmen_AM ;
                 
                 rdfs:range owl2:Delikt_DT .
 
@@ -111,7 +109,7 @@ owl2:hat_Informationen_ueber rdf:type owl:ObjectProperty ;
                              
                              rdfs:domain owl2:Insider ;
                              
-                             rdfs:range owl2:Angriffsziel_AZ .
+                             rdfs:range owl2:Angegriffener_AF .
 
 
 
@@ -121,7 +119,19 @@ owl2:ist_vorhanden_in rdf:type owl:ObjectProperty ;
                       
                       rdfs:domain owl2:Schwachstelle_ST ;
                       
-                      rdfs:range owl2:Angriffsziel_AZ .
+                      rdfs:range owl2:Angegriffener_AF .
+
+
+
+###  http://www.AMSL/GDK/ontologie#konstituiert
+
+owl2:konstituiert rdf:type owl:ObjectProperty ;
+                  
+                  rdfs:domain owl2:Person_PS ,
+                              owl2:Psychologisches_Konzept_Person_PSK ;
+                  
+                  rdfs:range owl2:Angreifer_Einzelperson ,
+                             owl2:Person_PS .
 
 
 
@@ -163,7 +173,7 @@ owl2:resultieren_in rdf:type owl:ObjectProperty ;
                                 owl2:Delikt_DT ,
                                 owl2:Straftatentdeckung_SE ;
                     
-                    rdfs:range owl2:Folgen_FG .
+                    rdfs:range owl2:Konsequenzen_KQ .
 
 
 
@@ -171,10 +181,18 @@ owl2:resultieren_in rdf:type owl:ObjectProperty ;
 
 owl2:rufen_hervor rdf:type owl:ObjectProperty ;
                   
-                  rdfs:domain owl2:Angriffsziel_AZ ,
-                              owl2:Delikt_DT ;
-                  
-                  rdfs:range owl2:GDK_Fluesse_FL .
+                  rdfs:domain owl2:Angegriffener_AF ,
+                              owl2:Delikt_DT .
+
+
+
+###  http://www.AMSL/GDK/ontologie#setzt_um
+
+owl2:setzt_um rdf:type owl:ObjectProperty ;
+              
+              rdfs:domain owl2:Kriminelle_Organisation_KO ;
+              
+              rdfs:range owl2:Konzept_Organisation_KO .
 
 
 
@@ -272,9 +290,29 @@ owl2:veranlasst_KnowHowUebertragung rdf:type owl:ObjectProperty ;
 
 owl2:verringern rdf:type owl:ObjectProperty ;
                 
-                rdfs:domain owl2:Abwehrmechanismen_AM ;
+                rdfs:domain owl2:Abwehrmassnahmen_AM ;
                 
                 rdfs:range owl2:Schwachstelle_ST .
+
+
+
+###  http://www.AMSL/GDK/ontologie#verwendet
+
+owl2:verwendet rdf:type owl:ObjectProperty ;
+               
+               rdfs:domain owl2:Kriminelle_Organisation_KO ;
+               
+               rdfs:range owl2:Motivationsmassnahmen .
+
+
+
+###  http://www.AMSL/GDK/ontologie#wendet_an
+
+owl2:wendet_an rdf:type owl:ObjectProperty ;
+               
+               rdfs:domain owl2:Geldwaesche ;
+               
+               rdfs:range owl2:Organisatorische_Geldwerkzeuge .
 
 
 
@@ -352,7 +390,7 @@ owl2:Nicht-Abstreitbarkeit rdf:type owl:DatatypeProperty ;
 owl2:Sicherheitsaspekte rdf:type owl:DatatypeProperty ,
                                  owl:FunctionalProperty ;
                         
-                        rdfs:domain owl2:Abwehrmechanismen_AM ,
+                        rdfs:domain owl2:Abwehrmassnahmen_AM ,
                                     owl2:Delikt_DT ,
                                     owl2:Schwachstelle_ST ;
                         
@@ -453,7 +491,7 @@ owl2:Abneigung rdf:type owl:Class ;
 
 owl2:Abwehr_Hardware rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Abwehrmechanismen_AM .
+                     rdfs:subClassOf owl2:Abwehrmassnahmen_AM .
 
 
 
@@ -461,7 +499,7 @@ owl2:Abwehr_Hardware rdf:type owl:Class ;
 
 owl2:Abwehr_Policies rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Abwehrmechanismen_AM .
+                     rdfs:subClassOf owl2:Abwehrmassnahmen_AM .
 
 
 
@@ -469,15 +507,15 @@ owl2:Abwehr_Policies rdf:type owl:Class ;
 
 owl2:Abwehr_Software rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Abwehrmechanismen_AM .
+                     rdfs:subClassOf owl2:Abwehrmassnahmen_AM .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Abwehrmechanismen_AM
+###  http://www.AMSL/GDK/ontologie#Abwehrmassnahmen_AM
 
-owl2:Abwehrmechanismen_AM rdf:type owl:Class ;
-                          
-                          rdfs:subClassOf F:W_Kriminalitaet .
+owl2:Abwehrmassnahmen_AM rdf:type owl:Class ;
+                         
+                         rdfs:subClassOf owl2:Massnahme_MN .
 
 
 
@@ -489,11 +527,35 @@ owl2:Account rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Aktiv_Unterstuetzte_Datenherausgabe
+###  http://www.AMSL/GDK/ontologie#Akteur_AT
 
-owl2:Aktiv_Unterstuetzte_Datenherausgabe rdf:type owl:Class ;
+owl2:Akteur_AT rdf:type owl:Class ;
+               
+               rdfs:subClassOf owl2:Finanz_Kriminalitaet .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Aktiv_Unterstuetzte_Daten_Herausgabe
+
+owl2:Aktiv_Unterstuetzte_Daten_Herausgabe rdf:type owl:Class ;
+                                          
+                                          rdfs:subClassOf owl2:Daten_Uebertragungstyp .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Aktiv_Unterstuetzte_Geld_Herausgabe
+
+owl2:Aktiv_Unterstuetzte_Geld_Herausgabe rdf:type owl:Class ;
                                          
-                                         rdfs:subClassOf owl2:KnowHow_Uebertragungsweg .
+                                         rdfs:subClassOf owl2:Geld_Uebertragungstyp .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Aktiv_Unterstuetzte_KnowHow_Herausgabe
+
+owl2:Aktiv_Unterstuetzte_KnowHow_Herausgabe rdf:type owl:Class ;
+                                            
+                                            rdfs:subClassOf owl2:KnowHow_Uebertragungstyp .
 
 
 
@@ -505,6 +567,14 @@ owl2:Aktivist rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Alter
+
+owl2:Alter rdf:type owl:Class ;
+           
+           rdfs:subClassOf owl2:Physisches_Konzept_Person_PHK .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Analyse_von_Buchaltungsdaten
 
 owl2:Analyse_von_Buchaltungsdaten rdf:type owl:Class ;
@@ -513,51 +583,83 @@ owl2:Analyse_von_Buchaltungsdaten rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Angegriffener_AF
+
+owl2:Angegriffener_AF rdf:type owl:Class ;
+                      
+                      rdfs:subClassOf owl2:Akteur_AT .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Angreifer_AG
 
 owl2:Angreifer_AG rdf:type owl:Class ;
                   
-                  rdfs:subClassOf F:W_Kriminalitaet .
+                  rdfs:subClassOf owl2:Akteur_AT .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Angreifertyp_Einzelperson
+###  http://www.AMSL/GDK/ontologie#Angreifer_Autonome_Maschine
 
-owl2:Angreifertyp_Einzelperson rdf:type owl:Class ;
-                               
-                               rdfs:subClassOf owl2:Typ .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Angreifertyp_Geheimdienst
-
-owl2:Angreifertyp_Geheimdienst rdf:type owl:Class ;
-                               
-                               rdfs:subClassOf owl2:Typ .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Angreifertyp_Personengruppe
-
-owl2:Angreifertyp_Personengruppe rdf:type owl:Class ;
+owl2:Angreifer_Autonome_Maschine rdf:type owl:Class ;
                                  
-                                 rdfs:subClassOf owl2:Typ .
+                                 rdfs:subClassOf owl2:Angreifer_AG .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Angreifertyp_Staat
+###  http://www.AMSL/GDK/ontologie#Angreifer_Einzelperson
 
-owl2:Angreifertyp_Staat rdf:type owl:Class ;
-                        
-                        rdfs:subClassOf owl2:Typ .
+owl2:Angreifer_Einzelperson rdf:type owl:Class ;
+                            
+                            rdfs:subClassOf owl2:Angreifer_AG .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Angreifertyp_Unternehmen
+###  http://www.AMSL/GDK/ontologie#Angreifer_Geheimdienst
 
-owl2:Angreifertyp_Unternehmen rdf:type owl:Class ;
+owl2:Angreifer_Geheimdienst rdf:type owl:Class ;
+                            
+                            rdfs:subClassOf owl2:Angreifer_Personengruppe .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Angreifer_Interessengemeinschaft
+
+owl2:Angreifer_Interessengemeinschaft rdf:type owl:Class ;
+                                      
+                                      rdfs:subClassOf owl2:Angreifer_Personengruppe .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Angreifer_Personengruppe
+
+owl2:Angreifer_Personengruppe rdf:type owl:Class ;
                               
-                              rdfs:subClassOf owl2:Typ .
+                              rdfs:subClassOf owl2:Angreifer_AG .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Angreifer_Staat
+
+owl2:Angreifer_Staat rdf:type owl:Class ;
+                     
+                     rdfs:subClassOf owl2:Angreifer_Personengruppe .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Angreifer_Unternehmen
+
+owl2:Angreifer_Unternehmen rdf:type owl:Class ;
+                           
+                           rdfs:subClassOf owl2:Angreifer_Personengruppe .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Angriff_AG
+
+owl2:Angriff_AG rdf:type owl:Class ;
+                
+                rdfs:subClassOf owl2:Ereigniss_EG .
 
 
 
@@ -577,19 +679,19 @@ owl2:Angriffs_Software rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Angriffsschutzmassnahmen_ASM
+
+owl2:Angriffsschutzmassnahmen_ASM rdf:type owl:Class ;
+                                  
+                                  rdfs:subClassOf owl2:Massnahme_MN .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Angriffswerkzeuge_AW
 
 owl2:Angriffswerkzeuge_AW rdf:type owl:Class ;
                           
-                          rdfs:subClassOf F:W_Kriminalitaet .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Angriffsziel_AZ
-
-owl2:Angriffsziel_AZ rdf:type owl:Class ;
-                     
-                     rdfs:subClassOf F:W_Kriminalitaet .
+                          rdfs:subClassOf owl2:Werkzeug_WZ .
 
 
 
@@ -665,27 +767,11 @@ owl2:Anonyme_Hinweise rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Anonyme_Transferdienste
+###  http://www.AMSL/GDK/ontologie#Anonymisierung
 
-owl2:Anonyme_Transferdienste rdf:type owl:Class ;
-                             
-                             rdfs:subClassOf owl2:Verschleierung_unrechtmaessig_erlangter_Vermoegenswerte .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Anonymitaet
-
-owl2:Anonymitaet rdf:type owl:Class ;
-                 
-                 rdfs:subClassOf owl2:Anonymitaetslevel .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Anonymitaetslevel
-
-owl2:Anonymitaetslevel rdf:type owl:Class ;
-                       
-                       rdfs:subClassOf owl2:Angreifer_AG .
+owl2:Anonymisierung rdf:type owl:Class ;
+                    
+                    rdfs:subClassOf owl2:Unscheinbarkeit .
 
 
 
@@ -733,7 +819,7 @@ owl2:Anti_Viren_Software rdf:type owl:Class ;
 
 owl2:Arbeitsrechtliche_Konsequenzen rdf:type owl:Class ;
                                     
-                                    rdfs:subClassOf owl2:Folgen_FG .
+                                    rdfs:subClassOf owl2:Konsequenzen_KQ .
 
 
 
@@ -741,7 +827,7 @@ owl2:Arbeitsrechtliche_Konsequenzen rdf:type owl:Class ;
 
 owl2:Assoziierungsgrad rdf:type owl:Class ;
                        
-                       rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                       rdfs:subClassOf owl2:Konzept_Organisation_KO .
 
 
 
@@ -749,15 +835,7 @@ owl2:Assoziierungsgrad rdf:type owl:Class ;
 
 owl2:Aufgabenverteilung rdf:type owl:Class ;
                         
-                        rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Aufgeladene_Paypal_Accounts
-
-owl2:Aufgeladene_Paypal_Accounts rdf:type owl:Class ;
-                                 
-                                 rdfs:subClassOf owl2:Missbrauch_von_Zahlungsdaten .
+                        rdfs:subClassOf owl2:Konzept_Organisation_KO .
 
 
 
@@ -765,7 +843,7 @@ owl2:Aufgeladene_Paypal_Accounts rdf:type owl:Class ;
 
 owl2:Aufklaerer_AR rdf:type owl:Class ;
                    
-                   rdfs:subClassOf F:W_Kriminalitaet .
+                   rdfs:subClassOf owl2:Akteur_AT .
 
 
 
@@ -773,7 +851,7 @@ owl2:Aufklaerer_AR rdf:type owl:Class ;
 
 owl2:Aufklaerungsmassnahmen_AN rdf:type owl:Class ;
                                
-                               rdfs:subClassOf F:W_Kriminalitaet .
+                               rdfs:subClassOf owl2:Massnahme_MN .
 
 
 
@@ -789,7 +867,15 @@ owl2:Aufmerksamkeit rdf:type owl:Class ;
 
 owl2:Aufnamevorraussetzungen rdf:type owl:Class ;
                              
-                             rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                             rdfs:subClassOf owl2:Konzept_Organisation_KO .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Aufsetzbarer_Skimmer
+
+owl2:Aufsetzbarer_Skimmer rdf:type owl:Class ;
+                          
+                          rdfs:subClassOf owl2:ATM_Skimmer .
 
 
 
@@ -797,7 +883,7 @@ owl2:Aufnamevorraussetzungen rdf:type owl:Class ;
 
 owl2:Auslaendischer_Geheimdienst rdf:type owl:Class ;
                                  
-                                 rdfs:subClassOf owl2:Angreifertyp_Geheimdienst .
+                                 rdfs:subClassOf owl2:Angreifer_Geheimdienst .
 
 
 
@@ -813,7 +899,7 @@ owl2:Auslandsueberweisung rdf:type owl:Class ;
 
 owl2:Ausschlussbedingungen rdf:type owl:Class ;
                            
-                           rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                           rdfs:subClassOf owl2:Konzept_Organisation_KO .
 
 
 
@@ -822,14 +908,6 @@ owl2:Ausschlussbedingungen rdf:type owl:Class ;
 owl2:Ausspaehung_von_Konto_und_Zahlungskartendaten rdf:type owl:Class ;
                                                    
                                                    rdfs:subClassOf owl2:Datendiebstahl .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Ausstiegsbedingungen
-
-owl2:Ausstiegsbedingungen rdf:type owl:Class ;
-                          
-                          rdfs:subClassOf owl2:Angreifer_AG .
 
 
 
@@ -869,7 +947,7 @@ owl2:Auswahl_Schwachstelle rdf:type owl:Class ;
 
 owl2:Auswahlkriterien rdf:type owl:Class ;
                       
-                      rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                      rdfs:subClassOf owl2:Konzept_Organisation_KO .
 
 
 
@@ -961,6 +1039,14 @@ owl2:Authentifizierungssysteme rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Autokauf_ohne_Rechnung
+
+owl2:Autokauf_ohne_Rechnung rdf:type owl:Class ;
+                            
+                            rdfs:subClassOf owl2:Barkauf_ohne_Rechnung .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Autos
 
 owl2:Autos rdf:type owl:Class ;
@@ -1001,11 +1087,27 @@ owl2:Bargeld rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Barkauf_mit_Rechnung
+
+owl2:Barkauf_mit_Rechnung rdf:type owl:Class ;
+                          
+                          rdfs:subClassOf owl2:Werkzeug_Barkauf .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Barkauf_ohne_Rechnung
+
+owl2:Barkauf_ohne_Rechnung rdf:type owl:Class ;
+                           
+                           rdfs:subClassOf owl2:Werkzeug_Barkauf .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Bedrohungswirkung
 
 owl2:Bedrohungswirkung rdf:type owl:Class ;
                        
-                       rdfs:subClassOf owl2:Angreifer_AG .
+                       rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
 
 
 
@@ -1029,7 +1131,7 @@ owl2:Beguenstigung_und_Hehlerei rdf:type owl:Class ;
 
 owl2:Belohnung rdf:type owl:Class ;
                
-               rdfs:subClassOf owl2:Motivationsmethoden .
+               rdfs:subClassOf owl2:Motivationsmassnahmen .
 
 
 
@@ -1045,7 +1147,7 @@ owl2:Berufsverbot rdf:type owl:Class ;
 
 owl2:Beschlagnahmung rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Wirtschaftliche_Folgen .
+                     rdfs:subClassOf owl2:Wirtschaftliche_Konsequenzen .
 
 
 
@@ -1062,6 +1164,38 @@ owl2:Bestechung rdf:type owl:Class ;
 owl2:Betaeubungsmittel rdf:type owl:Class ;
                        
                        rdfs:subClassOf owl2:Waren .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Betreiben_von_Eskort_System
+
+owl2:Betreiben_von_Eskort_System rdf:type owl:Class ;
+                                 
+                                 rdfs:subClassOf owl2:Sex_und_Prositution .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Betreiben_von_Menschenhandel
+
+owl2:Betreiben_von_Menschenhandel rdf:type owl:Class ;
+                                  
+                                  rdfs:subClassOf owl2:Sex_und_Prositution .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Betreiben_von_Zuhaelterei
+
+owl2:Betreiben_von_Zuhaelterei rdf:type owl:Class ;
+                               
+                               rdfs:subClassOf owl2:Sex_und_Prositution .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Betreiben_von_verbotenen_Online_Pornographie_Angeboten
+
+owl2:Betreiben_von_verbotenen_Online_Pornographie_Angeboten rdf:type owl:Class ;
+                                                            
+                                                            rdfs:subClassOf owl2:Sex_und_Prositution .
 
 
 
@@ -1105,14 +1239,6 @@ owl2:Bezahlung_mit_gefaelschter_Karte rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Bezeichner
-
-owl2:Bezeichner rdf:type owl:Class ;
-                
-                rdfs:subClassOf owl2:Angreifer_AG .
-
-
-
 ###  http://www.AMSL/GDK/ontologie#Biometrie
 
 owl2:Biometrie rdf:type owl:Class ;
@@ -1149,7 +1275,7 @@ owl2:Bluetooth_Skimmer rdf:type owl:Class ;
 
 owl2:Bordellbetrieb rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:Gewerbe .
+                    rdfs:subClassOf owl2:Werkzeug_Gewerbe .
 
 
 
@@ -1165,7 +1291,15 @@ owl2:CD rdf:type owl:Class ;
 
 owl2:Casino rdf:type owl:Class ;
             
-            rdfs:subClassOf owl2:Gewerbe .
+            rdfs:subClassOf owl2:Werkzeug_Gewerbe .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Chiplesegeaet
+
+owl2:Chiplesegeaet rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf owl2:Kartelesegeraet .
 
 
 
@@ -1221,7 +1355,7 @@ owl2:Datei-Monitoring rdf:type owl:Class ;
 
 owl2:Daten_Art rdf:type owl:Class ;
                
-               rdfs:subClassOf owl2:Daten_Fluesse .
+               rdfs:subClassOf owl2:Daten_Fluss .
 
 
 
@@ -1229,15 +1363,15 @@ owl2:Daten_Art rdf:type owl:Class ;
 
 owl2:Daten_Empfaenger rdf:type owl:Class ;
                       
-                      rdfs:subClassOf owl2:Daten_Fluesse .
+                      rdfs:subClassOf owl2:Daten_Fluss .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Daten_Fluesse
+###  http://www.AMSL/GDK/ontologie#Daten_Fluss
 
-owl2:Daten_Fluesse rdf:type owl:Class ;
-                   
-                   rdfs:subClassOf owl2:GDK_Fluesse_FL .
+owl2:Daten_Fluss rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf owl2:Fluss_FS .
 
 
 
@@ -1245,7 +1379,15 @@ owl2:Daten_Fluesse rdf:type owl:Class ;
 
 owl2:Daten_Sender rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Daten_Fluesse .
+                  rdfs:subClassOf owl2:Daten_Fluss .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Daten_Uebertragungstyp
+
+owl2:Daten_Uebertragungstyp rdf:type owl:Class ;
+                            
+                            rdfs:subClassOf owl2:Daten_Fluss .
 
 
 
@@ -1253,7 +1395,7 @@ owl2:Daten_Sender rdf:type owl:Class ;
 
 owl2:Daten_Uebertragungsweg rdf:type owl:Class ;
                             
-                            rdfs:subClassOf owl2:Daten_Fluesse .
+                            rdfs:subClassOf owl2:Daten_Fluss .
 
 
 
@@ -1293,7 +1435,7 @@ owl2:Datenveraenderung rdf:type owl:Class ;
 
 owl2:Datenverlust rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Technische_Folgen .
+                  rdfs:subClassOf owl2:Technische_Konsequenzen .
 
 
 
@@ -1313,11 +1455,19 @@ owl2:Debitkarte rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Deep_Insert_Skimmer
+
+owl2:Deep_Insert_Skimmer rdf:type owl:Class ;
+                         
+                         rdfs:subClassOf owl2:ATM_Skimmer .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Delikt_DT
 
 owl2:Delikt_DT rdf:type owl:Class ;
                
-               rdfs:subClassOf F:W_Kriminalitaet .
+               rdfs:subClassOf owl2:Finanz_Kriminalitaet .
 
 
 
@@ -1325,7 +1475,7 @@ owl2:Delikt_DT rdf:type owl:Class ;
 
 owl2:Denial_of_Service rdf:type owl:Class ;
                        
-                       rdfs:subClassOf owl2:Technische_Folgen .
+                       rdfs:subClassOf owl2:Technische_Konsequenzen .
 
 
 
@@ -1421,7 +1571,7 @@ owl2:Drehscheibe rdf:type owl:Class ;
 
 owl2:Drohung rdf:type owl:Class ;
              
-             rdfs:subClassOf owl2:Motivationsmethoden .
+             rdfs:subClassOf owl2:Motivationsmassnahmen .
 
 
 
@@ -1429,7 +1579,7 @@ owl2:Drohung rdf:type owl:Class ;
 
 owl2:Durchfuehrung rdf:type owl:Class ;
                    
-                   rdfs:subClassOf owl2:Vorgehensweisen .
+                   rdfs:subClassOf owl2:Organisations_Vorgehensweisen .
 
 
 
@@ -1446,14 +1596,6 @@ owl2:Edelsteine rdf:type owl:Class ;
 owl2:Ehemaliger_Arbeitnehmer rdf:type owl:Class ;
                              
                              rdfs:subClassOf owl2:Insider .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Einstiegsbedingungen
-
-owl2:Einstiegsbedingungen rdf:type owl:Class ;
-                          
-                          rdfs:subClassOf owl2:Angreifer_AG .
 
 
 
@@ -1561,11 +1703,19 @@ owl2:Entwendung_durch_Kassenwart rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Ereigniss_EG
+
+owl2:Ereigniss_EG rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf owl2:Finanz_Kriminalitaet .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Erfolgsquote
 
 owl2:Erfolgsquote rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                  rdfs:subClassOf owl2:Konzept_Organisation_KO .
 
 
 
@@ -1589,7 +1739,7 @@ owl2:Erpressung_durch_Kriminellen rdf:type owl:Class ;
 
 owl2:Erwartete_Daten rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Angreifer_AG .
+                     rdfs:subClassOf owl2:Erwartungen .
 
 
 
@@ -1597,7 +1747,7 @@ owl2:Erwartete_Daten rdf:type owl:Class ;
 
 owl2:Erwartete_Kosten rdf:type owl:Class ;
                       
-                      rdfs:subClassOf owl2:Angreifer_AG .
+                      rdfs:subClassOf owl2:Erwartungen .
 
 
 
@@ -1605,7 +1755,7 @@ owl2:Erwartete_Kosten rdf:type owl:Class ;
 
 owl2:Erwarteter_Gewinn rdf:type owl:Class ;
                        
-                       rdfs:subClassOf owl2:Angreifer_AG .
+                       rdfs:subClassOf owl2:Erwartungen .
 
 
 
@@ -1613,15 +1763,15 @@ owl2:Erwarteter_Gewinn rdf:type owl:Class ;
 
 owl2:Erwartetes_KnowHow rdf:type owl:Class ;
                         
-                        rdfs:subClassOf owl2:Angreifer_AG .
+                        rdfs:subClassOf owl2:Erwartungen .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Eskort_Systeme
+###  http://www.AMSL/GDK/ontologie#Erwartungen
 
-owl2:Eskort_Systeme rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf owl2:Sex_und_Prositution .
+owl2:Erwartungen rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
 
 
 
@@ -1669,15 +1819,7 @@ owl2:Facebook_GPS_Koordinaten rdf:type owl:Class ;
 
 owl2:Fachwissen rdf:type owl:Class ;
                 
-                rdfs:subClassOf owl2:Wissen .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Faehigkeiten
-
-owl2:Faehigkeiten rdf:type owl:Class ;
-                  
-                  rdfs:subClassOf owl2:Angreifer_AG .
+                rdfs:subClassOf owl2:Straftatrelevantes_Wissen .
 
 
 
@@ -1801,6 +1943,12 @@ owl2:Finanizielle_Bereicherung rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Finanz_Kriminalitaet
+
+owl2:Finanz_Kriminalitaet rdf:type owl:Class .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Finanzielle_Probleme
 
 owl2:Finanzielle_Probleme rdf:type owl:Class ;
@@ -1813,7 +1961,7 @@ owl2:Finanzielle_Probleme rdf:type owl:Class ;
 
 owl2:Finanzielle_Unscheinbarkeit rdf:type owl:Class ;
                                  
-                                 rdfs:subClassOf owl2:Selbstschutzmassnahmen .
+                                 rdfs:subClassOf owl2:Unscheinbarkeit .
 
 
 
@@ -1849,27 +1997,11 @@ owl2:Flooder rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Folgen_FG
+###  http://www.AMSL/GDK/ontologie#Fluss_FS
 
-owl2:Folgen_FG rdf:type owl:Class ;
-               
-               rdfs:subClassOf F:W_Kriminalitaet .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Fruehere_Rollen
-
-owl2:Fruehere_Rollen rdf:type owl:Class ;
-                     
-                     rdfs:subClassOf owl2:Angreifer_AG .
-
-
-
-###  http://www.AMSL/GDK/ontologie#GDK_Fluesse_FL
-
-owl2:GDK_Fluesse_FL rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf F:W_Kriminalitaet .
+owl2:Fluss_FS rdf:type owl:Class ;
+              
+              rdfs:subClassOf owl2:Finanz_Kriminalitaet .
 
 
 
@@ -1885,7 +2017,7 @@ owl2:Gang rdf:type owl:Class ;
 
 owl2:Gebrauchtwagenhaendler rdf:type owl:Class ;
                             
-                            rdfs:subClassOf owl2:Gewerbe .
+                            rdfs:subClassOf owl2:Werkzeug_Gewerbe .
 
 
 
@@ -1894,14 +2026,6 @@ owl2:Gebrauchtwagenhaendler rdf:type owl:Class ;
 owl2:Gebuendelter_Hybrid rdf:type owl:Class ;
                          
                          rdfs:subClassOf owl2:Assoziierungsgrad .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Geheime_Kamera
-
-owl2:Geheime_Kamera rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf owl2:Skimmer .
 
 
 
@@ -1917,7 +2041,7 @@ owl2:Geheimnisverrat rdf:type owl:Class ;
 
 owl2:Geld_Art rdf:type owl:Class ;
               
-              rdfs:subClassOf owl2:Geld_Fluesse .
+              rdfs:subClassOf owl2:Geld_Fluss .
 
 
 
@@ -1925,15 +2049,15 @@ owl2:Geld_Art rdf:type owl:Class ;
 
 owl2:Geld_Empfaenger rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Geld_Fluesse .
+                     rdfs:subClassOf owl2:Geld_Fluss .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Geld_Fluesse
+###  http://www.AMSL/GDK/ontologie#Geld_Fluss
 
-owl2:Geld_Fluesse rdf:type owl:Class ;
-                  
-                  rdfs:subClassOf owl2:GDK_Fluesse_FL .
+owl2:Geld_Fluss rdf:type owl:Class ;
+                
+                rdfs:subClassOf owl2:Fluss_FS .
 
 
 
@@ -1941,7 +2065,15 @@ owl2:Geld_Fluesse rdf:type owl:Class ;
 
 owl2:Geld_Sender rdf:type owl:Class ;
                  
-                 rdfs:subClassOf owl2:Geld_Fluesse .
+                 rdfs:subClassOf owl2:Geld_Fluss .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Geld_Uebertragungstyp
+
+owl2:Geld_Uebertragungstyp rdf:type owl:Class ;
+                           
+                           rdfs:subClassOf owl2:Geld_Fluss .
 
 
 
@@ -1949,7 +2081,7 @@ owl2:Geld_Sender rdf:type owl:Class ;
 
 owl2:Geld_Uebertragungsweg rdf:type owl:Class ;
                            
-                           rdfs:subClassOf owl2:Geld_Fluesse .
+                           rdfs:subClassOf owl2:Geld_Fluss .
 
 
 
@@ -1966,15 +2098,6 @@ owl2:Geldautomat rdf:type owl:Class ;
 owl2:Gelddiebstahl rdf:type owl:Class ;
                    
                    rdfs:subClassOf owl2:Diebstahl .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Geldkurier
-
-owl2:Geldkurier rdf:type owl:Class ;
-                
-                rdfs:subClassOf owl2:Rolle ,
-                                owl2:Verschleierung_unrechtmaessig_erlangter_Vermoegenswerte .
 
 
 
@@ -2022,7 +2145,7 @@ owl2:Geschaeftsfuehrer rdf:type owl:Class ;
 
 owl2:Geschaeftskontakte rdf:type owl:Class ;
                         
-                        rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                        rdfs:subClassOf owl2:Konzept_Organisation_KO .
 
 
 
@@ -2042,11 +2165,19 @@ owl2:Geschaeftszahlen rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Gesellschaftliche_Folgen
+###  http://www.AMSL/GDK/ontologie#Geschlecht
 
-owl2:Gesellschaftliche_Folgen rdf:type owl:Class ;
-                              
-                              rdfs:subClassOf owl2:Folgen_FG .
+owl2:Geschlecht rdf:type owl:Class ;
+                
+                rdfs:subClassOf owl2:Physisches_Konzept_Person_PHK .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Gesellschaftliche_Konsequenzen
+
+owl2:Gesellschaftliche_Konsequenzen rdf:type owl:Class ;
+                                    
+                                    rdfs:subClassOf owl2:Konsequenzen_KQ .
 
 
 
@@ -2071,14 +2202,6 @@ owl2:Gewalt_zur_Gewinning_von_Identitaetsdaten rdf:type owl:Class ;
 owl2:Gewaltkriminalitaet rdf:type owl:Class ;
                          
                          rdfs:subClassOf owl2:Delikt_DT .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Gewerbe
-
-owl2:Gewerbe rdf:type owl:Class ;
-             
-             rdfs:subClassOf owl2:Verschleierung_unrechtmaessig_erlangter_Vermoegenswerte .
 
 
 
@@ -2226,6 +2349,14 @@ owl2:Hashwerte rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Hawala-Bank
+
+owl2:Hawala-Bank rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf owl2:Werkzeug_Anonyme_Transferdienste .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Hawala_Ueberweisung
 
 owl2:Hawala_Ueberweisung rdf:type owl:Class ;
@@ -2370,11 +2501,36 @@ owl2:IT_Sicherheitsabteilung rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Illegal_Aufgeladene_Paypal_Accounts
+
+owl2:Illegal_Aufgeladene_Paypal_Accounts rdf:type owl:Class ;
+                                         
+                                         rdfs:subClassOf owl2:Missbrauch_von_Zahlungsdaten .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Immobilien
 
 owl2:Immobilien rdf:type owl:Class ;
                 
                 rdfs:subClassOf owl2:Geld_Art .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Immobilienkauf_mit_Rechnung
+
+owl2:Immobilienkauf_mit_Rechnung rdf:type owl:Class ;
+                                 
+                                 rdfs:subClassOf owl2:Barkauf_mit_Rechnung .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Immobilienkauf_ohne_Rechnung
+
+owl2:Immobilienkauf_ohne_Rechnung rdf:type owl:Class ;
+                                  
+                                  rdfs:subClassOf owl2:Barkauf_mit_Rechnung ,
+                                                  owl2:Barkauf_ohne_Rechnung .
 
 
 
@@ -2398,7 +2554,7 @@ owl2:Infrastrukturdaten rdf:type owl:Class ;
 
 owl2:Inhaftierung rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Strafrechtliche_Folgen .
+                  rdfs:subClassOf owl2:Strafrechtliche_Konsequenzen .
 
 
 
@@ -2406,7 +2562,7 @@ owl2:Inhaftierung rdf:type owl:Class ;
 
 owl2:Inlaendischer_Geheimdienst rdf:type owl:Class ;
                                 
-                                rdfs:subClassOf owl2:Angreifertyp_Geheimdienst .
+                                rdfs:subClassOf owl2:Angreifer_Geheimdienst .
 
 
 
@@ -2426,11 +2582,19 @@ owl2:Insider rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Interne_Folgen
+###  http://www.AMSL/GDK/ontologie#Insiderwissen
 
-owl2:Interne_Folgen rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf owl2:Folgen_FG .
+owl2:Insiderwissen rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf owl2:Faktenwissen .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Interne_Konsequenzen
+
+owl2:Interne_Konsequenzen rdf:type owl:Class ;
+                          
+                          rdfs:subClassOf owl2:Konsequenzen_KQ .
 
 
 
@@ -2462,7 +2626,31 @@ owl2:Iris rdf:type owl:Class ;
 
 owl2:JVA_Kontakte rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Einstiegsbedingungen .
+                  rdfs:subClassOf owl2:Kriminalitaet_Einstiegsbedingungen .
+
+
+
+###  http://www.AMSL/GDK/ontologie#KO_Ausstiegsbedingungen
+
+owl2:KO_Ausstiegsbedingungen rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
+
+
+
+###  http://www.AMSL/GDK/ontologie#KO_Einstiegsbedingungen
+
+owl2:KO_Einstiegsbedingungen rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Kamera
+
+owl2:Kamera rdf:type owl:Class ;
+            
+            rdfs:subClassOf owl2:Angriffs_Hardware .
 
 
 
@@ -2478,7 +2666,15 @@ owl2:Kapitalanlagenbetrug rdf:type owl:Class ;
 
 owl2:Karriereperspektiven rdf:type owl:Class ;
                           
-                          rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                          rdfs:subClassOf owl2:Konzept_Organisation_KO .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Kartelesegeraet
+
+owl2:Kartelesegeraet rdf:type owl:Class ;
+                     
+                     rdfs:subClassOf owl2:Kamera .
 
 
 
@@ -2503,6 +2699,22 @@ owl2:Kartellrechtsverstoesse rdf:type owl:Class ;
 owl2:Karten_Lese_Schreibgeraete rdf:type owl:Class ;
                                 
                                 rdfs:subClassOf owl2:Hardware_Werkzeuge_zur_digitalen_Urkundenfaelschung .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Kartenrohlinge
+
+owl2:Kartenrohlinge rdf:type owl:Class ;
+                    
+                    rdfs:subClassOf owl2:Angriffs_Hardware .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Kartenschreibgeraete
+
+owl2:Kartenschreibgeraete rdf:type owl:Class ;
+                          
+                          rdfs:subClassOf owl2:Kamera .
 
 
 
@@ -2534,7 +2746,15 @@ owl2:Klassisches_Telefonnetz rdf:type owl:Class ;
 
 owl2:KnowHow_Art rdf:type owl:Class ;
                  
-                 rdfs:subClassOf owl2:KnowHow_Fluesse .
+                 rdfs:subClassOf owl2:KnowHow_Fluss .
+
+
+
+###  http://www.AMSL/GDK/ontologie#KnowHow_Behoerden
+
+owl2:KnowHow_Behoerden rdf:type owl:Class ;
+                       
+                       rdfs:subClassOf owl2:KnowHow_Sender .
 
 
 
@@ -2542,15 +2762,31 @@ owl2:KnowHow_Art rdf:type owl:Class ;
 
 owl2:KnowHow_Empfaenger rdf:type owl:Class ;
                         
-                        rdfs:subClassOf owl2:KnowHow_Fluesse .
+                        rdfs:subClassOf owl2:KnowHow_Fluss .
 
 
 
-###  http://www.AMSL/GDK/ontologie#KnowHow_Fluesse
+###  http://www.AMSL/GDK/ontologie#KnowHow_Fluss
 
-owl2:KnowHow_Fluesse rdf:type owl:Class ;
+owl2:KnowHow_Fluss rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf owl2:Fluss_FS .
+
+
+
+###  http://www.AMSL/GDK/ontologie#KnowHow_Insider
+
+owl2:KnowHow_Insider rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:GDK_Fluesse_FL .
+                     rdfs:subClassOf owl2:KnowHow_Sender .
+
+
+
+###  http://www.AMSL/GDK/ontologie#KnowHow_Internet
+
+owl2:KnowHow_Internet rdf:type owl:Class ;
+                      
+                      rdfs:subClassOf owl2:KnowHow_Sender .
 
 
 
@@ -2558,7 +2794,15 @@ owl2:KnowHow_Fluesse rdf:type owl:Class ;
 
 owl2:KnowHow_Sender rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:KnowHow_Fluesse .
+                    rdfs:subClassOf owl2:KnowHow_Fluss .
+
+
+
+###  http://www.AMSL/GDK/ontologie#KnowHow_Uebertragungstyp
+
+owl2:KnowHow_Uebertragungstyp rdf:type owl:Class ;
+                              
+                              rdfs:subClassOf owl2:KnowHow_Fluss .
 
 
 
@@ -2566,7 +2810,15 @@ owl2:KnowHow_Sender rdf:type owl:Class ;
 
 owl2:KnowHow_Uebertragungsweg rdf:type owl:Class ;
                               
-                              rdfs:subClassOf owl2:KnowHow_Fluesse .
+                              rdfs:subClassOf owl2:KnowHow_Fluss .
+
+
+
+###  http://www.AMSL/GDK/ontologie#KnowHow_Universitaet
+
+owl2:KnowHow_Universitaet rdf:type owl:Class ;
+                          
+                          rdfs:subClassOf owl2:KnowHow_Sender .
 
 
 
@@ -2582,7 +2834,7 @@ owl2:Kodierer rdf:type owl:Class ;
 
 owl2:Koerpergroesse rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:Physische_Angreifereigenschaften .
+                    rdfs:subClassOf owl2:Physisches_Konzept_Person_PHK .
 
 
 
@@ -2590,7 +2842,7 @@ owl2:Koerpergroesse rdf:type owl:Class ;
 
 owl2:Kommunikative_Faehigkeiten rdf:type owl:Class ;
                                 
-                                rdfs:subClassOf owl2:Faehigkeiten .
+                                rdfs:subClassOf owl2:Straftatrelevante_Faehigkeiten .
 
 
 
@@ -2606,7 +2858,23 @@ owl2:Konfiguration rdf:type owl:Class ;
 
 owl2:Konkurrenzorganisationen rdf:type owl:Class ;
                               
-                              rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                              rdfs:subClassOf owl2:Konzept_Organisation_KO .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Konsequenzen_KQ
+
+owl2:Konsequenzen_KQ rdf:type owl:Class ;
+                     
+                     rdfs:subClassOf owl2:Finanz_Kriminalitaet .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Konsum_von_verbotenen_Online_Pornographie_Angeboten
+
+owl2:Konsum_von_verbotenen_Online_Pornographie_Angeboten rdf:type owl:Class ;
+                                                         
+                                                         rdfs:subClassOf owl2:Sex_und_Prositution .
 
 
 
@@ -2622,7 +2890,7 @@ owl2:Kontaktaufnahme_durch_Kriminellen rdf:type owl:Class ;
 
 owl2:Kontextwissen rdf:type owl:Class ;
                    
-                   rdfs:subClassOf owl2:Wissen .
+                   rdfs:subClassOf owl2:Straftatrelevantes_Wissen .
 
 
 
@@ -2639,6 +2907,22 @@ owl2:Kontodaten rdf:type owl:Class ;
 owl2:Konventionelle_Tatortforensik rdf:type owl:Class ;
                                    
                                    rdfs:subClassOf owl2:Auswertung_physischer_Daten .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Konzept_KZ
+
+owl2:Konzept_KZ rdf:type owl:Class ;
+                
+                rdfs:subClassOf owl2:Finanz_Kriminalitaet .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Konzept_Organisation_KO
+
+owl2:Konzept_Organisation_KO rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf owl2:Konzept_KZ .
 
 
 
@@ -2674,11 +2958,27 @@ owl2:Kreditkartendaten rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Kriminalitaet_Ausstiegsbedingungen
+
+owl2:Kriminalitaet_Ausstiegsbedingungen rdf:type owl:Class ;
+                                        
+                                        rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Kriminalitaet_Einstiegsbedingungen
+
+owl2:Kriminalitaet_Einstiegsbedingungen rdf:type owl:Class ;
+                                        
+                                        rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Kriminelle_Organisation_KO
 
 owl2:Kriminelle_Organisation_KO rdf:type owl:Class ;
                                 
-                                rdfs:subClassOf F:W_Kriminalitaet .
+                                rdfs:subClassOf owl2:Akteur_AT .
 
 
 
@@ -2742,7 +3042,7 @@ owl2:Leiharbeiter rdf:type owl:Class ;
 
 owl2:Liberty_Reserve rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Anonyme_Transferdienste .
+                     rdfs:subClassOf owl2:Werkzeug_Anonyme_Transferdienste .
 
 
 
@@ -2759,6 +3059,14 @@ owl2:Loeschprogramm rdf:type owl:Class ;
 owl2:Mafia rdf:type owl:Class ;
            
            rdfs:subClassOf owl2:Hierarchische_Organisation .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Magnetstreifenlesegeraet
+
+owl2:Magnetstreifenlesegeraet rdf:type owl:Class ;
+                              
+                              rdfs:subClassOf owl2:Kartelesegeraet .
 
 
 
@@ -2791,6 +3099,14 @@ owl2:Mangelndes_Verstaendnis rdf:type owl:Class ;
 owl2:Manipulation rdf:type owl:Class ;
                   
                   rdfs:subClassOf owl2:Delikt_DT .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Massnahme_MN
+
+owl2:Massnahme_MN rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf owl2:Finanz_Kriminalitaet .
 
 
 
@@ -2830,7 +3146,7 @@ owl2:Memory_Scraper rdf:type owl:Class ;
 
 owl2:Menge_an_Macht rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:Angreifer_AG .
+                    rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
 
 
 
@@ -2842,14 +3158,6 @@ owl2:Mensch_als_Waffe rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Menschenhandel
-
-owl2:Menschenhandel rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf owl2:Sex_und_Prositution .
-
-
-
 ###  http://www.AMSL/GDK/ontologie#Menschliche_Schwachstelle
 
 owl2:Menschliche_Schwachstelle rdf:type owl:Class ;
@@ -2858,11 +3166,19 @@ owl2:Menschliche_Schwachstelle rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Mikro_Kameras
+
+owl2:Mikro_Kameras rdf:type owl:Class ;
+                   
+                   rdfs:subClassOf owl2:Kamera .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Milieukontakte
 
 owl2:Milieukontakte rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:Einstiegsbedingungen .
+                    rdfs:subClassOf owl2:Kriminalitaet_Einstiegsbedingungen .
 
 
 
@@ -2890,14 +3206,6 @@ owl2:Missbrauch_von_Zugangsdaten rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Mitglieder
-
-owl2:Mitglieder rdf:type owl:Class ;
-                
-                rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
-
-
-
 ###  http://www.AMSL/GDK/ontologie#Mobile_Datenspeicher
 
 owl2:Mobile_Datenspeicher rdf:type owl:Class ;
@@ -2918,7 +3226,7 @@ owl2:Modifizierprogramm rdf:type owl:Class ;
 
 owl2:Monetaerer_Verlust rdf:type owl:Class ;
                         
-                        rdfs:subClassOf owl2:Wirtschaftliche_Folgen .
+                        rdfs:subClassOf owl2:Wirtschaftliche_Konsequenzen .
 
 
 
@@ -2934,15 +3242,15 @@ owl2:Monitoring rdf:type owl:Class ;
 
 owl2:Motivation rdf:type owl:Class ;
                 
-                rdfs:subClassOf owl2:Angreifer_AG .
+                rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Motivationsmethoden
+###  http://www.AMSL/GDK/ontologie#Motivationsmassnahmen
 
-owl2:Motivationsmethoden rdf:type owl:Class ;
-                         
-                         rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+owl2:Motivationsmassnahmen rdf:type owl:Class ;
+                           
+                           rdfs:subClassOf owl2:Massnahme_MN .
 
 
 
@@ -2958,7 +3266,15 @@ owl2:NFC_Karte rdf:type owl:Class ;
 
 owl2:Nachbereitung rdf:type owl:Class ;
                    
-                   rdfs:subClassOf owl2:Vorgehensweisen .
+                   rdfs:subClassOf owl2:Organisations_Vorgehensweisen .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Name
+
+owl2:Name rdf:type owl:Class ;
+          
+          rdfs:subClassOf owl2:Physisches_Konzept_Person_PHK .
 
 
 
@@ -3006,7 +3322,7 @@ owl2:Nicht_autorisierte_Durchfuehrung_von_Handelsvorgaengen rdf:type owl:Class ;
 
 owl2:Nichttechnisches_Angriffsziel rdf:type owl:Class ;
                                    
-                                   rdfs:subClassOf owl2:Angriffsziel_AZ .
+                                   rdfs:subClassOf owl2:Angegriffener_AF .
 
 
 
@@ -3066,14 +3382,6 @@ owl2:Online_Kreditbetrug rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Online_Pornographie
-
-owl2:Online_Pornographie rdf:type owl:Class ;
-                         
-                         rdfs:subClassOf owl2:Sex_und_Prositution .
-
-
-
 ###  http://www.AMSL/GDK/ontologie#Open_Source_Intelligence
 
 owl2:Open_Source_Intelligence rdf:type owl:Class ;
@@ -3086,7 +3394,7 @@ owl2:Open_Source_Intelligence rdf:type owl:Class ;
 
 owl2:Optimierung rdf:type owl:Class ;
                  
-                 rdfs:subClassOf owl2:Vorgehensweisen .
+                 rdfs:subClassOf owl2:Organisations_Vorgehensweisen .
 
 
 
@@ -3094,7 +3402,31 @@ owl2:Optimierung rdf:type owl:Class ;
 
 owl2:Ordnungsgeld rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Wirtschaftliche_Folgen .
+                  rdfs:subClassOf owl2:Wirtschaftliche_Konsequenzen .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Organisations_Policies
+
+owl2:Organisations_Policies rdf:type owl:Class ;
+                            
+                            rdfs:subClassOf owl2:Konzept_Organisation_KO .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Organisations_Standorte
+
+owl2:Organisations_Standorte rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf owl2:Konzept_Organisation_KO .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Organisations_Vorgehensweisen
+
+owl2:Organisations_Vorgehensweisen rdf:type owl:Class ;
+                                   
+                                   rdfs:subClassOf owl2:Konzept_Organisation_KO .
 
 
 
@@ -3102,7 +3434,15 @@ owl2:Ordnungsgeld rdf:type owl:Class ;
 
 owl2:Organisationstyp rdf:type owl:Class ;
                       
-                      rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+                      rdfs:subClassOf owl2:Konzept_Organisation_KO .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Organisatorische_Geldwerkzeuge
+
+owl2:Organisatorische_Geldwerkzeuge rdf:type owl:Class ;
+                                    
+                                    rdfs:subClassOf owl2:Organisatorische_Werkzeuge .
 
 
 
@@ -3111,6 +3451,14 @@ owl2:Organisationstyp rdf:type owl:Class ;
 owl2:Organisatorische_Schwachstellen rdf:type owl:Class ;
                                      
                                      rdfs:subClassOf owl2:Schwachstelle_ST .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Organisatorische_Werkzeuge
+
+owl2:Organisatorische_Werkzeuge rdf:type owl:Class ;
+                                
+                                rdfs:subClassOf owl2:Verschleierungswerkzeuge_VW .
 
 
 
@@ -3202,6 +3550,14 @@ owl2:Persoenlicher_Kontakt rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Person_PS
+
+owl2:Person_PS rdf:type owl:Class ;
+               
+               rdfs:subClassOf owl2:Akteur_AT .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Personalausweis_Creator
 
 owl2:Personalausweis_Creator rdf:type owl:Class ;
@@ -3242,11 +3598,11 @@ owl2:Phishing_Tools rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Physische_Angreifereigenschaften
+###  http://www.AMSL/GDK/ontologie#Physisches_Konzept_Person_PHK
 
-owl2:Physische_Angreifereigenschaften rdf:type owl:Class ;
-                                      
-                                      rdfs:subClassOf owl2:Angreifer_AG .
+owl2:Physisches_Konzept_Person_PHK rdf:type owl:Class ;
+                                   
+                                   rdfs:subClassOf owl2:Konzept_KZ .
 
 
 
@@ -3262,15 +3618,7 @@ owl2:Planer rdf:type owl:Class ;
 
 owl2:Planung rdf:type owl:Class ;
              
-             rdfs:subClassOf owl2:Vorgehensweisen .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Policies
-
-owl2:Policies rdf:type owl:Class ;
-              
-              rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
+             rdfs:subClassOf owl2:Organisations_Vorgehensweisen .
 
 
 
@@ -3303,14 +3651,6 @@ owl2:Portscanner rdf:type owl:Class ;
 owl2:PostIdent_Verfahren rdf:type owl:Class ;
                          
                          rdfs:subClassOf owl2:Prozedurales_Wissen .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Prepaid_Karten
-
-owl2:Prepaid_Karten rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf owl2:Geld_Art .
 
 
 
@@ -3350,23 +3690,15 @@ owl2:Prozess-Monitoring rdf:type owl:Class ;
 
 owl2:Prozessuale_Unscheinbarkeit rdf:type owl:Class ;
                                  
-                                 rdfs:subClassOf owl2:Selbstschutzmassnahmen .
+                                 rdfs:subClassOf owl2:Unscheinbarkeit .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Pseudonymitaet
+###  http://www.AMSL/GDK/ontologie#Pseudonymisierung
 
-owl2:Pseudonymitaet rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf owl2:Anonymitaetslevel .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Psychische_Angreifereigenschaften
-
-owl2:Psychische_Angreifereigenschaften rdf:type owl:Class ;
-                                       
-                                       rdfs:subClassOf owl2:Angreifer_AG .
+owl2:Pseudonymisierung rdf:type owl:Class ;
+                       
+                       rdfs:subClassOf owl2:Unscheinbarkeit .
 
 
 
@@ -3374,7 +3706,15 @@ owl2:Psychische_Angreifereigenschaften rdf:type owl:Class ;
 
 owl2:Psychologische_Faehigkeiten rdf:type owl:Class ;
                                  
-                                 rdfs:subClassOf owl2:Faehigkeiten .
+                                 rdfs:subClassOf owl2:Straftatrelevante_Faehigkeiten .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Psychologisches_Konzept_Person_PSK
+
+owl2:Psychologisches_Konzept_Person_PSK rdf:type owl:Class ;
+                                        
+                                        rdfs:subClassOf owl2:Konzept_KZ .
 
 
 
@@ -3400,38 +3740,6 @@ owl2:Rache rdf:type owl:Class ;
 owl2:Ransomware rdf:type owl:Class ;
                 
                 rdfs:subClassOf owl2:Angriffs_Software .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Real_erhaltene_Daten
-
-owl2:Real_erhaltene_Daten rdf:type owl:Class ;
-                          
-                          rdfs:subClassOf owl2:Angreifer_AG .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Reale_Kosten
-
-owl2:Reale_Kosten rdf:type owl:Class ;
-                  
-                  rdfs:subClassOf owl2:Angreifer_AG .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Realer_Gewinn
-
-owl2:Realer_Gewinn rdf:type owl:Class ;
-                   
-                   rdfs:subClassOf owl2:Angreifer_AG .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Reales_KnowHow
-
-owl2:Reales_KnowHow rdf:type owl:Class ;
-                    
-                    rdfs:subClassOf owl2:Angreifer_AG .
 
 
 
@@ -3471,7 +3779,7 @@ owl2:Registry-Monitoring rdf:type owl:Class ;
 
 owl2:Rekrutierung rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Vorgehensweisen .
+                  rdfs:subClassOf owl2:Organisations_Vorgehensweisen .
 
 
 
@@ -3479,7 +3787,7 @@ owl2:Rekrutierung rdf:type owl:Class ;
 
 owl2:Ressource_Daten rdf:type owl:Class ;
                      
-                     rdfs:subClassOf owl2:Ressourcen .
+                     rdfs:subClassOf owl2:Ressource_RS .
 
 
 
@@ -3487,7 +3795,7 @@ owl2:Ressource_Daten rdf:type owl:Class ;
 
 owl2:Ressource_Geld rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:Ressourcen .
+                    rdfs:subClassOf owl2:Ressource_RS .
 
 
 
@@ -3495,7 +3803,15 @@ owl2:Ressource_Geld rdf:type owl:Class ;
 
 owl2:Ressource_Infrastruktur rdf:type owl:Class ;
                              
-                             rdfs:subClassOf owl2:Ressourcen .
+                             rdfs:subClassOf owl2:Ressource_RS .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Ressource_RS
+
+owl2:Ressource_RS rdf:type owl:Class ;
+                  
+                  rdfs:subClassOf owl2:Finanz_Kriminalitaet .
 
 
 
@@ -3503,15 +3819,7 @@ owl2:Ressource_Infrastruktur rdf:type owl:Class ;
 
 owl2:Ressource_Zeit rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:Ressourcen .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Ressourcen
-
-owl2:Ressourcen rdf:type owl:Class ;
-                
-                rdfs:subClassOf owl2:Angreifer_AG .
+                    rdfs:subClassOf owl2:Ressource_RS .
 
 
 
@@ -3519,7 +3827,7 @@ owl2:Ressourcen rdf:type owl:Class ;
 
 owl2:Ressourcendiebstahl rdf:type owl:Class ;
                          
-                         rdfs:subClassOf owl2:Technische_Folgen .
+                         rdfs:subClassOf owl2:Technische_Konsequenzen .
 
 
 
@@ -3527,7 +3835,15 @@ owl2:Ressourcendiebstahl rdf:type owl:Class ;
 
 owl2:Restaurant rdf:type owl:Class ;
                 
-                rdfs:subClassOf owl2:Gewerbe .
+                rdfs:subClassOf owl2:Werkzeug_Gewerbe .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Retourengutschrift
+
+owl2:Retourengutschrift rdf:type owl:Class ;
+                        
+                        rdfs:subClassOf owl2:Werkzeug_Schwarzgeldwaren_Rueckgabe .
 
 
 
@@ -3535,7 +3851,7 @@ owl2:Restaurant rdf:type owl:Class ;
 
 owl2:Rolle rdf:type owl:Class ;
            
-           rdfs:subClassOf owl2:Angreifer_AG .
+           rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
 
 
 
@@ -3567,7 +3883,7 @@ owl2:Rowhammer rdf:type owl:Class ;
 
 owl2:Rufschaedigung rdf:type owl:Class ;
                     
-                    rdfs:subClassOf owl2:Gesellschaftliche_Folgen .
+                    rdfs:subClassOf owl2:Gesellschaftliche_Konsequenzen .
 
 
 
@@ -3591,7 +3907,7 @@ owl2:Sachbeschaedigung rdf:type owl:Class ;
 
 owl2:Sanktionen rdf:type owl:Class ;
                 
-                rdfs:subClassOf owl2:Interne_Folgen .
+                rdfs:subClassOf owl2:Interne_Konsequenzen .
 
 
 
@@ -3639,7 +3955,7 @@ owl2:Schutzrechtmissbrauch rdf:type owl:Class ;
 
 owl2:Schwachstelle_ST rdf:type owl:Class ;
                       
-                      rdfs:subClassOf F:W_Kriminalitaet .
+                      rdfs:subClassOf owl2:Finanz_Kriminalitaet .
 
 
 
@@ -3647,7 +3963,7 @@ owl2:Schwachstelle_ST rdf:type owl:Class ;
 
 owl2:Schwachstellenwissen rdf:type owl:Class ;
                           
-                          rdfs:subClassOf owl2:Wissen .
+                          rdfs:subClassOf owl2:Straftatrelevantes_Wissen .
 
 
 
@@ -3659,43 +3975,11 @@ owl2:Schwarm rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Schwarzgeld_Erbe
-
-owl2:Schwarzgeld_Erbe rdf:type owl:Class ;
-                      
-                      rdfs:subClassOf owl2:Verschleierung_unrechtmaessig_erlangter_Vermoegenswerte .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Schwarzgeldwaren_Rueckgabe
-
-owl2:Schwarzgeldwaren_Rueckgabe rdf:type owl:Class ;
-                                
-                                rdfs:subClassOf owl2:Verschleierung_unrechtmaessig_erlangter_Vermoegenswerte .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Schwarzgeldwaren_Zerstoerung_Versicherung
-
-owl2:Schwarzgeldwaren_Zerstoerung_Versicherung rdf:type owl:Class ;
-                                               
-                                               rdfs:subClassOf owl2:Verschleierung_unrechtmaessig_erlangter_Vermoegenswerte .
-
-
-
 ###  http://www.AMSL/GDK/ontologie#Selbstanzeige_des_Kriminellen
 
 owl2:Selbstanzeige_des_Kriminellen rdf:type owl:Class ;
                                    
                                    rdfs:subClassOf owl2:Kontaktaufnahme_durch_Kriminellen .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Selbstschutzmassnahmen
-
-owl2:Selbstschutzmassnahmen rdf:type owl:Class ;
-                            
-                            rdfs:subClassOf owl2:Angreifer_AG .
 
 
 
@@ -3839,7 +4123,7 @@ owl2:Sprache rdf:type owl:Class ;
 
 owl2:Staerke rdf:type owl:Class ;
              
-             rdfs:subClassOf owl2:Physische_Angreifereigenschaften .
+             rdfs:subClassOf owl2:Physisches_Konzept_Person_PHK .
 
 
 
@@ -3848,14 +4132,6 @@ owl2:Staerke rdf:type owl:Class ;
 owl2:Standortdaten rdf:type owl:Class ;
                    
                    rdfs:subClassOf owl2:Auswertung_Loggingdaten .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Standorte
-
-owl2:Standorte rdf:type owl:Class ;
-               
-               rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
 
 
 
@@ -3883,11 +4159,11 @@ owl2:Stoerung_von_EDV-Anlagen rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Strafrechtliche_Folgen
+###  http://www.AMSL/GDK/ontologie#Strafrechtliche_Konsequenzen
 
-owl2:Strafrechtliche_Folgen rdf:type owl:Class ;
-                            
-                            rdfs:subClassOf owl2:Folgen_FG .
+owl2:Strafrechtliche_Konsequenzen rdf:type owl:Class ;
+                                  
+                                  rdfs:subClassOf owl2:Konsequenzen_KQ .
 
 
 
@@ -3895,7 +4171,23 @@ owl2:Strafrechtliche_Folgen rdf:type owl:Class ;
 
 owl2:Straftatentdeckung_SE rdf:type owl:Class ;
                            
-                           rdfs:subClassOf F:W_Kriminalitaet .
+                           rdfs:subClassOf owl2:Ereigniss_EG .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Straftatrelevante_Faehigkeiten
+
+owl2:Straftatrelevante_Faehigkeiten rdf:type owl:Class ;
+                                    
+                                    rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Straftatrelevantes_Wissen
+
+owl2:Straftatrelevantes_Wissen rdf:type owl:Class ;
+                               
+                               rdfs:subClassOf owl2:Psychologisches_Konzept_Person_PSK .
 
 
 
@@ -3983,15 +4275,15 @@ owl2:Techniker rdf:type owl:Class ;
 
 owl2:Technische_Fertigkeiten rdf:type owl:Class ;
                              
-                             rdfs:subClassOf owl2:Faehigkeiten .
+                             rdfs:subClassOf owl2:Straftatrelevante_Faehigkeiten .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Technische_Folgen
+###  http://www.AMSL/GDK/ontologie#Technische_Konsequenzen
 
-owl2:Technische_Folgen rdf:type owl:Class ;
-                       
-                       rdfs:subClassOf owl2:Folgen_FG .
+owl2:Technische_Konsequenzen rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf owl2:Konsequenzen_KQ .
 
 
 
@@ -4007,7 +4299,7 @@ owl2:Technische_Schwachstelle rdf:type owl:Class ;
 
 owl2:Technisches_Angriffsziel rdf:type owl:Class ;
                               
-                              rdfs:subClassOf owl2:Angriffsziel_AZ .
+                              rdfs:subClassOf owl2:Angegriffener_AF .
 
 
 
@@ -4063,7 +4355,7 @@ owl2:Trading_Account rdf:type owl:Class ;
 
 owl2:Training rdf:type owl:Class ;
               
-              rdfs:subClassOf owl2:Vorgehensweisen .
+              rdfs:subClassOf owl2:Organisations_Vorgehensweisen .
 
 
 
@@ -4080,14 +4372,6 @@ owl2:Tresor rdf:type owl:Class ;
 owl2:Triaden rdf:type owl:Class ;
              
              rdfs:subClassOf owl2:Hierarchische_Organisation .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Typ
-
-owl2:Typ rdf:type owl:Class ;
-         
-         rdfs:subClassOf owl2:Angreifer_AG .
 
 
 
@@ -4111,7 +4395,7 @@ owl2:USD rdf:type owl:Class ;
 
 owl2:U_Kash rdf:type owl:Class ;
             
-            rdfs:subClassOf owl2:Anonyme_Transferdienste .
+            rdfs:subClassOf owl2:Werkzeug_Anonyme_Transferdienste .
 
 
 
@@ -4155,6 +4439,14 @@ owl2:Uebertragungsverschluesselung rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#Uebertragungsweg_Ablage_Cloud
+
+owl2:Uebertragungsweg_Ablage_Cloud rdf:type owl:Class ;
+                                   
+                                   rdfs:subClassOf owl2:Daten_Uebertragungsweg .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Ueberweisung
 
 owl2:Ueberweisung rdf:type owl:Class ;
@@ -4171,11 +4463,27 @@ owl2:Unachtsamkeit rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Unbeabsichtigte_Datenherausgabe
+###  http://www.AMSL/GDK/ontologie#Unbeabsichtigte_Daten_Herausgabe
 
-owl2:Unbeabsichtigte_Datenherausgabe rdf:type owl:Class ;
+owl2:Unbeabsichtigte_Daten_Herausgabe rdf:type owl:Class ;
+                                      
+                                      rdfs:subClassOf owl2:Daten_Uebertragungstyp .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Unbeabsichtigte_Geld_Herausgabe
+
+owl2:Unbeabsichtigte_Geld_Herausgabe rdf:type owl:Class ;
                                      
-                                     rdfs:subClassOf owl2:KnowHow_Uebertragungsweg .
+                                     rdfs:subClassOf owl2:Geld_Uebertragungstyp .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Unbeabsichtigte_KnowHow_Herausgabe
+
+owl2:Unbeabsichtigte_KnowHow_Herausgabe rdf:type owl:Class ;
+                                        
+                                        rdfs:subClassOf owl2:KnowHow_Uebertragungstyp .
 
 
 
@@ -4191,7 +4499,7 @@ owl2:Unbefugte_Benutzung_von_Konten rdf:type owl:Class ;
 
 owl2:Unbeobachtbarkeit rdf:type owl:Class ;
                        
-                       rdfs:subClassOf owl2:Anonymitaetslevel .
+                       rdfs:subClassOf owl2:Unscheinbarkeit .
 
 
 
@@ -4216,6 +4524,14 @@ owl2:Unklare_Kommunikationswege rdf:type owl:Class ;
 owl2:Unklare_Verantwortlichkeiten rdf:type owl:Class ;
                                   
                                   rdfs:subClassOf owl2:Unklare_Informationslage .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Unscheinbarkeit
+
+owl2:Unscheinbarkeit rdf:type owl:Class ;
+                     
+                     rdfs:subClassOf owl2:Angriffsschutzmassnahmen_ASM .
 
 
 
@@ -4247,7 +4563,7 @@ owl2:Untreue rdf:type owl:Class ;
 
 owl2:Unverkettbarkeit rdf:type owl:Class ;
                       
-                      rdfs:subClassOf owl2:Anonymitaetslevel .
+                      rdfs:subClassOf owl2:Unscheinbarkeit .
 
 
 
@@ -4343,7 +4659,7 @@ owl2:Verkehrskontrolle_Prozeduren rdf:type owl:Class ;
 
 owl2:Verlust_Vertraulichkeit rdf:type owl:Class ;
                              
-                             rdfs:subClassOf owl2:Technische_Folgen .
+                             rdfs:subClassOf owl2:Technische_Konsequenzen .
 
 
 
@@ -4363,6 +4679,14 @@ owl2:Verschleierung_unrechtmaessig_erlangter_Vermoegenswerte rdf:type owl:Class 
 
 
 
+###  http://www.AMSL/GDK/ontologie#Verschleierungswerkzeuge_VW
+
+owl2:Verschleierungswerkzeuge_VW rdf:type owl:Class ;
+                                 
+                                 rdfs:subClassOf owl2:Werkzeug_WZ .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#Verschluesselung
 
 owl2:Verschluesselung rdf:type owl:Class ;
@@ -4375,7 +4699,7 @@ owl2:Verschluesselung rdf:type owl:Class ;
 
 owl2:Verschluesselung_eigener_Daten rdf:type owl:Class ;
                                     
-                                    rdfs:subClassOf owl2:Selbstschutzmassnahmen .
+                                    rdfs:subClassOf owl2:Unscheinbarkeit .
 
 
 
@@ -4384,6 +4708,14 @@ owl2:Verschluesselung_eigener_Daten rdf:type owl:Class ;
 owl2:Versicherungen rdf:type owl:Class ;
                     
                     rdfs:subClassOf owl2:Angriffsziel_Unternehmen .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Versicherungsbetrug_mit_Autos
+
+owl2:Versicherungsbetrug_mit_Autos rdf:type owl:Class ;
+                                   
+                                   rdfs:subClassOf owl2:Werkzeug_Schwarzgeldwaren_Zerstoerung_Versicherung .
 
 
 
@@ -4407,7 +4739,7 @@ owl2:Vertrauenswuerdige_Historie rdf:type owl:Class ;
 
 owl2:Verurteilung rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Strafrechtliche_Folgen .
+                  rdfs:subClassOf owl2:Strafrechtliche_Konsequenzen .
 
 
 
@@ -4423,7 +4755,7 @@ owl2:Verzoegerungsdauer_Sofortmassnahmen rdf:type owl:Class ;
 
 owl2:Vorbereitung rdf:type owl:Class ;
                   
-                  rdfs:subClassOf owl2:Vorgehensweisen .
+                  rdfs:subClassOf owl2:Organisations_Vorgehensweisen .
 
 
 
@@ -4440,14 +4772,6 @@ owl2:Vorbereitung_des_Ausspaehens_und_Abfangens_von_Daten rdf:type owl:Class ;
 owl2:Vorbereitung_einer_Straftat rdf:type owl:Class ;
                                  
                                  rdfs:subClassOf owl2:Delikt_DT .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Vorgehensweisen
-
-owl2:Vorgehensweisen rdf:type owl:Class ;
-                     
-                     rdfs:subClassOf owl2:Kriminelle_Organisation_KO .
 
 
 
@@ -4503,7 +4827,81 @@ owl2:Warendiebstahl rdf:type owl:Class ;
 
 owl2:WebMoney rdf:type owl:Class ;
               
-              rdfs:subClassOf owl2:Anonyme_Transferdienste .
+              rdfs:subClassOf owl2:Werkzeug_Anonyme_Transferdienste .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Anonyme_Transferdienste
+
+owl2:Werkzeug_Anonyme_Transferdienste rdf:type owl:Class ;
+                                      
+                                      rdfs:subClassOf owl2:Organisatorische_Geldwerkzeuge .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Barkauf
+
+owl2:Werkzeug_Barkauf rdf:type owl:Class ;
+                      
+                      rdfs:subClassOf owl2:Organisatorische_Geldwerkzeuge .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Geldkurier
+
+owl2:Werkzeug_Geldkurier rdf:type owl:Class ;
+                         
+                         rdfs:subClassOf owl2:Organisatorische_Geldwerkzeuge ,
+                                         owl2:Rolle .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Gewerbe
+
+owl2:Werkzeug_Gewerbe rdf:type owl:Class ;
+                      
+                      rdfs:subClassOf owl2:Organisatorische_Geldwerkzeuge .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Prepaid_Karten
+
+owl2:Werkzeug_Prepaid_Karten rdf:type owl:Class ;
+                             
+                             rdfs:subClassOf owl2:Geld_Art ,
+                                             owl2:Organisatorische_Geldwerkzeuge .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Schwarzgeld_Erbe
+
+owl2:Werkzeug_Schwarzgeld_Erbe rdf:type owl:Class ;
+                               
+                               rdfs:subClassOf owl2:Organisatorische_Geldwerkzeuge .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Schwarzgeldwaren_Rueckgabe
+
+owl2:Werkzeug_Schwarzgeldwaren_Rueckgabe rdf:type owl:Class ;
+                                         
+                                         rdfs:subClassOf owl2:Organisatorische_Geldwerkzeuge .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_Schwarzgeldwaren_Zerstoerung_Versicherung
+
+owl2:Werkzeug_Schwarzgeldwaren_Zerstoerung_Versicherung rdf:type owl:Class ;
+                                                        
+                                                        rdfs:subClassOf owl2:Organisatorische_Geldwerkzeuge .
+
+
+
+###  http://www.AMSL/GDK/ontologie#Werkzeug_WZ
+
+owl2:Werkzeug_WZ rdf:type owl:Class ;
+                 
+                 rdfs:subClassOf owl2:Finanz_Kriminalitaet .
 
 
 
@@ -4527,7 +4925,7 @@ owl2:Wertpapiere rdf:type owl:Class ;
 
 owl2:Western_Union rdf:type owl:Class ;
                    
-                   rdfs:subClassOf owl2:Anonyme_Transferdienste .
+                   rdfs:subClassOf owl2:Werkzeug_Anonyme_Transferdienste .
 
 
 
@@ -4539,19 +4937,11 @@ owl2:Wiederverwendung rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Wirtschaftliche_Folgen
+###  http://www.AMSL/GDK/ontologie#Wirtschaftliche_Konsequenzen
 
-owl2:Wirtschaftliche_Folgen rdf:type owl:Class ;
-                            
-                            rdfs:subClassOf owl2:Folgen_FG .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Wissen
-
-owl2:Wissen rdf:type owl:Class ;
-            
-            rdfs:subClassOf owl2:Angreifer_AG .
+owl2:Wirtschaftliche_Konsequenzen rdf:type owl:Class ;
+                                  
+                                  rdfs:subClassOf owl2:Konsequenzen_KQ .
 
 
 
@@ -4611,19 +5001,19 @@ owl2:Zigaretten rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#Zivilrechtliche_Folgen
+###  http://www.AMSL/GDK/ontologie#Zivilrechtliche_Konsequenzen
 
-owl2:Zivilrechtliche_Folgen rdf:type owl:Class ;
-                            
-                            rdfs:subClassOf owl2:Folgen_FG .
+owl2:Zivilrechtliche_Konsequenzen rdf:type owl:Class ;
+                                  
+                                  rdfs:subClassOf owl2:Konsequenzen_KQ .
 
 
 
-###  http://www.AMSL/GDK/ontologie#Zufall
+###  http://www.AMSL/GDK/ontologie#Zufaellige_Entdeckung
 
-owl2:Zufall rdf:type owl:Class ;
-            
-            rdfs:subClassOf owl2:Straftatentdeckung_SE .
+owl2:Zufaellige_Entdeckung rdf:type owl:Class ;
+                           
+                           rdfs:subClassOf owl2:Straftatentdeckung_SE .
 
 
 
@@ -4640,14 +5030,6 @@ owl2:Zugangsdaten rdf:type owl:Class ;
 owl2:Zugriffskontrolle rdf:type owl:Class ;
                        
                        rdfs:subClassOf owl2:Abwehr_Policies .
-
-
-
-###  http://www.AMSL/GDK/ontologie#Zuhaelterei
-
-owl2:Zuhaelterei rdf:type owl:Class ;
-                 
-                 rdfs:subClassOf owl2:Delikt_DT .
 
 
 
@@ -4675,6 +5057,22 @@ owl2:Zurueckhalten_von_Waren rdf:type owl:Class ;
 
 
 
+###  http://www.AMSL/GDK/ontologie#class112
+
+owl2:class112 rdf:type owl:Class ;
+              
+              rdfs:subClassOf owl2:Faktenwissen .
+
+
+
+###  http://www.AMSL/GDK/ontologie#class819
+
+owl2:class819 rdf:type owl:Class ;
+              
+              rdfs:subClassOf owl2:Faktenwissen .
+
+
+
 ###  http://www.AMSL/GDK/ontologie#n-Faktor-Authentifizierung
 
 owl2:n-Faktor-Authentifizierung rdf:type owl:Class ;
@@ -4699,17 +5097,11 @@ ontologie:Faktor-Authenfizierung rdf:type owl:Class ;
 
 
 
-###  http://www.AMSL/GDK/ontologie#F/W_Kriminalitaet
-
-F:W_Kriminalitaet rdf:type owl:Class .
-
-
-
 ###  http://www.AMSL/GDK/ontologie#Herstellung/Beschaffung_von_Skimmern
 
 Herstellung:Beschaffung_von_Skimmern rdf:type owl:Class ;
                                      
-                                     rdfs:subClassOf owl2:Datendiebstahl .
+                                     rdfs:subClassOf owl2:Vorbereitung_des_Ausspaehens_und_Abfangens_von_Daten .
 
 
 
