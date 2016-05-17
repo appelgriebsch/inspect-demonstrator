@@ -51,7 +51,7 @@
               preview: imgData
             };
 
-            var ipc = require('ipc');
+            var ipc = require('electron').ipcRenderer;
             ipc.send('analyze-pdf-result', result);
           });
         });

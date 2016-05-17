@@ -31,6 +31,8 @@
   // adds debug features like hotkeys for triggering dev tools and reload
   require('electron-debug')();
 
+  process.on('uncaughtException', onCrash);
+
   // create main application window
   function createMainWindow() {
 
@@ -42,7 +44,8 @@
 
     win.loadURL('file://' + __dirname + '/main.html');
     win.on('closed', onClosed);
-
+    win.webContents.on('crashed', onCrash);
+    win.on('unresponsive', onCrash);
     return win;
   }
 
@@ -50,6 +53,10 @@
     // deref the window
     // for multiple windows store them in an array
     mainWindow = null;
+  }
+
+  function onCrash(exc) {
+    console.log(exc);
   }
 
   var handleStartupEvent = function() {
@@ -223,7 +230,7 @@
                     resolve({
                       id: fileName,
                       content_type: 'application/x-mimearchive',
-                      preview: thumbnail.toDataUrl(),
+                      preview: thumbnail.toDataURL(),
                       data: archive
                     });
                   });
