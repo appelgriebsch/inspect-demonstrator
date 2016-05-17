@@ -205,6 +205,16 @@
 
       webWnd.loadURL(url);
 
+      webWnd.on('unresponsive', (err) => {
+        console.log(err);
+        reject(err.message);
+      });
+
+      webWnd.webContents.on('crashed', (err) => {
+        console.log(err);
+        reject(err.message);
+      });
+
       webWnd.webContents.on('dom-ready', () => {
         webWnd.webContents.executeJavaScript(webAnalyzer.toString());
       });
@@ -264,6 +274,16 @@
       });
 
       pdfPreviewWnd.loadURL(`file://${__dirname}/templates/pdfanalyzer.html?pdf=${url}`);
+
+      pdfPreviewWnd.on('unresponsive', (err) => {
+        console.log(err);
+        reject(err.message);
+      });
+
+      pdfPreviewWnd.webContents.on('crashed', (err) => {
+        console.log(err);
+        reject(err.message);
+      });
 
       ipc.on('analyze-pdf-result', (evt, result) => {
         if (result.url === url) {
