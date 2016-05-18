@@ -4,6 +4,21 @@
 
   function OntologyViewController($scope, $state, $q, $mdDialog, OntologyDataService) {
 
+    this.graphOptions = {
+      nodes: {
+        shape: 'dot',
+        scaling: { min: 20,max: 30,
+          label: { min: 14, max: 30, drawThreshold: 9, maxVisible: 20 }
+        },
+        font: {size: 14, face: 'Helvetica Neue, Helvetica, Arial'}
+      },
+      interaction: {
+        hover: true,
+        hoverConnectedEdges: false,
+        selectConnectedEdges: true
+      }
+    };
+
     this.data = {
       nodes: new vis.DataSet(),
       edges: new vis.DataSet()
@@ -11,19 +26,30 @@
 
     this.network = undefined;
     this.query = '';
+    this.baseURI = '';
+    this.classes = [];
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
 
-    var _findNode = (label) => {
+    var _findNode = (identifier) => {
 
       return this.data.nodes.get({
         filter: function (item) {
-          return item.label === label;
+          return item.label === identifier;
         }
       });
     };
 
     var _createNode = (label) => {
+
+      var identifier = label;
+      if (label.startsWith('http://') || label.startsWith('https://')) {
+        var idx = label.lastIndexOf('#') + 1;
+        var uri = label.substr(0, idx);
+        var name = label.substr(idx);
+        var prefix = OntologyDataService.prefixForURI(uri);
+        identifier = `${prefix}:${name}`;
+      }
 
       var node = _findNode(label);
 
@@ -31,11 +57,13 @@
 
         var newNode = {
           id: this.data.nodes.length + 1,
-          label: label
+          label: identifier
         };
 
+        console.log(newNode);
+        
         this.data.nodes.add(newNode);
-        node = _findNode(label);
+        node = _findNode(identifier);
       }
 
       return node[0];
@@ -90,7 +118,7 @@
     var _createGraph = () => {
 
       var container = document.getElementById('ontology-graph');
-      this.network = new vis.Network(container, this.data, { });
+      this.network = new vis.Network(container, this.data, this.graphOptions);
 
       this.network.on('selectNode', (params) => {
         var selectedNodeId = params.nodes[0];
@@ -103,7 +131,16 @@
     this.initialize = function() {
       _createGraph();
       var init = [OntologyDataService.initialize()];
-      return init;
+      Promise.all(init).then(() => {
+        return OntologyDataService.ontology();
+      }).then((result) => {
+        this.baseURI = result;
+        return OntologyDataService.classes();
+      }).then((result) => {
+        this.classes = result;
+      }).catch((err) => {
+        console.log(err);
+      });
     };
 
     this.search = (evt) => {
