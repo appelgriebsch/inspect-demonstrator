@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/appelgriebsch/inspect-demonstrator.git"
+    "url": "git+https://github.com/appelgriebsch/inspect-demonstrator.git"
   },
   "keywords": [
     "electron",
@@ -25,9 +25,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/appelgriebsch/inspect-demonstrator/issues"
+    "url": "https://github.com/appelgriebsch/inspect-demonstrator/issues"
   },
-  "homepage": "https://gitlab.com/appelgriebsch/inspect-demonstrator#readme",
+  "homepage": "https://github.com/appelgriebsch/inspect-demonstrator#readme",
   "dependencies": {
     "angular": "^1.5.0",
     "angular-animate": "^1.5.0",

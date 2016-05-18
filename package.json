@@ -7,7 +7,7 @@
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/appelgriebsch/inspect-demonstrator.git"
+    "url": "git+https://github.com/appelgriebsch/inspect-demonstrator.git"
   },
   "keywords": [
     "electron",
@@ -22,9 +22,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/appelgriebsch/inspect-demonstrator/issues"
+    "url": "https://github.com/appelgriebsch/inspect-demonstrator/issues"
   },
-  "homepage": "https://gitlab.com/appelgriebsch/inspect-demonstrator#readme",
+  "homepage": "https://github.com/appelgriebsch/inspect-demonstrator#readme",
   "scripts": {
     "postinstall": "npm run app-install && npm run electron-version && npm run rebuild",
     "start": "electron app/",
@@ -71,7 +71,7 @@
     "spectron": "^3.0.0"
   },
   "optionalDependencies": {
-    "appdmg": "^0.3.6",
+    "appdmg": "^0.4.0",
     "electron-installer-debian": "^0.3.0",
     "electron-installer-redhat": "^0.2.0",
     "electron-installer-windows": "^0.2.0"
