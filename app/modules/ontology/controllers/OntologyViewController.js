@@ -7,10 +7,20 @@
     this.graphOptions = {
       nodes: {
         shape: 'dot',
-        scaling: { min: 20,max: 30,
-          label: { min: 14, max: 30, drawThreshold: 9, maxVisible: 20 }
+        scaling: {
+          min: 20,
+          max: 30,
+          label: {
+            min: 14,
+            max: 30,
+            drawThreshold: 9,
+            maxVisible: 20
+          }
         },
-        font: {size: 14, face: 'Helvetica Neue, Helvetica, Arial'}
+        font: {
+          size: 14,
+          face: 'Helvetica Neue, Helvetica, Arial'
+        }
       },
       interaction: {
         hover: true,
@@ -35,7 +45,7 @@
     var _findNode = (identifier) => {
 
       return this.data.nodes.get({
-        filter: function (item) {
+        filter: function(item) {
           return item.identifier === identifier;
         }
       });
@@ -51,7 +61,8 @@
         var newNode = {
           id: this.data.nodes.length + 1,
           identifier: identifier,
-          label: label
+          label: label,
+          title: identifier
         };
 
         this.data.nodes.add(newNode);
@@ -81,8 +92,17 @@
           from: from,
           to: to,
           identifier: identifier,
-          label: label
+          title: label
         };
+
+        if (label === 'isA') {
+          newEdge.arrows = {
+            to: {
+              scaleFactor: 0.5
+            }
+          };
+          newEdge.dashes = true;
+        }
 
         this.data.edges.add(newEdge);
         edge = _findEdge(from, to, identifier);
@@ -93,21 +113,26 @@
 
     var _loadNode = (nodeLabel) => {
 
-      console.log(nodeLabel);
       var queryString = nodeLabel.startsWith('http://') ? nodeLabel : `${this.baseURI}#${nodeLabel}`;
+      var owlURI = OntologyDataService.uriForPrefix('owl');
+
       OntologyDataService.node(queryString)
-       .then((results) => {
-         $q.when(true).then(() => {
-           results.map((item) => {
+        .then((results) => {
+          $q.when(true).then(() => {
+            results.forEach((item) => {
 
-             var subjNode = _createNode(item.subject);
-             var objNode = _createNode(item.object);
+              if (item.object !== `${owlURI}Class`) {
 
-             _createEdge(subjNode.id, objNode.id, item.predicate);
-             this.network.fit();
-           });
-         });
-       });
+                var subjNode = _createNode(item.subject);
+                var objNode = _createNode(item.object);
+
+                _createEdge(subjNode.id, objNode.id, item.predicate);
+              }
+            });
+
+            this.network.fit();
+          });
+        });
     };
 
     var _createGraph = () => {
@@ -118,7 +143,6 @@
       this.network.on('selectNode', (params) => {
         var selectedNodeId = params.nodes[0];
         var selectedNode = this.data.nodes.get(selectedNodeId);
-        console.log(selectedNode);
         _loadNode(selectedNode.identifier);
       });
     };
@@ -157,8 +181,7 @@
 
       if (identifier.length > 0) {
         _loadNode(identifier);
-      }
-      else {
+      } else {
         this.reset();
       }
 
