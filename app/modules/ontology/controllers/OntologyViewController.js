@@ -25,7 +25,8 @@
     };
 
     this.network = undefined;
-    this.query = '';
+    this.query = undefined;
+    this.searchText = '';
     this.baseURI = '';
     this.classes = [];
     this.state = $state.$current;
@@ -35,33 +36,24 @@
 
       return this.data.nodes.get({
         filter: function (item) {
-          return item.label === identifier;
+          return item.identifier === identifier;
         }
       });
     };
 
-    var _createNode = (label) => {
+    var _createNode = (identifier) => {
 
-      var identifier = label;
-      if (label.startsWith('http://') || label.startsWith('https://')) {
-        var idx = label.lastIndexOf('#') + 1;
-        var uri = label.substr(0, idx);
-        var name = label.substr(idx);
-        var prefix = OntologyDataService.prefixForURI(uri);
-        identifier = `${prefix}:${name}`;
-      }
-
-      var node = _findNode(label);
+      var node = _findNode(identifier);
 
       if (node.length == 0) {
 
+        var label = OntologyDataService.labelForNode(identifier);
         var newNode = {
           id: this.data.nodes.length + 1,
-          label: identifier
+          identifier: identifier,
+          label: label
         };
 
-        console.log(newNode);
-        
         this.data.nodes.add(newNode);
         node = _findNode(identifier);
       }
@@ -69,29 +61,31 @@
       return node[0];
     };
 
-    var _findEdge = (from, to, label) => {
+    var _findEdge = (from, to, identifier) => {
 
       return this.data.edges.get({
         filter: function(item) {
-          return ((item.from == from) && (item.to == to) && (item.label === label));
+          return ((item.from == from) && (item.to == to) && (item.identifier === identifier));
         }
       });
     };
 
-    var _createEdge = (from, to, label) => {
+    var _createEdge = (from, to, identifier) => {
 
-      var edge = _findEdge(from, to, label);
+      var edge = _findEdge(from, to, identifier);
 
       if (edge.length == 0) {
 
+        var label = OntologyDataService.labelForEdge(identifier);
         var newEdge = {
           from: from,
           to: to,
+          identifier: identifier,
           label: label
         };
 
         this.data.edges.add(newEdge);
-        edge = _findEdge(from, to, label);
+        edge = _findEdge(from, to, identifier);
       }
 
       return edge[0];
@@ -99,7 +93,8 @@
 
     var _loadNode = (nodeLabel) => {
 
-      var queryString = nodeLabel.startsWith('http://') ? nodeLabel : `http://www.AMSL/GDK/ontologie#${nodeLabel}`;
+      console.log(nodeLabel);
+      var queryString = nodeLabel.startsWith('http://') ? nodeLabel : `${this.baseURI}#${nodeLabel}`;
       OntologyDataService.node(queryString)
        .then((results) => {
          $q.when(true).then(() => {
@@ -124,7 +119,7 @@
         var selectedNodeId = params.nodes[0];
         var selectedNode = this.data.nodes.get(selectedNodeId);
         console.log(selectedNode);
-        _loadNode(selectedNode.label);
+        _loadNode(selectedNode.identifier);
       });
     };
 
@@ -143,12 +138,27 @@
       });
     };
 
-    this.search = (evt) => {
+    this.findTerm = (searchText) => {
 
-      if ((evt === undefined) || (evt.keyCode === 13)) {
-        _loadNode(this.query);
+      var foundNodes = [];
+      this.classes.forEach((entry) => {
+        var idx = entry.label.search(searchText);
+        if (idx != -1) {
+          foundNodes.push(entry);
+        }
+      });
+
+      return foundNodes;
+    };
+
+    this.search = () => {
+
+      var identifier = this.query ? this.query.identifier : '';
+
+      if (identifier.length > 0) {
+        _loadNode(identifier);
       }
-      else if ((evt !== undefined) && (evt.keyCode === 27)) {
+      else {
         this.reset();
       }
 

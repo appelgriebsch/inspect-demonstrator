@@ -48,14 +48,14 @@
       var item = knownURIs.find((entry) => {
         return entry.uri === uri;
       });
-      return item ? item.uri : '';
+      return item ? item.prefix : uri;
     };
 
     var _uriForPrefix = function(prefix) {
       var item = knownURIs.find((entry) => {
         return entry.prefix === prefix;
       });
-      return item ? item.uri : '';
+      return item ? item.uri : prefix;
     };
 
     var _loadNode = function(uri) {
@@ -86,6 +86,41 @@
       });
 
       return promise;
+    };
+
+    var _labelForNode = function(identifier) {
+
+      var label = identifier;
+
+      if (identifier.startsWith('http://') || identifier.startsWith('https://')) {
+        var idx = identifier.lastIndexOf('#') + 1;
+        var uri = identifier.substr(0, idx);
+        var name = identifier.substr(idx);
+        var prefix = _prefixForURI(uri);
+        label = `${prefix}:${name}`;
+      }
+
+      return label;
+    };
+
+    var _labelForEdge = function(identifier) {
+
+      var label = identifier;
+
+      if (identifier.startsWith('http://') || identifier.startsWith('https://')) {
+        var idx = identifier.lastIndexOf('#') + 1;
+        var uri = identifier.substr(0, idx);
+        var name = identifier.substr(idx);
+        var prefix = _prefixForURI(uri);
+        label = `${prefix}:${name}`;
+      }
+
+      if ((label === 'rdf:type') ||
+          (label === 'rdfs:subClassOf')) {
+        label = 'isA';
+      }
+
+      return label;
     };
 
     return {
@@ -150,7 +185,10 @@
             if (err) {
               reject(err);
             } else {
-              resolve(subjNodes);
+              var nodes = subjNodes.map((subjNode) => {
+                return { identifier: subjNode.subject, label: _labelForNode(subjNode.subject) };
+              });
+              resolve(nodes);
             }
           });
         });
@@ -172,12 +210,25 @@
             if (err) {
               reject(err);
             } else {
-              resolve(subjNodes);
+              var nodes = subjNodes.map( (subjNode) => {
+                return _labelForEdge(subjNode.subject);
+              });
+              resolve(nodes);
             }
           });
         });
 
         return promise;
+      },
+
+      labelForNode: function(identifier) {
+
+        return _labelForNode(identifier);
+      },
+
+      labelForEdge: function(identifier) {
+
+        return _labelForEdge(identifier);
       }
     };
   }
