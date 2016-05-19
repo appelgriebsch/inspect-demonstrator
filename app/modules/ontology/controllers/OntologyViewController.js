@@ -76,7 +76,7 @@
 
       return this.data.edges.get({
         filter: function(item) {
-          return ((item.from == from) && (item.to == to) && (item.identifier === identifier));
+          return ((item.from == from.id) && (item.to == to.id) && (item.identifier === identifier));
         }
       });
     };
@@ -89,8 +89,8 @@
 
         var label = OntologyDataService.labelForEdge(identifier);
         var newEdge = {
-          from: from,
-          to: to,
+          from: from.id,
+          to: to.id,
           identifier: identifier,
           title: label
         };
@@ -102,6 +102,7 @@
             }
           };
           newEdge.dashes = true;
+          newEdge.color = '#bad6f4';
         }
 
         this.data.edges.add(newEdge);
@@ -121,15 +122,17 @@
           $q.when(true).then(() => {
             results.forEach((item) => {
 
-              if (item.object !== `${owlURI}Class`) {
+              if (!item.object.startsWith(owlURI)) {
 
                 var subjNode = _createNode(item.subject);
                 var objNode = _createNode(item.object);
 
-                _createEdge(subjNode.id, objNode.id, item.predicate);
+                _createEdge(subjNode, objNode, item.predicate);
               }
             });
 
+            var mainNode = _findNode(queryString);
+            this.network.selectNodes( [ mainNode[0].id ], true);
             this.network.fit();
           });
         });
@@ -166,7 +169,7 @@
 
       var foundNodes = [];
       this.classes.forEach((entry) => {
-        var idx = entry.label.search(searchText);
+        var idx = entry.label.search(new RegExp(searchText, 'i'));
         if (idx != -1) {
           foundNodes.push(entry);
         }
