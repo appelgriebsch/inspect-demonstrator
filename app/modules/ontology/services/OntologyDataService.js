@@ -227,24 +227,23 @@
                     if (err) {
                       reject2(err);
                     } else {
+                      var domains = [];
+                      var ranges = [];
                       objects.forEach((obj) => {
-                        var node = nodes.find((elem) => {
-                          return elem.property === obj.subject;
-                        }) || {
-                          property: obj.subject,
-                          isNew: true
-                        };
-
                         if (obj.predicate === domainProp) {
-                          node.domain = obj.object;
+                          domains.push(obj.object);
                         } else if (obj.predicate === rangeProp) {
-                          node.range = obj.object;
+                          ranges.push(obj.object);
                         }
-
-                        if (node.isNew) {
-                          delete node.isNew;
-                          nodes.push(node);
-                        }
+                      });
+                      domains.forEach((domain) => {
+                        ranges.forEach((range) => {
+                          nodes.push({
+                            domain: domain,
+                            property: prop.subject,
+                            range: range
+                          });
+                        });
                       });
                       resolve2();
                     }

@@ -98,28 +98,32 @@
         title: label
       };
 
-      if (label === 'property') {     // replace domain and range relationships with related objects
+      if (label === 'property') { // replace domain and range relationships with related objects
 
         to = _createNode(object);
 
         var prop = this.properties.find((elem) => {
-          return elem.property === subject;
+          return (elem.property === subject) && ((elem.domain === object) || (elem.range === object));
         });
 
-        newEdge.title = OntologyDataService.labelForEdge(prop.property);
-        relation = newEdge.identifier = prop.property;
+        if (!prop) {
+          from = _createNode(subject);
+        } else {
+          newEdge.title = OntologyDataService.labelForEdge(prop.property);
+          relation = newEdge.identifier = prop.property;
 
-        if (to.identifier === prop.domain) {
-          from = _createNode(prop.range);
-        } else if (to.identifier === prop.range) {
-          from = _createNode(prop.domain);
+          if (to.identifier === prop.domain) {
+            from = _createNode(prop.range);
+          } else if (to.identifier === prop.range) {
+            from = _createNode(prop.domain);
+          }
         }
       } else {
 
         from = _createNode(subject);
         to = _createNode(object);
 
-        if (label === 'isA') {      // layout updates for sub class relationships
+        if (label === 'isA') { // layout updates for sub class relationships
 
           newEdge.arrows = {
             to: {
