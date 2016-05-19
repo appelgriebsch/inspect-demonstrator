@@ -39,6 +39,7 @@
     this.searchText = '';
     this.baseURI = '';
     this.classes = [];
+    this.properties = [];
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
 
@@ -103,6 +104,21 @@
           };
           newEdge.dashes = true;
           newEdge.color = '#bad6f4';
+        } else if (label === 'property') {
+          var prop = this.properties.find((elem) => {
+            return elem.property === from.identifier;
+          });
+          newEdge.title = OntologyDataService.labelForEdge(prop.property);
+          newEdge.identifier = prop.property;
+
+          if (from.identifier === prop.domain) {
+            to = _createNode(prop.range);
+          }
+          else if (from.identifier === prop.range) {
+            to = _createNode(prop.domain);
+          }
+
+          newEdge.to = to.id;
         }
 
         this.data.edges.add(newEdge);
@@ -132,7 +148,7 @@
             });
 
             var mainNode = _findNode(queryString);
-            this.network.selectNodes( [ mainNode[0].id ], true);
+            this.network.selectNodes([mainNode[0].id], true);
             this.network.fit();
           });
         });
@@ -151,6 +167,9 @@
     };
 
     this.initialize = function() {
+
+      $scope.setBusy('Initializing...');
+
       _createGraph();
       var init = [OntologyDataService.initialize()];
       Promise.all(init).then(() => {
@@ -160,8 +179,14 @@
         return OntologyDataService.classes();
       }).then((result) => {
         this.classes = result;
-      }).catch((err) => {
+        return OntologyDataService.properties();
+      }).then((result => {
+        this.properties = result;
+        $scope.setReady(false);
+      })).catch((err) => {
         console.log(err);
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
       });
     };
 

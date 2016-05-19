@@ -116,8 +116,11 @@
       }
 
       if ((label === 'rdf:type') ||
-          (label === 'rdfs:subClassOf')) {
+        (label === 'rdfs:subClassOf')) {
         label = 'isA';
+      } else if ((label === 'rdfs:domain') ||
+        (label === 'rdfs:range')) {
+        label = 'property';
       }
 
       return label;
@@ -186,7 +189,10 @@
               reject(err);
             } else {
               var nodes = subjNodes.map((subjNode) => {
-                return { identifier: subjNode.subject, label: _labelForNode(subjNode.subject) };
+                return {
+                  identifier: subjNode.subject,
+                  label: _labelForNode(subjNode.subject)
+                };
               });
               resolve(nodes);
             }
@@ -202,6 +208,8 @@
 
           var pred = `${_uriForPrefix('rdf')}type`;
           var obj = `${_uriForPrefix('owl')}ObjectProperty`;
+          var domainProp = `${_uriForPrefix('rdfs')}domain`;
+          var rangeProp = `${_uriForPrefix('rdfs')}range`;
 
           db.get({
             predicate: pred,
@@ -210,10 +218,46 @@
             if (err) {
               reject(err);
             } else {
-              var nodes = subjNodes.map( (subjNode) => {
-                return _labelForEdge(subjNode.subject);
+              var nodes = [];
+              var promises = subjNodes.map((prop) => {
+                var p = new Promise((resolve2, reject2) => {
+                  db.get({
+                    subject: prop.subject
+                  }, function(err, objects) {
+                    if (err) {
+                      reject2(err);
+                    } else {
+                      objects.forEach((obj) => {
+                        var node = nodes.find((elem) => {
+                          return elem.property === obj.subject;
+                        }) || {
+                          property: obj.subject,
+                          isNew: true
+                        };
+
+                        if (obj.predicate === domainProp) {
+                          node.domain = obj.object;
+                        } else if (obj.predicate === rangeProp) {
+                          node.range = obj.object;
+                        }
+
+                        if (node.isNew) {
+                          delete node.isNew;
+                          nodes.push(node);
+                        }
+                      });
+                      resolve2();
+                    }
+                  });
+                });
+                return p;
               });
-              resolve(nodes);
+              Promise.all(promises).then(() => {
+                console.log(nodes);
+                resolve(nodes);
+              }).catch((err) => {
+                reject(err);
+              });
             }
           });
         });
