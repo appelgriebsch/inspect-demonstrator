@@ -37,6 +37,8 @@
 
     this.initialize = function() {
 
+      $scope.setBusy('Loading library data...');
+
       var init = [LibraryDataService.initialize()];
       Promise.all(init).then(() => {
         return LibraryDataService.library();
@@ -47,8 +49,12 @@
               item.doc.author = item.doc.author.join(', ');
             }
             this.items.push(item.doc);
+            $scope.setReady(false);
           });
         });
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
       });
     };
 

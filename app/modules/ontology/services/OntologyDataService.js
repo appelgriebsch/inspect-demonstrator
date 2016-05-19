@@ -253,7 +253,6 @@
                 return p;
               });
               Promise.all(promises).then(() => {
-                console.log(nodes);
                 resolve(nodes);
               }).catch((err) => {
                 reject(err);

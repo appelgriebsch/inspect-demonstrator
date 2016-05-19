@@ -82,47 +82,63 @@
       });
     };
 
-    var _createEdge = (from, to, identifier) => {
+    var _createGraphItems = (subject, object, predicate) => {
 
-      var edge = _findEdge(from, to, identifier);
+      var subjNode = _findNode(subject);
+      var objNode = _findNode(object);
+      var relation = predicate;
 
-      if (edge.length == 0) {
+      var from = subjNode ? subjNode[0] : undefined;
+      var to = objNode ? objNode[0] : undefined;
 
-        var label = OntologyDataService.labelForEdge(identifier);
-        var newEdge = {
-          from: from.id,
-          to: to.id,
-          identifier: identifier,
-          title: label
-        };
+      var label = OntologyDataService.labelForEdge(relation);
 
-        if (label === 'isA') {
+      var newEdge = {
+        identifier: relation,
+        title: label
+      };
+
+      if (label === 'property') {     // replace domain and range relationships with related objects
+
+        to = _createNode(object);
+
+        var prop = this.properties.find((elem) => {
+          return elem.property === subject;
+        });
+
+        newEdge.title = OntologyDataService.labelForEdge(prop.property);
+        relation = newEdge.identifier = prop.property;
+
+        if (to.identifier === prop.domain) {
+          from = _createNode(prop.range);
+        } else if (to.identifier === prop.range) {
+          from = _createNode(prop.domain);
+        }
+      } else {
+
+        from = _createNode(subject);
+        to = _createNode(object);
+
+        if (label === 'isA') {      // layout updates for sub class relationships
+
           newEdge.arrows = {
             to: {
               scaleFactor: 0.5
             }
           };
+
           newEdge.dashes = true;
           newEdge.color = '#bad6f4';
-        } else if (label === 'property') {
-          var prop = this.properties.find((elem) => {
-            return elem.property === from.identifier;
-          });
-          newEdge.title = OntologyDataService.labelForEdge(prop.property);
-          newEdge.identifier = prop.property;
-
-          if (from.identifier === prop.domain) {
-            to = _createNode(prop.range);
-          }
-          else if (from.identifier === prop.range) {
-            to = _createNode(prop.domain);
-          }
-
-          newEdge.to = to.id;
         }
+      }
 
+      var edge = _findEdge(from, to, relation);
+
+      if (edge.length == 0) {
+        newEdge.from = from.id;
+        newEdge.to = to.id;
         this.data.edges.add(newEdge);
-        edge = _findEdge(from, to, identifier);
+        edge = _findEdge(from, to, relation);
       }
 
       return edge[0];
@@ -139,11 +155,7 @@
             results.forEach((item) => {
 
               if (!item.object.startsWith(owlURI)) {
-
-                var subjNode = _createNode(item.subject);
-                var objNode = _createNode(item.object);
-
-                _createEdge(subjNode, objNode, item.predicate);
+                _createGraphItems(item.subject, item.object, item.predicate);
               }
             });
 
@@ -168,7 +180,7 @@
 
     this.initialize = function() {
 
-      $scope.setBusy('Initializing...');
+      $scope.setBusy('Loading ontology data...');
 
       _createGraph();
       var init = [OntologyDataService.initialize()];
@@ -184,7 +196,6 @@
         this.properties = result;
         $scope.setReady(false);
       })).catch((err) => {
-        console.log(err);
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
       });
