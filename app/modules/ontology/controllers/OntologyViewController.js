@@ -52,7 +52,7 @@
       });
     };
 
-    var _createNode = (identifier) => {
+    var _createNode = (identifier, options) => {
 
       var node = _findNode(identifier);
 
@@ -66,9 +66,14 @@
           title: identifier
         };
 
+        if ((options) && (options.color)) {
+          newNode.color = options.color;
+        }
+
         this.data.nodes.add(newNode);
         node = _findNode(identifier);
       }
+
 
       return node[0];
     };
@@ -80,6 +85,15 @@
           return ((item.from == from.id) && (item.to == to.id) && (item.identifier === identifier));
         }
       });
+    };
+
+    var _hasProperties = (object) => {
+
+      var props = this.properties.find((elem) => {
+        return (elem.domain === object) || (elem.range === object);
+      });
+
+      return (props !== undefined);
     };
 
     var _createGraphItems = (subject, object, predicate) => {
@@ -98,6 +112,9 @@
         title: label
       };
 
+      var optionsFrom = {};
+      var optionsTo = {};
+
       if (label === 'property') { // replace domain and range relationships with related objects
 
         to = _createNode(object);
@@ -109,7 +126,8 @@
         if (!prop) {
           from = _createNode(subject);
         } else {
-          newEdge.title = OntologyDataService.labelForEdge(prop.property);
+
+          newEdge.label = newEdge.title = OntologyDataService.labelForEdge(prop.property);
           relation = newEdge.identifier = prop.property;
 
           if (to.identifier === prop.domain) {
@@ -120,9 +138,6 @@
         }
       } else {
 
-        from = _createNode(subject);
-        to = _createNode(object);
-
         if (label === 'isA') { // layout updates for sub class relationships
 
           newEdge.arrows = {
@@ -132,8 +147,19 @@
           };
 
           newEdge.dashes = true;
-          newEdge.color = '#bad6f4';
+          newEdge.color = '#b6c9de';
+
+          if (!_hasProperties(subject)) {
+            optionsFrom.color = newEdge.color;
+          }
+
+          if (!_hasProperties(object)) {
+            optionsTo.color = newEdge.color;
+          }
         }
+
+        from = _createNode(subject, optionsFrom);
+        to = _createNode(object, optionsTo);
       }
 
       var edge = _findEdge(from, to, relation);
