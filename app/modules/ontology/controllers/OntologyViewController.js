@@ -8,17 +8,17 @@
       nodes: {
         shape: 'dot',
         scaling: {
-          min: 20,
+          min: 10,
           max: 30,
           label: {
-            min: 14,
+            min: 10,
             max: 30,
             drawThreshold: 9,
-            maxVisible: 20
+            maxVisible: 15
           }
         },
         font: {
-          size: 14,
+          size: 12,
           face: 'Helvetica Neue, Helvetica, Arial'
         }
       },
@@ -70,6 +70,10 @@
           newNode.color = options.color;
         }
 
+        if ((options) && (options.value)) {
+          newNode.value = options.value;
+        }
+
         this.data.nodes.add(newNode);
         node = _findNode(identifier);
       }
@@ -117,25 +121,32 @@
 
       if (label === 'property') { // replace domain and range relationships with related objects
 
-        to = _createNode(object);
+        to = _createNode(object, optionsTo);
 
         var prop = this.properties.find((elem) => {
           return (elem.property === subject) && ((elem.domain === object) || (elem.range === object));
         });
 
         if (!prop) {
-          from = _createNode(subject);
+          from = _createNode(subject, optionsFrom);
         } else {
 
           newEdge.label = newEdge.title = OntologyDataService.labelForEdge(prop.property);
           relation = newEdge.identifier = prop.property;
 
           if (to.identifier === prop.domain) {
-            from = _createNode(prop.range);
+            from = _createNode(prop.range, optionsFrom);
           } else if (to.identifier === prop.range) {
-            from = _createNode(prop.domain);
+            from = _createNode(prop.domain, optionsFrom);
           }
         }
+
+        // check if reverse edge exists already
+        var reverseEdge = _findEdge(to, from, relation);
+        if (reverseEdge.length > 0) {
+          newEdge = undefined;
+        }
+
       } else {
 
         if (label === 'isA') { // layout updates for sub class relationships
@@ -151,10 +162,12 @@
 
           if (!_hasProperties(subject)) {
             optionsFrom.color = newEdge.color;
+            optionsFrom.value = 10;
           }
 
           if (!_hasProperties(object)) {
             optionsTo.color = newEdge.color;
+            optionsTo.value = 10;
           }
         }
 
@@ -162,16 +175,21 @@
         to = _createNode(object, optionsTo);
       }
 
-      var edge = _findEdge(from, to, relation);
+      if (newEdge) {
 
-      if (edge.length == 0) {
-        newEdge.from = from.id;
-        newEdge.to = to.id;
-        this.data.edges.add(newEdge);
-        edge = _findEdge(from, to, relation);
+        var edge = _findEdge(from, to, relation);
+
+        if (edge.length == 0) {
+          newEdge.from = from.id;
+          newEdge.to = to.id;
+          this.data.edges.add(newEdge);
+          edge = _findEdge(from, to, relation);
+        }
+
+        return edge[0];
       }
 
-      return edge[0];
+      return undefined;
     };
 
     var _loadNode = (nodeLabel) => {

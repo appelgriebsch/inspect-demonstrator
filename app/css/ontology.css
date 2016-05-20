@@ -1,0 +1,14 @@
+md-autocomplete[md-floating-label].transparent-blur, .transparent-blur {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.sticky-top {
+  overflow: hidden;
+  position: fixed;
+  top: 7em;
+  left: 5%;
+  width: 90%;
+  z-index: 1;
+  margin-top: -2em;
+  padding-top: 2em;
+}

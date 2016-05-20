@@ -26,17 +26,8 @@
         .catch((err) => {
           console.log('leveldb-adapter is not working, fallback to SQLite (websql)');
           console.log(err);
-          require('pouchdb/extras/websql');
-          settings.adapter = 'websql';
-          new PouchDB(dbName, settings)
-          .then((result2) => {
-            resolve(result2);
-          })
-          .catch((err2) => {
-            console.log('websql-adapter is also not working. have to stop!');
-            console.log(err2);
-            reject(err2);
-          });
+          alert(`FATAL: ${err.name}: ${err.message}`);
+          app.exit(-1);
         });
       });
 
