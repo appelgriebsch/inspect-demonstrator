@@ -132,6 +132,7 @@
         } else {
 
           newEdge.label = newEdge.title = OntologyDataService.labelForEdge(prop.property);
+          newEdge.font = { align: 'top' };
           relation = newEdge.identifier = prop.property;
 
           if (to.identifier === prop.domain) {

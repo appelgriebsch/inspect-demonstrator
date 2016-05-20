@@ -43,7 +43,6 @@
       Promise.all(init).then(() => {
         return LibraryDataService.library();
       }).then((result) => {
-        $scope.setReady(false);
         $q.when(true).then(() => {
           result.rows.forEach((item) => {
             if (Array.isArray(item.doc.author)) {
@@ -52,6 +51,9 @@
             this.items.push(item.doc);
           });
         });
+
+        $scope.setReady(false);
+        
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
