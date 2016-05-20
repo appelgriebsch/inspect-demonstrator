@@ -56,6 +56,6 @@
 
   angular.module('electron-app').service('LevelGraphService', [LevelGraphService]);
 
-  angular.module('electron-app').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', '$mdToast', 'modules', 'ActivityService', ShellController]);
+  angular.module('electron-app').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', 'modules', 'ActivityService', ShellController]);
 
 })(global.angular);

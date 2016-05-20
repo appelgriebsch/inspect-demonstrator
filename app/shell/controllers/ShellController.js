@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function ShellController($scope, $log, $q, $mdSidenav, $mdToast, modulesProvider, ActivityService) {
+  function ShellController($scope, $log, $q, $mdSidenav, modulesProvider, ActivityService) {
 
     var app = require('electron').remote.app;
     var appCfg = app.sysConfig();
@@ -31,11 +31,9 @@
     };
 
     $scope.notify = (title, message) => {
-
-      $mdToast.show({
-        template: `<md-toast><span flex>${message}</span></md-toast>`,
-        position: 'bottom right',
-        hideDelay: 2000
+      new Notification(title, {
+        body: message,
+        timeout: 2000
       });
     };
 
@@ -76,7 +74,8 @@
     this.initialize = function() {
       this.modules = modulesProvider.modules;
       return Promise.all([
-        ActivityService.initialize()
+        ActivityService.initialize(),
+        Notification.requestPermission()
       ]);
     };
 

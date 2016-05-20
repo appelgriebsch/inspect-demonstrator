@@ -116,7 +116,8 @@
       }
 
       if ((label === 'rdf:type') ||
-        (label === 'rdfs:subClassOf')) {
+        (label === 'rdfs:subClassOf') ||
+        (label === 'rdfs:subPropertyOf')) {
         label = 'isA';
       } else if ((label === 'rdfs:domain') ||
         (label === 'rdfs:range')) {
