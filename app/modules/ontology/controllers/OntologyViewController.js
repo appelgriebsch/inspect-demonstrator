@@ -74,6 +74,10 @@
           newNode.value = options.value;
         }
 
+        if ((options) && (options.comment)) {
+          newNode.title = options.comment;
+        }
+
         this.data.nodes.add(newNode);
         node = _findNode(identifier);
       }
@@ -148,6 +152,9 @@
           newEdge = undefined;
         }
 
+      } else if (label === 'comment') {
+        this.data.nodes.update({ id: from.id, title: object });
+        newEdge = undefined;
       } else {
 
         if (label === 'isA') { // layout updates for sub class relationships

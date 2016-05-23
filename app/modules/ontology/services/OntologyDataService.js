@@ -122,6 +122,8 @@
       } else if ((label === 'rdfs:domain') ||
         (label === 'rdfs:range')) {
         label = 'property';
+      } else if (label === 'rdfs:comment') {
+        label = 'comment';
       }
 
       return label;
