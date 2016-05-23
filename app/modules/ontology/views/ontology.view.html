@@ -12,5 +12,18 @@
      <span md-highlight-text="ctrl.searchText">{{ item.label }}</span>
    </md-item-template>
   </md-autocomplete>
+  <md-content class="sidebar" layout-padding layout-sm="column" layout-wrap layout="column">
+    <md-button class='md-icon-button sidebar-btn' ng-click="ctl.openSidebar()" ng-if="!ctl.sidebarOpened">
+      <md-icon>chevron_right</md-icon>
+    </md-button>
+    <div ng-if="ctl.sidebarOpened">
+      <div layout-align="space-between start" layout-fill layout="row">
+        <h3>Ontology Information</h3>
+        <md-button class='md-icon-button sidebar-btn-opened' ng-click="ctl.closeSidebar()">
+          <md-icon>chevron_left</md-icon>
+        </md-button>
+      </div>
+    </div>
+  </md-content>
   <div id="ontology-graph" flex layout-fill></div>
 </div>

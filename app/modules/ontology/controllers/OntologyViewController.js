@@ -40,6 +40,8 @@
     this.baseURI = '';
     this.classes = [];
     this.properties = [];
+    this.sidebarOpened = false;
+
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
 
@@ -292,7 +294,20 @@
         _createGraph();
       });
     };
+    
+    this.openSidebar = function() {
+      $q.when(true).then(() => {
+        angular.element(document.querySelector('.sidebar')).addClass('sidebar-open');
+        this.sidebarOpened = true;
+      });
+    };
 
+    this.closeSidebar = function() {
+      $q.when(true).then(() => {
+        angular.element(document.querySelector('.sidebar')).removeClass('sidebar-open');
+        this.sidebarOpened = false;
+      });
+    };
   }
 
   module.exports = OntologyViewController;
