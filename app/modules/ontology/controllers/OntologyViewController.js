@@ -36,10 +36,8 @@
 
     this.network = undefined;
     this.query = undefined;
+    this.ontology = undefined;
     this.searchText = '';
-    this.baseURI = '';
-    this.classes = [];
-    this.properties = [];
     this.sidebarOpened = false;
 
     this.state = $state.$current;
@@ -99,7 +97,7 @@
 
     var _hasProperties = (object) => {
 
-      var props = this.properties.find((elem) => {
+      var props = this.ontology.properties.find((elem) => {
         return (elem.domain === object) || (elem.range === object);
       });
 
@@ -129,7 +127,7 @@
 
         to = _createNode(object, optionsTo);
 
-        var prop = this.properties.find((elem) => {
+        var prop = this.ontology.properties.find((elem) => {
           return (elem.property === subject) && ((elem.domain === object) || (elem.range === object));
         });
 
@@ -204,7 +202,7 @@
 
     var _loadNode = (nodeLabel) => {
 
-      var queryString = nodeLabel.startsWith('http://') ? nodeLabel : `${this.baseURI}#${nodeLabel}`;
+      var queryString = nodeLabel.startsWith('http://') ? nodeLabel : `${this.ontology.uri}${nodeLabel}`;
       var owlURI = OntologyDataService.uriForPrefix('owl');
 
       OntologyDataService.node(queryString)
@@ -245,15 +243,9 @@
       Promise.all(init).then(() => {
         return OntologyDataService.ontology();
       }).then((result) => {
-        this.baseURI = result;
-        return OntologyDataService.classes();
-      }).then((result) => {
-        this.classes = result;
-        return OntologyDataService.properties();
-      }).then((result => {
-        this.properties = result;
+        this.ontology = result;
         $scope.setReady(false);
-      })).catch((err) => {
+      }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
       });
@@ -262,7 +254,7 @@
     this.findTerm = (searchText) => {
 
       var foundNodes = [];
-      this.classes.forEach((entry) => {
+      this.ontology.classes.forEach((entry) => {
         var idx = entry.label.search(new RegExp(searchText, 'i'));
         if (idx != -1) {
           foundNodes.push(entry);
@@ -294,7 +286,7 @@
         _createGraph();
       });
     };
-    
+
     this.openSidebar = function() {
       $q.when(true).then(() => {
         angular.element(document.querySelector('.sidebar')).addClass('sidebar-open');

@@ -17,12 +17,28 @@
       <md-icon>chevron_right</md-icon>
     </md-button>
     <div ng-if="ctl.sidebarOpened">
-      <div layout-align="space-between start" layout-fill layout="row">
-        <h3>Ontology Information</h3>
+      <div layout-align="space-between start" layout="row" layout-fill>
+        <h3>{{ ctl.ontology.label }}</h3>
         <md-button class='md-icon-button sidebar-btn-opened' ng-click="ctl.closeSidebar()">
           <md-icon>chevron_left</md-icon>
         </md-button>
       </div>
+      <md-input-container layout-fill>
+        <label>Title</label>
+        <textarea ng-model="ctl.ontology.title" readonly></textarea>
+      </md-input-container>
+      <md-input-container layout-fill>
+        <label>Description</label>
+        <textarea ng-model="ctl.ontology.comment" readonly></textarea>
+      </md-input-container>
+      <md-input-container layout-fill>
+        <label>Author</label>
+        <input ng-model="ctl.ontology.creator" readonly></input>
+      </md-input-container>
+      <md-input-container layout-fill>
+        <label>Version</label>
+        <input ng-model="ctl.ontology.version" readonly></input>
+      </md-input-container>
     </div>
   </md-content>
   <div id="ontology-graph" flex layout-fill></div>

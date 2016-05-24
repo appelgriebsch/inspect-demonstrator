@@ -18,6 +18,9 @@
       prefix: 'rdfs',
       uri: 'http://www.w3.org/2000/01/rdf-schema#'
     }, {
+      prefix: 'dc',
+      uri: 'http://purl.org/dc/elements/1.1/'
+    }, {
       prefix: 'xml',
       uri: 'http://www.w3.org/XML/1998/namespace'
     }, {
@@ -93,7 +96,7 @@
       var label = identifier;
 
       if (identifier.startsWith('http://') || identifier.startsWith('https://')) {
-        var idx = identifier.lastIndexOf('#') + 1;
+        var idx = identifier.lastIndexOf('#') > -1 ? identifier.lastIndexOf('#') + 1 : identifier.lastIndexOf('/') + 1;
         var uri = identifier.substr(0, idx);
         var name = identifier.substr(idx);
         var prefix = _prefixForURI(uri);
@@ -108,7 +111,7 @@
       var label = identifier;
 
       if (identifier.startsWith('http://') || identifier.startsWith('https://')) {
-        var idx = identifier.lastIndexOf('#') + 1;
+        var idx = identifier.lastIndexOf('#') > -1 ? identifier.lastIndexOf('#') + 1 : identifier.lastIndexOf('/') + 1;
         var uri = identifier.substr(0, idx);
         var name = identifier.substr(idx);
         var prefix = _prefixForURI(uri);
@@ -124,9 +127,106 @@
         label = 'property';
       } else if (label === 'rdfs:comment') {
         label = 'comment';
+      } else if (label === 'rdfs:label') {
+        label = 'label';
+      } else if (label === 'dc:title') {
+        label = 'title';
+      } else if (label === 'dc:creator') {
+        label = 'creator';
+      } else if (label === 'owl:versionInfo') {
+        label = 'version';
       }
 
       return label;
+    };
+
+    var _loadClasses = function() {
+
+      var promise = new Promise((resolve, reject) => {
+
+        var pred = `${_uriForPrefix('rdf')}type`;
+        var obj = `${_uriForPrefix('owl')}Class`;
+
+        db.get({
+          predicate: pred,
+          object: obj
+        }, function(err, subjNodes) {
+          if (err) {
+            reject(err);
+          } else {
+            var nodes = subjNodes.map((subjNode) => {
+              return {
+                identifier: subjNode.subject,
+                label: _labelForNode(subjNode.subject)
+              };
+            });
+            resolve(nodes);
+          }
+        });
+      });
+
+      return promise;
+    };
+
+    var _loadProperties = function() {
+
+      var promise = new Promise((resolve, reject) => {
+
+        var pred = `${_uriForPrefix('rdf')}type`;
+        var obj = `${_uriForPrefix('owl')}ObjectProperty`;
+        var domainProp = `${_uriForPrefix('rdfs')}domain`;
+        var rangeProp = `${_uriForPrefix('rdfs')}range`;
+
+        db.get({
+          predicate: pred,
+          object: obj
+        }, function(err, subjNodes) {
+          if (err) {
+            reject(err);
+          } else {
+            var nodes = [];
+            var promises = subjNodes.map((prop) => {
+              var p = new Promise((resolve2, reject2) => {
+                db.get({
+                  subject: prop.subject
+                }, function(err, objects) {
+                  if (err) {
+                    reject2(err);
+                  } else {
+                    var domains = [];
+                    var ranges = [];
+                    objects.forEach((obj) => {
+                      if (obj.predicate === domainProp) {
+                        domains.push(obj.object);
+                      } else if (obj.predicate === rangeProp) {
+                        ranges.push(obj.object);
+                      }
+                    });
+                    domains.forEach((domain) => {
+                      ranges.forEach((range) => {
+                        nodes.push({
+                          domain: domain,
+                          property: prop.subject,
+                          range: range
+                        });
+                      });
+                    });
+                    resolve2();
+                  }
+                });
+              });
+              return p;
+            });
+            Promise.all(promises).then(() => {
+              resolve(nodes);
+            }).catch((err) => {
+              reject(err);
+            });
+          }
+        });
+      });
+
+      return promise;
     };
 
     return {
@@ -163,103 +263,44 @@
 
           _loadNode(ontologyNode).then((result) => {
             if (result.length > 0) {
+              var ontology = {
+                prefix: '',
+                uri: `${result[0].subject}#`,
+                subject: result[0].subject
+              };
               knownURIs.push({
-                prefix: '_',
-                uri: `${result[0].subject}#`
+                prefix: ontology.prefix,
+                uri: ontology.uri
               });
-            }
-            resolve(result[0].subject);
-          }).catch((err) => {
-            reject(err);
-          });
-        });
-
-        return promise;
-      },
-
-      classes: function() {
-
-        var promise = new Promise((resolve, reject) => {
-
-          var pred = `${_uriForPrefix('rdf')}type`;
-          var obj = `${_uriForPrefix('owl')}Class`;
-
-          db.get({
-            predicate: pred,
-            object: obj
-          }, function(err, subjNodes) {
-            if (err) {
-              reject(err);
-            } else {
-              var nodes = subjNodes.map((subjNode) => {
-                return {
-                  identifier: subjNode.subject,
-                  label: _labelForNode(subjNode.subject)
-                };
-              });
-              resolve(nodes);
-            }
-          });
-        });
-
-        return promise;
-      },
-
-      properties: function() {
-
-        var promise = new Promise((resolve, reject) => {
-
-          var pred = `${_uriForPrefix('rdf')}type`;
-          var obj = `${_uriForPrefix('owl')}ObjectProperty`;
-          var domainProp = `${_uriForPrefix('rdfs')}domain`;
-          var rangeProp = `${_uriForPrefix('rdfs')}range`;
-
-          db.get({
-            predicate: pred,
-            object: obj
-          }, function(err, subjNodes) {
-            if (err) {
-              reject(err);
-            } else {
-              var nodes = [];
-              var promises = subjNodes.map((prop) => {
-                var p = new Promise((resolve2, reject2) => {
-                  db.get({
-                    subject: prop.subject
-                  }, function(err, objects) {
-                    if (err) {
-                      reject2(err);
-                    } else {
-                      var domains = [];
-                      var ranges = [];
-                      objects.forEach((obj) => {
-                        if (obj.predicate === domainProp) {
-                          domains.push(obj.object);
-                        } else if (obj.predicate === rangeProp) {
-                          ranges.push(obj.object);
-                        }
-                      });
-                      domains.forEach((domain) => {
-                        ranges.forEach((range) => {
-                          nodes.push({
-                            domain: domain,
-                            property: prop.subject,
-                            range: range
-                          });
-                        });
-                      });
-                      resolve2();
-                    }
-                  });
+              _loadNode(ontology.subject).then((entries) => {
+                entries.forEach((meta) => {
+                  var info = _labelForEdge(meta.predicate);
+                  if (info === 'label') {
+                    ontology.label = meta.object;
+                  } else if (info === 'comment') {
+                    ontology.comment = meta.object;
+                  } else if (info === 'title') {
+                    ontology.title = meta.object;
+                  } else if (info === 'creator') {
+                    ontology.creator = meta.object;
+                  } else if (info === 'version') {
+                    ontology.version = meta.object;
+                  }
                 });
-                return p;
-              });
-              Promise.all(promises).then(() => {
-                resolve(nodes);
+                return _loadClasses();
+              }).then((classes) => {
+                ontology.classes = classes;
+                return _loadProperties();
+              }).then((props) => {
+                ontology.properties = props;
+                console.log(ontology);
+                resolve(ontology);
               }).catch((err) => {
                 reject(err);
               });
             }
+          }).catch((err) => {
+            reject(err);
           });
         });
 
