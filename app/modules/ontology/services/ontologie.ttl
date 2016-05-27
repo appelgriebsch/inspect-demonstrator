@@ -16,11 +16,8 @@
 @base <http://www.AMSL/GDK/ontologie> .
 
 <http://www.AMSL/GDK/ontologie> rdf:type owl:Ontology ;
-        rdfs:comment "Used to help investigation of financial crime" ;
-        dc:title "The Vocabulary for Semantic Investigation of Skimming Frauds" ;
         owl:versionInfo "V 0.1, Release 2016-05-21" ;
-        dc:creator "Ronny Merkel" ;
-        rdfs:label "Anti-Skimming Ontology" .
+        dc:creator "Ronny Merkel" .
 
 #################################################################
 #
