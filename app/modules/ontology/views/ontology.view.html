@@ -39,6 +39,14 @@
         <label>Version</label>
         <input ng-model="ctl.ontology.version" readonly></input>
       </md-input-container>
+      <md-input-container layout-fill>
+        <label>Selected Element</label>
+        <input ng-model="selectedElement.label" readonly></input>
+      </md-input-container>
+      <md-input-container layout-fill>
+        <label>Description</label>
+        <input ng-model="selectedElement.title" readonly></input>
+      </md-input-container>
     </div>
   </md-content>
   <div id="ontology-graph" flex layout-fill></div>

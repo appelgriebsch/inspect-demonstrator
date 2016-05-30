@@ -37,6 +37,7 @@
     this.network = undefined;
     this.query = undefined;
     this.ontology = undefined;
+    this.selectedElement = undefined;
     this.searchText = '';
     this.sidebarOpened = false;
 
@@ -153,6 +154,7 @@
         }
 
       } else if (label === 'comment') {
+        from = _createNode(subject, optionsFrom);
         this.data.nodes.update({ id: from.id, title: object });
         newEdge = undefined;
       } else {
@@ -217,6 +219,7 @@
 
             var mainNode = _findNode(queryString);
             this.network.selectNodes([mainNode[0].id], true);
+            $scope.selectedElement = mainNode[0];
             this.network.fit();
           });
         });
@@ -232,6 +235,25 @@
         var selectedNode = this.data.nodes.get(selectedNodeId);
         _loadNode(selectedNode.identifier);
       });
+      // when a node is selected all incoming and outgoing edges of that node
+      // are selected too, that's why this event is used for displaying the
+      // meta data of a selected item
+      this.network.on('select', (params) => {
+        if ((params.nodes !== undefined) && (params.nodes.length > 0)) {
+          var selectedNodeId = params.nodes[0];
+          $scope.selectedElement =  this.data.nodes.get(selectedNodeId);
+          $scope.$apply();
+          return;
+        }
+        if ((params.edges !== undefined) && (params.edges.length > 0)) {
+          var selectedEdgeId = params.edges[0];
+          $scope.selectedElement = this.data.edges.get(selectedEdgeId);
+          $scope.$apply();
+          return;
+        }
+
+      });
+
     };
 
     this.initialize = function() {
