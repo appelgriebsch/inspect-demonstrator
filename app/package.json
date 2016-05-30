@@ -42,6 +42,8 @@
     "angular-ui-router": "^0.3.0",
     "animate.css": "^3.4.0",
     "asar": "^0.11.0",
+    "duet": "^4.0.0",
+    "duet-channel": "^1.0.0",
     "electron-debug": "^1.0.0",
     "filenamify-url": "^1.0.0",
     "geopouch": "^2.0.0",
