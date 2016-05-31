@@ -13,6 +13,18 @@
     this.statusMessage = '';
     this.isDirty = false;
     this.fabOpen = false;
+    this.activeMode = false;
+    this.activeModeLabel = '';
+
+    $scope.setModeLabel = (label) => {
+      $q.when(true).then(() => {
+        this.activeModeLabel = label;
+      });
+    };
+
+    $scope.getActiveMode = () => {
+      return this.activeMode;
+    };
 
     $scope.setBusy = (msg) => {
       $q.when(true).then(() => {

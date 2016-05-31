@@ -257,11 +257,22 @@
 
     };
 
+    var _activateMode = (mode) => {
+      if (mode) {
+        $scope.setModeLabel('Incidents');
+      } else {
+        $scope.setModeLabel('Model');
+      }
+      this.reset();
+    };
+
     this.initialize = function() {
 
       $scope.setBusy('Loading ontology data...');
 
       _createGraph();
+      _activateMode($scope.getActiveMode());
+
       var init = [OntologyDataService.initialize()];
       Promise.all(init).then(() => {
         return OntologyDataService.ontology();
@@ -303,6 +314,8 @@
     this.reset = () => {
       $q.when(true).then(() => {
         this.query = '';
+        this.searchText = '';
+        this.selectedElement = undefined;
         this.data.nodes.clear();
         this.data.edges.clear();
         this.network.destroy();
@@ -323,6 +336,10 @@
         this.sidebarOpened = false;
       });
     };
+
+    $scope.$on('mode-changed', (evt, mode) => {
+      _activateMode(mode);
+    });
   }
 
   module.exports = OntologyViewController;
