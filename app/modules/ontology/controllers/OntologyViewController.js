@@ -182,6 +182,9 @@
             optionsTo.color = newEdge.color;
             optionsTo.value = 10;
           }
+        } else {
+          newEdge.label = newEdge.title = OntologyDataService.labelForEdge(predicate);
+          newEdge.font = { align: 'top' };
         }
 
         from = _createNode(subject, optionsFrom);
@@ -228,13 +231,15 @@
     };
 
     var _loadInstanceNodes = () => {
-      this.ontology.instances.forEach((instance) => {
-        if (instance.object) {
-          console.log(instance);
-          _createGraphItems(instance.subject, instance.predicate, instance.object);
-        }
+      $q.when(true).then(() => {
+        this.ontology.instances.forEach((instance) => {
+          if (instance.object) {
+            console.log(instance);
+            _createGraphItems(instance.subject, instance.object, instance.predicate);
+          }
+        });
+        this.network.fit();
       });
-      this.network.fit();
     };
 
     var _createGraph = () => {
