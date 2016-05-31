@@ -157,6 +157,9 @@
         from = _createNode(subject, optionsFrom);
         this.data.nodes.update({ id: from.id, title: object });
         newEdge = undefined;
+      } else if (label === 'internal') {
+        console.log(subject, predicate, object);
+        newEdge = undefined;
       } else {
 
         if (label === 'isA') { // layout updates for sub class relationships
@@ -219,7 +222,7 @@
 
             var mainNode = _findNode(queryString);
             this.network.selectNodes([mainNode[0].id], true);
-            $scope.selectedElement = mainNode[0];
+            this.selectedElement = mainNode[0];
             this.network.fit();
           });
         });
@@ -241,14 +244,12 @@
       this.network.on('select', (params) => {
         if ((params.nodes !== undefined) && (params.nodes.length > 0)) {
           var selectedNodeId = params.nodes[0];
-          $scope.selectedElement =  this.data.nodes.get(selectedNodeId);
-          $scope.$apply();
+          this.selectedElement =  this.data.nodes.get(selectedNodeId);
           return;
         }
         if ((params.edges !== undefined) && (params.edges.length > 0)) {
           var selectedEdgeId = params.edges[0];
-          $scope.selectedElement = this.data.edges.get(selectedEdgeId);
-          $scope.$apply();
+          this.selectedElement = this.data.edges.get(selectedEdgeId);
           return;
         }
 

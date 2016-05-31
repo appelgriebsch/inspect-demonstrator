@@ -135,6 +135,8 @@
         label = 'creator';
       } else if (label === 'owl:versionInfo') {
         label = 'version';
+      } else if (label === 'rdf:first') {
+        label = 'internal';
       }
 
       return label;
