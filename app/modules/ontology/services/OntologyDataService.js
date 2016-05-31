@@ -170,6 +170,67 @@
       return promise;
     };
 
+    var _loadInstances = function() {
+
+      var promise = new Promise((resolve, reject) => {
+
+        var pred = `${_uriForPrefix('rdf')}type`;
+        var obj = `${_uriForPrefix('owl')}NamedIndividual`;
+
+        db.get({
+          predicate: pred,
+          object: obj
+        }, function(err, subjNodes) {
+          if (err) {
+            reject(err);
+          } else {
+            var nodes = subjNodes.map((subjNode) => {
+              return {
+                identifier: subjNode.subject,
+                label: _labelForNode(subjNode.subject)
+              };
+            });
+
+            var p = [];
+
+            nodes.forEach((node) => {
+              p.push(_loadNode(node.identifier));
+            });
+
+            var instances = [];
+
+            Promise.all(p).then((results) => {
+              results.forEach((result) => {
+                var instance = { inherits: [] };
+                for (var i = 0; i < result.length; ++i) {
+                  var prefix = _labelForNode(result[i].object);
+                  var label = _labelForEdge(result[i].predicate);
+                  if (prefix === 'owl:NamedIndividual') {
+                    continue;
+                  } else if (label === 'isA') {
+                    instance.subject = result[i].subject;
+                    instance.inherits.push(result[i].object);
+                  } else {
+                    instance.subject = result[i].subject;
+                    instance.predicate = result[i].predicate;
+                    instance.object = result[i].object;
+                  }
+                }
+                if (instance.subject) {
+                  instances.push(instance);
+                }
+              });
+              resolve(instances);
+            }).catch((err) => {
+              reject(err);
+            });
+          }
+        });
+      });
+
+      return promise;
+    };
+
     var _loadProperties = function() {
 
       var promise = new Promise((resolve, reject) => {
@@ -295,6 +356,9 @@
                 return _loadProperties();
               }).then((props) => {
                 ontology.properties = props;
+                return _loadInstances();
+              }).then((instances) => {
+                ontology.instances = instances;
                 console.log(ontology);
                 resolve(ontology);
               }).catch((err) => {
