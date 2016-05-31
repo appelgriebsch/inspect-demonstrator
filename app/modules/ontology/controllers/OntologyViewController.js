@@ -205,7 +205,7 @@
       return undefined;
     };
 
-    var _loadNode = (nodeLabel) => {
+    var _loadModelNode = (nodeLabel) => {
 
       var queryString = nodeLabel.startsWith('http://') ? nodeLabel : `${this.ontology.uri}${nodeLabel}`;
       var owlURI = OntologyDataService.uriForPrefix('owl');
@@ -214,7 +214,6 @@
         .then((results) => {
           $q.when(true).then(() => {
             results.forEach((item) => {
-
               if (!item.object.startsWith(owlURI)) {
                 _createGraphItems(item.subject, item.object, item.predicate);
               }
@@ -228,16 +227,21 @@
         });
     };
 
+    var _loadInstanceNodes = () => {
+      this.ontology.instances.forEach((instance) => {
+        if (instance.object) {
+          console.log(instance);
+          _createGraphItems(instance.subject, instance.predicate, instance.object);
+        }
+      });
+      this.network.fit();
+    };
+
     var _createGraph = () => {
 
       var container = document.getElementById('ontology-graph');
       this.network = new vis.Network(container, this.data, this.graphOptions);
 
-      this.network.on('selectNode', (params) => {
-        var selectedNodeId = params.nodes[0];
-        var selectedNode = this.data.nodes.get(selectedNodeId);
-        _loadNode(selectedNode.identifier);
-      });
       // when a node is selected all incoming and outgoing edges of that node
       // are selected too, that's why this event is used for displaying the
       // meta data of a selected item
@@ -252,18 +256,29 @@
           this.selectedElement = this.data.edges.get(selectedEdgeId);
           return;
         }
-
       });
-
     };
 
     var _activateMode = (mode) => {
+
+      this.reset();
+
       if (mode) {
         $scope.setModeLabel('Incidents');
+        if (this.network) {
+          this.network.removeAllListeners('selectNode');
+          _loadInstanceNodes();
+        }
       } else {
         $scope.setModeLabel('Model');
+        if (this.network) {
+          this.network.on('selectNode', (params) => {
+            var selectedNodeId = params.nodes[0];
+            var selectedNode = this.data.nodes.get(selectedNodeId);
+            _loadModelNode(selectedNode.identifier);
+          });
+        }
       }
-      this.reset();
     };
 
     this.initialize = function() {
@@ -303,7 +318,7 @@
       var identifier = this.query ? this.query.identifier : '';
 
       if (identifier.length > 0) {
-        _loadNode(identifier);
+        _loadModelNode(identifier);
       } else {
         this.reset();
       }
@@ -314,12 +329,9 @@
     this.reset = () => {
       $q.when(true).then(() => {
         this.query = '';
-        this.searchText = '';
         this.selectedElement = undefined;
         this.data.nodes.clear();
         this.data.edges.clear();
-        this.network.destroy();
-        _createGraph();
       });
     };
 
