@@ -5,5 +5,9 @@
     </md-button>
   </md-fab-trigger>
   <md-fab-actions>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('add-data', $event)">
+      <md-tooltip md-direction="left">Add Data</md-tooltip>
+      <md-icon>add</md-icon>
+    </md-button>
   </md-fab-actions>
 </md-fab-speed-dial>

@@ -229,6 +229,35 @@
       return promise;
     };
 
+    // TODO: check if name is unique
+    var _createIndividual = function(identifier, classIdentifier) {
+      // 2 triples have to be added:
+      //  - the individual is of type class
+      //  - the individual is of type NamedIndividual
+      var promise = new Promise((resolve, reject) => {
+        var pred = `${_uriForPrefix('rdf')}type`;
+        var namedIndividualProp = `${_uriForPrefix('owl')}NamedIndividual`;
+        db.put([
+          {
+            subject: identifier,
+            predicate: pred,
+            object: namedIndividualProp
+          }, {
+            subject: identifier,
+            predicate: pred,
+            object: classIdentifier
+          }
+        ], function(err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+      return promise;
+    };
+
     return {
 
       initialize: function() {
@@ -315,6 +344,15 @@
       labelForEdge: function(identifier) {
 
         return _labelForEdge(identifier);
+      },
+      /**
+       * Creates and saves a new Individual
+       * @param classIdentifier classIdentifier of the individual
+       * @param type uri of the class of which the individual is a type of
+       * @returns {Promise}
+       */
+      createIndividual: function (identifier, classIdentifier) {
+        return _createIndividual(identifier, classIdentifier);
       }
     };
   }

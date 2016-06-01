@@ -322,6 +322,32 @@
         this.sidebarOpened = false;
       });
     };
+
+
+    $scope.$on('add-data', ($event, args) => {
+      var confirm = $mdDialog.confirm({
+        controller: 'OntologyDialogController',
+        templateUrl: 'modules/ontology/views/ontology.addDialog.html',
+        locals: { classes: this.ontology.classes },
+        parent: angular.element(document.body)
+      });
+      $mdDialog.show(confirm).then((result) => {
+        console.log("result ", result);
+        var individualIdentifier = `${this.ontology.uri}${result.name}`;
+        OntologyDataService.createIndividual(individualIdentifier, result.selectedClass)
+          .then(() => {
+            OntologyDataService.node(result.selectedClass)
+              .then((results) => {
+                console.log("node results after add", results);
+              });
+          });
+      }).catch((err) => {
+        $scope.setError('InsertAction', 'insert', err);
+      });
+
+
+    });
+
   }
 
   module.exports = OntologyViewController;

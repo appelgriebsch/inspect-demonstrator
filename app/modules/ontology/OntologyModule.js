@@ -38,10 +38,12 @@
     var OntologyDataService = require('./services/OntologyDataService');
 
     var OntologyViewController = require('./controllers/OntologyViewController');
+    var OntologyDialogController = require('./controllers/OntologyDialogController');
 
     angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
 
     angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$mdDialog', 'OntologyDataService', OntologyViewController]);
+    angular.module('electron-app').controller('OntologyDialogController', OntologyDialogController);
 
   }
 

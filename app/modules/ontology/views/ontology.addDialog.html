@@ -1,0 +1,25 @@
+<md-dialog aria-label="List dialog">
+  <md-dialog-content>
+    <md-input-container class="md-block">
+      <label>Name</label>
+      <input md-maxlength="30" md-minlength="5" required md-no-asterisk name="Name" ng-model="data.name">
+      <div ng-messages="data.name.$error">
+        <div ng-message="required">This is required.</div>
+        <div ng-message="md-maxlength">The name has to be less than 30 characters long.</div>
+      </div>
+    </md-input-container>
+    <md-input-container class="md-block">
+      <select ng-model="data.selectedClass">
+        <option value="{{class.identifier}}" ng-repeat="class in data.classes">{{class.label}}</option>
+      </select>
+    </md-input-container>
+  </md-dialog-content>
+  <md-dialog-actions>
+    <md-button ng-click="cancelDialog()" type="button">
+      Cancel
+    </md-button>
+    <md-button ng-disabled="!isValid()" ng-click="closeDialog()"  type="button" class="md-primary">
+      Save
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>
