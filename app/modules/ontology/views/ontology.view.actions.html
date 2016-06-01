@@ -1,13 +1,10 @@
-<md-fab-speed-dial class="md-fab md-fab-bottom-right md-scale" md-open="shell.fabOpen" md-direction="up">
-  <md-fab-trigger>
-    <md-button aria-label="menu" class="md-fab">
-      <md-icon>menu</md-icon>
-    </md-button>
-  </md-fab-trigger>
-  <md-fab-actions>
-    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('add-data', $event)">
-      <md-tooltip md-direction="left">Add Data</md-tooltip>
-      <md-icon>add</md-icon>
-    </md-button>
-  </md-fab-actions>
-</md-fab-speed-dial>
+<div layout-fill layout="column" layout-align="center center">
+  <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('add-data', $event)">
+    <md-icon>add</md-icon>
+  </md-button>
+  <span>Add Data</span>
+</div>
+<div layout-fill layout="column" layout-align="center center">
+  <md-switch class="md-primary" ng-model="shell.activeMode" ng-change="shell.sendEvent('mode-changed', shell.activeMode)"></md-switch>
+  <span>{{ shell.activeModeLabel }}</span>
+</div>

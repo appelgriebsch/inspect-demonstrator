@@ -157,6 +157,9 @@
         from = _createNode(subject, optionsFrom);
         this.data.nodes.update({ id: from.id, title: object });
         newEdge = undefined;
+      } else if (label === 'internal') {
+        console.log(subject, predicate, object);
+        newEdge = undefined;
       } else {
 
         if (label === 'isA') { // layout updates for sub class relationships
@@ -179,6 +182,9 @@
             optionsTo.color = newEdge.color;
             optionsTo.value = 10;
           }
+        } else {
+          newEdge.label = newEdge.title = OntologyDataService.labelForEdge(predicate);
+          newEdge.font = { align: 'top' };
         }
 
         from = _createNode(subject, optionsFrom);
@@ -202,7 +208,7 @@
       return undefined;
     };
 
-    var _loadNode = (nodeLabel) => {
+    var _loadModelNode = (nodeLabel) => {
 
       var queryString = nodeLabel.startsWith('http://') ? nodeLabel : `${this.ontology.uri}${nodeLabel}`;
       var owlURI = OntologyDataService.uriForPrefix('owl');
@@ -211,7 +217,6 @@
         .then((results) => {
           $q.when(true).then(() => {
             results.forEach((item) => {
-
               if (!item.object.startsWith(owlURI)) {
                 _createGraphItems(item.subject, item.object, item.predicate);
               }
@@ -219,10 +224,22 @@
 
             var mainNode = _findNode(queryString);
             this.network.selectNodes([mainNode[0].id], true);
-            $scope.selectedElement = mainNode[0];
+            this.selectedElement = mainNode[0];
             this.network.fit();
           });
         });
+    };
+
+    var _loadInstanceNodes = () => {
+      $q.when(true).then(() => {
+        this.ontology.instances.forEach((instance) => {
+          if (instance.object) {
+            console.log(instance);
+            _createGraphItems(instance.subject, instance.object, instance.predicate);
+          }
+        });
+        this.network.fit();
+      });
     };
 
     var _createGraph = () => {
@@ -230,30 +247,43 @@
       var container = document.getElementById('ontology-graph');
       this.network = new vis.Network(container, this.data, this.graphOptions);
 
-      this.network.on('selectNode', (params) => {
-        var selectedNodeId = params.nodes[0];
-        var selectedNode = this.data.nodes.get(selectedNodeId);
-        _loadNode(selectedNode.identifier);
-      });
       // when a node is selected all incoming and outgoing edges of that node
       // are selected too, that's why this event is used for displaying the
       // meta data of a selected item
       this.network.on('select', (params) => {
         if ((params.nodes !== undefined) && (params.nodes.length > 0)) {
           var selectedNodeId = params.nodes[0];
-          $scope.selectedElement =  this.data.nodes.get(selectedNodeId);
-          $scope.$apply();
+          this.selectedElement =  this.data.nodes.get(selectedNodeId);
           return;
         }
         if ((params.edges !== undefined) && (params.edges.length > 0)) {
           var selectedEdgeId = params.edges[0];
-          $scope.selectedElement = this.data.edges.get(selectedEdgeId);
-          $scope.$apply();
+          this.selectedElement = this.data.edges.get(selectedEdgeId);
           return;
         }
-
       });
+    };
 
+    var _activateMode = (mode) => {
+
+      this.reset();
+
+      if (mode) {
+        $scope.setModeLabel('Incidents');
+        if (this.network) {
+          this.network.removeAllListeners('selectNode');
+          _loadInstanceNodes();
+        }
+      } else {
+        $scope.setModeLabel('Model');
+        if (this.network) {
+          this.network.on('selectNode', (params) => {
+            var selectedNodeId = params.nodes[0];
+            var selectedNode = this.data.nodes.get(selectedNodeId);
+            _loadModelNode(selectedNode.identifier);
+          });
+        }
+      }
     };
 
     this.initialize = function() {
@@ -261,6 +291,8 @@
       $scope.setBusy('Loading ontology data...');
 
       _createGraph();
+      _activateMode($scope.getActiveMode());
+
       var init = [OntologyDataService.initialize()];
       Promise.all(init).then(() => {
         return OntologyDataService.ontology();
@@ -291,7 +323,7 @@
       var identifier = this.query ? this.query.identifier : '';
 
       if (identifier.length > 0) {
-        _loadNode(identifier);
+        _loadModelNode(identifier);
       } else {
         this.reset();
       }
@@ -302,10 +334,9 @@
     this.reset = () => {
       $q.when(true).then(() => {
         this.query = '';
+        this.selectedElement = undefined;
         this.data.nodes.clear();
         this.data.edges.clear();
-        this.network.destroy();
-        _createGraph();
       });
     };
 
@@ -322,6 +353,10 @@
         this.sidebarOpened = false;
       });
     };
+
+    $scope.$on('mode-changed', (evt, mode) => {
+      _activateMode(mode);
+    });
 
 
     $scope.$on('add-data', ($event, args) => {

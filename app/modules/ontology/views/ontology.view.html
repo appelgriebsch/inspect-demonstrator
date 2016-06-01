@@ -1,5 +1,6 @@
 <div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
   <md-autocomplete class="sticky-top transparent-blur"
+                   ng-hide="shell.activeMode"
                    md-input-minlength="2"
                    md-input-maxlength="18"
                    md-selected-item="ctl.query"
@@ -41,11 +42,11 @@
       </md-input-container>
       <md-input-container layout-fill>
         <label>Selected Element</label>
-        <input ng-model="selectedElement.label" readonly></input>
+        <input ng-model="ctl.selectedElement.label" readonly></input>
       </md-input-container>
       <md-input-container layout-fill>
         <label>Description</label>
-        <input ng-model="selectedElement.title" readonly></input>
+        <input ng-model="ctl.selectedElement.title" readonly></input>
       </md-input-container>
     </div>
   </md-content>
