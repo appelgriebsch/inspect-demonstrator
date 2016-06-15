@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function OntologyViewController($scope, $state, $q, $mdDialog, OntologyDataService) {
+  function OntologyViewController($scope, $state, $q, $location, OntologyDataService) {
 
     this.graphOptions = {
       nodes: {
@@ -174,14 +174,15 @@
           newEdge.color = '#b6c9de';
 
           if (!_hasProperties(subject)) {
-            optionsFrom.color = newEdge.color;
-            optionsFrom.value = 10;
+            optionsFrom.color = "#8585ad";
+            optionsFrom.value = 6;
           }
 
           if (!_hasProperties(object)) {
             optionsTo.color = newEdge.color;
             optionsTo.value = 10;
           }
+
         } else {
           newEdge.label = newEdge.title = OntologyDataService.labelForEdge(predicate);
           newEdge.font = { align: 'top' };
@@ -234,7 +235,6 @@
       $q.when(true).then(() => {
         this.ontology.instances.forEach((instance) => {
           if (instance.object) {
-            console.log(instance);
             _createGraphItems(instance.subject, instance.object, instance.predicate);
           }
         });
@@ -358,31 +358,9 @@
       _activateMode(mode);
     });
 
-
-    $scope.$on('add-data', ($event, args) => {
-      var confirm = $mdDialog.confirm({
-        controller: 'OntologyDialogController',
-        templateUrl: 'modules/ontology/views/ontology.addDialog.html',
-        locals: { classes: this.ontology.classes },
-        parent: angular.element(document.body)
-      });
-      $mdDialog.show(confirm).then((result) => {
-        console.log("result ", result);
-        var individualIdentifier = `${this.ontology.uri}${result.name}`;
-        OntologyDataService.createIndividual(individualIdentifier, result.selectedClass)
-          .then(() => {
-            OntologyDataService.node(result.selectedClass)
-              .then((results) => {
-                console.log("node results after add", results);
-              });
-          });
-      }).catch((err) => {
-        $scope.setError('InsertAction', 'insert', err);
-      });
-
-
+    $scope.$on("add-data", ($event, args) => {
+      $location.path("app/ontology/form");
     });
-
   }
 
   module.exports = OntologyViewController;

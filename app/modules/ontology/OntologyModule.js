@@ -32,18 +32,30 @@
                 templateUrl: `${moduleConfig.path}/views/ontology.view.actions.html`
               }
             }
-          });
+          })
+          .state(`${moduleConfig.state}.form`, {
+            url: '/form',
+            views: {
+              'content': {
+                templateUrl: `${moduleConfig.path}/views/ontology.form.html`,
+                controller: 'OntologyFormController as ctl'
+              },
+              'actions@app': {
+                templateUrl: `${moduleConfig.path}/views/ontology.form.actions.html`
+              }
+            }
+          })
       });
 
     var OntologyDataService = require('./services/OntologyDataService');
 
     var OntologyViewController = require('./controllers/OntologyViewController');
-    var OntologyDialogController = require('./controllers/OntologyDialogController');
+    var OntologyFormController = require('./controllers/OntologyFormController');
 
     angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
 
-    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$mdDialog', 'OntologyDataService', OntologyViewController]);
-    angular.module('electron-app').controller('OntologyDialogController', OntologyDialogController);
+    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$location', 'OntologyDataService', OntologyViewController]);
+    angular.module('electron-app').controller('OntologyFormController', ['$scope', '$state', '$q',  '$location', 'OntologyDataService', OntologyFormController]);
 
   }
 

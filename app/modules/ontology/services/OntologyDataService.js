@@ -293,7 +293,7 @@
     };
 
     // TODO: check if name is unique
-    var _createIndividual = function(identifier, classIdentifier) {
+    var _createInstance = function(identifier, classIdentifier) {
       // 2 triples have to be added:
       //  - the individual is of type class
       //  - the individual is of type NamedIndividual
@@ -315,6 +315,95 @@
             reject(err);
           } else {
             resolve();
+          }
+        });
+      });
+      return promise;
+    };
+
+    /**
+     * Adds a new relation.
+     * 
+     * @param relation relation to be added
+     * @param doAddInverse if true, also adds the inverse relation
+     * @returns {Promise}
+       * @private
+       */
+    var _createRelation = function(relation, doAddInverse) {
+      var promises = [];
+      var inverseOfURI = `${_uriForPrefix('owl')}inverseOf`;
+
+      if (doAddInverse) {
+        promises.push(new Promise((resolve, reject) => {
+          db.get({
+            object: relation.predicate,
+            predicate: inverseOfURI
+          }, function (err, result) {
+            if (err) {
+              reject(err);
+            } else {
+              var newRelations = [];
+              result.forEach((rel) => {
+                newRelations.push({
+                  subject: relation.object,
+                  object: relation.subject,
+                  predicate: rel.object
+                });
+              });
+              resolve(newRelations);
+            }
+          });
+        }));
+
+        promises.push(new Promise((resolve, reject) => {
+          db.get({
+            subject: relation.predicate,
+            predicate: inverseOfURI
+          }, function (err, result) {
+            if (err) {
+              reject(err);
+            } else {
+              var newRelations = [];
+              result.forEach((rel) => {
+                newRelations.push({
+                  subject: relation.object,
+                  object: relation.subject,
+                  predicate: rel.object
+                });
+              });
+              resolve(newRelations);
+            }
+          });
+        }));
+      }
+      var promise = new Promise((resolve, reject) => {
+        Promise.all(promises).then((result) => {
+          var newRelations = [relation].concat(result[0]).concat(result[1]);
+          db.put(newRelations, function(err) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+      return promise;
+    };
+
+    var _findInstancesOf = function(classIdentifier) {
+      var promise = new Promise((resolve, reject) => {
+        var pred = `${_uriForPrefix('rdf')}type`;
+        db.get({
+          predicate: pred,
+          object: classIdentifier
+        }, function(err, subjNodes) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(subjNodes);
           }
         });
       });
@@ -364,6 +453,7 @@
                 prefix: ontology.prefix,
                 uri: ontology.uri
               });
+
               _loadNode(ontology.subject).then((entries) => {
                 entries.forEach((meta) => {
                   var info = _labelForEdge(meta.predicate);
@@ -411,14 +501,32 @@
 
         return _labelForEdge(identifier);
       },
+      loadClasses: function () {
+
+        return _loadClasses();
+      },
       /**
        * Creates and saves a new Individual
        * @param classIdentifier classIdentifier of the individual
        * @param type uri of the class of which the individual is a type of
+       * @addInverseRelations if true, also adds the inverse relations
        * @returns {Promise}
        */
-      createIndividual: function (identifier, classIdentifier) {
-        return _createIndividual(identifier, classIdentifier);
+      createInstance: function (identifier, classIdentifier, relations, addInverseRelations) {
+        var promises = [_createInstance(identifier, classIdentifier)];
+        relations.forEach((relation) => {
+          promises.push(_createRelation(relation, addInverseRelations));
+        });
+
+        return promises;
+      },
+      findInstancesOf: function (classIdentifier) {
+        return _findInstancesOf(classIdentifier);
+      },
+
+      loadProperties: function () {
+
+        return _loadProperties();
       }
     };
   }
