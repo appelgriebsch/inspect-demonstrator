@@ -3,6 +3,7 @@ md-autocomplete[md-floating-label].transparent-blur, .transparent-blur {
 }
 
 .sticky-top {
+  line-height: 32px;
   overflow: hidden;
   position: fixed;
   top: 7em;
@@ -11,4 +12,35 @@ md-autocomplete[md-floating-label].transparent-blur, .transparent-blur {
   z-index: 1;
   margin-top: -2em;
   padding-top: 2em;
+}
+.md-icon-button.ontology-sidebar-btn {
+  height: 32px;
+  width: 32px;
+  line-height: 32px;
+  padding: 0;
+  margin: 0.5em 0 0 0;
+}
+.md-icon-button.ontology-sidebar-btn-closed {
+  z-index: 1;
+  position: fixed;
+}
+
+.md-icon-button.ontology-sidebar-right-btn-closed {
+  right:25px;
+}
+
+.md-icon-button.ontology-sidebar-left-btn-opened {
+  margin-right: 1em;
+  margin-top: 1em;
+  padding:0 ;
+}
+
+.md-icon-button.ontology-sidebar-right-btn-opened {
+  margin-right: 1em;
+  margin-top: 1em;
+  padding:0 ;
+}
+
+md-input-container.sidebar-input {
+  margin: 2px 5px 2px 5px;
 }

@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function OntologyViewController($scope, $state, $q, $location, OntologyDataService) {
+  function OntologyViewController($scope, $state, $q, $location, $mdSidenav, OntologyDataService) {
 
     this.graphOptions = {
       nodes: {
@@ -38,8 +38,9 @@
     this.query = undefined;
     this.ontology = undefined;
     this.selectedElement = undefined;
+    this.visibleInstances = [{subject:"test"}];
+
     this.searchText = '';
-    this.sidebarOpened = false;
 
     this.state = $state.$current;
     this.baseState = this.state.parent.toString();
@@ -158,7 +159,6 @@
         this.data.nodes.update({ id: from.id, title: object });
         newEdge = undefined;
       } else if (label === 'internal') {
-        console.log(subject, predicate, object);
         newEdge = undefined;
       } else {
 
@@ -176,6 +176,7 @@
           if (!_hasProperties(subject)) {
             optionsFrom.color = "#8585ad";
             optionsFrom.value = 6;
+            this.visibleInstances.push( OntologyDataService.labelForNode(subject));
           }
 
           if (!_hasProperties(object)) {
@@ -319,7 +320,6 @@
     };
 
     this.search = () => {
-
       var identifier = this.query ? this.query.identifier : '';
 
       if (identifier.length > 0) {
@@ -335,24 +335,18 @@
       $q.when(true).then(() => {
         this.query = '';
         this.selectedElement = undefined;
+        this.visibleInstances = [];
         this.data.nodes.clear();
         this.data.edges.clear();
+
+      });
+    };
+    this.toggleSidebar = function(id) {
+      $q.when(true).then(() => {
+          $mdSidenav(id).toggle();
       });
     };
 
-    this.openSidebar = function() {
-      $q.when(true).then(() => {
-        angular.element(document.querySelector('.sidebar')).addClass('sidebar-open');
-        this.sidebarOpened = true;
-      });
-    };
-
-    this.closeSidebar = function() {
-      $q.when(true).then(() => {
-        angular.element(document.querySelector('.sidebar')).removeClass('sidebar-open');
-        this.sidebarOpened = false;
-      });
-    };
 
     $scope.$on('mode-changed', (evt, mode) => {
       _activateMode(mode);
@@ -361,6 +355,8 @@
     $scope.$on("add-data", ($event, args) => {
       $location.path("app/ontology/form");
     });
+
+
   }
 
   module.exports = OntologyViewController;
