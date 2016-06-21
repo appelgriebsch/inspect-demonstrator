@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 (function(angular) {
 
   'use strict';
@@ -27,10 +28,11 @@
       // changeable data
       name: undefined,
       selectedClass: undefined,
-      selectedInstance: undefined,
+      selectedObjectInstance: undefined,
       selectedProperty: undefined,
       instanceRelations: []
     };
+
     /**
      * Called when the type of the instance is changed.
      * TODO: invalidate all relations (automatic or confirmed removal?)
@@ -43,9 +45,9 @@
       // TODO: might be better to filter in the service
       OntologyDataService.loadProperties().then((props) => {
         props.find((prop) => {
-          if ((prop.domain == $scope.data.selectedClass)) {
+          if ((prop.domain === $scope.data.selectedClass)) {
             $scope.data.properties1[prop.property] = prop;
-          } else if ((prop.range == $scope.data.selectedClass)) {
+          } else if ((prop.range === $scope.data.selectedClass)) {
             $scope.data.properties2[prop.property] = prop;
           }
         });
@@ -59,13 +61,15 @@
      * All relations of the instance will be renamed.
      */
     $scope.nameChanged = function() {
-      var instanceIdentifier = `${ontologyUri}${$scope.data.name}`;
+
+      var identifier = `${ontologyUri}${$scope.data.name}`;
+
       $scope.data.instanceRelations.forEach(function(value) {
         if (value.type === "subject") {
-          value.subject = instanceIdentifier;
+          value.subject = identifier;
         }
         if (value.type === "object") {
-          value.object = instanceIdentifier;
+          value.object = identifier;
         }
       });
     };
@@ -81,17 +85,17 @@
       }
       var prop = $scope.data.properties1[$scope.data.selectedProperty];
 
-      OntologyDataService.findInstancesOf(prop.range).then((instances) => {
+      OntologyDataService.findInstances(prop.range).then((instances) => {
         $scope.data.instances = instances;
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
       });
     };
 
-    /**
-     * Extracts the name of the item (without namespace)
-     * @param identifier uri of the item
-     * @returns {*) 
+      /**
+       * Extracts the name of the item (without namespace)
+       * @param identifier uri of the item
+       * @returns {*}
        */
     $scope.label = function (identifier) {
       if (identifier) {
@@ -105,30 +109,17 @@
      * @returns {boolean} if there are relations to be shown
      */
     $scope.showInstanceRelations = function() {
-      if ((!$scope.data.instanceRelations) || ($scope.data.instanceRelations.length == 0)) {
-        return false;
-      }
-      return true;
+      return !((!$scope.data.instanceRelations) || ($scope.data.instanceRelations.length === 0));
     };
-
-    /**
-     *
-     */
     $scope.toggleShowRelationForm = function() {
       $scope.showRelationFormIsShown = !$scope.showRelationFormIsShown;
     };
 
     $scope.enableInstanceRelationsForm = function() {
-      if ((!$scope.data.name) || (!$scope.data.selectedClass)) {
-        return false;
-      }
-      return true;
+      return !((!$scope.data.name) || (!$scope.data.selectedClass));
     };
     $scope.addRelationButtonEnabled = function() {
-      if ((!$scope.data.name) || (!$scope.data.selectedClass) || (!$scope.data.selectedInstance)) {
-        return false;
-      }
-      return true;
+      return !((!$scope.data.name) || (!$scope.data.selectedClass) || (!$scope.data.selectedObjectInstance));
     };
 
     /**
@@ -142,11 +133,11 @@
      * Called if the form is submitted.
      * A new instance with the corresponding relations are created.
      * The application will route to the ontology view, if the creation was successful
-     * 
+     *
      * TODO: check whether name is valid
-     * 
+     *
      */
-    $scope.$on("save-instance", ($event, args) => {
+    $scope.$on("save-instance", () => {
       $scope.setBusy('Saving data...');
 
       var instanceIdentifier = `${ontologyUri}${$scope.data.name}`;
@@ -164,9 +155,9 @@
     $scope.addRelation = function () {
       var newInstance = `${ontologyUri}${$scope.data.name}`;
       // TODO: reverse prop
-      $scope.data.instanceRelations.push({subject: newInstance, predicate: $scope.data.selectedProperty, object: $scope.data.selectedInstance, type: "subject"});
+      $scope.data.instanceRelations.push({subject: newInstance, predicate: $scope.data.selectedProperty, object: $scope.data.selectedObjectInstance, type: "subject"});
       $scope.data.selectedProperty = undefined;
-      $scope.data.selectedInstance = undefined;
+      $scope.data.selectedObjectInstance = undefined;
     };
 
     $scope.removeRelation = function (index) {
@@ -174,16 +165,19 @@
         $scope.data.instanceRelations.splice(index, 1);
       }
     };
-
     this.initialize = function() {
       $scope.setBusy('Loading ontology data...');
 
-      var init = [OntologyDataService.initialize()];
-      Promise.all(init).then(() => {
-        return OntologyDataService.loadClasses();
-      }).then((classes) => {
-        $scope.data.classes = classes;
-        $scope.setReady(false);
+      var init = [OntologyDataService.initialize(), OntologyDataService.loadClasses(), OntologyDataService.findInstances()];
+      Promise.all(init).then((result) => {
+        $scope.data.classes = result[1];
+
+        $scope.data.instances = [];
+        result[2].forEach((entry) => {
+          entry.label = entry.subject.replace(ontologyUri, "");
+          $scope.data.instances.push(entry);
+        });
+        $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);

@@ -323,12 +323,12 @@
 
     /**
      * Adds a new relation.
-     * 
+     *
      * @param relation relation to be added
      * @param doAddInverse if true, also adds the inverse relation
      * @returns {Promise}
-       * @private
-       */
+     * @private
+     */
     var _createRelation = function(relation, doAddInverse) {
       var promises = [];
       var inverseOfURI = `${_uriForPrefix('owl')}inverseOf`;
@@ -399,6 +399,24 @@
         db.get({
           predicate: pred,
           object: classIdentifier
+        }, function(err, subjNodes) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(subjNodes);
+          }
+        });
+      });
+      return promise;
+    };
+
+    var _findAllInstances = function() {
+      var promise = new Promise((resolve, reject) => {
+        var pred = `${_uriForPrefix('rdf')}type`;
+        var namedIndividualProp = `${_uriForPrefix('owl')}NamedIndividual`;
+        db.get( {
+          predicate: pred,
+          object: namedIndividualProp
         }, function(err, subjNodes) {
           if (err) {
             reject(err);
@@ -507,10 +525,11 @@
       },
       /**
        * Creates and saves a new Individual
-       * @param classIdentifier classIdentifier of the individual
-       * @param type uri of the class of which the individual is a type of
-       * @addInverseRelations if true, also adds the inverse relations
-       * @returns {Promise}
+       * @param identifier identifier of the instance
+       * @param classIdentifier identifier of the class
+       * @param relations array of relations for this instance
+       * @param addInverseRelations if true, also adds the inverse relations
+       * @returns {*[]} an array of Promise
        */
       createInstance: function (identifier, classIdentifier, relations, addInverseRelations) {
         var promises = [_createInstance(identifier, classIdentifier)];
@@ -520,17 +539,58 @@
 
         return promises;
       },
-      findInstancesOf: function (classIdentifier) {
-        return _findInstancesOf(classIdentifier);
+      /**
+       * Returns all instances of a given class. If no class is provided all instances are returned
+       * @param classIdentifier
+       */
+      findInstances: function (classIdentifier) {
+        if (classIdentifier) {
+          return _findInstancesOf(classIdentifier);
+        }
+        return _findAllInstances();
       },
 
       loadProperties: function () {
-
         return _loadProperties();
-      }
+      },
+
+
+
+      /**
+       * Returns the class of the instance and all relations it has
+       * * @param identifier
+       */
+      loadInstance: function (identifier) {
+
+        var promise = new Promise((resolve, reject) => {
+          var typePred = `${_uriForPrefix('rdf')}type`;
+          var namedIndividual= `${_uriForPrefix('owl')}NamedIndividual`;
+
+          this.node(identifier).then((items) => {
+            if (items) {
+              var result = {classUri: undefined, relations: []};
+              items.forEach((item) => {
+                if ((item.predicate === typePred) && (item.object !== namedIndividual)) {
+                  result.classUri = item.object;
+                }
+                if ((item.predicate !== typePred)) {
+                  result.relations.push(item);
+                }
+              });
+              if (!result.classUri) {
+                resolve();
+              } else {
+                resolve(result);
+              }
+            } else {
+              reject("No node found!");
+            }
+          });
+        });
+        return promise;
+      },
     };
   }
-
   module.exports = OntologyDataService;
 
 })();
