@@ -49,7 +49,7 @@
 
         var ddoc = {
           _id: '_design/activities',
-          version: '1.0',
+          version: '1.1',
           views: {
             all: {
               map: function mapFun(doc) {
@@ -100,12 +100,13 @@
             startTime: '${startTime}' // when the activity has been started
           },
           actionStatus: [
-            'CompletedActionStatus', // action was successfull
-            'FailedActionStatus' // action was not successfull
+            'CompletedActionStatus', // action was successful
+            'FailedActionStatus' // action was not successful
           ],
           actionTypes: [
             'ControlAction', // startup/shutdown activity
             'AddAction', // create documents
+            'EditAction', // edit documents
             'DeleteAction', // remove documents
             'ReplaceAction', // update documents
             'SendAction', // export documents / replicate to action
