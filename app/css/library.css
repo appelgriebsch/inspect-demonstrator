@@ -134,3 +134,6 @@ md-tabs > md-tabs-wrapper > md-tabs-canvas > md-pagination-wrapper > md-tab-item
   margin-top: -20px;
   background: rgba(0,0,0,0.54);
 }
+.fullWidth {
+  width: 100%;
+}
