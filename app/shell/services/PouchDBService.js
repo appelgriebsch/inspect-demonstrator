@@ -9,6 +9,7 @@
     PouchDB.plugin(require('geopouch'));
     PouchDB.plugin(require('pouchdb-find'));
     PouchDB.plugin(require('pouchdb-quick-search'));
+    PouchDB.plugin(require('pouchdb-validation'));
     PouchDB.plugin(require('transform-pouch'));
 
     var app = require('electron').remote.app;

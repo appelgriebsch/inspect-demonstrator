@@ -117,14 +117,14 @@
     this.openSidebar = function() {
       $q.when(true).then(() => {
         angular.element(document.querySelector('.sidebar')).addClass('sidebar-open');
-        this.sidebarOpened = true;
+        this.sidebarLeftOpened = true;
       });
     };
 
     this.closeSidebar = function() {
       $q.when(true).then(() => {
         angular.element(document.querySelector('.sidebar')).removeClass('sidebar-open');
-        this.sidebarOpened = false;
+        this.sidebarLeftOpened = false;
       });
     };
 
