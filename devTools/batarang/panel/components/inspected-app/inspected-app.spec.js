@@ -4,7 +4,7 @@ describe('inspectedApp', function() {
   var inspectedApp, rootScope, port;
 
   beforeEach(function() {
-    module('batarang.inspected-app')
+    module('batarang.inspected-app');
     window.chrome = createMockChrome();
     inject(function(_inspectedApp_, _$rootScope_) {
       inspectedApp = _inspectedApp_;
@@ -159,7 +159,7 @@ describe('inspectedApp', function() {
       expect(chrome.devtools.inspectedWindow.eval).toHaveBeenCalledWith('angular.hint.unwatch(1,"")');
     });
   });
-  
+
   describe('inspectScope', function () {
     it('should call chrome devtools APIs', function() {
       inspectedApp.inspectScope(2);

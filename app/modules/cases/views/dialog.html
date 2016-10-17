@@ -1,0 +1,93 @@
+<md-dialog ng-cloak ng-init="ctl.initialize()">
+  <form name="form" ng-submit="confirm()" novalidate  >
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h4>Edit individual....</h4>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+
+      <div class="md-dialog-content" layout="column" layout-padding layout-margin>
+
+        <md-input-container  class="md-block">
+          <label for="individual-name">Name</label>
+          <input ng-maxLength="50" md-maxlength="80" ng-minLength="5" md-minlength="5" id="individual-name" name="name" required md-no-asterisk  aria-label="individual name" ng-model="data.individual.label">
+          <div style="color: red; font-size: 80%" ng-show="form.name.$error.required">Name is required.</div>
+          <div style="color: red; font-size: 80%" ng-show="form.name.$error.minlength || form.name.$error.maxlength">Name has to be between 5 and 80 characters long.</div>
+        </md-input-container>
+
+        <md-input-container  class="md-block">
+          <label for="individual-type">Type</label>
+          <input readonly id="individual-type"  aria-label="individual type" ng-model="data.individual.classIri">
+        </md-input-container>
+
+          <md-input-container class="md-block" ng-hide="data.objectProperties === 0">
+            <label for="node-relation">Relation</label>
+            <md-select id="node-relation"  placeholder="Select a relation" ng-model="data.selectedObjectPropertyIri">
+              <md-option value="{{prop.iri}}" ng-repeat="prop in data.objectProperties | orderBy:'label'">{{prop.label}}</md-option>
+            </md-select>
+          </md-input-container>
+
+          <md-input-container class="md-block" ng-hide="data.individuals === 0">
+            <label for="node-target">Target</label>
+            <md-select id="node-target"  placeholder="Select a target" ng-model="data.selectedIndividualIri">
+              <md-option value="{{individual.iri}}" ng-repeat="individual in data.individuals | orderBy:'label'">{{individual.label}}</md-option>
+            </md-select>
+          </md-input-container>
+
+<!--        <md-radio-group ng-model="data.selectedOption">
+          <div layout="row">
+            <md-radio-button value="one" class="md-primary" ng-disabled="!data.objectPropertyNewTargets || data.objectPropertyNewTargets.length === 0">
+            </md-radio-button>
+            <md-input-container class="md-block">
+              <label for="node-new-target">New individual</label>
+              <md-select id="node-new-target" placeholder="Select a target for the relation" ng-disabled="data.selectedOption !== 'one'" ng-model="data.selectedClass">
+                <md-option value="{{target.iri}}" ng-repeat="target in data.objectPropertyNewTargets | orderBy:'name'">{{target.name}}</md-option>
+              </md-select>
+            </md-input-container>
+          </div>
+          <div layout="row">
+            <md-radio-button value="two" class="md-primary" ng-disabled="!data.objectPropertyExistingTargets || data.objectPropertyExistingTargets.length === 0">
+
+            </md-radio-button>
+            <md-input-container class="md-block">
+              <label for="node-target">Existing individual</label>
+              <md-select id="node-target" placeholder="Select a target for the relation"  ng-disabled="data.selectedOption !== 'two'" ng-model="data.selectedindividual">
+                <md-option value="{{target.iri}}" ng-repeat="target in data.objectPropertyExistingTargets">{{target.name}}</md-option>
+              </md-select>
+            </md-input-container>
+          </div>
+        </md-radio-group>-->
+
+
+        <md-button class="md-button md-default" ng-click="addRelation()" ng-disabled="!data.selectedObjectPropertyIri || ! data.selectedindividualIri" aria-label="Add relation">
+          Add relation
+        </md-button>
+        <!-- <md-input-container flex="20">
+           <md-select placeholder="Select an individual" ng-model="data.selectedObjectindividual" ng-change="individualChanged()" layout-fill>
+             <md-option  value="{{inst.subject}}" ng-repeat="inst in data.individuals">{{label(inst.subject)}}</md-option>
+           </md-select>
+         </md-input-container>
+         <md-input-container>
+           <md-button ng-click="addRelation()" type="button" ng-disabled="!addRelationButtonEnabled()">
+             Add
+           </md-button>
+         </md-input-container>-->
+      </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button class="md-button md-warn" ng-click="delete()" aria-label="Delete Node">
+        Delete
+      </md-button>
+      <span flex></span>
+      <md-button class="md-button md-default" ng-click="cancel()" aria-label="Close dialog">
+        Cancel
+      </md-button>
+      <md-button type="submit" class="md-button md-primary"  ng-disabled="form.name.$invalid" >
+        Confirm
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
+

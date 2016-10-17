@@ -14,7 +14,7 @@
       <span md-highlight-text="ctrl.searchText">{{ item.label }}</span>
     </md-item-template>
   </md-autocomplete>
-  <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed' ng-click="ctl.toggleSidebar('sidebar-left')" ">
+  <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed' ng-click="ctl.toggleSidebar('sidebar-left')">
     <md-icon>chevron_right</md-icon>
   </md-button>
   <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed ontology-sidebar-right-btn-closed' ng-click="ctl.toggleSidebar('sidebar-right')">
@@ -22,7 +22,7 @@
   </md-button>
 
   <md-sidenav class="md-sidenav-left md-whiteframe-8dp" md-component-id="sidebar-left" layout="column">
-   <div layout-align="space-between start" layout="row" >
+    <div layout-align="space-between start" layout="row" >
       <h3>{{ ctl.ontology.label }}</h3>
       <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-left-btn-opened' ng-click="ctl.toggleSidebar('sidebar-left')">
         <md-icon>chevron_left</md-icon>
@@ -76,11 +76,11 @@
     <md-list class="md-dense" flex>
       <md-subheader class="md-no-sticky">Visible instances</md-subheader>
       <md-list-item  ng-repeat="inst in ctl.visibleInstances">
-       <div class="md-list-item-text" layout="column">
+        <div class="md-list-item-text" layout="column">
           {{inst}}
         </div>
       </md-list-item>
-</md-list>
+    </md-list>
   </md-sidenav>
 
 

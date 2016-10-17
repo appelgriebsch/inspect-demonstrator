@@ -1,52 +1,78 @@
-/*jshint esversion: 6 */
-(function () {
+(function(angular) {
   'use strict';
-  /**
-   * @constructor
-   */
-  function Case(identifier, name, creator, creationDate, status) {
-    /** private properties **/
-    var lastEditedDate = creationDate;
+
+  var uuid = require('uuid');
+
+  class Case {
+    constructor(identifier, createdBy, createdOn) {
+      if (angular.isUndefined(identifier)) {
+        throw Error('Identifier must not be null!');
+      }
+      if (angular.isUndefined(createdBy)) {
+        throw Error('Created by must not be null!');
+      }
+      if (angular.isUndefined(createdOn)) {
+        throw Error('Created on must not be null!');
+      }
 
 
-    var instances = [];
+      this.identifier = identifier;
+      this.createdBy = createdBy;
+      this.createdOn = createdOn;
+      this.lastEditedBy = createdBy;
+      this.lastEditedOn =  createdOn;
+      this.status = 'new';
+      this.names = [];
+      this.description = '';
+      this.individuals = [];
+      this.datatypeProperties = [];
+      this.objectProperties = [];
+    }
+    openCase() {
+      if (this.status !== 'new') {
+        throw Error('Case can not be opened!');
+      }
+      this.status = 'open';
+    }
+    closeCase() {
+      if (this.status !== 'open') {
+        throw Error('Case can not be closed!');
+      }
+      this.status = 'closed';
+    }
 
+    generateNode(individual) {
+      if (angular.isUndefined(individual)) {
+        throw Error('Individual must not be null!');
+      }
+      return {id: individual.iri, label: individual.label, title: individual.label, group: 'instanceNode'};
+    }
 
-    /** public properties **/
-    this.name = name;
-    this.status = status;
-    this.lastEditedBy = creator;
-    this.investigator = undefined;
-    this.description = undefined;
-    this.closedDate = undefined;
-    this.investigator = undefined;
-
-
-
-    this.identifier = () => {
-      return identifier;
-    };
-    this.creationDate = () => {
-      return creationDate;
-    };
-    this.export =() => {
-      return {
-        identifier: identifier,
-        name: this.name,
-        creator: creator,
-        creationDate: creationDate,
-        status: this.status,
-        lastEditedDate: creationDate,
-        lastEditedBy: this.lastEditedBy,
-        investigator: this.investigator,
-        description: this.description,
-        closedDate: this.closedDate,
-        instances: instances
+    generateNodesAndEdges() {
+      const result = {
+        nodes: [],
+        edges: []
       };
-    };
+      this.individuals.map((individual) => {
+        result.nodes.push(this.generateNode(individual));
+        angular.forEach(individual.datatypeProperties, (value, key) => {
+          angular.forEach(value, (prop) => {
+            const id = uuid.v4();
+            result.nodes.push({id: id, label: prop.target, title: prop.target, group: 'dataNode'});
+            result.edges.push({from: individual.iri, to: id, label: prop.label, title: prop.label});
+          });
+        });
+        angular.forEach(individual.objectProperties, (value) => {
+          angular.forEach(value, (prop) => {
+            result.edges.push({from: individual.iri, to: prop.target, label: prop.label, title: prop.label});
+          });
+        });
+      });
 
-
+      return result;
+    }
   }
-
   module.exports = Case;
-})();
+
+})(global.angular);
+

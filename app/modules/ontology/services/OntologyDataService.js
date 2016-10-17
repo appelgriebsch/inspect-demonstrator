@@ -206,7 +206,7 @@
                   var prefix = _labelForNode(result[i].object);
                   var label = _labelForEdge(result[i].predicate);
                   if (prefix === 'owl:NamedIndividual') {
-                    continue;
+
                   } else if (label === 'isA') {
                     instance.subject = result[i].subject;
                     instance.inherits.push(result[i].object);
@@ -525,9 +525,9 @@
       },
       /**
        * Creates and saves a new Individual
-       * @param identifier identifier of the instance
+       * @param identifier identifier of the individual
        * @param classIdentifier identifier of the class
-       * @param relations array of relations for this instance
+       * @param relations array of relations for this individual
        * @param addInverseRelations if true, also adds the inverse relations
        * @returns {*[]} an array of Promise
        */
@@ -557,7 +557,7 @@
 
 
       /**
-       * Returns the class of the instance and all relations it has
+       * Returns the class of the individual and all relations it has
        * * @param identifier
        */
       loadInstance: function (identifier) {
