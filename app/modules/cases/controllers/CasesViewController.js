@@ -1,45 +1,70 @@
-/*jshint esversion: 6 */
-(function(angular) {
+(function() {
 
   'use strict';
 
-  /**
-   * Controls the Add/Edit instance form
-   * @param $scope
-   * @param $state
-   * @param $q
-   * @param $location
-   * @param CasesDataService
-   * @constructor
-   */
-  function CasesViewController($scope, $state, $q, $location, CasesDataService) {
-    this.state = $state.$current;
+  function CasesViewController($scope, $state, $log, CaseOntologyDataService) {
+    const app = require('electron').remote.app;
+    const sysCfg = app.sysConfig();
 
-    $scope.moveToAddCase =  () => {
-      $location.path("/app/cases/edit");
+    this.state = $state.$current;
+    $scope.data = {
+      cases: [],
+      filteredCases: []
+    };
+    $scope.viewData = {
+      showCaseStatus: 'open', // open, closed
+      showCaseCreator: 'own' // own, all
     };
 
-    this.initialize = function() {
-      /*$scope.setBusy('Loading ontology data...');
+    $scope.newCase =  () => {
+      $scope.setBusy('Initializing Case..');
+      const identifier = 'Fall ' + new Date().getTime();
+      CaseOntologyDataService.createCase(identifier).then(() => {
+        $state.go('app.cases.edit', {caseId: identifier});
+        $scope.setReady(true);
+      }).catch((err) => {
+        $scope.setError('InsertAction', 'insert', err);
+        $scope.setReady(true);
+      });
+    };
 
-      var init = [CasesDataService.initialize(), CasesDataService.loadClasses(), CasesDataService.findInstances()];
-      Promise.all(init).then((result) => {
-        $scope.data.classes = result[1];
+    $scope.openCase =  (caseId) => {
+      $state.go('app.cases.edit', {caseId: caseId});
+    };
 
-        $scope.data.instances = [];
-        result[2].forEach((entry) => {
-          entry.label = entry.subject.replace(ontologyUri, "");
-          $scope.data.instances.push(entry);
-        });
+    $scope.filter = () => {
+      $scope.setBusy('Filtering...');
+      $scope.data.filteredCases = $scope.data.cases.filter((c) => {
+        if ($scope.viewData.showCaseCreator === 'own') {
+          if ((c.status === $scope.viewData.showCaseStatus) && (c.createdBy === sysCfg.user)) {
+            return true;
+          }
+        } else {
+          if ((c.status === $scope.viewData.showCaseStatus)) {
+            return true;
+          }
+        }
+        return false;
+      });
+      $scope.setReady(true);
+    };
+
+    this.initialize = () => {
+      $scope.setBusy('Initializing...');
+      CaseOntologyDataService.initialize().then(() => {
+        $scope.data.cases = [];
+        return CaseOntologyDataService.loadCasesOverview();
+      }).then((cases) => {
+        $scope.data.cases = cases;
+        $log.debug('loaded case', cases);
+        $scope.filter();
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
-      });*/
+      });
     };
   }
-
-
   module.exports = CasesViewController;
 
-})(global.angular);
+})();

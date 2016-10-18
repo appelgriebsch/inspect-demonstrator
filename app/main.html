@@ -20,15 +20,19 @@
 	<!-- pdf.js component styles -->
 	<link rel="stylesheet" href="node_modules/pdfjs-dist/web/pdf_viewer.css" />
 
-	<!-- visualization library -->
+  <!-- visualization library -->
 	<link rel="stylesheet" href="node_modules/vis/dist/vis.min.css" />
+
+  <!-- tree library -->
+  <link rel="stylesheet" href="node_modules/angular-ui-tree/dist/angular-ui-tree.min.css">
 
 	<!-- our own application style -->
 	<link rel="stylesheet" href="css/shell.css" />
 	<link rel="stylesheet" href="css/controls.css" />
 	<link rel="stylesheet" href="css/library.css" />
 	<link rel="stylesheet" href="css/ontology.css" />
-	<link rel="stylesheet" href="css/timeline.css" />
+  <link rel="stylesheet" href="css/timeline.css" />
+  <link rel="stylesheet" href="css/cases.css" />
 </head>
 
 <body ng-app="electron-app" layout="row" role="main" ui-view>
@@ -50,6 +54,9 @@
 
 	<!-- visualization library -->
 	<script src="node_modules/vis/dist/vis.min.js"></script>
+
+  <!-- tree library -->
+  <script type="text/javascript" src="node_modules/angular-ui-tree/dist/angular-ui-tree.js"></script>
 
 	<!-- our own shell starter -->
 	<script type="text/javascript" src="main.js"></script>

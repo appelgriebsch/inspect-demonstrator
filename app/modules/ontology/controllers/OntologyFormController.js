@@ -4,7 +4,7 @@
   'use strict';
 
   /**
-   * Controls the Add/Edit instance form
+   * Controls the Add/Edit individual form
    * @param $scope
    * @param $state
    * @param $q
@@ -21,8 +21,8 @@
     $scope.data = {
       // readonly data
       classes: [],
-      properties1: [], // instance is subject
-      properties2: [], // instance is object FIXME: unused
+      properties1: [], // individual is subject
+      properties2: [], // individual is object FIXME: unused
       instances: [],
 
       // changeable data
@@ -34,7 +34,7 @@
     };
 
     /**
-     * Called when the type of the instance is changed.
+     * Called when the type of the individual is changed.
      * TODO: invalidate all relations (automatic or confirmed removal?)
      */
     $scope.typeChanged = function() {
@@ -57,8 +57,8 @@
     };
 
     /**
-     * Called when the name of the instance was changed.
-     * All relations of the instance will be renamed.
+     * Called when the name of the individual was changed.
+     * All relations of the individual will be renamed.
      */
     $scope.nameChanged = function() {
 
@@ -76,8 +76,8 @@
 
     /**
      * Called when the property selection was changed.
-     * Fetches all the corresponding instance choices for the selected property.
-     * XXX: only works for relation where the current instance is subject so far
+     * Fetches all the corresponding individual choices for the selected property.
+     * XXX: only works for relation where the current individual is subject so far
      */
     $scope.propertyChanged = function() {
       if (!$scope.data.selectedClass) {
@@ -131,13 +131,13 @@
 
     /**
      * Called if the form is submitted.
-     * A new instance with the corresponding relations are created.
+     * A new individual with the corresponding relations are created.
      * The application will route to the ontology view, if the creation was successful
      *
      * TODO: check whether name is valid
      *
      */
-    $scope.$on("save-instance", () => {
+    $scope.$on("save-individual", () => {
       $scope.setBusy('Saving data...');
 
       var instanceIdentifier = `${ontologyUri}${$scope.data.name}`;

@@ -260,7 +260,7 @@
         if ((params.edges !== undefined) && (params.edges.length > 0)) {
           var selectedEdgeId = params.edges[0];
           this.selectedElement = this.data.edges.get(selectedEdgeId);
-          return;
+
         }
       });
     };
@@ -328,7 +328,7 @@
         this.reset();
       }
 
-      return;
+
     };
 
     this.reset = () => {

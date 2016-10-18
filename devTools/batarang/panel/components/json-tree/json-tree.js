@@ -201,7 +201,7 @@ function batJsonTreeDirective() {
           branches[depth].append(elt);
         });
 
-    };
+    }
   }
 }
 

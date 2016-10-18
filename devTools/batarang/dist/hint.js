@@ -40,7 +40,7 @@ function isFunction(value) {
  * var exampleMinErr = minErr('example');
  * throw exampleMinErr('one', 'This {0} is {1}', foo, bar);
  *
- * The above creates an instance of minErr in the example namespace. The
+ * The above creates an individual of minErr in the example namespace. The
  * resulting error will have a namespaced error code of example.one.  The
  * resulting error will replace {0} with the value of foo, and {1} with the
  * value of bar. The object is not restricted in the number of arguments it can
@@ -55,8 +55,8 @@ function isFunction(value) {
  * using minErr('namespace') . Error codes, namespaces and template strings
  * should all be static strings, not variables or general expressions.
  *
- * @param {string} module The namespace to use for the new minErr instance.
- * @returns {function(code:string, template:string, ...templateArgs): Error} minErr instance
+ * @param {string} module The namespace to use for the new minErr individual.
+ * @returns {function(code:string, template:string, ...templateArgs): Error} minErr individual
  */
 
 function minErr(module) {
@@ -244,7 +244,7 @@ function setupModuleLoader(window) {
            * @name angular.Module#provider
            * @module ng
            * @param {string} name service name
-           * @param {Function} providerType Construction function for creating new instance of the
+           * @param {Function} providerType Construction function for creating new individual of the
            *                                service.
            * @description
            * See {@link auto.$provide#provider $provide.provider()}.
@@ -256,7 +256,7 @@ function setupModuleLoader(window) {
            * @name angular.Module#factory
            * @module ng
            * @param {string} name service name
-           * @param {Function} providerFunction Function for creating new instance of the service.
+           * @param {Function} providerFunction Function for creating new individual of the service.
            * @description
            * See {@link auto.$provide#factory $provide.factory()}.
            */
@@ -278,7 +278,7 @@ function setupModuleLoader(window) {
            * @name angular.Module#value
            * @module ng
            * @param {string} name service name
-           * @param {*} object Service instance object.
+           * @param {*} object Service individual object.
            * @description
            * See {@link auto.$provide#value $provide.value()}.
            */
@@ -302,7 +302,7 @@ function setupModuleLoader(window) {
            * @module ng
            * @param {string} The name of the service to decorate.
            * @param {Function} This function will be invoked when the service needs to be
-           *                                    instantiated and should return the decorated service instance.
+           *                                    instantiated and should return the decorated service individual.
            * @description
            * See {@link auto.$provide#decorator $provide.decorator()}.
            */
@@ -313,7 +313,7 @@ function setupModuleLoader(window) {
            * @name angular.Module#animation
            * @module ng
            * @param {string} name animation name
-           * @param {Function} animationFactory Factory function for creating new instance of an
+           * @param {Function} animationFactory Factory function for creating new individual of an
            *                                    animation.
            * @description
            *
@@ -347,7 +347,7 @@ function setupModuleLoader(window) {
            * @name angular.Module#filter
            * @module ng
            * @param {string} name Filter name.
-           * @param {Function} filterFactory Factory function for creating new instance of filter.
+           * @param {Function} filterFactory Factory function for creating new individual of filter.
            * @description
            * See {@link ng.$filterProvider#register $filterProvider.register()}.
            */
@@ -371,7 +371,7 @@ function setupModuleLoader(window) {
            * @module ng
            * @param {string|Object} name Directive name, or an object map of directives where the
            *    keys are the names and the values are the factories.
-           * @param {Function} directiveFactory Factory function for creating new instance of
+           * @param {Function} directiveFactory Factory function for creating new individual of
            * directives.
            * @description
            * See {@link ng.$compileProvider#directive $compileProvider.directive()}.
@@ -1144,7 +1144,7 @@ function ngEventDirectivesDecorator(ngEventAttrName) {
 
 /**
  * We use EventEmitter2 here in order to have scoped events
- * For instance:
+ * For individual:
  *    hint.emit('scope:digest', {
  */
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
@@ -1585,9 +1585,8 @@ function defaultHash () {
  * Copyright (c) 2013 hij1nx
  * Licensed under the MIT license.
  */
-;!function(undefined) {
-
-  var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
+  !function (undefined) {
+    var isArray = Array.isArray ? Array.isArray : function _isArray(obj) {
     return Object.prototype.toString.call(obj) === "[object Array]";
   };
   var defaultMaxListeners = 10;

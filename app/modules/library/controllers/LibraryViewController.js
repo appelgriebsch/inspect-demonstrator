@@ -53,7 +53,7 @@
         });
 
         $scope.setReady(false);
-        
+
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
@@ -70,7 +70,7 @@
         _doSearch();
       }
 
-      return;
+
     };
 
     this.reset = () => {
@@ -141,7 +141,7 @@
           $scope.setReady(true);
         });
       });
-    }
+    };
 
     $scope.$on('import-documents', () => {
 

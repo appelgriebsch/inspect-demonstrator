@@ -37,6 +37,5 @@ function ScopesController($scope, inspectedApp) {
     $scope.watch(scopeId);
     $scope.inspectedScope = scopeId;
     inspectedApp.inspectScope(scopeId);
-  };
-
+  }
 }
