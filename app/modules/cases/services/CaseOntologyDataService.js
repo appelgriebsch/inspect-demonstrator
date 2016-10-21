@@ -9,8 +9,10 @@
 
     const caseClass = 'Fall';
     const caseNameProperty = 'Fallname';
-    const caseEntityProperty = 'beinhaltet_Fallinformationen';
-    const caseEntityInverseProperty = 'gehoert_zu_Fall';
+    const caseEntityPropertyName = 'beinhaltet_Fallinformationen';
+    let caseEntityProperty = {};
+    const caseEntityInversePropertyName = 'gehoert_zu_Fall';
+    let caseEntityInverseProperty = {};
 
     const regexExcludedClasses = new RegExp(`_:[a-zA-Z0-9]+|${caseClass}`, 'g');
     let isInitialized = false;
@@ -21,17 +23,16 @@
 
     const _createCase = (identifier) => {
       const c = new Case(identifier, sysCfg.user, new Date());
-      return OntologyDataService.saveIndividual(_convertToIndividual(c));
+      c.name = identifier;
+      return OntologyDataService.insertIndividual(_convertToIndividual(c));
     };
 
     const _convertToIndividual = (case_) => {
       const ontologyIri = OntologyDataService.ontologyIri();
       const individual = new OwlIndividual(ontologyIri, `${ontologyIri}${caseClass}`, `${ontologyIri}${case_.identifier}`);
-      angular.forEach(case_.names, function(name) {
-        individual.addDatatypeProperty(`${ontologyIri}${caseNameProperty}`, caseNameProperty, name);
-      });
+      individual.addDatatypeProperty(`${ontologyIri}${caseNameProperty}`, caseNameProperty, case_.name);
       angular.forEach(case_.individuals, function(ind) {
-        individual.addObjectProperty(`${ontologyIri}${caseEntityProperty}`, caseEntityProperty, ind.iri);
+        individual.addObjectProperty(`${ontologyIri}${caseEntityPropertyName}`, caseEntityPropertyName, ind.iri);
       });
 
       if (case_.description.length > 0) {
@@ -44,7 +45,7 @@
         Promise.reject('Individual must not be null!');
       }
       if (!(individual instanceof OwlIndividual)) {
-        Promise.reject('Individual of type OwlIndividual!');
+        Promise.reject(new Error('Individual of type OwlIndividual!'));
       }
       return new Promise((resolve, reject) => {
         // TODO: as long as those values don't get saved
@@ -58,10 +59,10 @@
         const caseNamePropertyIri = `${individual.ontologyIri}${caseNameProperty}`;
         angular.forEach(individual.datatypeProperties, function(value, key) {
           if (key === caseNamePropertyIri) {
-            c.names.push(value[0].target);
+            c.name = value[0].target;
           }
         });
-        const caseEntityPropertyIri = `${individual.ontologyIri}${caseEntityProperty}`;
+        const caseEntityPropertyIri = `${individual.ontologyIri}${caseEntityPropertyName}`;
         angular.forEach(individual.objectProperties, function(value, key) {
           if (key === caseEntityPropertyIri) {
             angular.forEach(value, function(prop) {
@@ -73,13 +74,15 @@
         });
         Promise.all(promises).then((result) => {
           resolve(result);
+        }).catch((err) => {
+          reject(err);
         });
       });
     };
 
     const _loadCase = (identifier, deep) => {
       if (angular.isUndefined(identifier)) {
-        return Promise.reject('Identifier may not be null!');
+        return Promise.reject(new Error('Identifier may not be null!'));
       }
       return new Promise((resolve, reject) => {
         OntologyDataService.fetchIndividual(identifier, deep).then((individual) => {
@@ -90,7 +93,7 @@
           resolve(c);
         }).catch((err) => {
           $log.error(err);
-          reject('Could not load case with identifier: ' + identifier + '!');
+          reject(new Error('Could not load case with identifier: ' + identifier + '!'));
         });
       });
     };
@@ -129,29 +132,34 @@
           resolve(cases);
         }).catch((err) => {
           $log.error(err);
-          reject('Could not load cases overview!');
+          reject(new Error('Could not load cases overview!'));
         });
       });
     };
 
     const _createAndAddIndividual = (classIri, instanceName, case_) => {
       if (!classIri) {
-        Promise.reject('Class iri is undefined.');
+        return Promise.reject(new Error('Class iri is undefined.'));
       }
       if (!instanceName) {
-        Promise.reject('Instance name is undefined.');
+        return Promise.reject(new Error('Instance name is undefined.'));
       }
       if (!case_) {
-        Promise.reject('Case is undefined.');
+        return Promise.reject(new Error('Case is undefined.'));
       }
       return new Promise((resolve, reject) => {
         const ontologyIri = OntologyDataService.ontologyIri();
         const individual = new OwlIndividual(ontologyIri, classIri, `${ontologyIri}${instanceName}`);
-        case_.individuals.push(individual);
-        individual.addObjectProperty(`${ontologyIri}${caseEntityInverseProperty}`, caseEntityInverseProperty, `${ontologyIri}${case_.identifier}`);
-        OntologyDataService.saveIndividual(individual).then(() => {
-          return OntologyDataService.saveIndividual(_convertToIndividual(case_));
+
+        OntologyDataService.insertIndividual(individual).then(() => {
+          const caseIndividual = _convertToIndividual(case_);
+
+          return Promise.all([
+            OntologyDataService.addObjectRelation(individual, caseEntityInverseProperty, caseIndividual),
+            OntologyDataService.addObjectRelation(caseIndividual, caseEntityProperty, individual)
+          ]);
         }).then(()=> {
+          case_.individuals.push(individual);
           resolve(individual);
         }).catch((err) => {
           reject(err);
@@ -161,16 +169,16 @@
 
     const _removeIndividual = (individual, case_) => {
       if (!individual) {
-        Promise.reject('Individual  is undefined.');
+        Promise.reject(new Error('Individual  is undefined.'));
       }
       if (!case_) {
-        Promise.reject('Case is undefined.');
+        Promise.reject(new Error('Case is undefined.'));
       }
       return new Promise((resolve, reject) => {
         const ontologyIri = OntologyDataService.ontologyIri();
 
         //check whether this individual is only linked to this case
-        const propIri = `${ontologyIri}${caseEntityInverseProperty}`;
+        const propIri = `${ontologyIri}${caseEntityInversePropertyName}`;
         let justOneCase = true;
         angular.forEach(individual.objectProperties[propIri], (value) => {
           if (value.target !== `${ontologyIri}${case_.identifier}`) {
@@ -215,8 +223,19 @@
               }
             });
             objectProperties = result[1];
+            objectProperties.map((prop) => {
+              if (prop.label === caseEntityPropertyName) {
+                caseEntityProperty = prop;
+              }
+              if (prop.label === caseEntityInversePropertyName) {
+                caseEntityInverseProperty = prop;
+              }
+            });
             _buildClassesTree(rootClassIris, -1);
+            return OntologyDataService.export();
+          }).then(() => {
             resolve();
+
           }).catch((err) => {
             reject(err);
           });

@@ -67,7 +67,7 @@
 
     angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', '$log', 'CaseOntologyDataService', CasesViewController]);
     angular.module('electron-app').controller('CasesDialogController', ['$scope', '$state', '$mdDialog', 'nodeId', 'objectProperties', 'datatypeProperties', 'instances', CasesDialogController]);
-    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', 'CaseOntologyDataService', CaseEditController]);
+    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', '$log','CaseOntologyDataService', CaseEditController]);
     angular.module('electron-app').controller('CasesTreeController', ['$scope', '$state',CasesTreeController]);
 
 

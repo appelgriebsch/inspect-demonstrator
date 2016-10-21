@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, CaseOntologyDataService) {
+  function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, $log, CaseOntologyDataService) {
     //<editor-fold desc="Constructor">
     this.state = $state.$current;
 
@@ -147,11 +147,12 @@
     //</editor-fold>
 
     $scope.newInstanceNode = (clazzIri) => {
-      CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node ${this.data.nodes.length}`, $scope.data['case']).then((individual) => {
+      const r = Math.floor((Math.random() * 1000) + 1);
+      CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node ${r}`, $scope.data['case']).then((individual) => {
         this.data.nodes.add($scope.data['case'].generateNode(individual));
         this.network.fit();
       }).catch((err) => {
-        $scope.setError('InsertAction', 'insert', err);
+        $scope.setError('AddAction', 'add', err);
         $scope.setReady(true);
       });
     };
@@ -174,6 +175,7 @@
         ]);
       }).then((result) => {
         $scope.data['case'] = result[0];
+        $log.debug('case ', result[0]);
         _createGraph();
         $scope.setReady(true);
       }).catch((err) => {

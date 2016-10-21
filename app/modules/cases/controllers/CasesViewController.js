@@ -23,7 +23,7 @@
         $state.go('app.cases.edit', {caseId: identifier});
         $scope.setReady(true);
       }).catch((err) => {
-        $scope.setError('InsertAction', 'insert', err);
+        $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
       });
     };
@@ -56,7 +56,7 @@
         return CaseOntologyDataService.loadCasesOverview();
       }).then((cases) => {
         $scope.data.cases = cases;
-        $log.debug('loaded case', cases);
+        $log.debug('cases: ', cases);
         $scope.filter();
         $scope.setReady(true);
       }).catch((err) => {

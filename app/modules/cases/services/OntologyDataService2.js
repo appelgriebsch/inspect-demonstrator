@@ -185,7 +185,7 @@
      */
     var _iriExists = (iri) => {
       if (angular.isUndefined(iri)) {
-        Promise.reject('Iri may not be null.');
+        return Promise.reject(new Error('Iri may not be null.'));
       }
       return new Promise((resolve, reject) => {
         db.get({
@@ -243,7 +243,7 @@
     };
     const _fetchClass = (classIri) => {
       if (angular.isUndefined(classIri)) {
-        return Promise.reject('Class iri may not be null.');
+        return Promise.reject(new Error('Class iri may not be null.'));
       }
       return new Promise((resolve, reject) => {
         const promises = [
@@ -254,7 +254,7 @@
         ];
         Promise.all(promises).then((result) => {
           if (angular.isUndefined(result) || (result[0].length === 0)) {
-            reject(`Class with iri ${classIri} not found.`);
+            throw new Error(`Class with iri ${classIri} not found.`);
           } else {
             const clazz = new OwlClass(_iriForPrefix('ontology'), classIri);
             angular.forEach(result[1], (comment) => {
@@ -268,12 +268,14 @@
             });
             resolve(clazz);
           }
+        }).catch((err) => {
+          reject(err);
         });
       });
     };
     const _fetchObjectProperty = (propertyIri) => {
       if (angular.isUndefined(propertyIri)) {
-        return Promise.reject('Property iri may not be null.');
+        return Promise.reject(new Error('Property iri may not be null.'));
       }
       return new Promise((resolve, reject) => {
         var predDomain = `${_iriForPrefix('rdfs')}domain`;
@@ -316,13 +318,13 @@
 
     const _fetchIndividual = (individualIri, deep) => {
       if (angular.isUndefined(individualIri)) {
-        return Promise.reject('Individual iri may not be null.');
+        return Promise.reject(new Error('Individual iri may not be null.'));
       }
       if (!angular.isString(individualIri)) {
-        return Promise.reject('Individual iri must be a string.');
+        return Promise.reject(new Error('Individual iri must be a string.'));
       }
       if (individualIri.length === 0) {
-        return Promise.reject('Individual iri must not be empty.');
+        return Promise.reject(new Error('Individual iri must not be empty.'));
       }
       return new Promise((resolve, reject) => {
         const dataPropType = `${_iriForPrefix('owl')}DatatypeProperty`;
@@ -338,7 +340,7 @@
 
         Promise.all(promises).then((result) => {
           if (angular.isUndefined(result) || (result[0].length === 0)) {
-            reject(`Individual with iri ${individualIri} not found.`);
+            throw new Error(`Individual with iri ${individualIri} not found.`);
           } else {
             const individual = new OwlIndividual(_iriForPrefix('ontology'), result[0][0].x, individualIri);
 
@@ -369,10 +371,10 @@
     };
     const _fetchForIndividual = function(individualIri, objType) {
       if (angular.isUndefined(individualIri)) {
-        return Promise.reject('Individual iri may not be null.');
+        return Promise.reject(new Error('Individual iri may not be null.'));
       }
       if (angular.isUndefined(objType)) {
-        return Promise.reject('Object type may not be null.');
+        return Promise.reject(new Error('Object type may not be null.'));
       }
       return new Promise((resolve, reject) => {
         const searchArray = [{
@@ -430,13 +432,13 @@
 
     const _fetchAllIrisForType = (rdfsType) => {
       if (angular.isUndefined(rdfsType)) {
-        return Promise.reject('Type may not be null.');
+        return Promise.reject(new Error('Type may not be null.'));
       }
       if (!angular.isString(rdfsType)) {
-        return Promise.reject('Type must be a string.');
+        return Promise.reject(new Error('Type must be a string.'));
       }
       if (rdfsType.length === 0) {
-        return Promise.reject('Type may not be empty.');
+        return Promise.reject(new Error('Type may not be empty.'));
       }
       return new Promise((resolve, reject) => {
         const iris = [];
@@ -500,23 +502,37 @@
     };
 
     const _insertIndividual = (individual) => {
+      if (angular.isUndefined(individual)) {
+        return Promise.reject(new Error('Individual must not be null.'));
+      }
+      console.log(individual);
+
       return new Promise((resolve, reject) => {
-        db.put(individual.toSaveTriples(), function(err) {
-          if (err) {
-            reject(err);
+        _iriExists(individual.iri).then((exists)  => {
+          if (exists === true) {
+            reject(new Error(`Iri: ${individual.iri} already exists!`));
           } else {
-            resolve();
+            db.put(individual.toSaveTriples(), function(err) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve();
+              }
+            });
           }
+        }).catch((err) => {
+          reject(err);
         });
       });
     };
 
     var _saveIndividual = (individual) => {
+      if (angular.isUndefined(individual)) {
+        return Promise.reject(new Error('Individual may not be null.'));
+      }
       //TODO: add quotation marks again
       return new Promise((resolve, reject) => {
-        if (angular.isUndefined(individual)) {
-          reject('Individual may not be null.');
-        }
+
         // if it doesn't need to be saved resolve instantly
         if (individual.saved) {
           resolve();
@@ -538,7 +554,7 @@
           }
           // if both iris exist, the individual can't be removed
           if (result[0] && result[1]) {
-            reject(`Can't rename individual from: ${individual.initialIri} to: ${individual.iri}`);
+            throw new Error(`Can't rename individual from: ${individual.initialIri} to: ${individual.iri}`);
           }
           return Promise.resolve();
         }).then(() => {
@@ -555,13 +571,15 @@
            */
           individual.markAsSaved();
           resolve();
+        }).catch((err) => {
+          reject(err);
         });
       });
     };
 
     var _fetchIndividualIrisForClass = (classIri) => {
       if (!classIri) {
-        throw new Error('ClassIri is undefined.');
+        Promise.reject(new Error('ClassIri is undefined.'));
       }
       return new Promise((resolve, reject) => {
         _fetch(classIri, _iriFor('rdf-type'), _iriFor('owl-individual'), 'object').then((result, err) => {
@@ -580,13 +598,13 @@
 
     var _addOrRemoveIndividual = (instance, type) => {
       if (angular.isUndefined(instance)) {
-        return Promise.reject('Instance may not be undefined.');
+        return Promise.reject(new Error('Instance may not be undefined.'));
       }
       if (angular.isUndefined(type)) {
-        return Promise.reject('Type may not be undefined.');
+        return Promise.reject(new Error('Type may not be undefined.'));
       }
       if ((type !== 'add') && (type !== 'remove')) {
-        return Promise.reject('Type may only be add or remove');
+        return Promise.reject(new Error('Type may only be add or remove'));
       }
       // 2 triples have to be added:
       //  - the individual is of type class
@@ -643,6 +661,41 @@
       });
     };
 
+    const _addObjectRelation = (subjectIndividual, objectProperty, objectIndividual) => {
+      if (angular.isUndefined(subjectIndividual)) {
+        return Promise.reject(new Error('Subject individual may not be undefined.'));
+      }
+      if (!(subjectIndividual instanceof OwlIndividual)) {
+        return Promise.reject(new Error('Subject individual must be of type OwlIndividual.'));
+      }
+      if (angular.isUndefined(objectProperty)) {
+        return Promise.reject(new Error('Property may not be undefined.'));
+      }
+      if (!(objectProperty instanceof OwlProperty)) {
+        return Promise.reject(new Error('Property must be of type OwlProperty.'));
+      }
+      if (angular.isUndefined(objectIndividual)) {
+        return Promise.reject(new Error('Object individual may not be undefined.'));
+      }
+      if (!(objectIndividual instanceof OwlIndividual)) {
+        return Promise.reject(new Error('Object individual must be of type OwlIndividual.'));
+      }
+      subjectIndividual.addObjectProperty(objectProperty.iri, objectProperty.label, objectIndividual.iri);
+      return new Promise((resolve, reject) => {
+        db.put({
+          subject: subjectIndividual.iri,
+          predicate: objectProperty.iri,
+          object: objectIndividual.iri
+        }, function(err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+    };
+
     return {
       initialize: function() {
         db = LevelGraphDBService.initialize('ontology2');
@@ -654,6 +707,9 @@
       },
       isInitialized: () => {
         return !angular.isUndefined(db);
+      },
+      iriExists: (iri) => {
+        return _iriExists(iri);
       },
       /* newInstance: (className, instanceName) => {
        if (angular.isUndefined(className)) {
@@ -691,8 +747,11 @@
       fetchClass(classIri) {
         return _fetchClass(classIri);
       },
-      saveIndividual: (individual) => {
-        return _saveIndividual(individual);
+      insertIndividual: (individual) => {
+        return _insertIndividual(individual);
+      },
+      addObjectRelation(subjectIndividual, objectProperty, objectIndividual) {
+        return _addObjectRelation(subjectIndividual, objectProperty, objectIndividual);
       },
       removeIndividual: (individualIri) => {
         return _removeIndividual(individualIri);
