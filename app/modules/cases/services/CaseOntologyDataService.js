@@ -2,10 +2,12 @@
   'use strict';
 
   function CaseOntologyDataService($log, $filter, OntologyDataService) {
+    var path = require('path');
+
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
-    const Case = require('../models/Case');
-    const OwlIndividual = require('../models/OwlIndividual');
+    const Case = require(path.join(__dirname, '../models/Case'));
+    const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
 
     const caseClass = 'Fall';
     const caseNameProperty = 'Fallname';
