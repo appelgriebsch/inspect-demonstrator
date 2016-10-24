@@ -361,7 +361,6 @@
                 individual.addObjectProperty(item.x, _labelFor(item.x), item.y);
               });
             }
-            individual.markAsSaved();
             resolve(individual);
           }
         }).catch((err) => {
@@ -505,9 +504,8 @@
       if (angular.isUndefined(individual)) {
         return Promise.reject(new Error('Individual must not be null.'));
       }
-      console.log(individual);
 
-      return new Promise((resolve, reject) => {
+       return new Promise((resolve, reject) => {
         _iriExists(individual.iri).then((exists)  => {
           if (exists === true) {
             reject(new Error(`Iri: ${individual.iri} already exists!`));
@@ -526,6 +524,61 @@
       });
     };
 
+    const _changeIri = (oldIri, newIri) => {
+      if (angular.isUndefined(oldIri)) {
+        return Promise.reject(new Error('Old Iri must not be null.'));
+      }
+      if (angular.isUndefined(newIri)) {
+        return Promise.reject(new Error('New Iri must not be null.'));
+      }
+      const _update = (oldTriple, newTriple) => {
+        return new Promise((resolve, reject) => {
+          db.del(oldTriple, function(err) {
+            db.put(newTriple, function(err2) {
+              resolve(true);
+            });
+          });
+        });
+      };
+
+      return new Promise((resolve, reject) => {
+        db.get({
+          subject: oldIri,
+        }, function(err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            const promises = [];
+            angular.forEach(results, (triple) => {
+              const newTriple = angular.copy(triple);
+              newTriple.subject = newIri;
+              promises.push(_update(triple, newTriple));
+            });
+            Promise.all(promises).then(() => {
+              db.get({
+                object: oldIri,
+              }, function(err, results) {
+                if (err) {
+                  reject(err);
+                } else {
+                  const promises = [];
+                  angular.forEach(results, (triple) => {
+                    const newTriple = angular.copy(triple);
+                    newTriple.object = newIri;
+                    promises.push(_update(triple, newTriple));
+                  });
+                  Promise.all(promises).then(() => {
+                    resolve();
+                  });
+
+                }
+              });
+            });
+
+          }
+        });
+      });
+    };
     var _saveIndividual = (individual) => {
       if (angular.isUndefined(individual)) {
         return Promise.reject(new Error('Individual may not be null.'));
@@ -569,7 +622,6 @@
            return Promise.resolve();
            }
            */
-          individual.markAsSaved();
           resolve();
         }).catch((err) => {
           reject(err);
@@ -735,6 +787,10 @@
        }
        return _addOrRemoveInstance(individual, 'add');
        },*/
+
+      changeIri(oldIri, newIri) {
+        return _changeIri(oldIri, newIri);
+      },
       fetchIndividual(individualIri, deep) {
         return _fetchIndividual(individualIri, deep);
       },

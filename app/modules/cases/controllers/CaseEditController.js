@@ -56,10 +56,6 @@
     this.data = {
       nodes: new vis.DataSet(),
       edges: new vis.DataSet(),
-
-      addedInstances: {},
-      editedInstances: {},
-      deletedInstances: {}
     };
     $scope.data = {
       'case': {},
@@ -83,16 +79,64 @@
         parent: angular.element(document.body),
         clickOutsideToClose: false,
         windowClass: 'large-Modal',
-        locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: [], instances: $scope.data['case'].individuals}
+        locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: [], instances: angular.copy($scope.data['case'].individuals)}
       }).then(function(result) {
-        if (result.toBeDeleted) {
+        if (result.toBeDeleted === true) {
+          $scope.setBusy('Deleting node...');
           that.data.nodes.remove(result.individual.iri);
           // XXX: removes the individual completely! what should happen if the individual is also in another case?
-          CaseOntologyDataService.removeIndividual(result.individual, $scope.data['case']);
+          CaseOntologyDataService.removeIndividual(result.individual, $scope.data['case']).then(() => {
+            that.network.fit();
+            $scope.setReady(true);
+          }).catch((err) => {
+            $scope.setError('DeleteAction', 'delete', err);
+            $scope.setReady(true);
+          });
+
         }
-        that.network.fit();
+        if (result.toBeRenamed === true) {
+          $scope.setBusy('Renaming node...');
+          const oldIri = result.individual.iri;
+          _renameNode(oldIri, result.newName).then(() => {
+            $scope.setReady(true);
+          }).catch((err) => {
+            $scope.setError('EditAction', 'mode edit', err);
+            $scope.setReady(true);
+          });
+        }
       });
     };
+
+    const _renameNode = (oldIri, newName) => {
+      return new Promise((resolve, reject) => {
+        // change node name
+        CaseOntologyDataService.renameIndividual($scope.data['case'], oldIri, newName).then((individual) => {
+          if (!angular.isUndefined(individual)) {
+            const newNode = $scope.data['case'].generateNode(individual);
+            // add new node
+            this.data.nodes.add(newNode);
+            //update edges
+            var updates = [];
+            angular.forEach(this.data.edges.get(), (edge) => {
+              if (edge.from === oldIri) {
+                updates.push({id: edge.id, from: individual.iri});
+              }
+              if (edge.to === oldIri) {
+                updates.push({id: edge.id, to: individual.iri});
+              }
+            });
+            this.data.edges.update(updates);
+            //delete old node
+            this.data.nodes.remove(oldIri);
+            this.network.fit();
+          }
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+
     var _createGraph = () => {
       const container = document.getElementById('ontology-graph');
       const t = $scope.data['case'].generateNodesAndEdges();
@@ -130,7 +174,7 @@
       return false;
     };
 
-     //<editor-fold desc="Actions">
+    //<editor-fold desc="Actions">
     $scope.$on('case-cancel', () => {
       $state.go('app.cases.view');
     });

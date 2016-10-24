@@ -42,10 +42,10 @@
     };
     const _convertToCase = (individual) => {
       if (angular.isUndefined(individual)) {
-        Promise.reject('Individual must not be null!');
+        return Promise.reject('Individual must not be null!');
       }
       if (!(individual instanceof OwlIndividual)) {
-        Promise.reject(new Error('Individual of type OwlIndividual!'));
+        return Promise.reject(new Error('Individual of type OwlIndividual!'));
       }
       return new Promise((resolve, reject) => {
         // TODO: as long as those values don't get saved
@@ -73,6 +73,12 @@
           }
         });
         Promise.all(promises).then((result) => {
+          // delete case relations
+          angular.forEach(result, (value, index) => {
+            if (index > 0) {
+              delete value.objectProperties[caseEntityInverseProperty.iri];
+            }
+          });
           resolve(result);
         }).catch((err) => {
           reject(err);
@@ -124,8 +130,7 @@
         OntologyDataService.fetchIndividualsForClass(caseClassIri).then((iris) => {
           const promises = [];
           angular.forEach(iris, function(iri) {
-            //promises.push(_loadCase(iri, false));
-            promises.push(_loadCase(iri, true));
+            promises.push(_loadCase(iri, false));
           });
           return Promise.all(promises);
         }).then((cases) => {
@@ -161,6 +166,59 @@
         }).then(()=> {
           case_.individuals.push(individual);
           resolve(individual);
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+
+    const _renameIndividual = (case_, individualIri, newName) => {
+      if (angular.isUndefined(case_)) {
+        return Promise.reject(new Error('Case must not be null!'));
+      }
+      if (!(case_ instanceof Case)) {
+        return Promise.reject(new Error('Case must be of type Case!'));
+      }
+      if (angular.isUndefined(individualIri)) {
+        return Promise.reject(new Error('Individual iri must not be null!'));
+      }
+      if (!angular.isString(individualIri)) {
+        return Promise.reject(new Error('Individual iri must not be a string!'));
+      }
+      if (angular.isUndefined(newName)) {
+        return Promise.reject(new Error('New name must not be null!'));
+      }
+      if (!angular.isString(newName)) {
+        return Promise.reject(new Error('New name must not be a string!'));
+      }
+      return new Promise((resolve, reject) => {
+        const newIri = `${OntologyDataService.ontologyIri()}${newName}`;
+        if (newIri === individualIri) {
+          resolve();
+          return;
+        }
+        OntologyDataService.iriExists(newIri).then((result) => {
+          if (result === true) {
+            throw new Error('Name already exists!');
+          }
+          return OntologyDataService.changeIri(individualIri, newIri);
+        }).then(()  => {
+          let result = undefined;
+          angular.forEach(case_.individuals, (individual) => {
+            if (individual.iri === individualIri) {
+              individual.iri = newIri;
+              individual.label = newName;
+              result = individual;
+            }
+            angular.forEach(individual.objectProperties, (props) => {
+              angular.forEach(props, (prop) => {
+                if (prop.target === individualIri) {
+                  prop.target = newIri;
+                }
+              });
+            });
+          });
+          resolve(result);
         }).catch((err) => {
           reject(err);
         });
@@ -264,7 +322,9 @@
       getClassTree: () => {
         return angular.copy(classTree);
       },
-
+      renameIndividual: (case_, individualIri, newName) => {
+        return _renameIndividual(case_, individualIri, newName);
+      },
       loadCase: (identifier) => {
         return _loadCase(`${OntologyDataService.ontologyIri()}${identifier}`, true);
       },
