@@ -26,11 +26,12 @@
     $scope.delete = function() {
       $mdDialog.hide({individual: $scope.data.individual, toBeDeleted: true});
     };
-    $scope.cancel = () => {
+    $scope.close = () => {
       $mdDialog.cancel();
     };
-    $scope.confirm = () => {
-      $mdDialog.hide({individual: $scope.data.individual, toBeDeleted: false});
+
+    $scope.rename = () => {
+      $mdDialog.hide({individual: $scope.data.individual, toBeRenamed: true, newName: $scope.data.individual.label});
     };
 
     $scope.addRelation = () => {
@@ -51,21 +52,6 @@
     return {
       initialize: function() {
 
-        /*  //TODO: an welchen scope kann ich das anhängen?
-          //$scope.$root.setBusy('Fetching data...');
-          OntologyDataService.fetchClasses([node.classIri]).then((classes) => {
-            if (classes.length > 0) {
-              return  OntologyDataService.fetchObjectProperties(classes[0].objectPropertyIris);
-            } else {
-              return Promise.resolve([]);
-            }
-          }).then((objectProperties) => {
-            $scope.data.objectProperties = _filterObjectProperties(node.classIri, objectProperties);
-            //$scope.setReady(true);
-          }).catch((err) => {
-            $scope.setError('SearchAction', 'search', err);
-            //$scope.setReady(true);
-          });*/
       }
     };
 
