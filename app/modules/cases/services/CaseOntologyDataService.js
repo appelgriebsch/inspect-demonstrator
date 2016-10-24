@@ -174,6 +174,55 @@
       });
     };
 
+    const _addObjectProperty = (case_, subjectIri, propertyIri, objectIri) => {
+      if (angular.isUndefined(case_)) {
+        return Promise.reject(new Error('Case must not be null!'));
+      }
+      if (!(case_ instanceof Case)) {
+        return Promise.reject(new Error('Case must be of type Case!'));
+      }
+      if (angular.isUndefined(subjectIri)) {
+        return Promise.reject(new Error('Subject iri must not be null!'));
+      }
+      if (!angular.isString(subjectIri)) {
+        return Promise.reject(new Error('Subject iri must not be a string!'));
+      }
+      if (angular.isUndefined(propertyIri)) {
+        return Promise.reject(new Error('Property iri must not be null!'));
+      }
+      if (!angular.isString(propertyIri)) {
+        return Promise.reject(new Error('Property iri must not be a string!'));
+      }
+      if (angular.isUndefined(objectIri)) {
+        return Promise.reject(new Error('Object iri must not be null!'));
+      }
+      if (!angular.isString(objectIri)) {
+        return Promise.reject(new Error('Object iri must not be a string!'));
+      }
+      return new Promise((resolve, reject) => {
+        let subjectIndividual = {};
+        let objectIndividual = {};
+        let objectProperty = {};
+        angular.forEach(case_.individuals, (individual) => {
+          if (individual.iri === subjectIri) {
+            subjectIndividual = individual;
+          }
+          if (individual.iri === objectIri) {
+            objectIndividual = individual;
+          }
+        });
+        angular.forEach(objectProperties, (prop) => {
+          if (prop.iri === propertyIri) {
+            objectProperty = prop;
+          }
+        });
+        OntologyDataService.addObjectRelation(subjectIndividual, objectProperty, objectIndividual).then(() => {
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
     const _renameIndividual = (case_, individualIri, newName) => {
       if (angular.isUndefined(case_)) {
         return Promise.reject(new Error('Case must not be null!'));
@@ -321,6 +370,9 @@
 
       getClassTree: () => {
         return angular.copy(classTree);
+      },
+      addObjectProperty: (case_, subjectIri, propertyIri, objectIri) => {
+        return _addObjectProperty(case_, subjectIri, propertyIri, objectIri);
       },
       renameIndividual: (case_, individualIri, newName) => {
         return _renameIndividual(case_, individualIri, newName);

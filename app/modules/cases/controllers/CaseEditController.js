@@ -104,6 +104,26 @@
             $scope.setReady(true);
           });
         }
+        if (result.newRelation === true) {
+          $scope.setBusy('Adding relation...');
+          _addRelation(result.individualIri, result.relation).then(() => {
+            $scope.setReady(true);
+          }).catch((err) => {
+            $scope.setError('EditAction', 'mode edit', err);
+            $scope.setReady(true);
+          });
+        }
+      });
+    };
+
+    const _addRelation = (individualIri, relation) => {
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.addObjectProperty($scope.data['case'], individualIri, relation.propIri, relation.targetIri).then(()=> {
+          this.data.edges.add({from: individualIri, to: relation.targetIri, label: relation.propLabel, title: relation.propLabel});
+          resolve();
+        }).catch((err) => {
+            reject(err);
+          });
       });
     };
 
@@ -153,7 +173,6 @@
 
       });
     };
-
 
     $scope.isEditable = (element) => {
       if ((element === 'identifier') && ($scope.data['case'].status === 'new')) {

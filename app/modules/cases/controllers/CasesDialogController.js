@@ -1,4 +1,3 @@
-/*jshint esversion: 6 */
 (function(angular) {
 
   'use strict';
@@ -14,14 +13,9 @@
 
       // changeable data
       selectedObjectPropertyIri: undefined,
-      selectedInstanceIri: undefined,
+      selectedIndividualIri: undefined,
       newObjectProperties: [],
     };
-    individuals.forEach((individual) => {
-      if (individual.iri === nodeId) {
-        $scope.data.individual = individual;
-      }
-    });
 
     $scope.delete = function() {
       $mdDialog.hide({individual: $scope.data.individual, toBeDeleted: true});
@@ -35,23 +29,54 @@
     };
 
     $scope.addRelation = () => {
-      if (!$scope.data.selectedObjectPropertyIri) {
+      if (angular.isUndefined($scope.data.selectedObjectPropertyIri)) {
         return;
       }
-      if (!$scope.data.selectedInstanceIri) {
+      if (angular.isUndefined($scope.data.selectedIndividualIri)) {
         return;
       }
-      $scope.data.objectProperties.forEach((prop) => {
-        if (prop.iri === $scope.data.selectedObjectPropertyIri) {
-          prop.target = $scope.data.selectedInstanceIri;
-          $scope.data.newObjectProperties.push(prop);
+      const relation = _createRelation($scope.data.selectedObjectPropertyIri, $scope.data.selectedIndividualIri);
+
+      if (!angular.isUndefined(relation)) {
+        $mdDialog.hide({individualIri: $scope.data.individual.iri, newRelation: true, relation: relation});
+      }
+    };
+
+    const _createRelation = (propertyIri, individualIri)=>{
+      const relation = {};
+      angular.forEach($scope.data.objectProperties, (prop) => {
+        if (prop.iri === (propertyIri)) {
+          relation.propIri =  prop.iri;
+          relation.propLabel =  prop.label;
         }
       });
+      angular.forEach($scope.data.individuals, (individual) => {
+        if (individual.iri === (individualIri)) {
+          relation.targetIri =  individual.iri;
+          relation.targetLabel =  individual.label;
+        }
+      });
+      if (angular.isUndefined(relation.propIri) || angular.isUndefined(relation.targetIri)) {
+        return undefined;
+      }
+      return relation;
     };
 
     return {
       initialize: function() {
-
+        angular.forEach(individuals, (individual) => {
+          if (individual.iri === nodeId) {
+            $scope.data.individual = individual;
+          }
+        });
+        angular.forEach($scope.data.individual.objectProperties, (array, key) => {
+          angular.forEach(array, (item) => {
+            const relation = _createRelation(key, item.target);
+            if (!angular.isUndefined(relation)) {
+              $scope.data.newObjectProperties.push(relation);
+            }
+          });
+        });
       }
     };
 

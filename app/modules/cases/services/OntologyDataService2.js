@@ -764,31 +764,6 @@
       iriExists: (iri) => {
         return _iriExists(iri);
       },
-      /* newInstance: (className, instanceName) => {
-       if (angular.isUndefined(className)) {
-       return Promise.reject('Class name must not be null!');
-       }
-       if (angular.isUndefined(instanceName)) {
-       return Promise.reject('Instance name must not be null!');
-       }
-       var classIri =  `${_iriForPrefix('ontology')}${className}`;
-       var instanceIri = `${_iriForPrefix('ontology')}${instanceName}`;
-       return Promise.resolve(_createInstanceFromTemplate(classIri, instanceIri));
-       },
-       createInstance: (individual) => {
-       if (angular.isUndefined(individual)) {
-       return Promise.reject('Instance must not be null!');
-       }
-       if (angular.isUndefined(individual.name)) {
-       return Promise.reject('Instance name must not be null!');
-       }
-       individual.iri = `${_iriForPrefix('ontology')}${individual.name}`;
-       if (_iriExists(individual.iri)) {
-       return Promise.reject('Instance Iri already exists!');
-       }
-       return _addOrRemoveInstance(individual, 'add');
-       },*/
-
       changeIri(oldIri, newIri) {
         return _changeIri(oldIri, newIri);
       },
