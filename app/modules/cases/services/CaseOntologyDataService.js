@@ -290,8 +290,6 @@
               }
             });
             _buildClassesTree(rootClassIris, -1);
-            return OntologyDataService.export();
-          }).then(() => {
             resolve();
 
           }).catch((err) => {
