@@ -18,9 +18,10 @@
     var db;
     var path = require('path');
     var fs = require('fs');
-    const OwlIndividual = require('../models/OwlIndividual');
-    const OwlClass = require('../models/OwlClass');
-    const OwlProperty = require('../models/OwlProperty');
+
+    const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
+    const OwlClass = require(path.join(__dirname, '../models/OwlClass'));
+    const OwlProperty = require(path.join(__dirname, '../models/OwlProperty'));
 
     const regexRemoveQuotationMarks = /^"?(.*?)"?$/;
 

@@ -7,7 +7,7 @@
     var docID = $stateParams.doc;
 
     this.document;
-    this.sidebarLeftOpened = false;
+    this.sidebarOpened = false;
 
     this.initialize = function() {
 
@@ -79,14 +79,14 @@
     this.openSidebar = function() {
       $q.when(true).then(() => {
         angular.element(document.querySelector('.sidebar')).addClass('sidebar-open');
-        this.sidebarLeftOpened = true;
+        this.sidebarOpened = true;
       });
     };
 
     this.closeSidebar = function() {
       $q.when(true).then(() => {
         angular.element(document.querySelector('.sidebar')).removeClass('sidebar-open');
-        this.sidebarLeftOpened = false;
+        this.sidebarOpened = false;
       });
     };
 
