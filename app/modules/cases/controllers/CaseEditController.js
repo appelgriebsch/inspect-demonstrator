@@ -2,6 +2,8 @@
 
   'use strict';
 
+  var uuid = require('uuid');
+
   function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, $log, CaseOntologyDataService) {
     //<editor-fold desc="Constructor">
     this.state = $state.$current;
@@ -27,6 +29,9 @@
           face: 'Helvetica Neue, Helvetica, Arial'
         }
       },
+      edges: {
+        arrows: 'to'
+      },
       groups: {
         instanceNode: {
         },
@@ -45,6 +50,16 @@
             },
           },
         }
+      },
+      physics: {
+        barnesHut: {
+          gravitationalConstant: -13250,
+          centralGravity: 0.75,
+          springLength: 135,
+          damping: 0.28,
+          avoidOverlap: 1
+        },
+        minVelocity: 0.75
       },
       interaction: {
         hover: true,
@@ -79,7 +94,7 @@
         parent: angular.element(document.body),
         clickOutsideToClose: false,
         windowClass: 'large-Modal',
-        locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: [], instances: angular.copy($scope.data['case'].individuals)}
+        locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: CaseOntologyDataService.getDatatypeProperties(), instances: angular.copy($scope.data['case'].individuals)}
       }).then(function(result) {
         if (result.toBeDeleted === true) {
           $scope.setBusy('Deleting node...');
@@ -106,24 +121,46 @@
         }
         if (result.newRelation === true) {
           $scope.setBusy('Adding relation...');
-          _addRelation(result.individualIri, result.relation).then(() => {
-            $scope.setReady(true);
-          }).catch((err) => {
-            $scope.setError('EditAction', 'mode edit', err);
-            $scope.setReady(true);
-          });
+          if (result.relation.type === 'object') {
+            _addObjectRelation(result.individualIri, result.relation).then(() => {
+              $scope.setReady(true);
+            }).catch((err) => {
+              $scope.setError('EditAction', 'mode edit', err);
+              $scope.setReady(true);
+            });
+          }
+          if (result.relation.type === 'value') {
+            _addValueRelation(result.individualIri, result.relation).then(() => {
+              $scope.setReady(true);
+            }).catch((err) => {
+              $scope.setError('EditAction', 'mode edit', err);
+              $scope.setReady(true);
+            });
+          }
         }
       });
     };
+    const _addValueRelation = (individualIri, relation) => {
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.addDatatypeProperty($scope.data['case'], individualIri, relation.propIri, relation.targetValue).then(()=> {
+          const id = uuid.v4();
+          this.data.nodes.add({id: id, label: relation.targetValue, title: relation.targetValue, group: 'dataNode'});
+          this.data.edges.add({from: individualIri, to: id, label: relation.propLabel, title: relation.propLabel});
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
 
-    const _addRelation = (individualIri, relation) => {
+    const _addObjectRelation = (individualIri, relation) => {
       return new Promise((resolve, reject) => {
         CaseOntologyDataService.addObjectProperty($scope.data['case'], individualIri, relation.propIri, relation.targetIri).then(()=> {
           this.data.edges.add({from: individualIri, to: relation.targetIri, label: relation.propLabel, title: relation.propLabel});
           resolve();
         }).catch((err) => {
-            reject(err);
-          });
+          reject(err);
+        });
       });
     };
 

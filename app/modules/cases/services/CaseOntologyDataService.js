@@ -21,6 +21,7 @@
 
     const classes = {};
     let objectProperties = [];
+    let datatypeProperties = [];
     const classTree = [];
 
     const _createCase = (identifier) => {
@@ -174,6 +175,48 @@
       });
     };
 
+    const _addDatatypeProperty = (case_, subjectIri, propertyIri, value) => {
+      if (angular.isUndefined(case_)) {
+        return Promise.reject(new Error('Case must not be null!'));
+      }
+      if (!(case_ instanceof Case)) {
+        return Promise.reject(new Error('Case must be of type Case!'));
+      }
+      if (angular.isUndefined(subjectIri)) {
+        return Promise.reject(new Error('Subject iri must not be null!'));
+      }
+      if (!angular.isString(subjectIri)) {
+        return Promise.reject(new Error('Subject iri must be a string!'));
+      }
+      if (angular.isUndefined(propertyIri)) {
+        return Promise.reject(new Error('Property iri must not be null!'));
+      }
+      if (!angular.isString(propertyIri)) {
+        return Promise.reject(new Error('Property iri must be a string!'));
+      }
+      if (angular.isUndefined(value)) {
+        return Promise.reject(new Error('Value must not be null!'));
+      }
+      return new Promise((resolve, reject) => {
+        let subjectIndividual = {};
+        let datatypeProperty = {};
+        angular.forEach(case_.individuals, (individual) => {
+          if (individual.iri === subjectIri) {
+            subjectIndividual = individual;
+          }
+        });
+        angular.forEach(datatypeProperties, (prop) => {
+          if (prop.iri === propertyIri) {
+            datatypeProperty = prop;
+          }
+        });
+        OntologyDataService.addDatatypeRelation(subjectIndividual, datatypeProperty, value).then(() => {
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
     const _addObjectProperty = (case_, subjectIri, propertyIri, objectIri) => {
       if (angular.isUndefined(case_)) {
         return Promise.reject(new Error('Case must not be null!'));
@@ -185,19 +228,19 @@
         return Promise.reject(new Error('Subject iri must not be null!'));
       }
       if (!angular.isString(subjectIri)) {
-        return Promise.reject(new Error('Subject iri must not be a string!'));
+        return Promise.reject(new Error('Subject iri must be a string!'));
       }
       if (angular.isUndefined(propertyIri)) {
         return Promise.reject(new Error('Property iri must not be null!'));
       }
       if (!angular.isString(propertyIri)) {
-        return Promise.reject(new Error('Property iri must not be a string!'));
+        return Promise.reject(new Error('Property iri must be a string!'));
       }
       if (angular.isUndefined(objectIri)) {
         return Promise.reject(new Error('Object iri must not be null!'));
       }
       if (!angular.isString(objectIri)) {
-        return Promise.reject(new Error('Object iri must not be a string!'));
+        return Promise.reject(new Error('Object iri must be a string!'));
       }
       return new Promise((resolve, reject) => {
         let subjectIndividual = {};
@@ -319,8 +362,9 @@
           }
           promise.then(() => {
             return Promise.all([
-              OntologyDataService.fetchAllClasses(),
-              OntologyDataService.fetchAllObjectProperties()
+             OntologyDataService.fetchAllClasses(),
+             OntologyDataService.fetchAllObjectProperties(),
+             OntologyDataService.fetchAllDatatypeProperties()
             ]);
           }).then((result) => {
             isInitialized = true;
@@ -340,6 +384,7 @@
                 caseEntityInverseProperty = prop;
               }
             });
+            datatypeProperties = result[2];
             _buildClassesTree(rootClassIris, -1);
             resolve();
 
@@ -361,6 +406,9 @@
       getObjectProperties: () => {
         return angular.copy(objectProperties);
       },
+      getDatatypeProperties: () => {
+        return angular.copy(datatypeProperties);
+      },
       createAndAddIndividual: (classIri, instanceName, case_) => {
         return _createAndAddIndividual(classIri, instanceName, case_);
       },
@@ -373,6 +421,9 @@
       },
       addObjectProperty: (case_, subjectIri, propertyIri, objectIri) => {
         return _addObjectProperty(case_, subjectIri, propertyIri, objectIri);
+      },
+      addDatatypeProperty: (case_, subjectIri, propertyIri, value) => {
+        return _addDatatypeProperty(case_, subjectIri, propertyIri, value);
       },
       renameIndividual: (case_, individualIri, newName) => {
         return _renameIndividual(case_, individualIri, newName);

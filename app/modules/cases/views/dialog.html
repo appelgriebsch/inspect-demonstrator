@@ -21,22 +21,40 @@
       </md-input-container>
 
       <md-input-container class="md-block" ng-hide="data.objectProperties === 0">
-        <label for="node-relation">Relation</label>
-        <md-select id="node-relation"  placeholder="Select a relation" ng-model="data.selectedObjectPropertyIri">
+        <label for="node-relation1">Relation</label>
+        <md-select id="node-relation1"  placeholder="Select a relation" ng-model="data.selectedObjectPropertyIri">
           <md-option value="{{prop.iri}}" ng-repeat="prop in data.objectProperties | orderBy:'label'">{{prop.label}}</md-option>
         </md-select>
       </md-input-container>
-
       <md-input-container class="md-block" ng-hide="data.individuals === 0">
-        <label for="node-target">Target</label>
-        <md-select id="node-target"  placeholder="Select a target" ng-model="data.selectedIndividualIri">
+        <label for="node-target1">Target</label>
+        <md-select id="node-target1"  placeholder="Select a target" ng-model="data.selectedIndividualIri" ng-disabled="!data.selectedObjectPropertyIri">
           <md-option value="{{individual.iri}}" ng-repeat="individual in data.individuals | orderBy:'label'">{{individual.label}}</md-option>
         </md-select>
       </md-input-container>
-      <md-button class="md-button md-default" ng-click="addRelation()" ng-disabled="!data.selectedObjectPropertyIri || ! data.selectedIndividualIri" aria-label="Add relation">
-        Add relation
+      <md-button class="md-button md-default" ng-click="addObjectRelation()" ng-disabled="!data.selectedObjectPropertyIri || ! data.selectedIndividualIri" aria-label="Add object relation">
+        Add object relation
       </md-button>
-      <div ng-repeat="relation in data.newObjectProperties">{{relation.propLabel}} {{relation.targetLabel}} </div>
+
+      <md-input-container class="md-block" ng-hide="data.datatypeProperties === 0">
+        <label for="node-relation2">Relation</label>
+        <md-select id="node-relation2"  placeholder="Select a relation" ng-model="data.selectedDatatypePropertyIri">
+          <md-option value="{{prop.iri}}" ng-repeat="prop in data.datatypeProperties | orderBy:'label'">{{prop.label}}</md-option>
+        </md-select>
+      </md-input-container>
+      <md-input-container  class="md-block">
+        <label for="node-target2">Value</label>
+        <input id="node-target2"  aria-label="DatatypeProperty target" ng-model="data.selectedDatatypePropertyTarget" ng-disabled="!data.selectedDatatypePropertyIri">
+      </md-input-container>
+
+      <md-button class="md-button md-default" ng-click="addDatatypeRelation()" ng-disabled="!data.selectedDatatypePropertyIri || ! data.selectedDatatypePropertyTarget" aria-label="Add value relation">
+        Add value relation
+      </md-button>
+
+
+      <div ng-repeat="relation in data.objectRelations">{{relation.propLabel}} {{relation.targetLabel}} </div>
+
+      <div ng-repeat="relation in data.valueRelations">{{relation.propLabel}} {{relation.targetValue}} </div>
 
     </md-dialog-content>
     <md-dialog-actions layout="row">
