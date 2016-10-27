@@ -74,6 +74,7 @@
     };
     $scope.data = {
       'case': {},
+      initialCase: {},
       classesTree: [],
       selectedNode: undefined
     };
@@ -139,8 +140,7 @@
           }
         }
         if (result.removeRelation === true) {
-          console.log(result);
-          $scope.setBusy('Removing relation...');
+           $scope.setBusy('Removing relation...');
           if (result.relation.type === 'object') {
             _removeObjectRelation(result.individualIri, result.relation).then(() => {
               $scope.setReady(true);
@@ -254,7 +254,7 @@
       });
     };
 
-    var _createGraph = () => {
+    const _createGraph = () => {
       const container = document.getElementById('ontology-graph');
       const t = $scope.data['case'].generateNodesAndEdges();
       this.data.nodes.add(t.nodes);
@@ -270,6 +270,7 @@
 
       });
     };
+
 
     $scope.isEditable = (element) => {
       if ((element === 'identifier') && ($scope.data['case'].status === 'new')) {
@@ -291,12 +292,16 @@
     };
 
     //<editor-fold desc="Actions">
-    $scope.$on('case-cancel', () => {
+    $scope.$on('case-back', () => {
       $state.go('app.cases.view');
     });
 
     $scope.$on('case-save', () => {
+     // console.log("case", $scope.data['case']);
+     // console.log("initialCase", $scope.data.initialCase);
+      CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
 
+      });
     });
 
     $scope.toggleSidebar = () => {
@@ -335,7 +340,7 @@
         ]);
       }).then((result) => {
         $scope.data['case'] = result[0];
-        $log.debug('case ', result[0]);
+        $scope.data.initialCase = angular.copy(result[0]);
         _createGraph();
         $scope.setReady(true);
       }).catch((err) => {

@@ -10,7 +10,7 @@
     const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
 
     const caseClass = 'Fall';
-    const caseNameProperty = 'Fallname';
+    const caseNamePropertyName = 'Fallname';
     const caseEntityPropertyName = 'beinhaltet_Fallinformationen';
     let caseEntityProperty = {};
     const caseEntityInversePropertyName = 'gehoert_zu_Fall';
@@ -33,7 +33,7 @@
     const _convertToIndividual = (case_) => {
       const ontologyIri = OntologyDataService.ontologyIri();
       const individual = new OwlIndividual(ontologyIri, `${ontologyIri}${caseClass}`, `${ontologyIri}${case_.identifier}`);
-      individual.addDatatypeProperty(`${ontologyIri}${caseNameProperty}`, caseNameProperty, case_.name);
+      individual.addDatatypeProperty(`${ontologyIri}${caseNamePropertyName}`, caseNamePropertyName, case_.name);
       angular.forEach(case_.individuals, function(ind) {
         individual.addObjectProperty(`${ontologyIri}${caseEntityPropertyName}`, caseEntityPropertyName, ind.iri);
       });
@@ -59,7 +59,7 @@
         if (individual.comments.length > 0) {
           c.description = individual.comments[0];
         }
-        const caseNamePropertyIri = `${individual.ontologyIri}${caseNameProperty}`;
+        const caseNamePropertyIri = `${individual.ontologyIri}${caseNamePropertyName}`;
         angular.forEach(individual.datatypeProperties, function(value, key) {
           if (key === caseNamePropertyIri) {
             c.name = value[0].target;
@@ -163,8 +163,8 @@
           const caseIndividual = _convertToIndividual(case_);
 
           return Promise.all([
-            OntologyDataService.addInstanceProperty(individual, caseEntityInverseProperty, caseIndividual),
-            OntologyDataService.addInstanceProperty(caseIndividual, caseEntityProperty, individual)
+            OntologyDataService.addIndividualProperty(individual, caseEntityInverseProperty, caseIndividual),
+            OntologyDataService.addIndividualProperty(caseIndividual, caseEntityProperty, individual)
           ]);
         }).then(()=> {
           case_.individuals.push(individual);
@@ -214,7 +214,7 @@
           }
         });
         if (type === 'add') {
-          OntologyDataService.addInstanceProperty(subjectIndividual, datatypeProperty, value).then(() => {
+          OntologyDataService.addIndividualProperty(subjectIndividual, datatypeProperty, value).then(() => {
             subjectIndividual.addDatatypeProperty(datatypeProperty.iri, datatypeProperty.label, value);
             resolve();
           }).catch((err) => {
@@ -222,7 +222,7 @@
           });
         }
         if (type === 'remove') {
-          OntologyDataService.removeProperty(subjectIndividual, datatypeProperty, value).then(() => {
+          OntologyDataService.removeIndividualProperty(subjectIndividual, datatypeProperty, value).then(() => {
             subjectIndividual.removeDatatypeProperty(datatypeProperty.iri, datatypeProperty.label, value);
             resolve();
           }).catch((err) => {
@@ -277,7 +277,7 @@
           }
         });
         if (type === 'add') {
-          OntologyDataService.addInstanceProperty(subjectIndividual, objectProperty, objectIndividual).then(() => {
+          OntologyDataService.addIndividualProperty(subjectIndividual, objectProperty, objectIndividual).then(() => {
             subjectIndividual.addObjectProperty(objectProperty.iri, objectProperty.label, objectIndividual.iri);
             resolve();
           }).catch((err) => {
@@ -285,7 +285,7 @@
           });
         }
         if (type === 'remove') {
-          OntologyDataService.removeProperty(subjectIndividual, objectProperty, objectIndividual).then(() => {
+          OntologyDataService.removeIndividualProperty(subjectIndividual, objectProperty, objectIndividual).then(() => {
             subjectIndividual.removeObjectProperty(objectProperty.iri, objectProperty.label, objectIndividual.iri);
             resolve();
           }).catch((err) => {
@@ -347,13 +347,46 @@
         });
       });
     };
-
-    const _removeIndividual = (individual, case_) => {
-      if (!individual) {
-        Promise.reject(new Error('Individual  is undefined.'));
+    const _saveCase = (case_) => {
+      if (angular.isUndefined(case_)) {
+        return Promise.reject(new Error('Case must not be null!'));
       }
-      if (!case_) {
-        Promise.reject(new Error('Case is undefined.'));
+      if (!(case_ instanceof Case)) {
+        return Promise.reject(new Error('Case must be of type Case!'));
+      }
+      return new Promise((resolve, reject) => {
+        const individual = _convertToIndividual(case_);
+        let nameProperty;
+        const promises2= [];
+        angular.forEach(datatypeProperties, (prop) => {
+          if (prop.label === caseNamePropertyName) {
+            nameProperty = prop;
+          }
+        });
+        OntologyDataService.removeAllIndividualProperties(individual, nameProperty).then(() => {
+          angular.forEach(individual.datatypeProperties[nameProperty.iri], (prop) => {
+            promises2.push(OntologyDataService.addIndividualProperty(individual, nameProperty, prop.target));
+          });
+          return Promise.all(promises2);
+        }).then(() => {
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+    const _removeIndividual = (individual, case_) => {
+      if (angular.isUndefined(individual)) {
+        return Promise.reject(new Error('Individual must not be null!'));
+      }
+      if (!(individual instanceof OwlIndividual)) {
+        return Promise.reject(new Error('Individual must be of type OwlIndividual!'));
+      }
+      if (angular.isUndefined(case_)) {
+        return Promise.reject(new Error('Case must not be null!'));
+      }
+      if (!(case_ instanceof Case)) {
+        return Promise.reject(new Error('Case must be of type Case!'));
       }
       return new Promise((resolve, reject) => {
         const ontologyIri = OntologyDataService.ontologyIri();
@@ -425,11 +458,8 @@
       createCase: (identifier) => {
         return _createCase(identifier);
       },
-      saveNewCase: (c) => {
-        if (angular.isUndefined(c)) {
-          throw Error('Case must not be null!');
-        }
-        return OntologyDataService.saveIndividual(c.toIndividual(OntologyDataService.ontologyIri()));
+      saveCase: (c) => {
+        return _saveCase(c);
       },
 
       getObjectProperties: () => {

@@ -646,7 +646,42 @@
         });
       });
     };
-    const _addOrRemoveInstanceProperty = (subject, property, object, type) => {
+
+    const _removeAllIndividualProperties = (subject, property) => {
+      if (angular.isUndefined(subject)) {
+        return Promise.reject(new Error('Subject must not be undefined.'));
+      }
+      if (!(subject instanceof OwlIndividual)) {
+        return Promise.reject(new Error('Subject must be of type OwlIndividual.'));
+      }
+      if (angular.isUndefined(property)) {
+        return Promise.reject(new Error('Property must not be undefined.'));
+      }
+      if (!((property instanceof OwlObjectProperty) || (property instanceof OwlDatatypeProperty))) {
+        return Promise.reject(new Error('Property must be of type OwlObjectProperty or OwlDatatypeProperty.'));
+      }
+      return new Promise((resolve, reject) => {
+        // get all properties
+        db.get({
+          subject: subject.iri,
+          predicate: property.iri,
+        }, function(err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            db.del(results, function(err2) {
+              if (err2) {
+                reject(err2);
+              } else {
+                resolve();
+              }
+            });
+          }
+        });
+      });
+    };
+
+    const _addOrRemoveIndividualProperty = (subject, property, object, type) => {
       if (angular.isUndefined(subject)) {
         return Promise.reject(new Error('Subject must not be undefined.'));
       }
@@ -665,7 +700,7 @@
       if ((property instanceof OwlObjectProperty) && !(object instanceof OwlIndividual)) {
         return Promise.reject(new Error('Object must be of type OwlIndividual.'));
       }
-      let func = undefined;
+      let func;
       if (type === 'add') {
         func = db.put;
       }
@@ -731,11 +766,14 @@
       insertIndividual: (individual) => {
         return _insertIndividual(individual);
       },
-      addInstanceProperty: (subject, property, object) => {
-        return _addOrRemoveInstanceProperty(subject, property, object, 'add');
+      addIndividualProperty: (subject, property, object) => {
+        return _addOrRemoveIndividualProperty(subject, property, object, 'add');
       },
-      removeProperty: (subject, property, object) => {
-        return _addOrRemoveInstanceProperty(subject, property, object, 'remove');
+      removeIndividualProperty: (subject, property, object) => {
+        return _addOrRemoveIndividualProperty(subject, property, object, 'remove');
+      },
+      removeAllIndividualProperties: (subject, property) => {
+        return _removeAllIndividualProperties(subject, property);
       },
       removeIndividual: (individualIri) => {
         return _removeIndividual(individualIri);
