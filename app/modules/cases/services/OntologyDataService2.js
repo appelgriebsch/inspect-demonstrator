@@ -646,33 +646,47 @@
         });
       });
     };
-
-    const _addObjectRelation = (subjectIndividual, objectProperty, objectIndividual) => {
-      if (angular.isUndefined(subjectIndividual)) {
-        return Promise.reject(new Error('Subject individual may not be undefined.'));
+    const _addOrRemoveInstanceProperty = (subject, property, object, type) => {
+      if (angular.isUndefined(subject)) {
+        return Promise.reject(new Error('Subject must not be undefined.'));
       }
-      if (!(subjectIndividual instanceof OwlIndividual)) {
-        return Promise.reject(new Error('Subject individual must be of type OwlIndividual.'));
+      if (!(subject instanceof OwlIndividual)) {
+        return Promise.reject(new Error('Subject must be of type OwlIndividual.'));
       }
-      if (angular.isUndefined(objectProperty)) {
-        return Promise.reject(new Error('Property may not be undefined.'));
+      if (angular.isUndefined(property)) {
+        return Promise.reject(new Error('Property must not be undefined.'));
       }
-      if (!(objectProperty instanceof OwlObjectProperty)) {
-        return Promise.reject(new Error('Property must be of type OwlObjectProperty.'));
+      if (!((property instanceof OwlObjectProperty) || (property instanceof OwlDatatypeProperty))) {
+        return Promise.reject(new Error('Property must be of type OwlObjectProperty or OwlDatatypeProperty.'));
       }
-      if (angular.isUndefined(objectIndividual)) {
-        return Promise.reject(new Error('Object individual may not be undefined.'));
+      if (angular.isUndefined(object)) {
+        return Promise.reject(new Error('Object must not be undefined.'));
       }
-      if (!(objectIndividual instanceof OwlIndividual)) {
-        return Promise.reject(new Error('Object individual must be of type OwlIndividual.'));
+      if ((property instanceof OwlObjectProperty) && !(object instanceof OwlIndividual)) {
+        return Promise.reject(new Error('Object must be of type OwlIndividual.'));
       }
-      subjectIndividual.addObjectProperty(objectProperty.iri, objectProperty.label, objectIndividual.iri);
+      let func = undefined;
+      if (type === 'add') {
+        func = db.put;
+      }
+      if (type === 'remove') {
+        func = db.del;
+      }
+      if (angular.isUndefined(func)) {
+        return Promise.resolve();
+      }
+      const triple = {
+        subject: subject.iri,
+        predicate: property.iri
+      };
+      if (property instanceof OwlObjectProperty) {
+        triple.object = object.iri;
+      }
+      if (property instanceof OwlDatatypeProperty) {
+        triple.object = `"${object}"`;
+      }
       return new Promise((resolve, reject) => {
-        db.put({
-          subject: subjectIndividual.iri,
-          predicate: objectProperty.iri,
-          object: objectIndividual.iri
-        }, function(err) {
+        func(triple, function(err) {
           if (err) {
             reject(err);
           } else {
@@ -681,39 +695,6 @@
         });
       });
     };
-
-    const _addDatatypeRelation = (subjectIndividual, datatypeProperty, value) => {
-      if (angular.isUndefined(subjectIndividual)) {
-        return Promise.reject(new Error('Subject individual may not be undefined.'));
-      }
-      if (!(subjectIndividual instanceof OwlIndividual)) {
-        return Promise.reject(new Error('Subject individual must be of type OwlIndividual.'));
-      }
-      if (angular.isUndefined(datatypeProperty)) {
-        return Promise.reject(new Error('Property may not be undefined.'));
-      }
-      if (!(datatypeProperty instanceof OwlDatatypeProperty)) {
-        return Promise.reject(new Error('Property must be of type OwlDatatypeProperty.'));
-      }
-      if (angular.isUndefined(value)) {
-        return Promise.reject(new Error('Value may not be undefined.'));
-      }
-      subjectIndividual.addDatatypeProperty(datatypeProperty.iri, datatypeProperty.label, value);
-      return new Promise((resolve, reject) => {
-        db.put({
-          subject: subjectIndividual.iri,
-          predicate: datatypeProperty.iri,
-          object: `"${value}"`
-        }, function(err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
-    };
-
     return {
       initialize: function() {
         db = LevelGraphDBService.initialize('ontology2');
@@ -750,11 +731,11 @@
       insertIndividual: (individual) => {
         return _insertIndividual(individual);
       },
-      addObjectRelation(subjectIndividual, objectProperty, objectIndividual) {
-        return _addObjectRelation(subjectIndividual, objectProperty, objectIndividual);
+      addInstanceProperty: (subject, property, object) => {
+        return _addOrRemoveInstanceProperty(subject, property, object, 'add');
       },
-      addDatatypeRelation(subjectIndividual, datatypeProperty, value) {
-        return _addDatatypeRelation(subjectIndividual, datatypeProperty, value);
+      removeProperty: (subject, property, object) => {
+        return _addOrRemoveInstanceProperty(subject, property, object, 'remove');
       },
       removeIndividual: (individualIri) => {
         return _removeIndividual(individualIri);

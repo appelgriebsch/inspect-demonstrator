@@ -163,8 +163,8 @@
           const caseIndividual = _convertToIndividual(case_);
 
           return Promise.all([
-            OntologyDataService.addObjectRelation(individual, caseEntityInverseProperty, caseIndividual),
-            OntologyDataService.addObjectRelation(caseIndividual, caseEntityProperty, individual)
+            OntologyDataService.addInstanceProperty(individual, caseEntityInverseProperty, caseIndividual),
+            OntologyDataService.addInstanceProperty(caseIndividual, caseEntityProperty, individual)
           ]);
         }).then(()=> {
           case_.individuals.push(individual);
@@ -175,7 +175,7 @@
       });
     };
 
-    const _addDatatypeProperty = (case_, subjectIri, propertyIri, value) => {
+    const _addOrRemoveDatatypeProperty = (case_, subjectIri, propertyIri, value, type) => {
       if (angular.isUndefined(case_)) {
         return Promise.reject(new Error('Case must not be null!'));
       }
@@ -197,6 +197,9 @@
       if (angular.isUndefined(value)) {
         return Promise.reject(new Error('Value must not be null!'));
       }
+      if ((type !== 'add') && (type !== 'remove')) {
+        return Promise.reject(new Error('Type must be \'add\' or \'remove\'!'));
+      }
       return new Promise((resolve, reject) => {
         let subjectIndividual = {};
         let datatypeProperty = {};
@@ -210,14 +213,25 @@
             datatypeProperty = prop;
           }
         });
-        OntologyDataService.addDatatypeRelation(subjectIndividual, datatypeProperty, value).then(() => {
-          resolve();
-        }).catch((err) => {
-          reject(err);
-        });
+        if (type === 'add') {
+          OntologyDataService.addInstanceProperty(subjectIndividual, datatypeProperty, value).then(() => {
+            subjectIndividual.addDatatypeProperty(datatypeProperty.iri, datatypeProperty.label, value);
+            resolve();
+          }).catch((err) => {
+            reject(err);
+          });
+        }
+        if (type === 'remove') {
+          OntologyDataService.removeProperty(subjectIndividual, datatypeProperty, value).then(() => {
+            subjectIndividual.removeDatatypeProperty(datatypeProperty.iri, datatypeProperty.label, value);
+            resolve();
+          }).catch((err) => {
+            reject(err);
+          });
+        }
       });
     };
-    const _addObjectProperty = (case_, subjectIri, propertyIri, objectIri) => {
+    const _addOrRemoveObjectProperty = (case_, subjectIri, propertyIri, objectIri, type) => {
       if (angular.isUndefined(case_)) {
         return Promise.reject(new Error('Case must not be null!'));
       }
@@ -242,6 +256,9 @@
       if (!angular.isString(objectIri)) {
         return Promise.reject(new Error('Object iri must be a string!'));
       }
+      if ((type !== 'add') && (type !== 'remove')) {
+        return Promise.reject(new Error('Type must be \'add\' or \'remove\'!'));
+      }
       return new Promise((resolve, reject) => {
         let subjectIndividual = {};
         let objectIndividual = {};
@@ -259,13 +276,25 @@
             objectProperty = prop;
           }
         });
-        OntologyDataService.addObjectRelation(subjectIndividual, objectProperty, objectIndividual).then(() => {
-          resolve();
-        }).catch((err) => {
-          reject(err);
-        });
+        if (type === 'add') {
+          OntologyDataService.addInstanceProperty(subjectIndividual, objectProperty, objectIndividual).then(() => {
+            subjectIndividual.addObjectProperty(objectProperty.iri, objectProperty.label, objectIndividual.iri);
+            resolve();
+          }).catch((err) => {
+            reject(err);
+          });
+        }
+        if (type === 'remove') {
+          OntologyDataService.removeProperty(subjectIndividual, objectProperty, objectIndividual).then(() => {
+            subjectIndividual.removeObjectProperty(objectProperty.iri, objectProperty.label, objectIndividual.iri);
+            resolve();
+          }).catch((err) => {
+            reject(err);
+          });
+        }
       });
     };
+
     const _renameIndividual = (case_, individualIri, newName) => {
       if (angular.isUndefined(case_)) {
         return Promise.reject(new Error('Case must not be null!'));
@@ -362,9 +391,9 @@
           }
           promise.then(() => {
             return Promise.all([
-             OntologyDataService.fetchAllClasses(),
-             OntologyDataService.fetchAllObjectProperties(),
-             OntologyDataService.fetchAllDatatypeProperties()
+              OntologyDataService.fetchAllClasses(),
+              OntologyDataService.fetchAllObjectProperties(),
+              OntologyDataService.fetchAllDatatypeProperties()
             ]);
           }).then((result) => {
             isInitialized = true;
@@ -420,10 +449,16 @@
         return angular.copy(classTree);
       },
       addObjectProperty: (case_, subjectIri, propertyIri, objectIri) => {
-        return _addObjectProperty(case_, subjectIri, propertyIri, objectIri);
+        return _addOrRemoveObjectProperty(case_, subjectIri, propertyIri, objectIri, 'add');
       },
       addDatatypeProperty: (case_, subjectIri, propertyIri, value) => {
-        return _addDatatypeProperty(case_, subjectIri, propertyIri, value);
+        return _addOrRemoveDatatypeProperty(case_, subjectIri, propertyIri, value, 'add');
+      },
+      removeObjectProperty: (case_, subjectIri, propertyIri, objectIri) => {
+        return _addOrRemoveObjectProperty(case_, subjectIri, propertyIri, objectIri, 'remove');
+      },
+      removeDatatypeProperty: (case_, subjectIri, propertyIri, value) => {
+        return _addOrRemoveDatatypeProperty(case_, subjectIri, propertyIri, value, 'remove');
       },
       renameIndividual: (case_, individualIri, newName) => {
         return _renameIndividual(case_, individualIri, newName);

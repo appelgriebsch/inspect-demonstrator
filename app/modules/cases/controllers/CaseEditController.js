@@ -119,7 +119,7 @@
             $scope.setReady(true);
           });
         }
-        if (result.newRelation === true) {
+        if (result.addRelation === true) {
           $scope.setBusy('Adding relation...');
           if (result.relation.type === 'object') {
             _addObjectRelation(result.individualIri, result.relation).then(() => {
@@ -138,8 +138,68 @@
             });
           }
         }
+        if (result.removeRelation === true) {
+          console.log(result);
+          $scope.setBusy('Removing relation...');
+          if (result.relation.type === 'object') {
+            _removeObjectRelation(result.individualIri, result.relation).then(() => {
+              $scope.setReady(true);
+            }).catch((err) => {
+              $scope.setError('EditAction', 'mode edit', err);
+              $scope.setReady(true);
+            });
+          }
+          if (result.relation.type === 'value') {
+            _removeValueRelation(result.individualIri, result.relation).then(() => {
+              $scope.setReady(true);
+            }).catch((err) => {
+              $scope.setError('EditAction', 'mode edit', err);
+              $scope.setReady(true);
+            });
+          }
+        }
       });
     };
+
+    const _removeValueRelation = (individualIri, relation) => {
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.removeDatatypeProperty($scope.data['case'], individualIri, relation.propIri, relation.targetValue).then(()=> {
+          const that = this;
+          const nodes = [];
+          const edges = this.data.edges.get({
+            filter: function (edge) {
+              const result = edge.from === individualIri && that.data.nodes.get(edge.to).label === relation.targetValue && edge.label === relation.propLabel;
+              if (result === true) {
+                nodes.push(edge.to)
+              }
+              return result;
+            }
+          });
+          this.data.edges.remove(edges);
+          this.data.nodes.remove(nodes);
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+
+    const _removeObjectRelation = (individualIri, relation) => {
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.removeObjectProperty($scope.data['case'], individualIri, relation.propIri, relation.targetIri).then(()=> {
+          const edges = this.data.edges.get({
+            filter: function (edge) {
+              return edge.from === individualIri && edge.to === relation.targetIri && edge.label === relation.propLabel;
+            }
+          });
+          this.data.edges.remove(edges);
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+
     const _addValueRelation = (individualIri, relation) => {
       return new Promise((resolve, reject) => {
         CaseOntologyDataService.addDatatypeProperty($scope.data['case'], individualIri, relation.propIri, relation.targetValue).then(()=> {

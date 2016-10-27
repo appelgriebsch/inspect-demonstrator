@@ -31,6 +31,17 @@
     $scope.rename = () => {
       $mdDialog.hide({individual: $scope.data.individual, toBeRenamed: true, newName: $scope.data.individual.label});
     };
+    $scope.removeObjectRelation = (index) => {
+      if ((index > -1 ) && (index < $scope.data.objectRelations.length)) {
+        $mdDialog.hide({individualIri: $scope.data.individual.iri, removeRelation: true, relation: $scope.data.objectRelations[index]});
+      }
+    };
+
+    $scope.removeValueRelation = (index) => {
+      if ((index > -1 ) && (index < $scope.data.valueRelations.length)) {
+        $mdDialog.hide({individualIri: $scope.data.individual.iri, removeRelation: true, relation: $scope.data.valueRelations[index]});
+      }
+    };
 
     $scope.addObjectRelation = () => {
       if (angular.isUndefined($scope.data.selectedObjectPropertyIri)) {
@@ -42,7 +53,7 @@
       const relation = _createObjectRelation($scope.data.selectedObjectPropertyIri, $scope.data.selectedIndividualIri);
 
       if (!angular.isUndefined(relation)) {
-        $mdDialog.hide({individualIri: $scope.data.individual.iri, newRelation: true, relation: relation});
+        $mdDialog.hide({individualIri: $scope.data.individual.iri, addRelation: true, relation: relation});
       }
     };
 
@@ -56,9 +67,12 @@
       const relation = _createValueRelation($scope.data.selectedDatatypePropertyIri, $scope.data.selectedDatatypePropertyTarget);
 
       if (!angular.isUndefined(relation)) {
-        $mdDialog.hide({individualIri: $scope.data.individual.iri, newRelation: true, relation: relation});
+        $mdDialog.hide({individualIri: $scope.data.individual.iri, addRelation: true, relation: relation});
       }
     };
+
+
+
     const _createValueRelation = (propertyIri, value)=>{
       const relation = {type: 'value'};
       angular.forEach($scope.data.datatypeProperties, (prop) => {
@@ -93,6 +107,8 @@
       }
       return relation;
     };
+
+
 
     return {
       initialize: function() {
