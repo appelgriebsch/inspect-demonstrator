@@ -6,10 +6,8 @@
 
     // initialize pouch db adapter
     var PouchDB = require('pouchdb');
-    PouchDB.plugin(require('geopouch'));
     PouchDB.plugin(require('pouchdb-find'));
     PouchDB.plugin(require('pouchdb-quick-search'));
-    PouchDB.plugin(require('transform-pouch'));
 
     var app = require('electron').remote.app;
 
@@ -19,16 +17,8 @@
     function DataService(dbName) {
 
       var promise = new Promise((resolve, reject) => {
-
-        new PouchDB(dbName, settings).then((result) => {
-          resolve(result);
-        })
-        .catch((err) => {
-          console.log('leveldb-adapter is not working, fallback to SQLite (websql)');
-          console.log(err);
-          alert(`FATAL: ${err.name}: ${err.message}`);
-          app.exit(-1);
-        });
+        var result = PouchDB(dbName, settings);
+        resolve(result);
       });
 
       return promise;
