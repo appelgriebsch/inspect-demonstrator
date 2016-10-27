@@ -16,6 +16,33 @@
 
 <div  ng-cloak ng-init="ctl.initialize()" layout="column" layout-fill>
   <md-tabs flex layout="column" layout-fill>
+    <md-tab flex layout="column" label="Case Information">
+      <md-tab-content layout-fill>
+        <div layout="column" >
+          <md-input-container>
+            <label for="case-identifier">Case Identifier</label>
+            <input ng-readonly="!isEditable('identifier')" md-maxlength="30" md-minlength="5"  id="case-identifier" required md-no-asterisk  aria-label="Identifier" ng-model="data.case.identifier">
+          </md-input-container>
+          <md-input-container>
+            <label for="case-name">Name</label>
+            <input ng-readonly="!isEditable('name')" md-maxlength="30" md-minlength="5" required md-no-asterisk id="case-name" aria-label="Name" ng-model="data.case.name" >
+          </md-input-container>
+          <md-input-container>
+            <label for="case-investigator">Investigator</label>
+            <input ng-readonly="!isEditable('investigator')" md-maxlength="30" md-minlength="5" md-no-asterisk id="case-investigator" aria-label="Investigator" ng-model="data.case.investigator">
+          </md-input-container>
+          <md-input-container>
+            <label for="case-description">Description</label>
+            <textarea  ng-readonly="!isEditable('description')" md-maxlength="500" md-minlength="5" md-no-asterisk id="case-description" aria-label="Description" ng-model="data.case.description"></textarea>
+          </md-input-container>
+
+          <div ng-show="viewData.showFooter">
+            <p>Created by {{data.case.createdBy}} on {{data.case.createdOn | date: "dd. MMM yyyy' at 'HH:mm "}}</p>
+            <p>Last edited by {{data.case.lastEditedBy}} on {{data.case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</p>
+          </div>
+        </div>
+      </md-tab-content>
+    </md-tab>
     <md-tab label="Entities" layout-fill>
       <md-tab-content flex  layout-fill>
         <md-sidenav class="md-sidenav-left md-whiteframe-8dp" md-component-id="sidebar-tree" layout="column">
@@ -42,35 +69,6 @@
         </div>
       </md-tab-content>
     </md-tab>
-
-    <md-tab flex layout="column" label="Case Information">
-      <md-tab-content layout-fill>
-        <div layout="column" >
-          <md-input-container>
-            <label for="case-identifier">Case Identifier</label>
-            <input ng-readonly="!isEditable('identifier')" md-maxlength="30" md-minlength="5"  id="case-identifier" required md-no-asterisk  aria-label="Identifier" ng-model="data.case.identifier">
-          </md-input-container>
-          <md-input-container>
-            <label for="case-name">Name</label>
-            <input ng-readonly="!isEditable('name')" md-maxlength="30" md-minlength="5" required md-no-asterisk id="case-name" aria-label="Name" ng-model="data.case.name">
-          </md-input-container>
-          <md-input-container>
-            <label for="case-investigator">Investigator</label>
-            <input ng-readonly="!isEditable('investigator')" md-maxlength="30" md-minlength="5" md-no-asterisk id="case-investigator" aria-label="Investigator" ng-model="data.case.investigator">
-          </md-input-container>
-          <md-input-container>
-            <label for="case-description">Description</label>
-            <textarea  ng-readonly="!isEditable('description')" md-maxlength="500" md-minlength="5" md-no-asterisk id="case-description" aria-label="Description" ng-model="data.case.description"></textarea>
-          </md-input-container>
-
-          <div ng-show="viewData.showFooter">
-            <p>Created by {{data.case.createdBy}} on {{data.case.createdOn | date: "dd. MMM yyyy' at 'HH:mm "}}</p>
-            <p>Last edited by {{data.case.lastEditedBy}} on {{data.case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</p>
-          </div>
-        </div>
-      </md-tab-content>
-    </md-tab>
-
 
   </md-tabs>
 </div>

@@ -14,15 +14,13 @@
       if (angular.isUndefined(createdOn)) {
         throw Error('Created on must not be null!');
       }
-
-
       this.identifier = identifier;
       this.createdBy = createdBy;
       this.createdOn = createdOn;
       this.lastEditedBy = createdBy;
       this.lastEditedOn =  createdOn;
       this.status = 'new';
-      this.names = [];
+      this.name = '';
       this.description = '';
       this.individuals = [];
       this.datatypeProperties = [];
@@ -40,6 +38,7 @@
       }
       this.status = 'closed';
     }
+
 
     generateNode(individual) {
       if (angular.isUndefined(individual)) {
