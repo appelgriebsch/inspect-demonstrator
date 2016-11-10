@@ -461,7 +461,10 @@
       saveCase: (c) => {
         return _saveCase(c);
       },
-
+      reset: () => {
+        OntologyDataService.reset();
+        isInitialized = false;
+      },
       getObjectProperties: () => {
         return angular.copy(objectProperties);
       },
