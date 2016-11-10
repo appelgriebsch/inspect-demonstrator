@@ -3,9 +3,6 @@
   'use strict';
 
   /**
-   * Has some sort of caching
-   *
-   * TODO: how does holding the data in maps and promises work?
    *
    * TODO: gesamte Fehlerbehandlung muss überarbeitet werden!
    *
@@ -15,9 +12,9 @@
    */
   function OntologyDataService($log, LevelGraphDBService) {
 
-    var db;
-    var path = require('path');
-    var fs = require('fs');
+    let db;
+    const path = require('path');
+    const fs = require('fs');
 
     const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
     const OwlClass = require(path.join(__dirname, '../models/OwlClass'));
@@ -25,8 +22,9 @@
     const OwlDatatypeProperty = require(path.join(__dirname, '../models/OwlDatatypeProperty'));
 
     const regexRemoveQuotationMarks = /^"?(.*?)"?$/;
+    const regexIriCheck = /\s+/m;
 
-    var knownIris = [{
+    const knownIris = [{
       prefix: 'owl',
       iri: 'http://www.w3.org/2002/07/owl#'
     }, {
@@ -46,15 +44,47 @@
       iri: 'http://www.w3.org/2001/XMLSchema#'
     }];
 
-    var _importTTL = (doc) => {
+    const _deleteAll = () => {
+      return new Promise((resolve, reject) => {
+        db.get({}, function(err, list) {
+          if (err) {
+            reject(err);
+          } else {
+            const promises = [];
+            angular.forEach(list, (triple) => {
+              promises.push(new Promise((resolve2, reject2) => {
+                db.del(triple, function(err2) {
+                  if (err2) {
+                    reject2(err2);
+                  } else {
+                    resolve2();
+                  }
+                });
+              }));
+            });
+            Promise.all(promises).then(() => {
+              resolve();
+            }).catch((err3) => {
+              reject(err3);
+            });
+          }
+        });
+      });
+    };
+
+
+
+    const _importTTL = (path) => {
 
       return new Promise((resolve, reject) => {
-
-        var stream = fs.createReadStream(doc)
+        const stream = fs.createReadStream(path)
           .pipe(db.n3.putStream());
 
         stream.on('finish', function() {
-          resolve(db);
+
+          _fetchOntologyIri().then(() => {
+            resolve(db);
+          });
         });
 
         stream.on('error', function(err) {
@@ -63,36 +93,84 @@
       });
     };
 
-    var _exportTTL = () => {
-
+    const _exportObject = (iri) => {
       return new Promise((resolve, reject) => {
-        var owlURI = _iriForPrefix('owl');
-        var turtle = '';
-        knownIris.forEach((item) => {
-          turtle += `@prefix ${item.prefix}: ${item.iri}.
-`;
-        });
-        db.get({},
+        db.search([{
+            subject: iri,
+            predicate: db.v('p'),
+            object: db.v('o')
+          }], {
+            n3: {
+              subject: iri,
+              predicate: db.v('p'),
+              object: db.v('o')
+            }
+          },
           function(err, result) {
-            result.forEach((item) => {
-              turtle += `${item.subject} ${item.predicate} ${item.object}.
-`;
-            });
-            fs.writeFile('export.ttl', turtle,  function(err) {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
-            });
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
           });
       });
     };
 
-    var _fetchOntologyIri = () => {
+    const _exportType = (type) => {
       return new Promise((resolve, reject) => {
-        var owlURI = _iriForPrefix('owl');
-        var ontologyNode = `${owlURI}Ontology`;
+        db.get({
+            predicate: `${_iriForPrefix('rdf')}type`,
+            object: type,
+
+          },
+          function(err, result) {
+            if (err) {
+              reject(err);
+            } else {
+              const promises = [];
+              angular.forEach(result, (item) => {
+                  promises.push(_exportObject(item.subject));
+                });
+              Promise.all(promises).then((result) => {
+                resolve(result);
+              });
+            }
+          });
+      });
+    };
+
+    const _exportTTL = (path) => {
+      return new Promise((resolve, reject) => {
+        Promise.all([
+          _exportType(`${_iriForPrefix('owl')}Ontology`),
+          _exportType(`${_iriForPrefix('owl')}DatatypeProperty`),
+          _exportType(`${_iriForPrefix('owl')}ObjectProperty`),
+          _exportType(`${_iriForPrefix('owl')}Class`),
+          _exportType(`${_iriForPrefix('owl')}NamedIndividual`)
+        ]).then((result) => {
+          let n3 = '';
+          angular.forEach(result, (result2) => {
+            angular.forEach(result2, (item) => {
+              n3 = n3.concat(item);
+            });
+          });
+          fs.writeFile(path, n3,  function(err) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+
+    const _fetchOntologyIri = () => {
+      return new Promise((resolve, reject) => {
+        const owlURI = _iriForPrefix('owl');
+        const ontologyNode = `${owlURI}Ontology`;
         db.get({
           predicate: _iriFor('rdf-type'),
           object: ontologyNode
@@ -102,7 +180,7 @@
             reject(err);
           } else {
             if (results.length > 0) {
-              var ontology = {
+              const ontology = {
                 prefix: 'ontology',
                 iri: `${results[0].subject}#`,
                 subject: results[0].subject
@@ -118,21 +196,21 @@
       });
     };
 
-    var _prefixForIRI = function(iri) {
-      var item = knownIris.find((entry) => {
+    const _prefixForIRI = function(iri) {
+      const item = knownIris.find((entry) => {
         return entry.iri === iri;
       });
       return item ? item.prefix : iri;
     };
 
-    var _iriForPrefix = function(prefix) {
-      var item = knownIris.find((entry) => {
+    const _iriForPrefix = function(prefix) {
+      const item = knownIris.find((entry) => {
         return entry.prefix === prefix;
       });
       return item ? item.iri : prefix;
     };
 
-    var _iriFor = function(type) {
+    const _iriFor = function(type) {
       if (type === 'rdf-type') {
         return `${_iriForPrefix('rdf')}type`;
       }
@@ -169,7 +247,7 @@
       throw new Error('Type not found!');
     };
 
-    var _labelFor = (iri, label) => {
+    const _labelFor = (iri, label) => {
       if ((label) && (typeof label === 'string') && (label.length > 0)) {
         return label;
       }
@@ -185,7 +263,7 @@
      * @returns {Promise}
      * @private
      */
-    var _iriExists = (iri) => {
+    const _iriExists = (iri) => {
       if (angular.isUndefined(iri)) {
         return Promise.reject(new Error('Iri may not be null.'));
       }
@@ -206,9 +284,24 @@
       });
     };
 
-    var _fetch = (iri, predicate, rdfsType, type) => {
+    const _checkIri = (iri) => {
+      if (angular.isUndefined(iri)) {
+        throw new Error('Iri may not be null.');
+      }
+      if (!angular.isString(iri)) {
+        throw new Error(`Iri (${iri}) must be a string.`);
+      }
+      if (iri.length === 0) {
+        throw new Error('Iri may not be an empty string.');
+      }
+      if (regexIriCheck.test(iri)) {
+        throw new Error(`Iri (${iri}) may not contain a space.`);
+      }
+    };
+
+    const _fetch = (iri, predicate, rdfsType, type) => {
       return new Promise((resolve, reject) => {
-        var searchArray = [];
+        const searchArray = [];
         if (type === 'subject') {
           searchArray.push({
             subject: iri,
@@ -280,11 +373,11 @@
         return Promise.reject(new Error('Property iri may not be null.'));
       }
       return new Promise((resolve, reject) => {
-        var predDomain = `${_iriForPrefix('rdfs')}domain`;
-        var predRange = `${_iriForPrefix('rdfs')}range`;
-        var predInverseOf = `${_iriForPrefix('owl')}inverseOf`;
-        var symmetricProp = `${_iriForPrefix('owl')}SymmetricProperty`;
-        var promises = [
+        const predDomain = `${_iriForPrefix('rdfs')}domain`;
+        const predRange = `${_iriForPrefix('rdfs')}range`;
+        const predInverseOf = `${_iriForPrefix('owl')}inverseOf`;
+        const symmetricProp = `${_iriForPrefix('owl')}SymmetricProperty`;
+        const promises = [
           _fetch(propertyIri, _iriFor('rdf-type'), _iriFor('owl-objectProperty'), 'subject'),
           _fetch(propertyIri, predDomain, _iriFor('owl-objectProperty'), 'subject'),
           _fetch(propertyIri, predRange, _iriFor('owl-objectProperty'), 'subject'),
@@ -331,9 +424,9 @@
         return Promise.reject(new Error('Property iri may not be null.'));
       }
       return new Promise((resolve, reject) => {
-        var predDomain = `${_iriForPrefix('rdfs')}domain`;
-        var predRange = `${_iriForPrefix('rdfs')}range`;
-        var promises = [
+        const predDomain = `${_iriForPrefix('rdfs')}domain`;
+        const predRange = `${_iriForPrefix('rdfs')}range`;
+        const promises = [
           _fetch(propertyIri, _iriFor('rdf-type'), _iriFor('owl-datatypeProperty'), 'subject'),
           _fetch(propertyIri, predDomain, _iriFor('owl-datatypeProperty'), 'subject'),
           _fetch(propertyIri, predRange, _iriFor('owl-datatypeProperty'), 'subject'),
@@ -553,7 +646,11 @@
       if (angular.isUndefined(individual)) {
         return Promise.reject(new Error('Individual must not be null.'));
       }
-
+      try {
+        _checkIri(individual.iri);
+      } catch (err) {
+        return Promise.reject(err);
+      }
       return new Promise((resolve, reject) => {
         _iriExists(individual.iri).then((exists)  => {
           if (exists === true) {
@@ -628,7 +725,7 @@
         });
       });
     };
-    var _fetchIndividualIrisForClass = (classIri) => {
+    const _fetchIndividualIrisForClass = (classIri) => {
       if (!classIri) {
         Promise.reject(new Error('ClassIri is undefined.'));
       }
@@ -637,7 +734,7 @@
           if (!angular.isUndefined(err)) {
             reject(err);
           } else {
-            var instanceIris = [];
+            const instanceIris = [];
             result.forEach((item) => {
               instanceIris.push(item.x);
             });
@@ -735,9 +832,11 @@
         db = LevelGraphDBService.initialize('ontology2');
 
         return Promise.all([
-          _importTTL(path.join(__dirname, 'ontologie.ttl')),
-          _fetchOntologyIri()
+         _fetchOntologyIri()
         ]);
+      },
+      reset: () => {
+        return db = undefined;
       },
       isInitialized: () => {
         return !angular.isUndefined(db);
@@ -784,9 +883,9 @@
       fetchIndividualsForClass: (classIri) => {
         return _fetchIndividualIrisForClass(classIri);
       },
-      export: () => {
-        return _exportTTL(path.join(__dirname, 'test.ttl'));
-      },
+      clear: _deleteAll,
+      import: _importTTL,
+      export: _exportTTL
     };
   }
   module.exports = OntologyDataService;

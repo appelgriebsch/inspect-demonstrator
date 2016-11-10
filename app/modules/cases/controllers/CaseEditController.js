@@ -296,12 +296,8 @@
       $state.go('app.cases.view');
     });
 
-    $scope.$on('case-save', () => {
-     // console.log("case", $scope.data['case']);
-     // console.log("initialCase", $scope.data.initialCase);
-      CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
+    $scope.$on('import-ontology', () => {
 
-      });
     });
 
     $scope.toggleSidebar = () => {
@@ -313,7 +309,7 @@
 
     $scope.newInstanceNode = (clazzIri) => {
       const r = Math.floor((Math.random() * 1000) + 1);
-      CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node ${r}`, $scope.data['case']).then((individual) => {
+      CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node_${r}`, $scope.data['case']).then((individual) => {
         this.data.nodes.add($scope.data['case'].generateNode(individual));
         this.network.fit();
       }).catch((err) => {
