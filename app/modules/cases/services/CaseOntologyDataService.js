@@ -462,7 +462,6 @@
         return _saveCase(c);
       },
       reset: () => {
-        OntologyDataService.reset();
         isInitialized = false;
       },
       getObjectProperties: () => {
