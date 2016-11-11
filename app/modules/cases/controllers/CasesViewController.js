@@ -40,14 +40,14 @@
 
         $scope.setBusy('Importing ontology...');
         OntologySharingService.import(targetPath[0]).then(() => {
-
           var info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
           info.description = 'The ontology has been imported successfully.';
           info.object = {};
           info.result = {};
           return $scope.writeLog('info', info);
         }).then(() => {
-          return this.initialize();
+          CaseOntologyDataService.reset();
+          return CaseOntologyDataService.initialize();
         }).then(() => {
           $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
           $scope.setReady();
@@ -73,9 +73,6 @@
           info.object = {};
           info.result = {};
           return $scope.writeLog('info', info);
-        }).then(() => {
-          CaseOntologyDataService.reset();
-          return CaseOntologyDataService.initialize();
         }).then(() => {
           $scope.notify('Export finished successfully', 'The ontology has been exported successfully.');
           $scope.setReady();

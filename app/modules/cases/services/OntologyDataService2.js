@@ -143,23 +143,25 @@
       return new Promise((resolve, reject) => {
         Promise.all([
           _exportType(`${_iriForPrefix('owl')}Ontology`),
+          _exportType(`${_iriForPrefix('owl')}Annotation`),
+          _exportType(`${_iriForPrefix('owl')}AnnotationProperty`),
           _exportType(`${_iriForPrefix('owl')}DatatypeProperty`),
           _exportType(`${_iriForPrefix('owl')}ObjectProperty`),
           _exportType(`${_iriForPrefix('owl')}Class`),
           _exportType(`${_iriForPrefix('owl')}NamedIndividual`)
         ]).then((result) => {
-          let n3 = '';
+          const stream = fs.createWriteStream(path);
           angular.forEach(result, (result2) => {
             angular.forEach(result2, (item) => {
-              n3 = n3.concat(item);
+              stream.write(item);
             });
           });
-          fs.writeFile(path, n3,  function(err) {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
+          stream.end('\n');
+          stream.on('finish', () => {
+            resolve();
+          });
+          stream.on('error', (err) => {
+            reject(err);
           });
         }).catch((err) => {
           reject(err);
@@ -598,20 +600,6 @@
         });
       });
     };
-    /*const _removeIndividual = (individualIri) => {
-     return new Promise((resolve, reject) => {
-     _fetchIndividual(individualIri).then((individual) => {
-     db.del(individual.toSaveTriples(), function(err) {
-     if (err) {
-     reject(err);
-     } else {
-     resolve();
-     }
-     });
-
-     });
-     });
-     };*/
     const _removeIndividual = (individualIri) => {
       return new Promise((resolve, reject) => {
         db.get({
@@ -834,9 +822,6 @@
         return Promise.all([
          _fetchOntologyIri()
         ]);
-      },
-      reset: () => {
-        return db = undefined;
       },
       isInitialized: () => {
         return !angular.isUndefined(db);
