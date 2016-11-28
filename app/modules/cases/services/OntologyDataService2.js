@@ -163,6 +163,9 @@
       if (type === 'case-name') {
         return `${_iriForPrefix('ontology')}Fallname`;
       }
+      if (type === 'case-iksize') {
+        return `${_iriForPrefix('ontology')}caseInstanzKnotenSizePropertyName`;
+      }
       if (type === 'case-individual') {
         return `${_iriForPrefix('ontology')}beinhaltet_Fallinformationen`;
       }

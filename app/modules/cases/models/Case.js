@@ -4,7 +4,7 @@
   var uuid = require('uuid');
 
   class Case {
-    constructor(identifier, createdBy, createdOn) {
+    constructor(identifier, createdBy, createdOn, description) {
       if (angular.isUndefined(identifier)) {
         throw Error('Identifier must not be null!');
       }
@@ -21,7 +21,17 @@
       this.lastEditedOn =  createdOn;
       this.status = 'new';
       this.name = '';
-      this.description = '';
+      //ik = instanzKnoten, ak = attributsKnoten, k = kanten.
+      this.iksize = 12;
+      this.ikcolor = '#aa80ff';
+      this.ikform = 'dot';
+      this.aksize = 12;
+      this.akcolor = '#aa80ff';
+      this.akform = 'dot';
+      this.ksize = 1;
+      this.kcolor = '#aa80ff';
+      this.kform = 'dynamic';
+      this.description = description;
       this.individuals = [];
       this.datatypeProperties = [];
       this.objectProperties = [];

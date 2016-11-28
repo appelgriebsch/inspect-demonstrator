@@ -42,7 +42,7 @@
     var win = new BrowserWindow({
       width: 1280,
       height: 800,
-      frame: false
+      frame: true
     });
 
     win.loadURL('file://' + __dirname + '/main.html');

@@ -30,23 +30,34 @@
         }
       },
       edges: {
-        arrows: 'to'
+        arrows: 'to',
+        font: {
+          size: 12,
+          face: 'Helvetica Neue, Helvetica, Arial'
+        },
+        smooth: {
+          enabled: true,
+          type: "dynamic",
+          roundness: 1
+    }
       },
       groups: {
         instanceNode: {
+          size : 12,
         },
         dataNode: {
+          size: 12,
           shape: 'box',
           color: {
-            border: 'aa80ff',//'#2B7CE9',
-            background: '#bb99ff',//'#97C2FC',
+            border: '#000000',//'#2B7CE9',
+            background: '#000000' ,//'#97C2FC',
             highlight: {
               border: '#aa80ff',
-              background: '#ddccff'
+              background: '#000000'
             },
             hover: {
               border: '#aa80ff',
-              background: '#ddccff'
+              background: '#000000'
             },
           },
         }
@@ -78,6 +89,7 @@
       classesTree: [],
       selectedNode: undefined
     };
+    $scope.grapOpt = [];
     $scope.viewData = {
       showFooter: false
     };
@@ -259,6 +271,35 @@
       const t = $scope.data['case'].generateNodesAndEdges();
       this.data.nodes.add(t.nodes);
       this.data.edges.add(t.edges);
+      //$scope.data['initialCase']
+      if ($scope.data.case.iksize !== "" && $scope.data.case.iksize !== undefined) {
+        this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
+      }
+      if ($scope.data.case.ikcolor !== "" && $scope.data.case.ikcolor !== undefined) {
+        this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
+      }
+      if ($scope.data.case.ikform !== "" && $scope.data.case.ikform !== undefined) {
+        this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
+      }
+      if ($scope.data.case.aksize !== "" && $scope.data.case.aksize !== undefined) {
+        this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
+      }
+      if ($scope.data.case.akcolor !== "" && $scope.data.case.akcolor !== undefined) {
+        this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
+      }
+      if ($scope.data.case.akform !== "" && $scope.data.case.akform !== undefined) {
+        this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
+      }
+      if ($scope.data.case.ksize !== "" && $scope.data.case.ksize !== undefined) {
+        this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
+      }
+      if ($scope.data.case.kcolor !== "" && $scope.data.case.kcolor !== undefined) {
+        this.graphOptions.edges.color = $scope.data.case.kcolor;
+      }
+      if ($scope.data.case.kform !== "" && $scope.data.case.kform !== undefined) {
+        this.graphOptions.edges.smooth.type = $scope.data.case.kform;
+      }
+
       this.network = new vis.Network(container, this.data, this.graphOptions);
 
       this.network.on('click', (params) => {
@@ -288,6 +329,15 @@
       if ((element === 'nodes') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
         return true;
       }
+      if ((element === 'size') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
+        return true;
+      }
+      if ((element === 'color') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
+        return true;
+      }
+      if ((element === 'form') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
+        return true;
+      }
       return false;
     };
 
@@ -297,8 +347,8 @@
     });
 
     $scope.$on('case-save', () => {
-     // console.log("case", $scope.data['case']);
-     // console.log("initialCase", $scope.data.initialCase);
+      //console.log("case", $scope.data['case']);
+      //console.log("initialCase", $scope.data.initialCase);
       CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
 
       });

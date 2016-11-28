@@ -1389,6 +1389,86 @@ owl2:Fallname rdf:type owl:DatatypeProperty ;
               rdfs:range xsd:string .
 
 
+###  http://www.AMSL/GDK/ontologie#caseInstanzKnotenSizePropertyName
+
+owl2:caseInstanzKnotenSizePropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string .
+
+
+###  http://www.AMSL/GDK/ontologie#caseInstanzKnotenColorPropertyName
+
+owl2:caseInstanzKnotenColorPropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string .
+
+
+###  http://www.AMSL/GDK/ontologie#caseInstanzKnotenFormPropertyName
+
+owl2:caseInstanzKnotenFormPropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string .  
+
+
+###  http://www.AMSL/GDK/ontologie#caseAttributKnotenSizePropertyName
+
+owl2:caseAttributKnotenSizePropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string .
+
+
+###  http://www.AMSL/GDK/ontologie#caseAttributKnotenColorPropertyName
+
+owl2:caseAttributKnotenColorPropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string .
+
+
+###  http://www.AMSL/GDK/ontologie#caseAttributKnotenFormPropertyName
+
+owl2:caseAttributKnotenFormPropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string . 
+
+
+###  http://www.AMSL/GDK/ontologie#caseKantenSizePropertyName
+
+owl2:caseKantenSizePropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string .
+
+
+###  http://www.AMSL/GDK/ontologie#caseKantenColorPropertyName
+
+owl2:caseKantenColorPropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string .
+
+
+###  http://www.AMSL/GDK/ontologie#caseKantenFormPropertyName
+
+owl2:caseKantenFormPropertyName rdf:type owl:DatatypeProperty ;
+              
+              rdfs:domain owl2:Fall ;
+              
+              rdfs:range xsd:string . 
+
 
 ###  http://www.AMSL/GDK/ontologie#Finanzielle_Bereicherung
 

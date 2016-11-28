@@ -69,6 +69,90 @@
         </div>
       </md-tab-content>
     </md-tab>
+    <md-tab label="Optionen Graph" layout-fill>
+      <md-tab-content layout-fill>
+        <div layout="column" >
+        <h3>Instanzknoten</h3>
+          <md-input-container>
+            <label for="case-iksize">Größe</label>
+            <input type="number" ng-readonly="!isEditable('size')" id="case-iksize" required md-no-asterisk aria-label="Größe" ng-model="data.case.iksize">
+          </md-input-container>
+          <md-input-container>
+            <label for="case-ikcolor">Farbe</label>
+            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-ikcolor" aria-label="Farbe" type="color" ng-model="data.case.ikcolor" >
+          </md-input-container>
+          <md-input-container>
+            <label for="case-ikform">Form</label>
+            <md-select ng-model="data.case.ikform" aria-label="Form" id="case-ikform" ng-readonly="!isEditable('form')" required class="md-underline">
+              <md-option value="box">Box</md-option>
+              <md-option value="circle">Circle</md-option>
+              <md-option value="diamond">Diamond</md-option>
+              <md-option value="dot">Dot</md-option>
+              <md-option value="ellipse">Ellipse</md-option>
+              <md-option value="star">Star</md-option>
+              <md-option value="square">Square</md-option>
+              <md-option value="triangle">Triangle</md-option>
+              
+            </md-select>
+          </md-input-container>
+          <h3>Attributsknoten</h3>
+          <md-input-container>
+            <label for="case-aksize">Größe</label>
+            <input type="number" ng-readonly="!isEditable('size')" id="case-aksize" required md-no-asterisk aria-label="Größe" ng-model="data.case.aksize">
+          </md-input-container>
+          <md-input-container>
+            <label for="case-akcolor">Farbe</label>
+            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-akcolor" aria-label="Farbe" type="color" ng-model="data.case.akcolor" >
+          </md-input-container>
+          <md-input-container>
+            <label for="case-akform">Form</label>
+            <md-select ng-model="data.case.akform" aria-label="Form" id="case-akform" ng-readonly="!isEditable('form')" required class="md-underline">
+              <md-option value="box">Box</md-option>
+              <md-option value="circle">Circle</md-option>
+              <md-option value="diamond">Diamond</md-option>
+              <md-option value="dot">Dot</md-option>
+              <md-option value="ellipse">Ellipse</md-option>
+              <md-option value="star">Star</md-option>
+              <md-option value="square">Square</md-option>
+              <md-option value="triangle">Triangle</md-option>
+            </md-select>
+          </md-input-container>
+          <h3>Kanten</h3>
+          <md-input-container>
+            <label for="case-ksize">Größe</label>
+            <input type="number" ng-readonly="!isEditable('size')" id="case-ksize" required md-no-asterisk aria-label="Weite" ng-model="data.case.ksize">
+          </md-input-container>
+          <md-input-container>
+            <label for="case-kcolor">Farbe</label>
+            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-kcolor" aria-label="Farbe" type="color" ng-model="data.case.kcolor" >
+          </md-input-container>
+          <md-input-container>
+            <label for="case-kform">Form</label>
+            <md-select ng-model="data.case.kform" aria-label="Form" id="case-kform" ng-readonly="!isEditable('form')" required class="md-underline">
+              <md-option value="continuous">Continuous</md-option>
+              <md-option value="cubicBezier">CubicBezier</md-option>
+              <md-option value="curvedCW">CurvedCW</md-option>
+              <md-option value="curvedCCW">CurvedCCW</md-option>
+              <md-option value="diagonalCross">DiagonalCross</md-option>
+              <md-option value="discrete">Discrete</md-option>
+              <md-option value="dynamic">Dynamic</md-option>
+              <md-option value="horizontal">Horizontal</md-option>
+              <md-option value="straightCross">StraightCross</md-option>
+              <md-option value="vertical">Vertical</md-option>
+            </md-select>
+          </md-input-container>
+          <h3>Physikalische Kräfte</h3>
+          <div ng-show="viewData.showFooter">
+            <p>Created by {{data.case.createdBy}} on {{data.case.createdOn | date: "dd. MMM yyyy' at 'HH:mm "}}</p>
+            <p>Last edited by {{data.case.lastEditedBy}} on {{data.case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</p>
+          </div>
+        </div>
+        <!-- <pre>data.case: {{data.case|json}}</pre>
+        <pre>case.name: {{data.case.name}}</pre>
+        <pre>case.color: {{data.case.color}}</pre>
+        <pre>case.colors: {{data.case.colors}}</pre> -->
+      </md-tab-content>
+    </md-tab>
 
   </md-tabs>
 </div>
