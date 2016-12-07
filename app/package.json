@@ -2,7 +2,7 @@
   "name": "inspect.demonstrator",
   "productName": "inspect.demonstrator",
   "description": "A demonstrator for the funded INSPECT project",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "author": "Wincor Nixdorf International GmbH",
   "main": "index.js",
   "scripts": {
@@ -17,12 +17,6 @@
     "boilerplate",
     "angularjs"
   ],
-  "config": {
-    "id": "com.wincornixdorf.inspect-demonstrator",
-    "ico": "assets/demonstrator.ico",
-    "icns": "assets/demonstrator.icns",
-    "png": "assets/demonstrator.png"
-  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/appelgriebsch/inspect-demonstrator/issues"
@@ -46,10 +40,10 @@
     "duet": "^4.0.0",
     "duet-channel": "^1.0.0",
     "electron-debug": "^1.0.0",
+    "electron-devtools-installer": "^2.0.0",
+    "electron-notifications": "^0.1.0",
     "filenamify-url": "^1.0.0",
-    "geopouch": "^2.0.0",
-    "level": "^1.4.0",
-    "leveldown": "^1.4.4",
+    "level": "^1.5.0",
     "levelgraph": "^1.1.0",
     "levelgraph-jsonld": "^0.5.0",
     "levelgraph-n3": "^1.0.0",
@@ -57,12 +51,10 @@
     "mime": "^1.3.4",
     "node-servicefinder": "appelgriebsch/node-servicefinder",
     "pdfjs-dist": "^1.5.0",
-    "pouchdb": "^5.1.0",
+    "pouchdb": "^6.0.0",
     "pouchdb-find": "^0.10.0",
     "pouchdb-quick-search": "^1.1.0",
-    "pouchdb-validation": "^1.2.1",
     "rimraf": "^2.4.3",
-    "transform-pouch": "^1.0.2",
     "uuid": "^2.0.1",
     "vis": "^4.16.1"
   }

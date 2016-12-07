@@ -1,23 +1,23 @@
 <div flex layout-fill layout="column" ng-init="ctl.initialize()" ng-cloak>
   <div flex id="docMeta" layout="row">
-    <div class="layout-padding" flex>
-      <md-input-container layout-fill>
+    <div class="layout-padding" flex layout="column">
+      <md-input-container class="fullWidth">
         <label>Title</label>
         <textarea ng-model="ctl.document.meta.headline" required></textarea>
       </md-input-container>
-      <md-input-container layout-fill>
+      <md-input-container class="fullWidth">
         <label>Description</label>
         <textarea ng-model="ctl.document.meta.description"></textarea>
       </md-input-container>
-      <md-input-container layout-fill>
+      <md-input-container class="fullWidth">
         <label>Author</label>
         <input ng-model="ctl.document.meta.author.name"></input>
       </md-input-container>
-      <md-input-container layout-fill>
+      <md-input-container class="fullWidth">
         <label>Publication Date</label>
         <input ng-model="ctl.document.datePublished" type="datetime-local"></input>
       </md-input-container>
-      <md-input-container layout-fill>
+      <md-input-container class="fullWidth">
         <label>Tags</label>
         <md-chips ng-model="ctl.document.tags"
                   placeholder="Enter a tag"

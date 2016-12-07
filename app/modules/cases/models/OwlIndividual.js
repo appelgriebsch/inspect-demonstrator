@@ -8,23 +8,11 @@
       if (angular.isUndefined(classIri)) {
         throw Error('Class iri must not be null!');
       }
-      this.initialIri = instanceIri;
       this.classIri = classIri;
       this.saved = false;
       this.datatypeProperties = {};
       this.objectProperties = {};
     }
-
-    markAsSaved() {
-      this.saved = true;
-      this.initialIri = this.iri;
-    }
-    rename(newName)  {
-      this.iri = `${this.ontologyIri}${newName}`;
-      this.label = newName;
-      this.saved = false;
-    }
-
     static addProperty(propertyArray, label, propertyIri, target) {
       const prop = {label: label, target: target};
       if (!propertyArray[propertyIri]) {

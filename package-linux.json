@@ -1,7 +1,0 @@
-{
-  "icon": "app/assets/demonstrator.png",
-  "bin": "inspect.demonstrator",
-  "categories": [
-    "Utility"
-  ]
-}

@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function CasesViewController($scope, $state, $log, CaseOntologyDataService) {
+  function CasesViewController($scope, $state, $log, CaseOntologyDataService, OntologySharingService) {
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
 
@@ -18,7 +18,7 @@
 
     $scope.newCase =  () => {
       $scope.setBusy('Initializing Case..');
-      const identifier = 'Fall ' + new Date().getTime();
+      const identifier = 'Fall_' + new Date().getTime();
       CaseOntologyDataService.createCase(identifier).then(() => {
         $state.go('app.cases.edit', {caseId: identifier});
         $scope.setReady(true);
@@ -31,6 +31,57 @@
     $scope.openCase =  (caseId) => {
       $state.go('app.cases.edit', {caseId: caseId});
     };
+
+    $scope.$on('import-ontology', () => {
+
+      var targetPath = OntologySharingService.requestOpenFile();
+
+      if ((targetPath !== undefined) && (targetPath.length > 0)) {
+
+        $scope.setBusy('Importing ontology...');
+        OntologySharingService.import(targetPath[0]).then(() => {
+          var info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
+          info.description = 'The ontology has been imported successfully.';
+          info.object = {};
+          info.result = {};
+          return $scope.writeLog('info', info);
+        }).then(() => {
+          CaseOntologyDataService.reset();
+          return CaseOntologyDataService.initialize();
+        }).then(() => {
+          $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
+          $scope.setReady();
+        }).catch((err) => {
+          $scope.setError('ReceiveAction', 'import_export', err);
+          $scope.setReady(true);
+        });
+      }
+    });
+
+    $scope.$on('export-ontology', () => {
+
+      var targetPath = OntologySharingService.requestSaveFile();
+
+      if (targetPath !== undefined) {
+
+        $scope.setBusy('Exporting ontology...');
+
+        OntologySharingService.export(targetPath).then(() => {
+
+          var info = $scope.createEventFromTemplate('SendAction', 'share');
+          info.description = 'The ontology has been exported successfully.';
+          info.object = {};
+          info.result = {};
+          return $scope.writeLog('info', info);
+        }).then(() => {
+          $scope.notify('Export finished successfully', 'The ontology has been exported successfully.');
+          $scope.setReady();
+        }).catch((err) => {
+          $scope.setError('SendAction', 'share', err);
+          $scope.setReady(true);
+        });
+      }
+    });
 
     $scope.filter = () => {
       $scope.setBusy('Filtering...');

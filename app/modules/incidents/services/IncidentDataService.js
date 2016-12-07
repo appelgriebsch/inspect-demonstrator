@@ -4,7 +4,7 @@
 
   function IncidentDataService(PouchDBService) {
 
-    var db = PouchDBService.initialize('incidents');
+    var db;    
 
     var saveDoc = function(doc) {
 
@@ -47,7 +47,11 @@
           }
         };
 
-        return saveDoc(ddoc);
+        return PouchDBService.initialize('incidents').then((pouchdb) => {
+
+          db = pouchdb;
+          return saveDoc(ddoc);
+        });
       },
 
       incidents: function() {

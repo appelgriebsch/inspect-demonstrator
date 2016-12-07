@@ -39,6 +39,7 @@
       this.status = 'closed';
     }
 
+
     generateNode(individual) {
       if (angular.isUndefined(individual)) {
         throw Error('Individual must not be null!');
