@@ -73,17 +73,28 @@
       <md-tab-content layout-fill>
         <div layout="column" >
         <h3>Instanzknoten</h3>
-          <md-input-container>
+
+          <label for="case-iksize">Größe</label>
+          <md-slider-container>
+            <md-icon md-svg-icon="device:brightness-low"></md-icon>
+            <md-slider ng-model="data.case.iksize" min="3" max="30" aria-label="Größe" flex md-discrete ng-change="onSizeChange()"></md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="data.case.iksize" aria-label="green" readonly aria-controls="green-slider">
+              </md-input-container>
+            </md-slider-container>
+          <!-- <md-input-container>
+
             <label for="case-iksize">Größe</label>
             <input type="number" ng-readonly="!isEditable('size')" id="case-iksize" required md-no-asterisk aria-label="Größe" ng-model="data.case.iksize">
-          </md-input-container>
+          </md-input-container> -->
           <md-input-container>
             <label for="case-ikcolor">Farbe</label>
-            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-ikcolor" aria-label="Farbe" type="color" ng-model="data.case.ikcolor" >
+            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-ikcolor" aria-label="Farbe" type="color" ng-model="data.case.ikcolor" ng-change="onColorChange()">
           </md-input-container>
+
           <md-input-container>
             <label for="case-ikform">Form</label>
-            <md-select ng-model="data.case.ikform" aria-label="Form" id="case-ikform" ng-readonly="!isEditable('form')" required class="md-underline">
+            <md-select ng-model="data.case.ikform" aria-label="Form" id="case-ikform" ng-readonly="!isEditable('form')" required class="md-underline" ng-change="onFormChange()">
               <md-option value="box">Box</md-option>
               <md-option value="circle">Circle</md-option>
               <md-option value="diamond">Diamond</md-option>
@@ -92,21 +103,28 @@
               <md-option value="star">Star</md-option>
               <md-option value="square">Square</md-option>
               <md-option value="triangle">Triangle</md-option>
-              
             </md-select>
           </md-input-container>
+
           <h3>Attributsknoten</h3>
-          <md-input-container>
-            <label for="case-aksize">Größe</label>
-            <input type="number" ng-readonly="!isEditable('size')" id="case-aksize" required md-no-asterisk aria-label="Größe" ng-model="data.case.aksize">
-          </md-input-container>
+
+          <label for="case-aksize">Größe</label>
+          <md-slider-container>
+            <md-icon md-svg-icon="device:brightness-low"></md-icon>
+            <md-slider ng-model="data.case.aksize" aria-label="Größe" min="3" max="30" flex md-discrete ng-change="onSizeChange()"></md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="data.case.aksize" aria-label="green" readonly aria-controls="green-slider">
+              </md-input-container>
+            </md-slider-container>
+
           <md-input-container>
             <label for="case-akcolor">Farbe</label>
-            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-akcolor" aria-label="Farbe" type="color" ng-model="data.case.akcolor" >
+            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-akcolor" aria-label="Farbe" type="color" ng-model="data.case.akcolor" ng-change="onColorChange()">
           </md-input-container>
+
           <md-input-container>
             <label for="case-akform">Form</label>
-            <md-select ng-model="data.case.akform" aria-label="Form" id="case-akform" ng-readonly="!isEditable('form')" required class="md-underline">
+            <md-select ng-model="data.case.akform" aria-label="Form" id="case-akform" ng-readonly="!isEditable('form')" required class="md-underline" ng-change="onFormChange()">
               <md-option value="box">Box</md-option>
               <md-option value="circle">Circle</md-option>
               <md-option value="diamond">Diamond</md-option>
@@ -118,17 +136,23 @@
             </md-select>
           </md-input-container>
           <h3>Kanten</h3>
-          <md-input-container>
-            <label for="case-ksize">Größe</label>
-            <input type="number" ng-readonly="!isEditable('size')" id="case-ksize" required md-no-asterisk aria-label="Weite" ng-model="data.case.ksize">
-          </md-input-container>
+
+          <label for="case-ksize">Größe</label>
+          <md-slider-container>
+            <md-icon md-svg-icon="device:brightness-low"></md-icon>
+            <md-slider ng-model="data.case.ksize" aria-label="Größe" min="1" max="20" flex md-discrete ng-change="onSizeChange()"></md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="data.case.ksize" aria-label="green" readonly aria-controls="green-slider">
+              </md-input-container>
+            </md-slider-container>
+
           <md-input-container>
             <label for="case-kcolor">Farbe</label>
-            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-kcolor" aria-label="Farbe" type="color" ng-model="data.case.kcolor" >
+            <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-kcolor" aria-label="Farbe" type="color" ng-model="data.case.kcolor" ng-change="onColorChange()">
           </md-input-container>
           <md-input-container>
             <label for="case-kform">Form</label>
-            <md-select ng-model="data.case.kform" aria-label="Form" id="case-kform" ng-readonly="!isEditable('form')" required class="md-underline">
+            <md-select ng-model="data.case.kform" aria-label="Form" id="case-kform" ng-readonly="!isEditable('form')" required class="md-underline" ng-change="onFormChange()">
               <md-option value="continuous">Continuous</md-option>
               <md-option value="cubicBezier">CubicBezier</md-option>
               <md-option value="curvedCW">CurvedCW</md-option>

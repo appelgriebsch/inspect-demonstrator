@@ -350,7 +350,6 @@
       //console.log("case", $scope.data['case']);
       //console.log("initialCase", $scope.data.initialCase);
       CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
-
       });
     });
 
@@ -360,6 +359,30 @@
       });
     };
     //</editor-fold>
+
+    $scope.onColorChange = () => {
+      var container = document.getElementById('ontology-graph');
+      this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
+      this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
+      this.graphOptions.edges.color = $scope.data.case.kcolor;
+      var network = new vis.Network(container, this.data, this.graphOptions);
+    };
+
+    $scope.onSizeChange = () => {
+      var container = document.getElementById('ontology-graph');
+      this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
+      this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
+      this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
+      var network = new vis.Network(container, this.data, this.graphOptions);
+    };
+
+    $scope.onFormChange = () => {
+      var container = document.getElementById('ontology-graph');
+      this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
+      this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
+      this.graphOptions.edges.smooth.type = $scope.data.case.kform;
+      var network = new vis.Network(container, this.data, this.graphOptions);
+    };
 
     $scope.newInstanceNode = (clazzIri) => {
       const r = Math.floor((Math.random() * 1000) + 1);
