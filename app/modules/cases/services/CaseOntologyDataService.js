@@ -11,19 +11,6 @@
 
     const caseClass = 'Fall';
     const caseNamePropertyName = 'Fallname';
-
-    const caseInstanzKnotenSizePropertyName = "InstanzKnotenSize";
-    const caseInstanzKnotenColorPropertyName = "InstanzKnotenColor";
-    const caseInstanzKnotenFormPropertyName = "InstanzKnotenForm";
-
-    const caseAttributKnotenSizePropertyName = "AttributKnotenSize";
-    const caseAttributKnotenColorPropertyName = "AttributKnotenColor";
-    const caseAttributKnotenFormPropertyName = "AttributKnotenForm";
-
-    const caseKantenSizePropertyName = "KantenSize";
-    const caseKantenColorPropertyName = "KantenColor";
-    const caseKantenFormPropertyName = "KantenForm";
-
     const caseEntityPropertyName = 'beinhaltet_Fallinformationen';
     let caseEntityProperty = {};
     const caseEntityInversePropertyName = 'gehoert_zu_Fall';
@@ -46,18 +33,15 @@
     const _convertToIndividual = (case_) => {
       const ontologyIri = OntologyDataService.ontologyIri();
       const individual = new OwlIndividual(ontologyIri, `${ontologyIri}${caseClass}`, `${ontologyIri}${case_.identifier}`);
-      
       individual.addDatatypeProperty(`${ontologyIri}${caseNamePropertyName}`, caseNamePropertyName, case_.name);
-
       angular.forEach(case_.individuals, function(ind) {
         individual.addObjectProperty(`${ontologyIri}${caseEntityPropertyName}`, caseEntityPropertyName, ind.iri);
       });
-      if (case_.description !== undefined) {
-        if (case_.description.length > 0) {
-          individual.addComment(case_.description);
-        }
-      };
-        return individual;
+
+      if (case_.description.length > 0) {
+        individual.addComment(case_.description);
+      }
+      return individual;
     };
     const _convertToCase = (individual) => {
       if (angular.isUndefined(individual)) {
@@ -75,13 +59,12 @@
         if (individual.comments.length > 0) {
           c.description = individual.comments[0];
         }
-
         const caseNamePropertyIri = `${individual.ontologyIri}${caseNamePropertyName}`;
-
         angular.forEach(individual.datatypeProperties, function(value, key) {
-          if (key === caseNamePropertyIri) c.name = value[0].target;
+          if (key === caseNamePropertyIri) {
+            c.name = value[0].target;
+          }
         });
-
         const caseEntityPropertyIri = `${individual.ontologyIri}${caseEntityPropertyName}`;
         angular.forEach(individual.objectProperties, function(value, key) {
           if (key === caseEntityPropertyIri) {
@@ -123,7 +106,6 @@
         });
       });
     };
-
     const _buildClassesTree = (rootClassIris, maxLevel) => {
       classTree.length = 0;
       const convertClass = (clazz) => {
@@ -144,7 +126,6 @@
       };
       build(classTree, rootClassIris, 0, maxLevel);
     };
-
     const _loadCasesOverview = () => {
       const ontologyIri = OntologyDataService.ontologyIri();
       const caseClassIri = `${ontologyIri}${caseClass}`;
@@ -375,40 +356,22 @@
       }
       return new Promise((resolve, reject) => {
         const individual = _convertToIndividual(case_);
-
-        let nameProperty, instanzknotenSizeProperty, instanzknotenColorProperty, instanzknotenFormProperty,
-        attributknotenSizeProperty, attributknotenColorProperty, attributknotenFormProperty, 
-        kantenSizeProperty, kantenColorProperty, kantenFormProperty;
-
+        let nameProperty;
         const promises2= [];
         angular.forEach(datatypeProperties, (prop) => {
-          if (prop.label === caseNamePropertyName) nameProperty = prop;
-          if (prop.label === caseInstanzKnotenSizePropertyName) instanzknotenSizeProperty = prop;
-          if (prop.label === caseInstanzKnotenColorPropertyName) instanzknotenColorProperty = prop;
-          if (prop.label === caseInstanzKnotenFormPropertyName) instanzknotenFormProperty = prop;
-          if (prop.label === caseAttributKnotenSizePropertyName) attributknotenSizeProperty = prop;
-          if (prop.label === caseAttributKnotenColorPropertyName) attributknotenColorProperty = prop;
-          if (prop.label === caseAttributKnotenFormPropertyName) attributknotenFormProperty = prop;
-          if (prop.label === caseKantenSizePropertyName) kantenSizeProperty = prop;
-          if (prop.label === caseKantenColorPropertyName) kantenColorProperty = prop;
-          if (prop.label === caseKantenFormPropertyName) kantenFormProperty = prop;
+          if (prop.label === caseNamePropertyName) {
+            nameProperty = prop;
+          }
         });
-
-        let propertys = [nameProperty, instanzknotenSizeProperty, instanzknotenColorProperty, instanzknotenFormProperty,
-        attributknotenSizeProperty, attributknotenColorProperty, attributknotenFormProperty, 
-        kantenSizeProperty, kantenColorProperty, kantenFormProperty];
-
-        angular.forEach(propertys, (props) => {
-          OntologyDataService.removeAllIndividualProperties(individual, props).then(() => {
-            angular.forEach(individual.datatypeProperties[props.iri], (prop) => {
-              promises2.push(OntologyDataService.addIndividualProperty(individual, props, prop.target));
-            });
-            return Promise.all(promises2);
-          }).then(() => {
-            resolve();
-          }).catch((err) => {
-            reject(err);
+        OntologyDataService.removeAllIndividualProperties(individual, nameProperty).then(() => {
+          angular.forEach(individual.datatypeProperties[nameProperty.iri], (prop) => {
+            promises2.push(OntologyDataService.addIndividualProperty(individual, nameProperty, prop.target));
           });
+          return Promise.all(promises2);
+        }).then(() => {
+          resolve();
+        }).catch((err) => {
+          reject(err);
         });
       });
     };
@@ -498,7 +461,9 @@
       saveCase: (c) => {
         return _saveCase(c);
       },
-
+      reset: () => {
+        isInitialized = false;
+      },
       getObjectProperties: () => {
         return angular.copy(objectProperties);
       },
