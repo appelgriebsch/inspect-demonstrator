@@ -4,7 +4,7 @@
 
   var uuid = require('uuid');
 
-  function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, $log, CaseOntologyDataService) {
+  function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, $log, CaseOntologyDataService, GraphDataService) {
     //<editor-fold desc="Constructor">
     this.state = $state.$current;
 
@@ -152,7 +152,7 @@
           }
         }
         if (result.removeRelation === true) {
-           $scope.setBusy('Removing relation...');
+          $scope.setBusy('Removing relation...');
           if (result.relation.type === 'object') {
             _removeObjectRelation(result.individualIri, result.relation).then(() => {
               $scope.setReady(true);
@@ -346,11 +346,12 @@
       $state.go('app.cases.view');
     });
 
+
     $scope.$on('case-save', () => {
       //console.log("case", $scope.data['case']);
       //console.log("initialCase", $scope.data.initialCase);
       CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
-      });
+     });
     });
 
     $scope.toggleSidebar = () => {
@@ -386,7 +387,7 @@
 
     $scope.newInstanceNode = (clazzIri) => {
       const r = Math.floor((Math.random() * 1000) + 1);
-      CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node ${r}`, $scope.data['case']).then((individual) => {
+      CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node_${r}`, $scope.data['case']).then((individual) => {
         this.data.nodes.add($scope.data['case'].generateNode(individual));
         this.network.fit();
       }).catch((err) => {
@@ -394,6 +395,7 @@
         $scope.setReady(true);
       });
     };
+
 
     //<editor-fold desc="Initialization">
     /**
@@ -406,7 +408,10 @@
         return;
       }
       $scope.setBusy('Loading Case...');
-      CaseOntologyDataService.initialize().then(() => {
+      Promise.all([
+        CaseOntologyDataService.initialize(),
+        GraphDataService.initialize()
+      ]).then(() => {
         $scope.data.classesTree = CaseOntologyDataService.getClassTree();
         return Promise.all([
           CaseOntologyDataService.loadCase($state.params.caseId)
@@ -415,6 +420,7 @@
         $scope.data['case'] = result[0];
         $scope.data.initialCase = angular.copy(result[0]);
         _createGraph();
+
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
