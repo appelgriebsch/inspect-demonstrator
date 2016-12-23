@@ -86,6 +86,8 @@
     $scope.data = {
       'case': {},
       initialCase: {},
+      'graph': {},
+      initalGraph: {},
       classesTree: [],
       selectedNode: undefined
     };
@@ -269,47 +271,88 @@
     const _createGraph = () => {
       const container = document.getElementById('ontology-graph');
       const t = $scope.data['case'].generateNodesAndEdges();
+      
       this.data.nodes.add(t.nodes);
       this.data.edges.add(t.edges);
-      //$scope.data['initialCase']
-      if ($scope.data.case.iksize !== "" && $scope.data.case.iksize !== undefined) {
-        this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
-      }
-      if ($scope.data.case.ikcolor !== "" && $scope.data.case.ikcolor !== undefined) {
-        this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
-      }
-      if ($scope.data.case.ikform !== "" && $scope.data.case.ikform !== undefined) {
-        this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
-      }
-      if ($scope.data.case.aksize !== "" && $scope.data.case.aksize !== undefined) {
-        this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
-      }
-      if ($scope.data.case.akcolor !== "" && $scope.data.case.akcolor !== undefined) {
-        this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
-      }
-      if ($scope.data.case.akform !== "" && $scope.data.case.akform !== undefined) {
-        this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
-      }
-      if ($scope.data.case.ksize !== "" && $scope.data.case.ksize !== undefined) {
-        this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
-      }
-      if ($scope.data.case.kcolor !== "" && $scope.data.case.kcolor !== undefined) {
-        this.graphOptions.edges.color = $scope.data.case.kcolor;
-      }
-      if ($scope.data.case.kform !== "" && $scope.data.case.kform !== undefined) {
-        this.graphOptions.edges.smooth.type = $scope.data.case.kform;
-      }
 
-      this.network = new vis.Network(container, this.data, this.graphOptions);
-
-      this.network.on('click', (params) => {
-        if (params.nodes.length > 0) {
-          if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
-            _showNodeDialog(params.nodes[0]);
+      $scope.setBusy('Loading Graph...');
+      GraphDataService.initialize().then(() => {
+        return Promise.all([
+          GraphDataService.loadOptions($state.params.caseId)
+          ]);
+      }).then((result) => {
+        $scope.data['graph'] = result[0];
+        $scope.data.initialGraph = angular.copy(result[0]);
+        this.graphOptions = $scope.data['graph'];
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+        this.network.on('click', (params) => {
+          if (params.nodes.length > 0) {
+            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+              _showNodeDialog(params.nodes[0]);
+            }
           }
-        }
 
+        });
+        $scope.setReady(true);
+      }).catch((err) => {
+        if (err.name == "not_found") {
+          $scope.data['graph'] = GraphDataService.newGraphOptions();
+          $scope.data.initialGraph = angular.copy(GraphDataService.newGraphOptions());
+          this.graphOptions = $scope.data['graph'];
+          this.network = new vis.Network(container, this.data, this.graphOptions);
+          this.network.on('click', (params) => {
+            if (params.nodes.length > 0) {
+              if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+                _showNodeDialog(params.nodes[0]);
+              }
+            }
+
+          });
+          $scope.setReady(true);
+        }
+        else {
+          $scope.setError('SearchAction', 'search', err);
+          $scope.setReady(true);
+          $state.go('app.cases.view');
+        }
+        
       });
+
+      //var savedGrapOption = GraphDataService.loadOptions($scope.data['case'].identifier):
+      
+      //$scope.data['initialCase']
+      // if ($scope.data.case.iksize !== "" && $scope.data.case.iksize !== undefined) {
+      //   this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
+      // }
+      // if ($scope.data.case.ikcolor !== "" && $scope.data.case.ikcolor !== undefined) {
+      //   this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
+      // }
+      // if ($scope.data.case.ikform !== "" && $scope.data.case.ikform !== undefined) {
+      //   this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
+      // }
+      // if ($scope.data.case.aksize !== "" && $scope.data.case.aksize !== undefined) {
+      //   this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
+      // }
+      // if ($scope.data.case.akcolor !== "" && $scope.data.case.akcolor !== undefined) {
+      //   this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
+      // }
+      // if ($scope.data.case.akform !== "" && $scope.data.case.akform !== undefined) {
+      //   this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
+      // }
+      // if ($scope.data.case.ksize !== "" && $scope.data.case.ksize !== undefined) {
+      //   this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
+      // }
+      // if ($scope.data.case.kcolor !== "" && $scope.data.case.kcolor !== undefined) {
+      //   this.graphOptions.edges.color = $scope.data.case.kcolor;
+      // }
+      // if ($scope.data.case.kform !== "" && $scope.data.case.kform !== undefined) {
+      //   this.graphOptions.edges.smooth.type = $scope.data.case.kform;
+      // }
+
+      //this.network = new vis.Network(container, this.data,  $scope.data['graph']);
+      //this.network = new vis.Network(container, this.data, this.graphOptions);
+
+      
     };
 
 
@@ -352,6 +395,8 @@
       //console.log("initialCase", $scope.data.initialCase);
       CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
      });
+      this.graphOptions._id = $scope.data.case.identifier;
+      GraphDataService.save(this.graphOptions);
     });
 
     $scope.toggleSidebar = () => {
@@ -410,24 +455,25 @@
       $scope.setBusy('Loading Case...');
       Promise.all([
         CaseOntologyDataService.initialize(),
-        GraphDataService.initialize()
+        //GraphDataService.initialize()
       ]).then(() => {
         $scope.data.classesTree = CaseOntologyDataService.getClassTree();
         return Promise.all([
-          CaseOntologyDataService.loadCase($state.params.caseId)
+          CaseOntologyDataService.loadCase($state.params.caseId),
+          //GraphDataService.loadOptions($state.params.caseId)
         ]);
       }).then((result) => {
         $scope.data['case'] = result[0];
         $scope.data.initialCase = angular.copy(result[0]);
+        //$scope.data['graph'] = result[1];
+        //$scope.data.initialGraph = angular.copy(result[1]);
         _createGraph();
-
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
         $state.go('app.cases.view');
       });
-
     };
     //</editor-fold>
 

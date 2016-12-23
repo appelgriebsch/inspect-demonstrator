@@ -38,9 +38,9 @@
         individual.addObjectProperty(`${ontologyIri}${caseEntityPropertyName}`, caseEntityPropertyName, ind.iri);
       });
 
-      if (case_.description.length > 0) {
-        individual.addComment(case_.description);
-      }
+      // if (case_.description.length > 0) {
+      //   individual.addComment(case_.description);
+      // }
       return individual;
     };
     const _convertToCase = (individual) => {
