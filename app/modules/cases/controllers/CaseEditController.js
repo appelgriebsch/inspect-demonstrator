@@ -285,13 +285,13 @@
         $scope.data.initialGraph = angular.copy(result[0]);
         this.graphOptions = $scope.data['graph'];
         this.network = new vis.Network(container, this.data, this.graphOptions);
+        _loadGraphFieldData(this.graphOptions);
         this.network.on('click', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
               _showNodeDialog(params.nodes[0]);
             }
           }
-
         });
         $scope.setReady(true);
       }).catch((err) => {
@@ -300,13 +300,13 @@
           $scope.data.initialGraph = angular.copy(GraphDataService.newGraphOptions());
           this.graphOptions = $scope.data['graph'];
           this.network = new vis.Network(container, this.data, this.graphOptions);
+          _loadGraphFieldData(this.graphOptions);
           this.network.on('click', (params) => {
             if (params.nodes.length > 0) {
               if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
                 _showNodeDialog(params.nodes[0]);
               }
             }
-
           });
           $scope.setReady(true);
         }
@@ -315,46 +315,20 @@
           $scope.setReady(true);
           $state.go('app.cases.view');
         }
-        
       });
-
-      //var savedGrapOption = GraphDataService.loadOptions($scope.data['case'].identifier):
-      
-      //$scope.data['initialCase']
-      // if ($scope.data.case.iksize !== "" && $scope.data.case.iksize !== undefined) {
-      //   this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
-      // }
-      // if ($scope.data.case.ikcolor !== "" && $scope.data.case.ikcolor !== undefined) {
-      //   this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
-      // }
-      // if ($scope.data.case.ikform !== "" && $scope.data.case.ikform !== undefined) {
-      //   this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
-      // }
-      // if ($scope.data.case.aksize !== "" && $scope.data.case.aksize !== undefined) {
-      //   this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
-      // }
-      // if ($scope.data.case.akcolor !== "" && $scope.data.case.akcolor !== undefined) {
-      //   this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
-      // }
-      // if ($scope.data.case.akform !== "" && $scope.data.case.akform !== undefined) {
-      //   this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
-      // }
-      // if ($scope.data.case.ksize !== "" && $scope.data.case.ksize !== undefined) {
-      //   this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
-      // }
-      // if ($scope.data.case.kcolor !== "" && $scope.data.case.kcolor !== undefined) {
-      //   this.graphOptions.edges.color = $scope.data.case.kcolor;
-      // }
-      // if ($scope.data.case.kform !== "" && $scope.data.case.kform !== undefined) {
-      //   this.graphOptions.edges.smooth.type = $scope.data.case.kform;
-      // }
-
-      //this.network = new vis.Network(container, this.data,  $scope.data['graph']);
-      //this.network = new vis.Network(container, this.data, this.graphOptions);
-
-      
     };
 
+    const _loadGraphFieldData = (data) => {
+      $scope.data.case.iksize = data.groups.instanceNode.size;
+      $scope.data.case.ikcolor = data.groups.instanceNode.color;
+      $scope.data.case.ikform = data.groups.instanceNode.shape;
+      $scope.data.case.aksize = data.groups.dataNode.size;
+      $scope.data.case.akcolor = data.groups.dataNode.color;
+      $scope.data.case.akform = data.groups.dataNode.shape;
+      $scope.data.case.ksize = data.edges.width;
+      $scope.data.case.kcolor = data.edges.color;
+      $scope.data.case.kform = data.edges.smooth.type;
+    };
 
     $scope.isEditable = (element) => {
       if ((element === 'identifier') && ($scope.data['case'].status === 'new')) {

@@ -37,15 +37,81 @@
           _id: '_design/templates',
           version: '1.0',
           graphOptions: {
-            nodeSize: 12,
-            nodeColor: 'green'
+            height: '100%',
+            width: '100%',
+            autoResize: true,
+            nodes: {
+              shape: 'dot',
+              scaling: {
+                min: 10,
+                max: 30,
+                label: {
+                  min: 10,
+                  max: 30,
+                  drawThreshold: 9,
+                  maxVisible: 15
+                }
+              },
+              font: {
+                size: 12,
+                face: 'Helvetica Neue, Helvetica, Arial'
+              }
+            },
+            edges: {
+              arrows: 'to',
+              font: {
+                size: 12,
+                face: 'Helvetica Neue, Helvetica, Arial'
+              },
+              smooth: {
+                enabled: true,
+                type: "dynamic",
+                roundness: 1
+              }
+            },
+            groups: {
+              instanceNode: {
+                size : 12,
+              },
+              dataNode: {
+                size: 12,
+                shape: 'box',
+                color: {
+            border: '#000000',//'#2B7CE9',
+            background: '#000000' ,//'#97C2FC',
+            highlight: {
+              border: '#aa80ff',
+              background: '#000000'
+            },
+            hover: {
+              border: '#aa80ff',
+              background: '#000000'
+            },
           },
-          caseOptions: {
-            _id: '',
-            nodeSize: 12,
-            nodeColor: 'green'
-          }
-        };
+        }
+      },
+      physics: {
+        barnesHut: {
+          gravitationalConstant: -13250,
+          centralGravity: 0.75,
+          springLength: 135,
+          damping: 0.28,
+          avoidOverlap: 1
+        },
+        minVelocity: 0.75
+      },
+      interaction: {
+        hover: true,
+        hoverConnectedEdges: false,
+        selectConnectedEdges: true
+      }
+    },
+    caseOptions: {
+      _id: '',
+      nodeSize: 12,
+      nodeColor: 'green'
+    }
+  };
         this.templates = templates;
 
         return PouchDBService.initialize('graph').then((pouchdb) => {
