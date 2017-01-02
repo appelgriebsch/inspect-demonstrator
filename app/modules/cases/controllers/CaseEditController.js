@@ -328,6 +328,43 @@
       $scope.data.case.ksize = data.edges.width;
       $scope.data.case.kcolor = data.edges.color;
       $scope.data.case.kform = data.edges.smooth.type;
+      $scope.data.case.physicsCG = data.physics.barnesHut.centralGravity;
+      $scope.data.case.physicsSP = data.physics.barnesHut.springLength;
+      $scope.data.case.physicsDamping = data.physics.barnesHut.damping;
+$scope.data.case.physicsAO = data.physics.barnesHut.avoidOverlap;
+    };
+
+    $scope.onColorChange = () => {
+      var container = document.getElementById('ontology-graph');
+      this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
+      this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
+      this.graphOptions.edges.color = $scope.data.case.kcolor;
+      var network = new vis.Network(container, this.data, this.graphOptions);
+    };
+
+    $scope.onSizeChange = () => {
+      var container = document.getElementById('ontology-graph');
+      this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
+      this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
+      this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
+      var network = new vis.Network(container, this.data, this.graphOptions);
+    };
+
+    $scope.onFormChange = () => {
+      var container = document.getElementById('ontology-graph');
+      this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
+      this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
+      this.graphOptions.edges.smooth.type = $scope.data.case.kform;
+      var network = new vis.Network(container, this.data, this.graphOptions);
+    };
+
+    $scope.onPhysicChange = () => {
+      var container = document.getElementById('ontology-graph');
+      this.graphOptions.physics.barnesHut.centralGravity = $scope.data.case.physicsCG;
+      this.graphOptions.physics.barnesHut.springLength = $scope.data.case.physicsSP;
+      this.graphOptions.physics.barnesHut.damping = $scope.data.case.physicsDamping;
+      this.graphOptions.physics.barnesHut.avoidOverlap = $scope.data.case.physicsAO;
+      var network = new vis.Network(container, this.data, this.graphOptions);
     };
 
     $scope.isEditable = (element) => {
@@ -344,15 +381,6 @@
         return true;
       }
       if ((element === 'nodes') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
-        return true;
-      }
-      if ((element === 'size') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
-        return true;
-      }
-      if ((element === 'color') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
-        return true;
-      }
-      if ((element === 'form') && (($scope.data['case'].status === 'new') || ($scope.data['case'].status === 'open'))) {
         return true;
       }
       return false;
@@ -379,30 +407,6 @@
       });
     };
     //</editor-fold>
-
-    $scope.onColorChange = () => {
-      var container = document.getElementById('ontology-graph');
-      this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
-      this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
-      this.graphOptions.edges.color = $scope.data.case.kcolor;
-      var network = new vis.Network(container, this.data, this.graphOptions);
-    };
-
-    $scope.onSizeChange = () => {
-      var container = document.getElementById('ontology-graph');
-      this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
-      this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
-      this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
-      var network = new vis.Network(container, this.data, this.graphOptions);
-    };
-
-    $scope.onFormChange = () => {
-      var container = document.getElementById('ontology-graph');
-      this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
-      this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
-      this.graphOptions.edges.smooth.type = $scope.data.case.kform;
-      var network = new vis.Network(container, this.data, this.graphOptions);
-    };
 
     $scope.newInstanceNode = (clazzIri) => {
       const r = Math.floor((Math.random() * 1000) + 1);

@@ -166,6 +166,43 @@
             </md-select>
           </md-input-container>
           <h3>Physikalische Kräfte</h3>
+
+          <label for="case-physicsCG">Central Gravity</label>
+          <md-slider-container>
+            <md-icon md-svg-icon="device:brightness-low"></md-icon>
+            <md-slider ng-model="data.case.physicsCG" aria-label="Central Gravity" min="1" max="10" step="0.1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="data.case.physicsCG" readonly aria-controls="green-slider">
+              </md-input-container>
+            </md-slider-container>
+
+            <label for="case-physicsSP">Spring Length</label>
+          <md-slider-container>
+            <md-icon md-svg-icon="device:brightness-low"></md-icon>
+            <md-slider ng-model="data.case.physicsSP" aria-label="Spring Length" min="1" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="data.case.physicsSP" readonly aria-controls="green-slider">
+              </md-input-container>
+            </md-slider-container>
+
+            <label for="case-physicsDamping">Damping</label>
+          <md-slider-container>
+            <md-icon md-svg-icon="device:brightness-low"></md-icon>
+            <md-slider ng-model="data.case.physicsDamping" aria-label="Damping" min="1" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="data.case.physicsDamping" readonly aria-controls="green-slider">
+              </md-input-container>
+            </md-slider-container>
+
+            <label for="case-physicsAO">avoidOverlap</label>
+          <md-slider-container>
+            <md-icon md-svg-icon="device:brightness-low"></md-icon>
+            <md-slider ng-model="data.case.physicsAO" aria-label="avoidOverlap" min="1" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="data.case.physicsAO" readonly aria-controls="green-slider">
+              </md-input-container>
+            </md-slider-container>
+
           <div ng-show="viewData.showFooter">
             <p>Created by {{data.case.createdBy}} on {{data.case.createdOn | date: "dd. MMM yyyy' at 'HH:mm "}}</p>
             <p>Last edited by {{data.case.lastEditedBy}} on {{data.case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</p>

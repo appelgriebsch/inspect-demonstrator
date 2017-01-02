@@ -22,15 +22,15 @@
       this.status = 'new';
       this.name = '';
       //ik = instanzKnoten, ak = attributsKnoten, k = kanten.
-      this.iksize = 12;
-      this.ikcolor = '#aa80ff';
-      this.ikform = 'dot';
-      this.aksize = 12;
-      this.akcolor = '#aa80ff';
-      this.akform = 'dot';
-      this.ksize = 1;
-      this.kcolor = '#aa80ff';
-      this.kform = 'dynamic';
+      // this.iksize = 12;
+      // this.ikcolor = '#aa80ff';
+      // this.ikform = 'dot';
+      // this.aksize = 12;
+      // this.akcolor = '#aa80ff';
+      // this.akform = 'dot';
+      // this.ksize = 1;
+      // this.kcolor = '#aa80ff';
+      // this.kform = 'dynamic';
       this.description = description;
       this.individuals = [];
       this.datatypeProperties = [];
