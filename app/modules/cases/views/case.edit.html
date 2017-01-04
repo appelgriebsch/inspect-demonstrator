@@ -73,27 +73,23 @@
       <md-tab-content layout-fill>
         <div layout="column" >
         <h3>Instanzknoten</h3>
-
-          <label for="case-iksize">Größe</label>
-          <md-slider-container>
+        <div layout="row" >
+          <label class="opt-graph-title" for="case-iksize">Größe:</label>
+          <md-slider-container class="opt-graph-input">
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
             <md-slider ng-model="data.case.iksize" min="3" max="30" aria-label="Größe" flex md-discrete ng-change="onSizeChange()"></md-slider>
             <md-input-container>
                 <input flex type="number" ng-model="data.case.iksize" aria-label="green" readonly aria-controls="green-slider">
               </md-input-container>
             </md-slider-container>
-          <!-- <md-input-container>
 
-            <label for="case-iksize">Größe</label>
-            <input type="number" ng-readonly="!isEditable('size')" id="case-iksize" required md-no-asterisk aria-label="Größe" ng-model="data.case.iksize">
-          </md-input-container> -->
-          <md-input-container>
-            <label for="case-ikcolor">Farbe</label>
+          <label class="opt-graph-title" for="case-ikcolor">Farbe:</label>
+          <md-input-container class="opt-graph-input">
             <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-ikcolor" aria-label="Farbe" type="color" ng-model="data.case.ikcolor" ng-change="onColorChange()">
           </md-input-container>
 
-          <md-input-container>
-            <label for="case-ikform">Form</label>
+          <label class="opt-graph-title" for="case-ikform">Form:</label>
+          <md-input-container class="opt-graph-input"> 
             <md-select ng-model="data.case.ikform" aria-label="Form" id="case-ikform" ng-readonly="!isEditable('form')" required class="md-underline" ng-change="onFormChange()">
               <md-option value="box">Box</md-option>
               <md-option value="circle">Circle</md-option>
@@ -105,25 +101,24 @@
               <md-option value="triangle">Triangle</md-option>
             </md-select>
           </md-input-container>
-
+          </div>
           <h3>Attributsknoten</h3>
-
-          <label for="case-aksize">Größe</label>
-          <md-slider-container>
+          <div layout="row" >
+          <label class="opt-graph-title" for="case-aksize">Größe</label>
+          <md-slider-container class="opt-graph-input">
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
             <md-slider ng-model="data.case.aksize" aria-label="Größe" min="3" max="30" flex md-discrete ng-change="onSizeChange()"></md-slider>
             <md-input-container>
                 <input flex type="number" ng-model="data.case.aksize" aria-label="green" readonly aria-controls="green-slider">
               </md-input-container>
             </md-slider-container>
-
-          <md-input-container>
-            <label for="case-akcolor">Farbe</label>
+          <label class="opt-graph-title" for="case-akcolor">Farbe</label>
+          <md-input-container class="opt-graph-input">
             <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-akcolor" aria-label="Farbe" type="color" ng-model="data.case.akcolor" ng-change="onColorChange()">
           </md-input-container>
 
-          <md-input-container>
-            <label for="case-akform">Form</label>
+          <label class="opt-graph-title" for="case-akform">Form</label>
+          <md-input-container class="opt-graph-input">
             <md-select ng-model="data.case.akform" aria-label="Form" id="case-akform" ng-readonly="!isEditable('form')" required class="md-underline" ng-change="onFormChange()">
               <md-option value="box">Box</md-option>
               <md-option value="circle">Circle</md-option>
@@ -135,10 +130,12 @@
               <md-option value="triangle">Triangle</md-option>
             </md-select>
           </md-input-container>
-          <h3>Kanten</h3>
+          </div>
 
-          <label for="case-ksize">Größe</label>
-          <md-slider-container>
+          <h3>Kanten</h3>
+          <div layout="row" >
+          <label class="opt-graph-title" for="case-ksize">Größe</label>
+          <md-slider-container class="opt-graph-input">
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
             <md-slider ng-model="data.case.ksize" aria-label="Größe" min="1" max="20" flex md-discrete ng-change="onSizeChange()"></md-slider>
             <md-input-container>
@@ -146,12 +143,12 @@
               </md-input-container>
             </md-slider-container>
 
-          <md-input-container>
-            <label for="case-kcolor">Farbe</label>
+          <label class="opt-graph-title" for="case-kcolor">Farbe</label>
+          <md-input-container class="opt-graph-input">
             <input ng-readonly="!isEditable('color')" required md-no-asterisk id="case-kcolor" aria-label="Farbe" type="color" ng-model="data.case.kcolor" ng-change="onColorChange()">
           </md-input-container>
-          <md-input-container>
-            <label for="case-kform">Form</label>
+          <label class="opt-graph-title" for="case-kform">Form</label>
+          <md-input-container class="opt-graph-input">
             <md-select ng-model="data.case.kform" aria-label="Form" id="case-kform" ng-readonly="!isEditable('form')" required class="md-underline" ng-change="onFormChange()">
               <md-option value="continuous">Continuous</md-option>
               <md-option value="cubicBezier">CubicBezier</md-option>
@@ -165,9 +162,10 @@
               <md-option value="vertical">Vertical</md-option>
             </md-select>
           </md-input-container>
+          </div>
           <h3>Physikalische Kräfte</h3>
-
-          <label for="case-physicsCG">Central Gravity</label>
+          <div layout="row" layout-xs="column">
+          <label class="opt-graph-title" for="case-physicsCG">Central Gravity</label>
           <md-slider-container>
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
             <md-slider ng-model="data.case.physicsCG" aria-label="Central Gravity" min="1" max="10" step="0.1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
@@ -176,42 +174,38 @@
               </md-input-container>
             </md-slider-container>
 
-            <label for="case-physicsSP">Spring Length</label>
+            <label class="opt-graph-title" for="case-physicsSP">Spring Length</label>
           <md-slider-container>
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
-            <md-slider ng-model="data.case.physicsSP" aria-label="Spring Length" min="1" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+            <md-slider ng-model="data.case.physicsSP" aria-label="Spring Length" min="0" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
             <md-input-container>
                 <input flex type="number" ng-model="data.case.physicsSP" readonly aria-controls="green-slider">
               </md-input-container>
             </md-slider-container>
 
-            <label for="case-physicsDamping">Damping</label>
+            <label class="opt-graph-title" for="case-physicsDamping">Damping</label>
           <md-slider-container>
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
-            <md-slider ng-model="data.case.physicsDamping" aria-label="Damping" min="1" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+            <md-slider ng-model="data.case.physicsDamping" aria-label="Damping" min="0" max="1" step="0.01" flex md-discrete ng-change="onPhysicChange()"></md-slider>
             <md-input-container>
                 <input flex type="number" ng-model="data.case.physicsDamping" readonly aria-controls="green-slider">
               </md-input-container>
             </md-slider-container>
 
-            <label for="case-physicsAO">avoidOverlap</label>
+            <label class="opt-graph-title" for="case-physicsAO">avoidOverlap</label>
           <md-slider-container>
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
-            <md-slider ng-model="data.case.physicsAO" aria-label="avoidOverlap" min="1" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+            <md-slider ng-model="data.case.physicsAO" aria-label="avoidOverlap" min="0" max="1" step="0.01" flex md-discrete ng-change="onPhysicChange()"></md-slider>
             <md-input-container>
-                <input flex type="number" ng-model="data.case.physicsAO" readonly aria-controls="green-slider">
-              </md-input-container>
-            </md-slider-container>
-
+              <input flex type="number" ng-model="data.case.physicsAO" readonly aria-controls="green-slider">
+            </md-input-container>
+           </md-slider-container>
+           </div>
           <div ng-show="viewData.showFooter">
             <p>Created by {{data.case.createdBy}} on {{data.case.createdOn | date: "dd. MMM yyyy' at 'HH:mm "}}</p>
             <p>Last edited by {{data.case.lastEditedBy}} on {{data.case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</p>
           </div>
         </div>
-        <!-- <pre>data.case: {{data.case|json}}</pre>
-        <pre>case.name: {{data.case.name}}</pre>
-        <pre>case.color: {{data.case.color}}</pre>
-        <pre>case.colors: {{data.case.colors}}</pre> -->
       </md-tab-content>
     </md-tab>
 

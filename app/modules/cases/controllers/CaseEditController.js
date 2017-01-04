@@ -331,7 +331,7 @@
       $scope.data.case.physicsCG = data.physics.barnesHut.centralGravity;
       $scope.data.case.physicsSP = data.physics.barnesHut.springLength;
       $scope.data.case.physicsDamping = data.physics.barnesHut.damping;
-$scope.data.case.physicsAO = data.physics.barnesHut.avoidOverlap;
+      $scope.data.case.physicsAO = data.physics.barnesHut.avoidOverlap;
     };
 
     $scope.onColorChange = () => {
