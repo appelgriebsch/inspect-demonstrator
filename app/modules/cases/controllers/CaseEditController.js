@@ -284,6 +284,8 @@
         $scope.data['graph'] = result[0];
         $scope.data.initialGraph = angular.copy(result[0]);
         this.graphOptions = $scope.data['graph'];
+        delete this.graphOptions['_id'];
+        delete this.graphOptions['_rev'];
         this.network = new vis.Network(container, this.data, this.graphOptions);
         _loadGraphFieldData(this.graphOptions);
         this.network.on('click', (params) => {
@@ -299,6 +301,8 @@
           $scope.data['graph'] = GraphDataService.newGraphOptions();
           $scope.data.initialGraph = angular.copy(GraphDataService.newGraphOptions());
           this.graphOptions = $scope.data['graph'];
+          delete this.graphOptions['_id'];
+          delete this.graphOptions['_rev'];
           this.network = new vis.Network(container, this.data, this.graphOptions);
           _loadGraphFieldData(this.graphOptions);
           this.network.on('click', (params) => {
@@ -340,6 +344,13 @@
       this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
       this.graphOptions.edges.color = $scope.data.case.kcolor;
       var network = new vis.Network(container, this.data, this.graphOptions);
+      this.network.on('click', (params) => {
+          if (params.nodes.length > 0) {
+            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+              _showNodeDialog(params.nodes[0]);
+            }
+          }
+        });
     };
 
     $scope.onSizeChange = () => {
@@ -348,6 +359,13 @@
       this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
       this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
       var network = new vis.Network(container, this.data, this.graphOptions);
+      this.network.on('click', (params) => {
+          if (params.nodes.length > 0) {
+            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+              _showNodeDialog(params.nodes[0]);
+            }
+          }
+        });
     };
 
     $scope.onFormChange = () => {
@@ -356,6 +374,13 @@
       this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
       this.graphOptions.edges.smooth.type = $scope.data.case.kform;
       var network = new vis.Network(container, this.data, this.graphOptions);
+      this.network.on('click', (params) => {
+          if (params.nodes.length > 0) {
+            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+              _showNodeDialog(params.nodes[0]);
+            }
+          }
+        });
     };
 
     $scope.onPhysicChange = () => {
@@ -365,6 +390,13 @@
       this.graphOptions.physics.barnesHut.damping = $scope.data.case.physicsDamping;
       this.graphOptions.physics.barnesHut.avoidOverlap = $scope.data.case.physicsAO;
       var network = new vis.Network(container, this.data, this.graphOptions);
+      this.network.on('click', (params) => {
+          if (params.nodes.length > 0) {
+            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+              _showNodeDialog(params.nodes[0]);
+            }
+          }
+        });
     };
 
     $scope.isEditable = (element) => {
