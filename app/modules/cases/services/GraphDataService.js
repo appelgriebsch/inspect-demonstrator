@@ -59,6 +59,8 @@
             },
             edges: {
               arrows: 'to',
+              color: '#000000',
+              width: 1,
               font: {
                 size: 12,
                 face: 'Helvetica Neue, Helvetica, Arial'
@@ -72,22 +74,13 @@
             groups: {
               instanceNode: {
                 size : 12,
+                color: '#ffffff',
+                shape: 'box',
               },
               dataNode: {
                 size: 12,
                 shape: 'box',
-                color: {
-            border: '#000000',//'#2B7CE9',
-            background: '#000000' ,//'#97C2FC',
-            highlight: {
-              border: '#aa80ff',
-              background: '#000000'
-            },
-            hover: {
-              border: '#aa80ff',
-              background: '#000000'
-            },
-          },
+                color: '#ffffff'
         }
       },
       physics: {
@@ -110,6 +103,11 @@
       _id: '',
       nodeSize: 12,
       nodeColor: 'green'
+    },
+    autoSetupOptions: {
+      instanzKnoten : true,
+      attributsKnoten: true,
+      kanten: true
     }
   };
         this.templates = templates;
@@ -133,6 +131,10 @@
       },
       newGraphOptions: () => {
         var doc = this.templates.graphOptions || {};
+        return JSON.parse(JSON.stringify(doc));
+      },
+      newAutoSetupOptions: () => {
+        var doc = this.templates.autoSetupOptions || {};
         return JSON.parse(JSON.stringify(doc));
       },
       save: (options) => {

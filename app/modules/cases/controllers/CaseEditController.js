@@ -8,76 +8,7 @@
     //<editor-fold desc="Constructor">
     this.state = $state.$current;
 
-    this.graphOptions = {
-      height: '100%',
-      width: '100%',
-      autoResize: true,
-      nodes: {
-        shape: 'dot',
-        scaling: {
-          min: 10,
-          max: 30,
-          label: {
-            min: 10,
-            max: 30,
-            drawThreshold: 9,
-            maxVisible: 15
-          }
-        },
-        font: {
-          size: 12,
-          face: 'Helvetica Neue, Helvetica, Arial'
-        }
-      },
-      edges: {
-        arrows: 'to',
-        font: {
-          size: 12,
-          face: 'Helvetica Neue, Helvetica, Arial'
-        },
-        smooth: {
-          enabled: true,
-          type: "dynamic",
-          roundness: 1
-    }
-      },
-      groups: {
-        instanceNode: {
-          size : 12,
-        },
-        dataNode: {
-          size: 12,
-          shape: 'box',
-          color: {
-            border: '#000000',//'#2B7CE9',
-            background: '#000000' ,//'#97C2FC',
-            highlight: {
-              border: '#aa80ff',
-              background: '#000000'
-            },
-            hover: {
-              border: '#aa80ff',
-              background: '#000000'
-            },
-          },
-        }
-      },
-      physics: {
-        barnesHut: {
-          gravitationalConstant: -13250,
-          centralGravity: 0.75,
-          springLength: 135,
-          damping: 0.28,
-          avoidOverlap: 1
-        },
-        minVelocity: 0.75
-      },
-      interaction: {
-        hover: true,
-        hoverConnectedEdges: false,
-        selectConnectedEdges: true
-      }
-    };
+    this.graphOptions = {};
     this.network = undefined;
     this.data = {
       nodes: new vis.DataSet(),
@@ -88,6 +19,7 @@
       initialCase: {},
       'graph': {},
       initalGraph: {},
+      'autosetup': {},
       classesTree: [],
       selectedNode: undefined
     };
@@ -278,14 +210,21 @@
       $scope.setBusy('Loading Graph...');
       GraphDataService.initialize().then(() => {
         return Promise.all([
-          GraphDataService.loadOptions($state.params.caseId)
+          GraphDataService.loadOptions($state.params.caseId),
+          GraphDataService.loadOptions($state.params.caseId + 'autosetup')
           ]);
       }).then((result) => {
+
         $scope.data['graph'] = result[0];
         $scope.data.initialGraph = angular.copy(result[0]);
         this.graphOptions = $scope.data['graph'];
+
         delete this.graphOptions['_id'];
         delete this.graphOptions['_rev'];
+
+        $scope.data['autosetup'] = result[1];
+        _loadGraphAutoSetup($scope.data['autosetup']);
+
         this.network = new vis.Network(container, this.data, this.graphOptions);
         _loadGraphFieldData(this.graphOptions);
         this.network.on('click', (params) => {
@@ -298,11 +237,17 @@
         $scope.setReady(true);
       }).catch((err) => {
         if (err.name == "not_found") {
+
           $scope.data['graph'] = GraphDataService.newGraphOptions();
           $scope.data.initialGraph = angular.copy(GraphDataService.newGraphOptions());
           this.graphOptions = $scope.data['graph'];
+
           delete this.graphOptions['_id'];
           delete this.graphOptions['_rev'];
+
+          $scope.data['autosetup'] = GraphDataService.newAutoSetupOptions();
+          _loadGraphAutoSetup($scope.data['autosetup']);
+
           this.network = new vis.Network(container, this.data, this.graphOptions);
           _loadGraphFieldData(this.graphOptions);
           this.network.on('click', (params) => {
@@ -338,12 +283,27 @@
       $scope.data.case.physicsAO = data.physics.barnesHut.avoidOverlap;
     };
 
-    $scope.onColorChange = () => {
+    const _loadGraphAutoSetup = (data) => {
+      $scope.data.autosetup.instanzKnoten = data.instanzKnoten;
+      $scope.data.autosetup.attributsKnoten = data.attributsKnoten;
+      $scope.data.autosetup.kanten = data.kanten;
+    };
+
+    $scope.onInstanzKnotenChange = () => {
       var container = document.getElementById('ontology-graph');
-      this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
-      this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
-      this.graphOptions.edges.color = $scope.data.case.kcolor;
-      var network = new vis.Network(container, this.data, this.graphOptions);
+      if (!$scope.data.autosetup.instanzKnoten) {
+        this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
+        this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
+        this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
+      else {
+        var defGraph = GraphDataService.newGraphOptions();
+        this.graphOptions.groups.instanceNode.color = defGraph.groups.instanceNode.color;
+        this.graphOptions.groups.instanceNode.size = defGraph.groups.instanceNode.size;
+        this.graphOptions.groups.instanceNode.shape = defGraph.groups.instanceNode.shape;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
       this.network.on('click', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
@@ -353,12 +313,21 @@
         });
     };
 
-    $scope.onSizeChange = () => {
+    $scope.onAttributsKnotenChange = () => {
       var container = document.getElementById('ontology-graph');
-      this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
-      this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
-      this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
-      var network = new vis.Network(container, this.data, this.graphOptions);
+      if (!$scope.data.autosetup.attributsKnoten) {
+        this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
+        this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
+        this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
+      else {
+        var defGraph = GraphDataService.newGraphOptions();
+        this.graphOptions.groups.dataNode.color = defGraph.groups.dataNode.color;
+        this.graphOptions.groups.dataNode.size = defGraph.groups.dataNode.size;
+        this.graphOptions.groups.dataNode.shape = defGraph.groups.dataNode.shape;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
       this.network.on('click', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
@@ -368,12 +337,21 @@
         });
     };
 
-    $scope.onFormChange = () => {
+    $scope.onKantenChange = () => {
       var container = document.getElementById('ontology-graph');
-      this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
-      this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
-      this.graphOptions.edges.smooth.type = $scope.data.case.kform;
-      var network = new vis.Network(container, this.data, this.graphOptions);
+      if (!$scope.data.autosetup.kanten) {
+        this.graphOptions.edges.color = $scope.data.case.kcolor;
+        this.graphOptions.edges.width = parseInt($scope.data.case.ksize);
+        this.graphOptions.edges.smooth.type = $scope.data.case.kform;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
+      else {
+        var defGraph = GraphDataService.newGraphOptions();
+        this.graphOptions.edges.color = defGraph.edges.color;
+        this.graphOptions.edges.width = defGraph.edges.width;
+        this.graphOptions.edges.smooth.type  = defGraph.edges.smooth.type;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
       this.network.on('click', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
@@ -385,11 +363,21 @@
 
     $scope.onPhysicChange = () => {
       var container = document.getElementById('ontology-graph');
-      this.graphOptions.physics.barnesHut.centralGravity = $scope.data.case.physicsCG;
-      this.graphOptions.physics.barnesHut.springLength = $scope.data.case.physicsSP;
-      this.graphOptions.physics.barnesHut.damping = $scope.data.case.physicsDamping;
-      this.graphOptions.physics.barnesHut.avoidOverlap = $scope.data.case.physicsAO;
-      var network = new vis.Network(container, this.data, this.graphOptions);
+      if (!$scope.data.autosetup.physik) {
+        this.graphOptions.physics.barnesHut.centralGravity = $scope.data.case.physicsCG;
+        this.graphOptions.physics.barnesHut.springLength = $scope.data.case.physicsSP;
+        this.graphOptions.physics.barnesHut.damping = $scope.data.case.physicsDamping;
+        this.graphOptions.physics.barnesHut.avoidOverlap = $scope.data.case.physicsAO;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
+      else {
+        var defGraph = GraphDataService.newGraphOptions();
+        this.graphOptions.physics.barnesHut.centralGravity = defGraph.physics.barnesHut.centralGravity;
+        this.graphOptions.physics.barnesHut.springLength = defGraph.physics.barnesHut.springLength;
+        this.graphOptions.physics.barnesHut.damping = defGraph.physics.barnesHut.damping;
+        this.graphOptions.physics.barnesHut.avoidOverlap = defGraph.physics.barnesHut.avoidOverlap;
+        this.network = new vis.Network(container, this.data, this.graphOptions);
+      }
       this.network.on('click', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
@@ -431,6 +419,8 @@
      });
       this.graphOptions._id = $scope.data.case.identifier;
       GraphDataService.save(this.graphOptions);
+      $scope.data['autosetup']._id = $scope.data.case.identifier + 'autosetup';
+      GraphDataService.save($scope.data['autosetup']);
     });
 
     $scope.toggleSidebar = () => {
