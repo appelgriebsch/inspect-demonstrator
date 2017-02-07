@@ -71,8 +71,16 @@
     </md-tab>
     <md-tab label="Optionen Graph" layout-fill>
       <md-tab-content layout-fill>
-        <div layout="column" >
-        
+        <div layout="column">
+        <ul>
+          <li><a ng-class="showInstanzknotenActive" class="iknoten" ng-click="isShowContent('Instanzknoten')">Instanzknoten</a></li>
+          <li><a ng-class="showAttributsknotenActive" class="aknoten" ng-click="isShowContent('Attributsknoten')">Attributsknoten</a></li>
+          <li><a ng-class="showKantenActive" class="kanten" ng-click="isShowContent('Kanten')">Kanten</a></li>
+          <li><a ng-class="showPhysikalischeActive" class="physik" ng-click="isShowContent('Physikalische')">Physikalische Kräfte</a></li>
+        </ul>
+      </div>
+        <div layout="column" style="margin-left: 20%;">
+        <div id="instanzknoten" ng-show='showInstanzknoten'>
         <h3>Instanzknoten</h3>
         <div layout="row" >
           <label class="opt-graph-title" for="case-iksize">Größe:</label>
@@ -84,9 +92,14 @@
               </md-input-container>
             </md-slider-container>
 
-          <label class="opt-graph-title" for="case-ikcolor">Farbe:</label>
+          <label class="opt-graph-title" for="case-ikcolor">Farbe (Füllen):</label>
           <md-input-container class="opt-graph-input">
             <input required md-no-asterisk id="case-ikcolor" aria-label="Farbe" type="color" ng-disabled="data.autosetup.instanzKnoten" ng-model="data.case.ikcolor" ng-change="onInstanzKnotenChange()">
+          </md-input-container>
+
+          <label class="opt-graph-title" for="case-ikcolorFrame">Farbe (Umrandung):</label>
+          <md-input-container class="opt-graph-input">
+            <input required md-no-asterisk id="case-ikcolorFrame" aria-label="Farbe" type="color" ng-disabled="data.autosetup.instanzKnoten" ng-model="data.case.ikcolorFrame" ng-change="onInstanzKnotenChange()">
           </md-input-container>
 
           <label class="opt-graph-title" for="case-ikform">Form:</label>
@@ -106,7 +119,9 @@
           <md-switch ng-model="data.autosetup.instanzKnoten" layout-align="center center" aria-label="Switch 2" class="md-warn" type="checkbox" ng-change="onInstanzKnotenChange()">
             <h5>Instanzknoten automatisch Einstellungen</h5>
           </md-switch>
-
+          <hr>
+          </div><!-- instanzknoten end -->
+          <div id="attributsknoten" ng-show='showAttributsknoten'>
           <h3>Attributsknoten</h3>
           <div layout="row" >
           <label class="opt-graph-title" for="case-aksize">Größe:</label>
@@ -117,10 +132,15 @@
                 <input flex type="number" ng-model="data.case.aksize" aria-label="green" readonly aria-controls="green-slider">
               </md-input-container>
             </md-slider-container>
-          <label class="opt-graph-title" for="case-akcolor">Farbe:</label>
 
+          <label class="opt-graph-title" for="case-akcolor">Farbe (Füllen):</label>
           <md-input-container class="opt-graph-input">
             <input ng-disabled="data.autosetup.attributsKnoten" required md-no-asterisk id="case-akcolor" aria-label="Farbe" type="color" ng-model="data.case.akcolor" ng-change="onAttributsKnotenChange()">
+          </md-input-container>
+
+          <label class="opt-graph-title" for="case-akcolorFrame">Farbe (Umrandung):</label>
+          <md-input-container class="opt-graph-input">
+            <input ng-disabled="data.autosetup.attributsKnoten" required md-no-asterisk id="case-akcolorFrame" aria-label="Farbe" type="color" ng-model="data.case.akcolorFrame" ng-change="onAttributsKnotenChange()">
           </md-input-container>
 
           <label class="opt-graph-title" for="case-akform">Form:</label>
@@ -140,7 +160,9 @@
           <md-switch ng-model="data.autosetup.attributsKnoten" layout-align="center center" aria-label="Switch 2" class="md-warn" ng-change="onAttributsKnotenChange()">
             <h5>Attributsknoten automatisch Einstellungen</h5>
           </md-switch>
-
+          <hr>
+          </div><!-- instanzknoten end -->
+          <div id="kanten" ng-show='showKanten'>
           <h3>Kanten</h3>
           <div layout="row" >
           <label class="opt-graph-title" for="case-ksize">Größe:</label>
@@ -152,7 +174,7 @@
               </md-input-container>
             </md-slider-container>
 
-          <label class="opt-graph-title" for="case-kcolor">Farbe:</label>
+          <label class="opt-graph-title" for="case-kcolor">Farbe (Füllen):</label>
           <md-input-container class="opt-graph-input">
             <input ng-disabled="data.autosetup.kanten" required md-no-asterisk id="case-kcolor" aria-label="Farbe" type="color" ng-model="data.case.kcolor" ng-change="onKantenChange()">
           </md-input-container>
@@ -176,11 +198,14 @@
           <md-switch ng-model="data.autosetup.kanten" layout-align="center center" aria-label="Switch 2" class="md-warn" ng-change="onKantenChange()">
             <h5>Kanten automatisch Einstellungen</h5>
           </md-switch>
+          <hr>
+          </div> <!--Kanten end -->
 
+          <div id="physikalische" ng-show='showPhysikalische'>
           <h3>Physikalische Kräfte</h3>
           <div layout="row">
           <div flex="50">
-          <label class="opt-graph-title" for="case-physicsCG">Central Gravity:</label>
+          <label class="opt-graph-title" for="case-physicsCG">Zentrale Schwerkraft:</label>
           <md-slider-container>
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
             <md-slider ng-model="data.case.physicsCG" aria-label="Central Gravity" ng-disabled="data.autosetup.physik" min="1" max="10" step="0.1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
@@ -202,7 +227,7 @@
             </div>
             <div layout="row">
             <div flex="50">
-            <label class="opt-graph-title" for="case-physicsDamping">Damping:</label>
+            <label class="opt-graph-title" for="case-physicsDamping">Dämpfung:</label>
           <md-slider-container>
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
             <md-slider ng-model="data.case.physicsDamping" aria-label="Damping" ng-disabled="data.autosetup.physik" min="0" max="1" step="0.01" flex md-discrete ng-change="onPhysicChange()"></md-slider>
@@ -212,7 +237,7 @@
             </md-slider-container>
           </div>
           <div flex="50">
-            <label class="opt-graph-title" for="case-physicsAO">avoidOverlap:</label>
+            <label class="opt-graph-title" for="case-physicsAO">Vermeiden Sie Überschneidungen:</label>
           <md-slider-container>
             <md-icon md-svg-icon="device:brightness-low"></md-icon>
             <md-slider ng-model="data.case.physicsAO" aria-label="avoidOverlap" ng-disabled="data.autosetup.physik" min="0" max="1" step="0.01" flex md-discrete ng-change="onPhysicChange()"></md-slider>
@@ -225,6 +250,8 @@
            <md-switch ng-model="data.autosetup.physik" layout-align="center center" aria-label="Switch 2" class="md-warn" ng-change="onPhysicChange()">
             <h5>Physikalische Kräfte automatisch Einstellungen</h5>
           </md-switch>
+          <hr>
+          </div> <!-- physikalische end -->
           <div ng-show="viewData.showFooter">
             <p>Created by {{data.case.createdBy}} on {{data.case.createdOn | date: "dd. MMM yyyy' at 'HH:mm "}}</p>
             <p>Last edited by {{data.case.lastEditedBy}} on {{data.case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</p>

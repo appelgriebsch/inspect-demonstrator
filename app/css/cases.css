@@ -36,3 +36,61 @@ md-dialog {
   width: 25%;
   padding-right: 8%;
 }
+
+ul {
+    list-style-type: none;
+    margin: 1;
+    padding: 0;
+    width: 16%;
+    position: fixed;
+    height: 200%;
+    overflow: hidden;
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+li a {
+    width:100%;
+    padding-left:10px;
+    height:50px;
+    line-height:50px;
+    display:block;
+    overflow:hidden;
+    position:relative;
+    text-decoration:none;
+    text-transform:uppercase;
+    font-size:14px;
+    color:#686868;
+ 
+    -webkit-transition:all 0.2s linear;
+    -moz-transition:all 0.2s linear;
+    -o-transition:all 0.2s linear;
+    transition:all 0.2s linear;
+}
+
+li a.active {
+    background-color: #617d8b;
+    color: white;
+}
+
+li a:hover:not(.active) {
+    background:#efefef;
+}
+
+li a.iknoten {
+    border-left:5px solid #617d8b;
+}
+
+li a.aknoten {
+    border-left:5px solid #617d8b;
+}
+
+li a.kanten {
+    border-left:5px solid #617d8b;
+}
+
+li a.physik {
+    border-left:5px solid #617d8b;
+}

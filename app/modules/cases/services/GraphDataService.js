@@ -74,13 +74,20 @@
             groups: {
               instanceNode: {
                 size : 12,
-                color: '#ffffff',
+                color: {
+                border: '#ff0000',
+                background: '#ffffff'
+                
+              },
                 shape: 'box',
               },
               dataNode: {
                 size: 12,
                 shape: 'box',
-                color: '#ffffff'
+                color: {
+                border: '#000000',
+                background: '#ffffff'
+              }
         }
       },
       physics: {
@@ -89,7 +96,8 @@
           centralGravity: 0.75,
           springLength: 135,
           damping: 0.28,
-          avoidOverlap: 1
+          avoidOverlap: 1,
+          maxVelocity: 100
         },
         minVelocity: 0.75
       },

@@ -29,6 +29,16 @@
     };
     //</editor-fold>
 
+    //isShowContent() -->
+    $scope.showInstanzknoten = true;
+    $scope.showAttributsknoten = false;
+    $scope.showKanten = false;
+    $scope.showPhysikalische = false;
+    $scope.showInstanzknotenActive = 'active'
+    
+    var allNodes;
+    var highlightActive = false;
+
     var _showNodeDialog = (nodeId) => {
       if (!nodeId) {
         return;
@@ -227,13 +237,16 @@
 
         this.network = new vis.Network(container, this.data, this.graphOptions);
         _loadGraphFieldData(this.graphOptions);
-        this.network.on('click', (params) => {
+        this.network.on('doubleClick', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
               _showNodeDialog(params.nodes[0]);
             }
           }
         });
+
+        this.network.on("click",neighbourhoodHighlight);
+
         $scope.setReady(true);
       }).catch((err) => {
         if (err.name == "not_found") {
@@ -250,13 +263,16 @@
 
           this.network = new vis.Network(container, this.data, this.graphOptions);
           _loadGraphFieldData(this.graphOptions);
-          this.network.on('click', (params) => {
+          this.network.on('doubleClick', (params) => {
             if (params.nodes.length > 0) {
               if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
                 _showNodeDialog(params.nodes[0]);
               }
             }
           });
+
+          this.network.on("click",neighbourhoodHighlight);
+
           $scope.setReady(true);
         }
         else {
@@ -269,10 +285,12 @@
 
     const _loadGraphFieldData = (data) => {
       $scope.data.case.iksize = data.groups.instanceNode.size;
-      $scope.data.case.ikcolor = data.groups.instanceNode.color;
+      $scope.data.case.ikcolor = data.groups.instanceNode.color.background;
+      $scope.data.case.ikcolorFrame = data.groups.instanceNode.color.border;
       $scope.data.case.ikform = data.groups.instanceNode.shape;
       $scope.data.case.aksize = data.groups.dataNode.size;
-      $scope.data.case.akcolor = data.groups.dataNode.color;
+      $scope.data.case.akcolor = data.groups.dataNode.color.background;
+      $scope.data.case.akcolorFrame = data.groups.dataNode.color.border;
       $scope.data.case.akform = data.groups.dataNode.shape;
       $scope.data.case.ksize = data.edges.width;
       $scope.data.case.kcolor = data.edges.color;
@@ -292,49 +310,55 @@
     $scope.onInstanzKnotenChange = () => {
       var container = document.getElementById('ontology-graph');
       if (!$scope.data.autosetup.instanzKnoten) {
-        this.graphOptions.groups.instanceNode.color = $scope.data.case.ikcolor;
+        this.graphOptions.groups.instanceNode.color.background = $scope.data.case.ikcolor;
+        this.graphOptions.groups.instanceNode.color.border = $scope.data.case.ikcolorFrame;
         this.graphOptions.groups.instanceNode.size = parseInt($scope.data.case.iksize);
         this.graphOptions.groups.instanceNode.shape = $scope.data.case.ikform;
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
       else {
         var defGraph = GraphDataService.newGraphOptions();
-        this.graphOptions.groups.instanceNode.color = defGraph.groups.instanceNode.color;
+        this.graphOptions.groups.instanceNode.color.background = defGraph.groups.instanceNode.color.background;
+        this.graphOptions.groups.instanceNode.color.border = defGraph.groups.instanceNode.color.border;
         this.graphOptions.groups.instanceNode.size = defGraph.groups.instanceNode.size;
         this.graphOptions.groups.instanceNode.shape = defGraph.groups.instanceNode.shape;
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
-      this.network.on('click', (params) => {
+      this.network.on('doubleClick', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
               _showNodeDialog(params.nodes[0]);
             }
           }
         });
+      this.network.on("click",neighbourhoodHighlight);
     };
 
     $scope.onAttributsKnotenChange = () => {
       var container = document.getElementById('ontology-graph');
       if (!$scope.data.autosetup.attributsKnoten) {
-        this.graphOptions.groups.dataNode.color = $scope.data.case.akcolor;
+        this.graphOptions.groups.dataNode.color.background = $scope.data.case.akcolor;
+        this.graphOptions.groups.dataNode.color.border = $scope.data.case.akcolorFrame;
         this.graphOptions.groups.dataNode.size = parseInt($scope.data.case.aksize);
         this.graphOptions.groups.dataNode.shape = $scope.data.case.akform;
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
       else {
         var defGraph = GraphDataService.newGraphOptions();
-        this.graphOptions.groups.dataNode.color = defGraph.groups.dataNode.color;
+        this.graphOptions.groups.dataNode.color.background = defGraph.groups.dataNode.color.background;
+        this.graphOptions.groups.dataNode.color.border = defGraph.groups.dataNode.color.border;
         this.graphOptions.groups.dataNode.size = defGraph.groups.dataNode.size;
         this.graphOptions.groups.dataNode.shape = defGraph.groups.dataNode.shape;
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
-      this.network.on('click', (params) => {
+      this.network.on('doubleClick', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
               _showNodeDialog(params.nodes[0]);
             }
           }
         });
+      this.network.on("click",neighbourhoodHighlight);
     };
 
     $scope.onKantenChange = () => {
@@ -352,13 +376,14 @@
         this.graphOptions.edges.smooth.type  = defGraph.edges.smooth.type;
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
-      this.network.on('click', (params) => {
+      this.network.on('doubleClick', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
               _showNodeDialog(params.nodes[0]);
             }
           }
         });
+      this.network.on("click",neighbourhoodHighlight);
     };
 
     $scope.onPhysicChange = () => {
@@ -378,13 +403,111 @@
         this.graphOptions.physics.barnesHut.avoidOverlap = defGraph.physics.barnesHut.avoidOverlap;
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
-      this.network.on('click', (params) => {
+      this.network.on('doubleClick', (params) => {
           if (params.nodes.length > 0) {
             if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
               _showNodeDialog(params.nodes[0]);
             }
           }
         });
+      this.network.on("click",neighbourhoodHighlight);
+    };
+
+    const neighbourhoodHighlight = (params) => {
+      allNodes = this.data['nodes'].get({returnType:"Object"});
+      // if something is selected:
+      if (params.nodes.length > 0) {
+        highlightActive = true;
+        var i,j;
+        var selectedNode = params.nodes[0];
+        var degrees = 2;
+
+        // mark all nodes as hard to read.
+        for (var nodeId in allNodes) {
+          allNodes[nodeId].color = 'rgba(200,200,200,0.2)';
+          if (allNodes[nodeId].hiddenLabel === undefined) {
+            allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+            allNodes[nodeId].label = undefined;
+          }
+        }
+        var connectedNodes = this.network.getConnectedNodes(selectedNode);
+        var allConnectedNodes = [];
+
+        // get the second degree nodes
+        for (i = 1; i < degrees; i++) {
+          for (j = 0; j < connectedNodes.length; j++) {
+            allConnectedNodes = allConnectedNodes.concat(this.network.getConnectedNodes(connectedNodes[j]));
+          }
+        }
+
+        // all second degree nodes get a different color and their label back
+        for (i = 0; i < allConnectedNodes.length; i++) {
+          allNodes[allConnectedNodes[i]].color = 'rgba(150,150,150,0.75)';
+          if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+            allNodes[allConnectedNodes[i]].label = allNodes[allConnectedNodes[i]].hiddenLabel;
+            allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+          }
+        }
+
+        // all first degree nodes get their own color and their label back
+        for (i = 0; i < connectedNodes.length; i++) {
+          allNodes[connectedNodes[i]].color = undefined;
+          if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+            allNodes[connectedNodes[i]].label = allNodes[connectedNodes[i]].hiddenLabel;
+            allNodes[connectedNodes[i]].hiddenLabel = undefined;
+          }
+        }
+
+        // the main node gets its own color and its label back.
+        allNodes[selectedNode].color = undefined;
+        if (allNodes[selectedNode].hiddenLabel !== undefined) {
+          allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+          allNodes[selectedNode].hiddenLabel = undefined;
+        }
+      }
+      else if (highlightActive === true) {
+        // reset all nodes
+        for (var nodeId in allNodes) {
+          allNodes[nodeId].color = undefined;
+          if (allNodes[nodeId].hiddenLabel !== undefined) {
+            allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+            allNodes[nodeId].hiddenLabel = undefined;
+          }
+        }
+        highlightActive = false
+      }
+
+      // transform the object into an array
+      var updateArray = [];
+      for (nodeId in allNodes) {
+        if (allNodes.hasOwnProperty(nodeId)) {
+          updateArray.push(allNodes[nodeId]);
+        }
+      }
+      this.data['nodes'].update(updateArray);
+    };
+
+
+    $scope.isShowContent = (data) => {
+      if (data === "Instanzknoten") {
+        ($scope.showInstanzknoten) ? $scope.showInstanzknoten = false : $scope.showInstanzknoten = true;
+        ($scope.showInstanzknoten) ? $scope.showInstanzknotenActive = 'active' : $scope.showInstanzknotenActive = '';
+      }
+
+      if (data === "Attributsknoten") {
+        ($scope.showAttributsknoten) ? $scope.showAttributsknoten = false : $scope.showAttributsknoten = true;
+        ($scope.showAttributsknoten) ? $scope.showAttributsknotenActive = 'active' : $scope.showAttributsknotenActive = '';
+      }
+
+      if (data === "Kanten") {
+        ($scope.showKanten) ? $scope.showKanten = false : $scope.showKanten = true;
+        ($scope.showKanten) ? $scope.showKantenActive = 'active' : $scope.showKantenActive = '';
+      }
+
+      if (data === "Physikalische") {
+        ($scope.showPhysikalische) ? $scope.showPhysikalische = false : $scope.showPhysikalische = true;
+        ($scope.showPhysikalische) ? $scope.showPhysikalischeActive = 'active' : $scope.showPhysikalischeActive = '';
+      }
     };
 
     $scope.isEditable = (element) => {
