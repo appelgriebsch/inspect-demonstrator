@@ -76,8 +76,11 @@
                 size : 12,
                 color: {
                 border: '#ff0000',
-                background: '#ffffff'
-                
+                background: '#ffffff',
+                hover: {
+                  border: '#ff0000',
+                  background: '#ffffff'
+                }
               },
                 shape: 'box',
               },
@@ -86,7 +89,11 @@
                 shape: 'box',
                 color: {
                 border: '#000000',
-                background: '#ffffff'
+                background: '#ffffff',
+                hover: {
+                  border: '#ff0000',
+                  background: '#ffffff'
+                }
               }
         }
       },
