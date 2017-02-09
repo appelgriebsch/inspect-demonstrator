@@ -26,43 +26,112 @@ md-dialog {
 }
 
 .opt-graph-title {
-  font-size: 14px;
-  color: #000;
-  font-style: italic;
-  text-decoration: underline;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    font-weight: 400;
+    text-transform: uppercase;
+    text-align: center;
+    padding:2%;
+    width: 100%;
+}
+
+.h3_title{
+  text-transform: uppercase;
+  text-align:center;
+  letter-spacing: 5px;
 }
 
 .opt-graph-input{
-  width: 25%;
+  width: 100%;
   padding-right: 8%;
+  float: left;
 }
 
-ul {
+.graphCol{
+  list-style-type: none;
+  width: 100%;
+  position: fixed;
+  height: 90%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.instanzCol{
+  width: 20%;
+  height: 80%;
+  float:left;
+  padding: 30px 14px 25px;
+  border-right: 1px solid #617d8b;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.attributsCol {
+  width: 20%;
+  height: 80%;
+  float: left;
+  padding: 33px 44px;
+  border-right: 1px solid #617d8b;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.kantenCol{
+  width: 20%;
+  height: 80%;
+  float:left;
+  padding: 30px 14px 25px;
+  border-right: 1px solid #617d8b;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.physikCol{
+  width: 20%;
+  height: 80%;
+  float:left;
+  padding: 30px 14px 25px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.switchPos{
+  position: absolute;
+  bottom: 0;
+}
+
+.cbTextCenter{
+  text-align: center;
+}
+
+.infoIcon{
+  vertical-align: middle;
+}
+
+.infoIcon:hover{
+  color: #ff0000;
+}
+
+.menuUL{
     list-style-type: none;
     margin: 1;
     padding: 0;
-    width: 16%;
-    position: fixed;
-    height: 200%;
-    overflow: hidden;
-
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    width: 100%;
 }
 
-li a {
-    width:100%;
-    padding-left:10px;
-    height:50px;
-    line-height:50px;
-    display:block;
-    overflow:hidden;
-    position:relative;
-    text-decoration:none;
-    text-transform:uppercase;
-    font-size:14px;
+.menuLI {
+  float:left;
+  cursor: pointer;
+}
+
+.menuLI a {
+    font-size:12px;
     color:#686868;
+    letter-spacing: 1px;
+    padding:10px;
+    height:30px;
+    text-transform:uppercase;
+    
  
     -webkit-transition:all 0.2s linear;
     -moz-transition:all 0.2s linear;
@@ -70,27 +139,10 @@ li a {
     transition:all 0.2s linear;
 }
 
-li a.active {
-    background-color: #617d8b;
-    color: white;
+.menuLI a.active {
+    border-bottom: 1px solid #efefef;
 }
 
-li a:hover:not(.active) {
-    background:#efefef;
-}
-
-li a.iknoten {
-    border-left:5px solid #617d8b;
-}
-
-li a.aknoten {
-    border-left:5px solid #617d8b;
-}
-
-li a.kanten {
-    border-left:5px solid #617d8b;
-}
-
-li a.physik {
-    border-left:5px solid #617d8b;
+.menuLI a:hover:not(.active) {
+    background: #efefef;
 }

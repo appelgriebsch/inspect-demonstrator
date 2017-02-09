@@ -31,10 +31,13 @@
 
     //isShowContent() -->
     $scope.showInstanzknoten = true;
-    $scope.showAttributsknoten = false;
-    $scope.showKanten = false;
-    $scope.showPhysikalische = false;
-    $scope.showInstanzknotenActive = 'active'
+    $scope.showAttributsknoten = true;
+    $scope.showKanten = true;
+    $scope.showPhysikalische = true;
+    $scope.showInstanzknotenActive = 'active';
+    $scope.showAttributsknotenActive = 'active';
+    $scope.showKantenActive = 'active';
+    $scope.showPhysikalischeActive = 'active';
     
     var allNodes;
     var highlightActive = false;
