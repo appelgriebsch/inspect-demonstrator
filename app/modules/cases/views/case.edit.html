@@ -58,6 +58,78 @@
             </ol>
           </div>
         </md-sidenav>
+
+        <md-sidenav class="md-sidenav-right md-whiteframe-8dp" md-component-id="sidebar-tree" layout="column">
+          <div layout-align="space-between start" layout="row" >
+            <h3>Classes</h3>
+            <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-right-btn-opened' ng-click="toggleSidebar()">
+              <md-icon>chevron_left</md-icon>
+            </md-button>
+          </div>
+          <div ui-tree="treeClasses"
+            data-nodrop-enabled="true"
+            data-drag-enabled="false"
+            ng-controller="CasesTreeController">
+            <ol ui-tree-nodes ng-model="data.classesTree">
+              <li ng-repeat="clazz in data.classesTree" ui-tree-node collapsed="true" ng-include="'nodes_renderer2.html'"></li>
+            </ol>
+          </div>
+        </md-sidenav>
+
+        <md-sidenav class="md-sidenav-right md-whiteframe-8dp" md-component-id="right" layout="column" md-disable-backdrop md-whiteframe="4">
+          <h3 class="h3_title_entities">Focus</h3>
+          <hr style="width: 100%">
+          <ul>
+            <li>
+              <p><b>Selected node:</b> {{selectedKnotenName}}</p>
+            </li>
+            <li>
+              <p><b>Focused node:</b> {{focusedNode}}</p>
+            </li>
+            <li>
+
+              <md-button class="md-raised-cases" name="{{selectedKnotenNameFull}}" ng-click="setFocus(this)">
+              <i class="material-icons infoIcon">add_location</i>
+              Set Focus
+              </md-button>
+
+              <md-button class="md-raised-cases {{gradBtnHide}}" ng-click="nextLevel(this)">
+              <i class="material-icons infoIcon">directions</i>
+              Next level
+              </md-button>
+
+              <md-button class="md-raised-cases {{gradBtnHide}}" ng-click="clearFocus()">
+              <i class="material-icons infoIcon">cancel</i>
+              Clear focus
+              </md-button>
+
+              <md-switch ng-model="physicsOnOffData" layout-align="left center" aria-label="Switch 2" class="md-warn {{gradBtnHide}}" type="checkbox" ng-change="physicsOnOff()">
+                  <h5>Physik</h5>
+                </md-switch>
+
+            </li>
+          </ul>
+          <h3 class="h3_title_entities">Edit individual</h3>
+          <hr style="width: 100%">
+          <ul>
+            <li>
+              <p>Rename</p>
+            </li>
+            <li>
+              <p>Type</p>
+            </li>
+            <li>
+              <p>Object relation</p>
+            </li>
+            <li>
+              <p>Value relation</p>
+            </li>
+            <li>
+              <p>Delete</p>
+            </li>
+          </ul>
+        </md-sidenav>
+
         <div layout="row" layout-fill >
           <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed' ng-click="toggleSidebar()">
             <md-icon>chevron_right</md-icon>
@@ -216,7 +288,7 @@
               <div layout="column">
                 <label class="opt-graph-title infoIcon">
                   Zentrale Schwerkraft:
-                  <md-tooltip>
+                  <md-tooltip class="ttFont">
                     There is a central gravity attractor to pull the entire network back to the center.
                   </md-tooltip>
                   <i class="material-icons infoIcon">info_outline</i>
@@ -232,7 +304,7 @@
               <div layout="column">
                 <label class="opt-graph-title infoIcon">
                   Spring Length:
-                  <md-tooltip>
+                  <md-tooltip class="ttFont">
                     The edges are modelled as springs. This springLength here is the the rest length of the spring.
                   </md-tooltip>
                   <i class="material-icons infoIcon">info_outline</i>
@@ -248,7 +320,7 @@
               <div layout="column">
                 <label class="opt-graph-title infoIcon">
                   Dämpfung:
-                  <md-tooltip>
+                  <md-tooltip class="ttFont">
                     Accepted range: [0 .. 1]. The damping factor is how much of the velocity from the previous physics simulation iteration carries over to the next iteration.
                   </md-tooltip>
                   <i class="material-icons infoIcon">info_outline</i>
@@ -264,7 +336,7 @@
               <div layout="column">
                 <label class="opt-graph-title infoIcon">
                   Vermeiden Sie Überschneidungen:
-                  <md-tooltip>
+                  <md-tooltip class="ttFont">
                     Accepted range: [0 .. 1]. When larger than 0, the size of the node is taken into account. The distance will be calculated from the radius of the encompassing circle of the node for both the gravity model. Value 1 is maximum overlap avoidance.
                   </md-tooltip>
                   <i class="material-icons infoIcon">info_outline</i>

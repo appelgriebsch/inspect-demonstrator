@@ -40,6 +40,21 @@
             height: '100%',
             width: '100%',
             autoResize: true,
+            layout: {
+              randomSeed: undefined,
+              improvedLayout:true,
+              hierarchical: {
+                enabled:false,
+                levelSeparation: 150,
+                nodeSpacing: 100,
+                treeSpacing: 200,
+                blockShifting: true,
+                edgeMinimization: true,
+                parentCentralization: true,
+                direction: 'UD',        // UD, DU, LR, RL
+                sortMethod: 'hubsize'   // hubsize, directed
+              }
+            },
             nodes: {
               shape: 'dot',
               scaling: {
@@ -103,9 +118,9 @@
           centralGravity: 0.75,
           springLength: 135,
           damping: 0.28,
-          avoidOverlap: 1,
-          maxVelocity: 100
+          avoidOverlap: 1
         },
+        maxVelocity: 100,
         minVelocity: 0.75
       },
       interaction: {

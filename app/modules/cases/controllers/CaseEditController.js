@@ -40,7 +40,21 @@
     $scope.showPhysikalischeActive = 'active';
     
     var allNodes;
+    var allEdges;
     var highlightActive = false;
+    var rightSideNavIsOpen = false;
+
+    $scope.gradBtnHide = 'ng-hide';
+    $scope.focusedNode = "---";
+
+    $scope.toggleSidebarLeft = buildToggler('left');
+    $scope.toggleSidebarRight = buildToggler('right');
+
+    function buildToggler(componentId) {
+      return function() {
+        $mdSidenav(componentId).toggle();
+      };
+    }
 
     var _showNodeDialog = (nodeId) => {
       if (!nodeId) {
@@ -236,7 +250,7 @@
         delete this.graphOptions['_rev'];
 
         $scope.data['autosetup'] = result[1];
-        _loadGraphAutoSetup($scope.data['autosetup']);
+        _loadGraphSetup($scope.data['autosetup']);
 
         this.network = new vis.Network(container, this.data, this.graphOptions);
         _loadGraphFieldData(this.graphOptions);
@@ -248,7 +262,7 @@
           }
         });
 
-        this.network.on("click",neighbourhoodHighlight);
+        this.network.on("click",fokusGraph);
 
         $scope.setReady(true);
       }).catch((err) => {
@@ -262,7 +276,7 @@
           delete this.graphOptions['_rev'];
 
           $scope.data['autosetup'] = GraphDataService.newAutoSetupOptions();
-          _loadGraphAutoSetup($scope.data['autosetup']);
+          _loadGraphSetup($scope.data['autosetup']);
 
           this.network = new vis.Network(container, this.data, this.graphOptions);
           _loadGraphFieldData(this.graphOptions);
@@ -274,7 +288,7 @@
             }
           });
 
-          this.network.on("click",neighbourhoodHighlight);
+          this.network.on("click",fokusGraph);
 
           $scope.setReady(true);
         }
@@ -304,7 +318,7 @@
       $scope.data.case.physicsAO = data.physics.barnesHut.avoidOverlap;
     };
 
-    const _loadGraphAutoSetup = (data) => {
+    const _loadGraphSetup = (data) => {
       $scope.data.autosetup.instanzKnoten = data.instanzKnoten;
       $scope.data.autosetup.attributsKnoten = data.attributsKnoten;
       $scope.data.autosetup.kanten = data.kanten;
@@ -334,7 +348,7 @@
             }
           }
         });
-      this.network.on("click",neighbourhoodHighlight);
+      this.network.on("click",fokusGraph);
     };
 
     $scope.onAttributsKnotenChange = () => {
@@ -361,7 +375,7 @@
             }
           }
         });
-      this.network.on("click",neighbourhoodHighlight);
+      this.network.on("click",fokusGraph);
     };
 
     $scope.onKantenChange = () => {
@@ -386,7 +400,7 @@
             }
           }
         });
-      this.network.on("click",neighbourhoodHighlight);
+      this.network.on("click",fokusGraph);
     };
 
     $scope.onPhysicChange = () => {
@@ -413,72 +427,54 @@
             }
           }
         });
-      this.network.on("click",neighbourhoodHighlight);
+      this.network.on("click",fokusGraph);
     };
 
-    const neighbourhoodHighlight = (params) => {
-      allNodes = this.data['nodes'].get({returnType:"Object"});
-      // if something is selected:
+    const fokusGraph = (params) => {
       if (params.nodes.length > 0) {
-        highlightActive = true;
-        var i,j;
-        var selectedNode = params.nodes[0];
-        var degrees = 2;
-
-        // mark all nodes as hard to read.
-        for (var nodeId in allNodes) {
-          allNodes[nodeId].color = 'rgba(200,200,200,0.2)';
-          if (allNodes[nodeId].hiddenLabel === undefined) {
-            allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
-            allNodes[nodeId].label = undefined;
-          }
-        }
-        var connectedNodes = this.network.getConnectedNodes(selectedNode);
-        var allConnectedNodes = [];
-
-        // get the second degree nodes
-        for (i = 1; i < degrees; i++) {
-          for (j = 0; j < connectedNodes.length; j++) {
-            allConnectedNodes = allConnectedNodes.concat(this.network.getConnectedNodes(connectedNodes[j]));
-          }
-        }
-
-        // all second degree nodes get a different color and their label back
-        for (i = 0; i < allConnectedNodes.length; i++) {
-          allNodes[allConnectedNodes[i]].color = 'rgba(150,150,150,0.75)';
-          if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
-            allNodes[allConnectedNodes[i]].label = allNodes[allConnectedNodes[i]].hiddenLabel;
-            allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
-          }
-        }
-
-        // all first degree nodes get their own color and their label back
-        for (i = 0; i < connectedNodes.length; i++) {
-          allNodes[connectedNodes[i]].color = undefined;
-          if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
-            allNodes[connectedNodes[i]].label = allNodes[connectedNodes[i]].hiddenLabel;
-            allNodes[connectedNodes[i]].hiddenLabel = undefined;
-          }
-        }
-
-        // the main node gets its own color and its label back.
-        allNodes[selectedNode].color = undefined;
-        if (allNodes[selectedNode].hiddenLabel !== undefined) {
-          allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
-          allNodes[selectedNode].hiddenLabel = undefined;
+        if (params.nodes[0].match(/#/g) !== null) {
+          $scope.selectedKnotenNameFull = params.nodes[0];
+          $scope.selectedKnotenName = params.nodes[0].match(/#(.*)/g).toString().substring(1);
+          $scope.$apply();
         }
       }
-      else if (highlightActive === true) {
-        // reset all nodes
-        for (var nodeId in allNodes) {
-          allNodes[nodeId].color = undefined;
-          if (allNodes[nodeId].hiddenLabel !== undefined) {
-            allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
-            allNodes[nodeId].hiddenLabel = undefined;
-          }
-        }
-        highlightActive = false
+      
+      if (!rightSideNavIsOpen && params.nodes.length > 0) {
+        //open
+        $scope.toggleSidebarRight();
+        rightSideNavIsOpen = true;
       }
+      else if (rightSideNavIsOpen && params.nodes.length < 1) {
+        //close
+        $scope.toggleSidebarRight();
+        rightSideNavIsOpen = false;
+      }
+    };
+
+    $scope.setFocus = (params) => {
+      allNodes = this.data['nodes'].get({returnType:"Object"});
+      allEdges = this.data['edges'].get({returnType:"Object"});
+      var container = document.getElementById('ontology-graph');
+
+      $scope.physicsOnOffData = this.network.physics.physicsEnabled;
+
+      //if something is selected:
+      $scope.gradBtnHide = '';
+      highlightActive = true;
+      $scope.focusedNode = params.selectedKnotenName;
+      var selectedNode = params.selectedKnotenNameFull;
+
+      // mark all nodes & edges as hard to read.
+      for (var edgeId in allEdges) {
+        allEdges[edgeId].hidden = true;
+      }
+      for (var nodeId in allNodes) {
+        if (nodeId !== selectedNode) {
+          allNodes[nodeId].hidden = true;
+        }
+      }
+      
+      this.network.moveNode(params.selectedKnotenNameFull, 0, 0);
 
       // transform the object into an array
       var updateArray = [];
@@ -488,8 +484,155 @@
         }
       }
       this.data['nodes'].update(updateArray);
+
+      for (edgeId in allEdges) {
+        if (allEdges.hasOwnProperty(edgeId)) {
+          updateArray.push(allEdges[edgeId]);
+        }
+      }
+      this.data['edges'].update(updateArray);
     };
 
+    $scope.physicsOnOff = () => {
+      this.network.physics.physicsEnabled= $scope.physicsOnOffData;
+    };
+
+    $scope.clearFocus = (params) => {
+     if (highlightActive === true) {
+      allNodes = this.data['nodes'].get({returnType:"Object"});
+      allEdges = this.data['edges'].get({returnType:"Object"});
+        // reset all nodes
+        for (var nodeId in allNodes) {
+          allNodes[nodeId].hidden = false;
+        }
+        // reset all edges
+        for (var edgeId in allEdges) {
+          allEdges[edgeId].hidden = false;
+        }
+
+        highlightActive = false;
+        $scope.gradBtnHide = 'ng-hide';
+        this.network.physics.physicsEnabled= true;
+        var updateArrayNodes = [];
+        var updateArrayEdges = [];
+
+        for (nodeId in allNodes) {
+          if (allNodes.hasOwnProperty(nodeId)) {
+            updateArrayNodes.push(allNodes[nodeId]);
+          }
+        }
+        this.data['nodes'].update(updateArrayNodes);
+
+        for (edgeId in allEdges) {
+          if (allEdges.hasOwnProperty(edgeId)) {
+            updateArrayEdges.push(allEdges[edgeId]);
+          }
+        }
+        this.data['edges'].update(updateArrayEdges);
+        $scope.focusedNode = '---';
+      }
+    };
+
+    $scope.nextLevel = (params) => {
+      allNodes = this.data['nodes'].get({returnType:"Object"});
+      allEdges = this.data['edges'].get({returnType:"Object"});
+      var selectedNode = params.selectedKnotenNameFull;
+      var connectedNodes = this.network.getConnectedNodes(selectedNode);
+      var connectedEdges = this.network.getConnectedEdges(selectedNode);
+      var allConnectedNodes = [];
+      var i,j;
+      var degrees = 2;
+      var counterx = 1;
+      var countery = 2;
+
+      // var graphX = container.children[0].children[0].width;//graph width
+      // var graphY = container.children[0].children[0].height;//graph width
+      var selectedCoord = this.network.getPositions(selectedNode);
+
+      // first degree unhidden
+      for (i = 0; i < connectedNodes.length; i++) {
+        for (var nodeId in allNodes){
+          if (connectedNodes[i] === nodeId) {
+            // if (allNodes[nodeId].hidden === true) {
+            //   this.network.moveNode(allNodes[nodeId].id, selectedCoord[Object.keys(selectedCoord)[0]].x+(75*counterx), selectedCoord[Object.keys(selectedCoord)[0]].y+(75*countery));
+            // }            
+            allNodes[nodeId].hidden = false;
+          }
+        }
+        counterx++;
+        countery++;
+      }
+
+      for (i = 0; i < connectedEdges.length; i++) {
+        for (var edgeId in allEdges){
+          if (connectedEdges[i] === edgeId) {
+            allEdges[edgeId].hidden = false;
+          }
+        }
+      }
+      // for (i = 0; i < connectedNodes.length; i++) {
+      //   allNodes[connectedNodes].hidden = false;
+      // }
+
+      // // get the second degree nodes
+      // for (i = 1; i < degrees; i++) {
+      //   for (j = 0; j < connectedNodes.length; j++) {
+      //      allConnectedNodes = allConnectedNodes.concat(this.network.getConnectedNodes(connectedNodes[j]));
+      //   }
+      // }
+      var x = 1;
+
+      // transform the object into an array
+      var updateArray = [];
+      for (nodeId in allNodes) {
+        if (allNodes.hasOwnProperty(nodeId)) {
+          updateArray.push(allNodes[nodeId]);
+        }
+      }
+      this.data['nodes'].update(updateArray);
+
+      for (var edgeId in allEdges) {
+        if (allEdges.hasOwnProperty(edgeId)) {
+          updateArray.push(allEdges[edgeId]);
+        }
+      }
+      this.data['edges'].update(updateArray);
+        // // all second degree nodes get a different color and their label back
+        // for (i = 0; i < allConnectedNodes.length; i++) {
+        //   allNodes[allConnectedNodes[i]].color = 'rgba(150,150,150,0.75)';
+        //   if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        //     allNodes[allConnectedNodes[i]].label = allNodes[allConnectedNodes[i]].hiddenLabel;
+        //     allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+        //   }
+        // }
+
+        // // all first degree nodes get their own color and their label back
+        // for (i = 0; i < connectedNodes.length; i++) {
+        //   allNodes[connectedNodes[i]].color = undefined;
+        //   if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        //     allNodes[connectedNodes[i]].label = allNodes[connectedNodes[i]].hiddenLabel;
+        //     allNodes[connectedNodes[i]].hiddenLabel = undefined;
+        //   }
+        // }
+
+        // the main node gets its own color and its label back.
+        // allNodes[selectedNode].color = undefined;
+        // if (allNodes[selectedNode].hiddenLabel !== undefined) {
+        //   allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+        //   allNodes[selectedNode].hiddenLabel = undefined;
+        // }
+    };
+
+    function invertColor(hexTripletColor) {
+      var color = hexTripletColor;
+      color = color.substring(1);           // remove #
+      color = parseInt(color, 16);          // convert to integer
+      color = 0xFFFFFF ^ color;             // invert three bytes
+      color = color.toString(16);           // convert to hex
+      color = ("000000" + color).slice(-6); // pad with leading zeros
+      color = "#" + color;                  // prepend #
+      return color;
+    };
 
     $scope.isShowContent = (data) => {
       if (data === "Instanzknoten") {
@@ -554,6 +697,12 @@
         $mdSidenav('sidebar-tree').toggle();
       });
     };
+
+    // $scope.toggleSidebarRight = () => {
+    //   $q.when(true).then(() => {
+    //     $mdSidenav('sidebar-right').toggle();
+    //   });
+    // };
     //</editor-fold>
 
     $scope.newInstanceNode = (clazzIri) => {
