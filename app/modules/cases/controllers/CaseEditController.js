@@ -427,7 +427,7 @@
             }
           }
         });
-      this.network.on("click",fokusGraph);
+      this.network.on("click", fokusGraph);
     };
 
     const fokusGraph = (params) => {
@@ -472,8 +472,11 @@
         if (nodeId !== selectedNode) {
           allNodes[nodeId].hidden = true;
         }
+        else {
+          allNodes[nodeId].color = $scope.invertColor(this.graphOptions.groups.instanceNode.color.background);
+        }
       }
-      
+
       this.network.moveNode(params.selectedKnotenNameFull, 0, 0);
 
       // transform the object into an array
@@ -483,6 +486,7 @@
           updateArray.push(allNodes[nodeId]);
         }
       }
+
       this.data['nodes'].update(updateArray);
 
       for (edgeId in allEdges) {
@@ -501,10 +505,15 @@
      if (highlightActive === true) {
       allNodes = this.data['nodes'].get({returnType:"Object"});
       allEdges = this.data['edges'].get({returnType:"Object"});
+
         // reset all nodes
         for (var nodeId in allNodes) {
           allNodes[nodeId].hidden = false;
+          if (allNodes[nodeId].title === $scope.focusedNode) {
+            allNodes[nodeId].color = this.graphOptions.groups.instanceNode.color.background;
+          }
         }
+
         // reset all edges
         for (var edgeId in allEdges) {
           allEdges[edgeId].hidden = false;
@@ -521,6 +530,7 @@
             updateArrayNodes.push(allNodes[nodeId]);
           }
         }
+
         this.data['nodes'].update(updateArrayNodes);
 
         for (edgeId in allEdges) {
@@ -528,6 +538,7 @@
             updateArrayEdges.push(allEdges[edgeId]);
           }
         }
+
         this.data['edges'].update(updateArrayEdges);
         $scope.focusedNode = '---';
       }
@@ -536,31 +547,23 @@
     $scope.nextLevel = (params) => {
       allNodes = this.data['nodes'].get({returnType:"Object"});
       allEdges = this.data['edges'].get({returnType:"Object"});
+
       var selectedNode = params.selectedKnotenNameFull;
       var connectedNodes = this.network.getConnectedNodes(selectedNode);
       var connectedEdges = this.network.getConnectedEdges(selectedNode);
       var allConnectedNodes = [];
       var i,j;
       var degrees = 2;
-      var counterx = 1;
-      var countery = 2;
 
-      // var graphX = container.children[0].children[0].width;//graph width
-      // var graphY = container.children[0].children[0].height;//graph width
       var selectedCoord = this.network.getPositions(selectedNode);
 
       // first degree unhidden
       for (i = 0; i < connectedNodes.length; i++) {
         for (var nodeId in allNodes){
           if (connectedNodes[i] === nodeId) {
-            // if (allNodes[nodeId].hidden === true) {
-            //   this.network.moveNode(allNodes[nodeId].id, selectedCoord[Object.keys(selectedCoord)[0]].x+(75*counterx), selectedCoord[Object.keys(selectedCoord)[0]].y+(75*countery));
-            // }            
             allNodes[nodeId].hidden = false;
           }
         }
-        counterx++;
-        countery++;
       }
 
       for (i = 0; i < connectedEdges.length; i++) {
@@ -570,17 +573,6 @@
           }
         }
       }
-      // for (i = 0; i < connectedNodes.length; i++) {
-      //   allNodes[connectedNodes].hidden = false;
-      // }
-
-      // // get the second degree nodes
-      // for (i = 1; i < degrees; i++) {
-      //   for (j = 0; j < connectedNodes.length; j++) {
-      //      allConnectedNodes = allConnectedNodes.concat(this.network.getConnectedNodes(connectedNodes[j]));
-      //   }
-      // }
-      var x = 1;
 
       // transform the object into an array
       var updateArray = [];
@@ -597,33 +589,9 @@
         }
       }
       this.data['edges'].update(updateArray);
-        // // all second degree nodes get a different color and their label back
-        // for (i = 0; i < allConnectedNodes.length; i++) {
-        //   allNodes[allConnectedNodes[i]].color = 'rgba(150,150,150,0.75)';
-        //   if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
-        //     allNodes[allConnectedNodes[i]].label = allNodes[allConnectedNodes[i]].hiddenLabel;
-        //     allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
-        //   }
-        // }
-
-        // // all first degree nodes get their own color and their label back
-        // for (i = 0; i < connectedNodes.length; i++) {
-        //   allNodes[connectedNodes[i]].color = undefined;
-        //   if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
-        //     allNodes[connectedNodes[i]].label = allNodes[connectedNodes[i]].hiddenLabel;
-        //     allNodes[connectedNodes[i]].hiddenLabel = undefined;
-        //   }
-        // }
-
-        // the main node gets its own color and its label back.
-        // allNodes[selectedNode].color = undefined;
-        // if (allNodes[selectedNode].hiddenLabel !== undefined) {
-        //   allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
-        //   allNodes[selectedNode].hiddenLabel = undefined;
-        // }
     };
 
-    function invertColor(hexTripletColor) {
+    $scope.invertColor = (hexTripletColor) => {
       var color = hexTripletColor;
       color = color.substring(1);           // remove #
       color = parseInt(color, 16);          // convert to integer
@@ -680,7 +648,6 @@
       $state.go('app.cases.view');
     });
 
-
     $scope.$on('case-save', () => {
       //console.log("case", $scope.data['case']);
       //console.log("initialCase", $scope.data.initialCase);
@@ -697,12 +664,6 @@
         $mdSidenav('sidebar-tree').toggle();
       });
     };
-
-    // $scope.toggleSidebarRight = () => {
-    //   $q.when(true).then(() => {
-    //     $mdSidenav('sidebar-right').toggle();
-    //   });
-    // };
     //</editor-fold>
 
     $scope.newInstanceNode = (clazzIri) => {
@@ -715,7 +676,6 @@
         $scope.setReady(true);
       });
     };
-
 
     //<editor-fold desc="Initialization">
     /**
