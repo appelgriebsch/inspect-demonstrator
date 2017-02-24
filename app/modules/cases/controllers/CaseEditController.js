@@ -468,9 +468,11 @@
       for (var edgeId in allEdges) {
         allEdges[edgeId].hidden = true;
       }
+      
       for (var nodeId in allNodes) {
         if (nodeId !== selectedNode) {
           allNodes[nodeId].hidden = true;
+          allNodes[nodeId].color = this.graphOptions.groups.instanceNode.color.background;
         }
         else {
           allNodes[nodeId].color = $scope.invertColor(this.graphOptions.groups.instanceNode.color.background);

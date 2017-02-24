@@ -42,9 +42,9 @@
             autoResize: true,
             layout: {
               randomSeed: undefined,
-              improvedLayout:true,
+              improvedLayout: true,
               hierarchical: {
-                enabled:false,
+                enabled: false,
                 levelSeparation: 150,
                 nodeSpacing: 100,
                 treeSpacing: 200,
