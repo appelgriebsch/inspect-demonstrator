@@ -167,3 +167,13 @@ md-dialog {
   float: none;
   text-align: left;
 }
+
+.nextLevelBtn{
+  float: left;
+  width: 40%;
+}
+
+.nextLevelSlider{
+  float: left;
+  width: 20%;
+}

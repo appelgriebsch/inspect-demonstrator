@@ -88,7 +88,10 @@
             },
             groups: {
               instanceNode: {
-                size : 12,
+                font: {
+                  size : 12,
+                  color: '#ff0000'
+                },
                 color: {
                 border: '#ff0000',
                 background: '#ffffff',
@@ -100,7 +103,10 @@
                 shape: 'box',
               },
               dataNode: {
-                size: 12,
+                font: {
+                  size : 12,
+                  color: '#ff0000'
+                },
                 shape: 'box',
                 color: {
                 border: '#000000',
