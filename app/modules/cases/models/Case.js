@@ -4,7 +4,7 @@
   var uuid = require('uuid');
 
   class Case {
-    constructor(identifier, createdBy, createdOn) {
+    constructor(identifier, createdBy, createdOn, description) {
       if (angular.isUndefined(identifier)) {
         throw Error('Identifier must not be null!');
       }
@@ -21,7 +21,7 @@
       this.lastEditedOn =  createdOn;
       this.status = 'new';
       this.name = '';
-      this.description = '';
+      this.description = description;
       this.individuals = [];
       this.datatypeProperties = [];
       this.objectProperties = [];
