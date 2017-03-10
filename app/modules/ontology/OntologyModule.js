@@ -47,16 +47,10 @@
           })
       });
 
-    var OntologyDataService = require('./services/OntologyDataService');
 
-    var OntologyViewController = require('./controllers/OntologyViewController');
-    var OntologyFormController = require('./controllers/OntologyFormController');
-
-    angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
+    const OntologyViewController = require('./controllers/OntologyViewController');
 
     angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$location', '$mdSidenav', 'OntologyDataService', OntologyViewController]);
-    angular.module('electron-app').controller('OntologyFormController', ['$scope', '$state', '$q',  '$location', 'OntologyDataService', OntologyFormController]);
-
   }
 
   module.exports = OntologyModule;
