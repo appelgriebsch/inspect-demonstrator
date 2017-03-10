@@ -107,7 +107,6 @@
         return CaseOntologyDataService.loadCasesOverview();
       }).then((cases) => {
         $scope.data.cases = cases;
-        $log.debug('cases: ', cases);
         $scope.filter();
         $scope.setReady(true);
       }).catch((err) => {

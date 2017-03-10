@@ -368,10 +368,10 @@
             angular.forEach(result[1], (comment) => {
               clazz.addComment(comment);
             });
-            clazz.parentClassIris = result[2];
-            clazz.childClassIris = result[3];
-            clazz.individualIris = result[4];
-            clazz.objectPropertyIris = result[5];
+            clazz.parentClassIris = !angular.isUndefined(result[2]) ? [] : result[2];
+            clazz.childClassIris = angular.isUndefined(result[3]) ? [] : result[3];
+            clazz.individualIris = angular.isUndefined(result[4]) ? [] : result[4];
+            clazz.objectPropertyIris = angular.isUndefined(result[5]) ? [] : result[5];
             resolve(clazz);
           }
         }).catch((err) => {
@@ -432,10 +432,12 @@
               property.symmetric = true;
             }
           });
-          property.domainIris = result[1];
-          property.rangeIris = result[2];
-          property.inverseOfIris = result[3];
-          property.comments = result[4];
+
+          property.domainIris = !angular.isUndefined(result[1]) ? [] : result[1];
+          property.rangeIris = !angular.isUndefined(result[2]) ? [] : result[2];
+          property.inverseOfIris = !angular.isUndefined(result[3]) ? [] : result[3];
+          property.comments = !angular.isUndefined(result[4]) ? [] : result[4];
+
           resolve(property);
         }).catch((err) => {
           reject(err);
@@ -463,9 +465,11 @@
             throw new Error(`DatatypeProperty with iri ${propertyIri} not found.`);
           }
           const property = new OwlDatatypeProperty(_iriForPrefix('ontology'), propertyIri);
-          property.domainIris = result[1];
-          property.ranges = result[2];
-          property.comments = result[3];
+
+          property.domainIris = !angular.isUndefined(result[1]) ? [] : result[1];
+          property.rangeIris = !angular.isUndefined(result[2]) ? [] : result[2];
+          property.comments = !angular.isUndefined(result[3]) ? [] : result[3];
+
           resolve(property);
         }).catch((err) => {
           reject(err);
@@ -929,26 +933,6 @@
       },
       fetchEntity: (iri, complete) => {
         return _fetchEntity(iri, complete);
-      },
-      test: () => {
-        _fetchEntity('http://www.AMSL/GDK/ontologie#Mensch', false).then((clazz) => {
-
-        });
-
-       /* _fetchClass('http://www.AMSL/GDK/ontologie#Mensch', false).then((clazz) => {
-          return _fetchObjectPropertiesForClass(clazz);
-        }).then((props) => {
-            console.log('properties', props);
-        });*/
-      /* const classIri = 'http://www.AMSL/GDK/ontologie#Mensch';
-       _fetchClass(classIri, true).then((result) => {
-         console.log("class", result);
-       });
-        const individualIri = 'http://www.AMSL/GDK/ontologie#Amber';
-        _fetchIndividual(individualIri, true).then((result) => {
-          console.log("individual", result);
-        });*/
-
       },
       clear: _deleteAll,
       import: _importTTL,

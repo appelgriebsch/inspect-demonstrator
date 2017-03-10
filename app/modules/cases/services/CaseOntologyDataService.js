@@ -7,7 +7,6 @@
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
     const Case = require(path.join(__dirname, '../models/Case'));
-    const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
 
     const caseClass = 'Fall';
     const caseNamePropertyName = 'Fallname';
@@ -32,22 +31,22 @@
 
     const _convertToIndividual = (case_) => {
       const ontologyIri = OntologyDataService.ontologyIri();
-      const individual = new OwlIndividual(ontologyIri, `${ontologyIri}${caseClass}`, `${ontologyIri}${case_.identifier}`);
+      const individual =  OntologyDataService.createIndividual(ontologyIri, `${ontologyIri}${caseClass}`, `${ontologyIri}${case_.identifier}`);
       individual.addDatatypeProperty(`${ontologyIri}${caseNamePropertyName}`, caseNamePropertyName, case_.name);
       angular.forEach(case_.individuals, function(ind) {
         individual.addObjectProperty(`${ontologyIri}${caseEntityPropertyName}`, caseEntityPropertyName, ind.iri);
       });
 
-      // if (case_.description.length > 0) {
-      //   individual.addComment(case_.description);
-      // }
+      if (case_.description.length > 0) {
+        individual.addComment(case_.description);
+      }
       return individual;
     };
     const _convertToCase = (individual) => {
       if (angular.isUndefined(individual)) {
         return Promise.reject('Individual must not be null!');
       }
-      if (!(individual instanceof OwlIndividual)) {
+      if (!OntologyDataService.isIndividual(individual)) {
         return Promise.reject(new Error('Individual of type OwlIndividual!'));
       }
       return new Promise((resolve, reject) => {
@@ -157,7 +156,7 @@
       }
       return new Promise((resolve, reject) => {
         const ontologyIri = OntologyDataService.ontologyIri();
-        const individual = new OwlIndividual(ontologyIri, classIri, `${ontologyIri}${instanceName}`);
+        const individual = OntologyDataService.createIndividual(ontologyIri, classIri, `${ontologyIri}${instanceName}`);
 
         OntologyDataService.insertIndividual(individual).then(() => {
           const caseIndividual = _convertToIndividual(case_);
@@ -379,7 +378,7 @@
       if (angular.isUndefined(individual)) {
         return Promise.reject(new Error('Individual must not be null!'));
       }
-      if (!(individual instanceof OwlIndividual)) {
+      if (!OntologyDataService.isIndividual(individual)) {
         return Promise.reject(new Error('Individual must be of type OwlIndividual!'));
       }
       if (angular.isUndefined(case_)) {
