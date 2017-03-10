@@ -117,12 +117,19 @@
                 </md-switch>
 
               <md-button class="md-raised-cases" ng-disabled="setFocusDisableFadeOut" ng-click="fadeOut(this)">
-              <i class="material-icons infoIcon">remove_red_eye</i>
+              <i class="material-icons infoIcon">visibility_off</i>
               Fade out
+              </md-button>
+
+              <hr style="text-align: left; width: 25%">
+
+              <md-button class="md-raised-cases" ng-click="resetGraph()">
+              <i class="material-icons infoIcon">replay</i>
+              Reset Graph
               </md-button>
             </li>
           </ul>
-          <!-- <h3 class="h3_title_entities">Edit individual</h3>
+          <h3 class="h3_title_entities">Edit individual</h3>
           <hr style="width: 100%">
           <ul>
             <li>
@@ -140,7 +147,7 @@
             <li>
               <p>Delete</p>
             </li>
-          </ul> -->
+          </ul>
         </md-sidenav>
 
         <div layout="row" layout-fill >

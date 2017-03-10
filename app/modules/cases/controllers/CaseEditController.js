@@ -483,7 +483,6 @@
           //   //allNodes[nodeId].color = $scope.invertColor(this.graphOptions.groups.instanceNode.color.background);
           //   // if (prevFocused !== undefined  && prevFocused !== $scope.focusedNode) {
           //   //   allNodes["http://www.AMSL/GDK/ontologie#" + prevFocused].color = this.graphOptions.groups.instanceNode.color.background;
-          //   //   var x = 1;
           //   // }
           // }
         }
@@ -508,7 +507,6 @@
           allNodes[nodeId].hidden = false;
           // if (allNodes[nodeId].title === $scope.focusedNode) {
           //     delete allNodes["http://www.AMSL/GDK/ontologie#" + $scope.focusedNode].color;
-          //     var x = 1;
           //      //= this.graphOptions.groups.instanceNode.color.background;
           // }
         }
@@ -571,14 +569,18 @@
             allConnectedNodes2d = allConnectedNodes2d.concat(this.network.getConnectedNodes(connectedNodes[j]));
           }
           for (j = 0; j < connectedEdges.length; j++) {
-            allConnectedEdges2d = allConnectedEdges2d.concat(this.network.getConnectedEdges(connectedNodes[j]));
+            if (connectedNodes[j] !== undefined) {
+              allConnectedEdges2d = allConnectedEdges2d.concat(this.network.getConnectedEdges(connectedNodes[j]));
+            }
           }
           if (degrees > 2) {
             for (j = 0; j < allConnectedNodes2d.length; j++) {
               allConnectedNodes3d = allConnectedNodes3d.concat(this.network.getConnectedNodes(allConnectedNodes2d[j]));
             }
             for (j = 0; j < allConnectedEdges2d.length; j++) {
-              allConnectedEdges3d = allConnectedEdges3d.concat(this.network.getConnectedEdges(allConnectedNodes2d[j]));
+              if (allConnectedNodes2d[j] !== undefined) {
+                allConnectedEdges3d = allConnectedEdges3d.concat(this.network.getConnectedEdges(allConnectedNodes2d[j]));
+              }
             }
           }
         }
@@ -625,6 +627,30 @@
       $scope.updateEdges();
 
       $scope.selectedKnotenName = undefined;
+    };
+
+    $scope.resetGraph = () => {
+      allNodes = this.data['nodes'].get({returnType:"Object"});
+      allEdges = this.data['edges'].get({returnType:"Object"});
+      // reset all nodes
+      for (var nodeId in allNodes) {
+         allNodes[nodeId].hidden = false;
+      }
+
+        // reset all edges
+      for (var edgeId in allEdges) {
+        allEdges[edgeId].hidden = false;
+      }
+
+      $scope.gradBtnHide = 'ng-hide';
+      this.network.physics.physicsEnabled = true;
+      this.network.physics.startedStabilization = true;
+      $scope.focusedNode = '---';
+      $scope.setFocusDisableFadeOut = false;
+      $scope.updateNodes("resetgraph");
+      $scope.updateEdges();
+      highlightActive = false;
+      $scope.setFocusDisableFadeOut = false;
     };
 
     $scope.updateNodes  = (params) => {
