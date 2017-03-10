@@ -37,15 +37,115 @@
           _id: '_design/templates',
           version: '1.0',
           graphOptions: {
-            nodeSize: 12,
-            nodeColor: 'green'
-          },
-          caseOptions: {
-            _id: '',
-            nodeSize: 12,
-            nodeColor: 'green'
-          }
-        };
+            height: '100%',
+            width: '100%',
+            autoResize: true,
+            layout: {
+              randomSeed: undefined,
+              improvedLayout: true,
+              hierarchical: {
+                enabled: false,
+                levelSeparation: 150,
+                nodeSpacing: 100,
+                treeSpacing: 200,
+                blockShifting: true,
+                edgeMinimization: true,
+                parentCentralization: true,
+                direction: 'UD',        // UD, DU, LR, RL
+                sortMethod: 'hubsize'   // hubsize, directed
+              }
+            },
+            nodes: {
+              shape: 'dot',
+              scaling: {
+                min: 10,
+                max: 30,
+                label: {
+                  min: 10,
+                  max: 30,
+                  drawThreshold: 9,
+                  maxVisible: 15
+                }
+              },
+              font: {
+                size: 12,
+                face: 'Helvetica Neue, Helvetica, Arial'
+              }
+            },
+            edges: {
+              arrows: 'to',
+              color: '#000000',
+              width: 1,
+              font: {
+                size: 12,
+                face: 'Helvetica Neue, Helvetica, Arial'
+              },
+              smooth: {
+                enabled: true,
+                type: "dynamic",
+                roundness: 1
+              }
+            },
+            groups: {
+              instanceNode: {
+                font: {
+                  size : 12,
+                  color: '#ff0000'
+                },
+                color: {
+                border: '#ff0000',
+                background: '#ffffff',
+                hover: {
+                  border: '#ff0000',
+                  background: '#ffffff'
+                }
+              },
+                shape: 'box',
+              },
+              dataNode: {
+                font: {
+                  size : 12,
+                  color: '#ff0000'
+                },
+                shape: 'box',
+                color: {
+                border: '#000000',
+                background: '#ffffff',
+                hover: {
+                  border: '#ff0000',
+                  background: '#ffffff'
+                }
+              }
+        }
+      },
+      physics: {
+        barnesHut: {
+          gravitationalConstant: -13250,
+          centralGravity: 0.75,
+          springLength: 135,
+          damping: 0.28,
+          avoidOverlap: 1
+        },
+        maxVelocity: 100,
+        minVelocity: 0.75
+      },
+      interaction: {
+        hover: true,
+        hoverConnectedEdges: false,
+        selectConnectedEdges: true
+      }
+    },
+    caseOptions: {
+      _id: '',
+      nodeSize: 12,
+      nodeColor: 'green'
+    },
+    autoSetupOptions: {
+      instanzKnoten : true,
+      attributsKnoten: true,
+      kanten: true
+    }
+  };
         this.templates = templates;
 
         return PouchDBService.initialize('graph').then((pouchdb) => {
@@ -67,6 +167,10 @@
       },
       newGraphOptions: () => {
         var doc = this.templates.graphOptions || {};
+        return JSON.parse(JSON.stringify(doc));
+      },
+      newAutoSetupOptions: () => {
+        var doc = this.templates.autoSetupOptions || {};
         return JSON.parse(JSON.stringify(doc));
       },
       save: (options) => {

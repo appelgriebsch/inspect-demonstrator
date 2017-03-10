@@ -1389,7 +1389,6 @@ owl2:Fallname rdf:type owl:DatatypeProperty ;
               rdfs:range xsd:string .
 
 
-
 ###  http://www.AMSL/GDK/ontologie#Finanzielle_Bereicherung
 
 owl2:Finanzielle_Bereicherung rdf:type owl:DatatypeProperty ;
