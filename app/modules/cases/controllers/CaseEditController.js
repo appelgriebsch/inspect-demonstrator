@@ -4,7 +4,7 @@
 
   var uuid = require('uuid');
 
-  function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, $log, CaseOntologyDataService) {
+  function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, $log, CaseOntologyDataService, GraphDataService) {
     //<editor-fold desc="Constructor">
     this.state = $state.$current;
 
@@ -140,7 +140,7 @@
           }
         }
         if (result.removeRelation === true) {
-           $scope.setBusy('Removing relation...');
+          $scope.setBusy('Removing relation...');
           if (result.relation.type === 'object') {
             _removeObjectRelation(result.individualIri, result.relation).then(() => {
               $scope.setReady(true);
@@ -318,6 +318,7 @@
       });
     };
 
+
     //<editor-fold desc="Initialization">
     /**
      * Initializes dependant services.
@@ -329,7 +330,10 @@
         return;
       }
       $scope.setBusy('Loading Case...');
-      CaseOntologyDataService.initialize().then(() => {
+      Promise.all([
+        CaseOntologyDataService.initialize(),
+        GraphDataService.initialize()
+      ]).then(() => {
         $scope.data.classesTree = CaseOntologyDataService.getClassTree();
         return Promise.all([
           CaseOntologyDataService.loadCase($state.params.caseId)
@@ -338,6 +342,7 @@
         $scope.data['case'] = result[0];
         $scope.data.initialCase = angular.copy(result[0]);
         _createGraph();
+
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);

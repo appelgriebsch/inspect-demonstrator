@@ -56,6 +56,7 @@
     const OntologyDataService2 = require('./services/OntologyDataService2');
     const CaseOntologyDataService = require('./services/CaseOntologyDataService');
     const OntologySharingService = require('./services/OntologySharingService');
+    const GraphDataService = require('./services/GraphDataService');
 
     const CasesViewController = require('./controllers/CasesViewController');
     const CaseEditController = require('./controllers/CaseEditController');
@@ -63,13 +64,15 @@
     const CasesDialogController = require('./controllers/CasesDialogController');
 
 
+
+    angular.module('electron-app').service('GraphDataService', ['PouchDBService', GraphDataService]);
     angular.module('electron-app').service('OntologyDataService2', ['$log', 'LevelGraphService', OntologyDataService2]);
     angular.module('electron-app').service('CaseOntologyDataService', ['$log', '$filter', 'OntologyDataService2', CaseOntologyDataService]);
     angular.module('electron-app').service('OntologySharingService', ['OntologyDataService2', OntologySharingService]);
 
     angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', '$log', 'CaseOntologyDataService', 'OntologySharingService', CasesViewController]);
     angular.module('electron-app').controller('CasesDialogController', ['$scope', '$state', '$mdDialog', 'nodeId', 'objectProperties', 'datatypeProperties', 'instances', CasesDialogController]);
-    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', '$log','CaseOntologyDataService', CaseEditController]);
+    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', '$log','CaseOntologyDataService', 'GraphDataService', CaseEditController]);
     angular.module('electron-app').controller('CasesTreeController', ['$scope', '$state',CasesTreeController]);
 
 
