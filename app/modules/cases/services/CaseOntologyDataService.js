@@ -10,9 +10,9 @@
 
     const caseClass = 'Fall';
     const caseNamePropertyName = 'Fallname';
-    const caseEntityPropertyName = 'beinhaltet_Fallinformationen';
+    const caseEntityPropertyName = 'beinhaltet';
     let caseEntityProperty = {};
-    const caseEntityInversePropertyName = 'gehoert_zu_Fall';
+    const caseEntityInversePropertyName = 'ist_Bestandteil_von';
     let caseEntityInverseProperty = {};
 
     const regexExcludedClasses = new RegExp(`_:[a-zA-Z0-9]+|${caseClass}`, 'g');
@@ -94,6 +94,8 @@
       }
       return new Promise((resolve, reject) => {
         OntologyDataService.fetchIndividual(identifier, deep).then((individual) => {
+          console.log("case individual", individual);
+
           return _convertToCase(individual);
         }).then((result) =>  {
           const c = result[0];
@@ -132,7 +134,7 @@
         OntologyDataService.fetchIndividualsForClass(caseClassIri).then((iris) => {
           const promises = [];
           angular.forEach(iris, function(iri) {
-            promises.push(_loadCase(iri, false));
+            promises.push(_loadCase(iri, true));
           });
           return Promise.all(promises);
         }).then((cases) => {
@@ -423,7 +425,8 @@
           }
           promise.then(() => {
             return Promise.all([
-              OntologyDataService.fetchAllClasses(),
+
+              OntologyDataService.fetchAllClasses(true),
               OntologyDataService.fetchAllObjectProperties(),
               OntologyDataService.fetchAllDatatypeProperties()
             ]);
@@ -432,10 +435,11 @@
             const rootClassIris = [];
             angular.forEach(result[0], (clazz) => {
               classes[clazz.iri] = clazz;
-              if (angular.isUndefined(clazz.parentClassIri)) {
+              if (angular.isUndefined(clazz.parentClassIris) || clazz.parentClassIris.length === 0) {
                 rootClassIris.push(clazz.iri);
               }
             });
+
             objectProperties = result[1];
             objectProperties.map((prop) => {
               if (prop.label === caseEntityPropertyName) {

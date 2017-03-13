@@ -368,7 +368,7 @@
             angular.forEach(result[1], (comment) => {
               clazz.addComment(comment);
             });
-            clazz.parentClassIris = !angular.isUndefined(result[2]) ? [] : result[2];
+            clazz.parentClassIris = angular.isUndefined(result[2]) ? [] : result[2];
             clazz.childClassIris = angular.isUndefined(result[3]) ? [] : result[3];
             clazz.individualIris = angular.isUndefined(result[4]) ? [] : result[4];
             clazz.objectPropertyIris = angular.isUndefined(result[5]) ? [] : result[5];
@@ -494,6 +494,7 @@
           _fetch(individualIri, _iriFor('rdf-type'), _iriFor('owl-individual'), 'subject'),
           _fetch(individualIri, _iriFor('rdfs-comment'), _iriFor('owl-individual'), 'subject'),
           _fetchForIndividual(individualIri, dataPropType)
+
         ];
         if (deep === true) {
           promises.push(_fetchForIndividual(individualIri, objectPropType));
@@ -536,6 +537,7 @@
         return Promise.reject(new Error('Object type may not be null.'));
       }
       return new Promise((resolve, reject) => {
+        //noinspection GjsLint,GjsLint
         const searchArray = [{
           subject: individualIri,
           predicate: _iriFor('rdf-type'),
@@ -933,6 +935,10 @@
       },
       fetchEntity: (iri, complete) => {
         return _fetchEntity(iri, complete);
+      },
+      test: () => {
+       // return _fetchForIndividual("http://www.AMSL/GDK/ontologie#KFZ_gestohlen_001", `${_iriForPrefix('owl')}DatatypeProperty`);
+        return _fetchClass("http://www.AMSL/GDK/ontologie#Wirtschaftliche_Konsequenzen", true);
       },
       clear: _deleteAll,
       import: _importTTL,
