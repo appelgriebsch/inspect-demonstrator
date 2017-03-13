@@ -44,13 +44,14 @@
                 templateUrl: `${moduleConfig.path}/views/ontology.form.actions.html`
               }
             }
-          })
+          });
       });
+
 
 
     const OntologyViewController = require('./controllers/OntologyViewController');
 
-    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$location', '$mdSidenav', 'OntologyDataService', OntologyViewController]);
+    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$location', '$mdSidenav', 'OntologyDataService', 'CaseOntologyDataService', OntologyViewController]);
   }
 
   module.exports = OntologyModule;

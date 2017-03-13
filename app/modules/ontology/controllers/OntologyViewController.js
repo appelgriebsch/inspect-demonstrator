@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function OntologyViewController($scope, $state, $q, $location, $mdSidenav, OntologyDataService) {
+  function OntologyViewController($scope, $state, $q, $location, $mdSidenav, OntologyDataService, CaseOntologyDataService) {
 
     this.graphOptions = {
       height: '100%',
@@ -84,181 +84,20 @@
       edges: new vis.DataSet(),
       lastSearchedItem: undefined,
       classes: [],
-      classes2: {}
+
     };
+    $scope.data = {
+      selectedNode: {},
+      focusedNode: {},
+      level: 1,
+    };
+
+    $scope.physicsEnabled = true;
     this.query = undefined;
-    this.selectedElement = undefined;
-    this.visibleInstances = [];
 
     this.searchText = '';
-
     this.state = $state.$current;
-    this.baseState = this.state.parent.toString();
 
-    const _findNode = (identifier) => {
-
-      return this.data.nodes.get({
-        filter: function(item) {
-          return item.identifier === identifier;
-        }
-      });
-    };
-
-    const _createNode = (identifier, options) => {
-
-      var node = _findNode(identifier);
-
-      if (node.length == 0) {
-
-        var label = OntologyDataService.labelForNode(identifier);
-        var newNode = {
-          id: this.data.nodes.length + 1,
-          identifier: identifier,
-          label: label,
-          title: identifier
-        };
-
-        if ((options) && (options.color)) {
-          newNode.color = options.color;
-        }
-
-        if ((options) && (options.value)) {
-          newNode.value = options.value;
-        }
-
-        if ((options) && (options.comment)) {
-          newNode.title = options.comment;
-        }
-
-        this.data.nodes.add(newNode);
-        node = _findNode(identifier);
-      }
-
-
-      return node[0];
-    };
-
-    const _findEdge = (from, to, identifier) => {
-
-      return this.data.edges.get({
-        filter: function(item) {
-          return ((item.from == from.id) && (item.to == to.id) && (item.identifier === identifier));
-        }
-      });
-    };
-
-    const _hasProperties = (object) => {
-
-      var props = this.ontology.properties.find((elem) => {
-        return (elem.domain === object) || (elem.range === object);
-      });
-
-      return (props !== undefined);
-    };
-
-    var _createGraphItems = (subject, object, predicate) => {
-
-      var subjNode = _findNode(subject);
-      var objNode = _findNode(object);
-      var relation = predicate;
-
-      var from = subjNode ? subjNode[0] : undefined;
-      var to = objNode ? objNode[0] : undefined;
-
-      var label = OntologyDataService.labelForEdge(relation);
-
-      var newEdge = {
-        identifier: relation,
-        title: label
-      };
-
-      var optionsFrom = {};
-      var optionsTo = {};
-
-      if (label === 'property') { // replace domain and range relationships with related objects
-
-        to = _createNode(object, optionsTo);
-
-        var prop = this.ontology.properties.find((elem) => {
-          return (elem.property === subject) && ((elem.domain === object) || (elem.range === object));
-        });
-
-        if (!prop) {
-          from = _createNode(subject, optionsFrom);
-        } else {
-
-          newEdge.label = newEdge.title = OntologyDataService.labelForEdge(prop.property);
-          newEdge.font = { align: 'top' };
-          relation = newEdge.identifier = prop.property;
-
-          if (to.identifier === prop.domain) {
-            from = _createNode(prop.range, optionsFrom);
-          } else if (to.identifier === prop.range) {
-            from = _createNode(prop.domain, optionsFrom);
-          }
-        }
-
-        // check if reverse edge exists already
-        var reverseEdge = _findEdge(to, from, relation);
-        if (reverseEdge.length > 0) {
-          newEdge = undefined;
-        }
-
-      } else if (label === 'comment') {
-        from = _createNode(subject, optionsFrom);
-        this.data.nodes.update({ id: from.id, title: object });
-        newEdge = undefined;
-      } else if (label === 'internal') {
-        newEdge = undefined;
-      } else {
-
-        if (label === 'isA') { // layout updates for sub class relationships
-
-          newEdge.arrows = {
-            to: {
-              scaleFactor: 0.5
-            }
-          };
-
-          newEdge.data.classIrises = true;
-          newEdge.color = '#b6c9de';
-
-          if (!_hasProperties(subject)) {
-            optionsFrom.color = "#8585ad";
-            optionsFrom.value = 6;
-            this.visibleInstances.push( OntologyDataService.labelForNode(subject));
-          }
-
-          if (!_hasProperties(object)) {
-            optionsTo.color = newEdge.color;
-            optionsTo.value = 10;
-          }
-
-        } else {
-          newEdge.label = newEdge.title = OntologyDataService.labelForEdge(predicate);
-          newEdge.font = { align: 'top' };
-        }
-
-        from = _createNode(subject, optionsFrom);
-        to = _createNode(object, optionsTo);
-      }
-
-      if (newEdge) {
-
-        var edge = _findEdge(from, to, relation);
-
-        if (edge.length == 0) {
-          newEdge.from = from.id;
-          newEdge.to = to.id;
-          this.data.edges.add(newEdge);
-          edge = _findEdge(from, to, relation);
-        }
-
-        return edge[0];
-      }
-
-      return undefined;
-    };
 
     const _addSubClassRelation = (parentClass, childClass) => {
       _addRelation(
@@ -278,83 +117,10 @@
       );
     };
 
-    const _addInstanceRelation = (instance1, instance2, relation) => {
-      if (angular.isUndefined(instance1)) {
-        throw Error('Instance1 must not be null!');
-      }
-      if (angular.isUndefined(instance)) {
-        throw Error('Instanc2e must not be null!');
-      }
-      if (!this.data.nodes.get(instance1.iri)) {
-        _addNode(instance1, 'instanceNode');
-      }
-      if (!this.data.nodes.get(instance2.iri)) {
-        _addNode(instance2, 'instanceNode');
-      }
-      this.data.edges.add({
-        from: instance1.iri,
-        to: instance2.iri,
-        title: relation,
-      });
-
-    };
-
-
-    const _addObjectRelation = (clazz, objectProperty) => {
-      /*_addRelation(
-        clazz,
-        instance,
-        `${instance.label} is of type ${clazz.label}`,
-        { bidirectional: false, type: 'instanceOf'}
-      );*/
-
-      if (angular.isUndefined(clazz)) {
-        throw Error('Class must not be null!');
-      }
-      if (!OntologyDataService.isClass(clazz)) {
-        throw Error('First parameter must be a class object!');
-      }
-      if (angular.isUndefined(objectProperty)) {
-        throw Error('ObjectProperty must not be null!');
-      }
-      if (!OntologyDataService.isObjectProperty(objectProperty)) {
-        throw Error('Second parameter must be an object property object!');
-      }
-
-      if(objectProperty.domainIris.indexOf(clazz.iri) > -1) {
-        objectProperty.rangeIris.forEach((iri) => {
-         /* _addRelation(
-            clazz,
-            instance,
-            `${instance.label} is of type ${clazz.label}`,
-            { bidirectional: false, type: 'instanceOf'}
-          );*/
-
-          //TODO: change to display label!!
-          _addNode({iri: iri, label: iri}, 'classNode');
-          this.data.edges.add({
-            from: clazz.iri,
-            to: iri,
-            title: objectProperty.label,
-          });
-        });
-      }
-      if(objectProperty.rangeIris.indexOf(clazz.iri) > -1) {
-        objectProperty.domainIris.forEach((iri) => {
-          //TODO: change to display label!!
-          _addNode({iri: iri, label: iri}, 'classNode');
-          this.data.edges.add({
-            to: clazz.iri,
-            from: iri,
-            title: objectProperty.label,
-          });
-        });
-      }
-    };
-
     const _addRelation = (item1, item2, relation, options) => {
-      _addNode(item1);
-      _addNode(item2);
+      if  (angular.isUndefined(_addNode(item1)) || angular.isUndefined(_addNode(item2)))  {
+        return;
+      }
       if (angular.isUndefined(options)) {
         options = {};
       }
@@ -363,9 +129,14 @@
           edge[name] = options[name];
         }
       };
+      const edgeId = `${item1.id}_${relation}_${item2.id}`;
+      if (this.data.edges.get(edgeId)) {
+        return;
+      }
       const edge = {
-        to: item1.iri,
-        from: item2.iri,
+        id: edgeId,
+        from: item1.id,
+        to: item2.id,
         title: relation,
       };
       setOption(edge, options, 'color');
@@ -380,20 +151,29 @@
     };
 
     const _addNode = (item) => {
-      if (angular.isUndefined(item)) {
-        throw Error('Item must not be null!');
-      }
-      if (this.data.nodes.get(item.iri)) {
+      if (angular.isUndefined(item) || (item === null )) {
         return;
+      }
+      if (!angular.isUndefined(item.iri) && this.data.nodes.get(item.iri)) {
+        return item.iri;
+      }
+      if (!angular.isUndefined(item.id) && this.data.nodes.get(item.id)) {
+        return item.id;
       }
       if (OntologyDataService.isClass(item)){
         item.group = 'classNode';
+        item.title = item.label;
+        item.id = item.iri;
       } else if (OntologyDataService.isIndividual(item)){
         item.group = 'instanceNode';
+        item.title = `${item.label} of type ${item.classIri.replace(OntologyDataService.ontologyIri(),'')}`;
+        item.id = item.iri;
+      }  else {
+        item.group = 'dataNode';
+        item.title = item.label;
       }
-      item.title = item.label;
-      item.id = item.iri;
       this.data.nodes.add(item);
+      return item.id;
     };
 
     const _loadClassNode = (iri) => {
@@ -450,81 +230,123 @@
       });
 
     };
-    const _loadInstanceNodes = () => {
-      OntologyDataService.fetchAllInstances(true).then((result) => {
-        result.forEach((individual) => {
-          console.log(individual);
-          _addNode(individual, 'instanceNode');
+
+    const _addObjectRelations = (individuals) => {
+      const that = this;
+      angular.forEach(individuals, (individual) => {
+        angular.forEach(individual.objectProperties, (value) => {
+          angular.forEach(value, function(v) {
+            _addRelation(
+              that.data.nodes.get(individual.iri),
+              that.data.nodes.get(v.target),
+              v.label
+            );
+          });
         });
-        result.forEach((individual) => {
-        // _addNode(individual, 'instanceNode');
+      });
+    };
+    const _addDataRelations = (individuals) => {
+      const that = this;
+      angular.forEach(individuals, (individual) => {
+        angular.forEach(individual.datatypeProperties, (value) => {
+          angular.forEach(value, function(v) {
+            _addRelation(
+              that.data.nodes.get(individual.iri),
+              that.data.nodes.get(_addNode({id: `${individual.iri}_label_${v.target}`, label: v.target})),
+              v.label
+            );
+          });
         });
-
-
-
-        /*const promises = [ Promise.resolve(result) ];
-
-        // child classes
-        promises.push(Promise.all(result.childClassIris.reduce((accumulator, iri) => {
-          accumulator.push(OntologyDataService.fetchClass(iri, true));
-          return accumulator;
-        }, [])));
-
-        // parent classes
-        promises.push(Promise.all(result.parentClassIris.reduce((accumulator, iri) => {
-          accumulator.push(OntologyDataService.fetchClass(iri, true));
-          return accumulator;
-        }, [])));
-
-        // individuals
-        promises.push(Promise.all(result.individualIris.reduce((accumulator, iri) => {
-          accumulator.push(OntologyDataService.fetchIndividual(iri, false));
-          return accumulator;
-        }, [])));
-
-        //object relations
-        promises.push(Promise.all(result.objectPropertyIris.reduce((accumulator, iri) => {
-          accumulator.push(OntologyDataService.fetchObjectProperty(iri, true));
-          return accumulator;
-        }, [])));
-        return Promise.all(promises);
-      }).then((result) => {
-
-        const clazz = result.splice(0, 1)[0];
-
-        result.splice(0, 1)[0].forEach((childClass) => {
-          _addSubClassRelation(clazz, childClass);
-        });
-
-        result.splice(0, 1)[0].forEach((parentClass) => {
-          _addSubClassRelation(parentClass, clazz);
-        });
-
-        result.splice(0, 1)[0].forEach((individual) => {
-          _addInstanceRelation(clazz, individual);
-        });
-
-        result.splice(0, 1)[0].forEach((objectProperty) => {
-          _addObjectRelation(clazz, objectProperty);
-        });
-        this.network.fit();*/
-      })/*.catch((err) => {
-        $scope.setError('SearchAction', 'search', err);
-        $scope.setReady(true);
-      });*/
-
+      });
     };
 
-  /*  var _loadInstanceNodes = () => {
-      $q.when(true).then(() => {
-        this.ontology.instances.forEach((instance) => {
-          if (instance.object) {
-            _createGraphItems(instance.subject, instance.object, instance.predicate);
-          }
+    const _loadIndividualNode = (iri, level) => {
+      if (angular.isUndefined(iri)) {
+        return;
+      }
+      const promises = [];
+      const individual = this.data.nodes.get(iri);
+      if (!angular.isUndefined(individual)) {
+        _addDataRelations([individual]);
+        angular.forEach(individual.objectProperties, function(propIri) {
+          angular.forEach(propIri, function(v) {
+            promises.push(OntologyDataService.fetchIndividual(v.target, true));
+          });
         });
-        this.network.fit();
+      }
+      Promise.all(promises).then((result) => {
+        angular.forEach(result, (item) => {
+          _addNode(item);
+        });
+        result.push(individual);
+        _addObjectRelations(result);
+        if (level > 0) {
+          angular.forEach(result, (item) => {
+            _loadIndividualNode(item.iri, level - 1);
+          });
+        }
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
       });
-    };*/
+
+
+
+    };
+    const _loadIndividualNodes = () => {
+      OntologyDataService.fetchAllInstances(true).then((result) => {
+        angular.forEach(result, (individual) => {
+          _addNode(individual);
+          individual.expanded = true;
+        });
+        _addObjectRelations(result);
+        _addDataRelations(result);
+
+        this.network.fit();
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
+      });
+    };
+
+    /*
+     const _loadIndividualNodes = (iri, level) => {
+     OntologyDataService.fetchAllInstances(true).then((result) => {
+     result.forEach((individual) => {
+     //  console.log(individual);
+     _addNode(individual, 'instanceNode');
+     });
+     const that = this;
+     result.forEach((individual) => {
+     angular.forEach(individual.objectProperties, function(value, key) {
+     angular.forEach(value, function(v) {
+     _addRelation(
+     that.data.nodes.get(individual.iri),
+     that.data.nodes.get(v.target),
+     v.label
+     );
+     });
+     });
+     });
+     result.forEach((individual) => {
+     angular.forEach(individual.datatypeProperties, function(value, key) {
+     angular.forEach(value, function(v) {
+     _addRelation(
+     that.data.nodes.get(individual.iri),
+     that.data.nodes.get(_addNode({label: v.target})),
+     v.label
+     );
+     });
+     });
+     });
+     this.network.fit();
+     }).catch((err) => {
+     $scope.setError('SearchAction', 'search', err);
+     $scope.setReady(true);
+     });
+     };
+     */
+
 
     var _createGraph = () => {
 
@@ -537,14 +359,17 @@
       this.network.on('select', (params) => {
         if ((params.nodes !== undefined) && (params.nodes.length > 0)) {
           var selectedNodeId = params.nodes[0];
-          this.selectedElement =  this.data.nodes.get(selectedNodeId);
+
+
+          $scope.data.selectedNode =  this.data.nodes.get(selectedNodeId);
+          $scope.$apply();
           return;
         }
-        if ((params.edges !== undefined) && (params.edges.length > 0)) {
+        /*if ((params.edges !== undefined) && (params.edges.length > 0)) {
           var selectedEdgeId = params.edges[0];
-          this.selectedElement = this.data.edges.get(selectedEdgeId);
+          this.selectedNode = this.data.edges.get(selectedEdgeId);
 
-        }
+        }*/
       });
     };
 
@@ -556,7 +381,7 @@
         $scope.setModeLabel('Incidents');
         if (this.network) {
           this.network.removeAllListeners('selectNode');
-          _loadInstanceNodes();
+          _loadIndividualNodes();
         }
       } else {
         $scope.setModeLabel('Model');
@@ -576,15 +401,16 @@
     this.initialize = function() {
 
       $scope.setBusy('Loading ontology data...');
-      let promise;
+      const promises = [];
       if (OntologyDataService.isInitialized()) {
-        promise = Promise.resolve();
+        promises.push(Promise.resolve());
       } else {
-        promise = OntologyDataService.initialize();
+        promises.push(OntologyDataService.initialize());
       }
-      promise.then(() => {
+      promises.push(CaseOntologyDataService.initialize());
+      Promise.all(promises).then(() => {
         return Promise.all([
-          OntologyDataService.fetchAllClasses()
+           OntologyDataService.fetchAllClasses(),
         ]);
       }).then((result) => {
         this.data.classes = result[0];
@@ -620,8 +446,8 @@
     this.reset = () => {
       $q.when(true).then(() => {
         this.query = '';
-        this.selectedElement = undefined;
-        this.visibleInstances = [];
+        $scope.data.selectedNode = undefined;
+        $scope.data.focusedNode = undefined;
         this.data.nodes.clear();
         this.data.edges.clear();
 
@@ -633,10 +459,69 @@
       });
     };
 
+    $scope.isEnabled = (data) => {
+      if (data === 'nextLevel') {
+        return angular.isUndefined($scope.data.focusedNode);
+      }
+      if (data === 'setFocus') {
+        return angular.isUndefined($scope.data.selectedNode);
+      }
+      if (data === 'clearFocus') {
+        return angular.isUndefined($scope.data.focusedNode);
+      }
+      if (data === 'fadeOut') {
+
+        return angular.isUndefined($scope.data.selectedNode);
+      }
+    };
+
 
     $scope.$on('mode-changed', (evt, mode) => {
       _activateMode(mode);
     });
+
+
+    $scope.setFocus = () => {
+      if (angular.isUndefined($scope.data.selectedNode)) {
+        return;
+      }
+      $scope.physicsOnOffData = this.network.physics.physicsEnabled;
+      this.data.nodes.clear();
+      this.data.edges.clear();
+
+      this.data.nodes.add($scope.data.selectedNode);
+      $scope.data.focusedNode = $scope.data.selectedNode;
+      this.network.fit();
+
+    };
+    $scope.clearFocus = () => {
+      $scope.data.focusedNode = undefined;
+      this.network.releaseNode();
+    };
+    $scope.resetGraph = () => {
+      this.reset();
+      $scope.data.selectedNode = undefined;
+      $scope.data.focusedNode = undefined;
+      _loadIndividualNodes();
+    };
+    $scope.nextLevel = () => {
+      _loadIndividualNode ($scope.data.selectedNode.id, $scope.data.level - 1);
+      //this.network.moveNode($scope.data.focusedNode.id, 0, 0);
+      this.network.focus($scope.data.focusedNode.id);
+    };
+    $scope.fadeOut = () => {
+      this.data.nodes.remove($scope.data.selectedNode);
+      $scope.data.selectedNode = undefined;
+    };
+
+
+    $scope.physicsOnOff = () => {
+      if ($scope.physicsEnabled === true) {
+        this.network.physics.enabled = true;
+      } else {
+        this.network.physics.enabled = false;
+      }
+    };
   }
 
   module.exports = OntologyViewController;

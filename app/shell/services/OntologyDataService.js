@@ -20,7 +20,7 @@
     const OwlObjectProperty = require(path.join(__dirname, '../models/OwlObjectProperty'));
     const OwlDatatypeProperty = require(path.join(__dirname, '../models/OwlDatatypeProperty'));
 
-    const regexRemoveQuotationMarks = /^"?(.*?)"?$/;
+    const regexRemoveQuotationMarks = /^""([\w-\d:'\.`_]+)"/;
     const regexIriCheck = /\s+/m;
 
     const knownIris = [{
@@ -507,14 +507,12 @@
             const individual = new OwlIndividual(_iriForPrefix('ontology'), result[0][0], individualIri);
             individual.comments = result[1];
             result[2].forEach((item) => {
-
-              let value = item.y;
-              //TODO: test
-              if (typeof item.y  === 'string') {
+             //TODO: doesn't work with numerical or date time values
+              /*if (typeof item.y  === 'string') {
                 // remove leading and trailing quotation marks
-                value = regexRemoveQuotationMarks.exec(value)[1];
-              }
-              individual.addDatatypeProperty(item.x, _labelFor(item.x), value);
+                  value = regexRemoveQuotationMarks.exec(value)[1];
+              }*/
+              individual.addDatatypeProperty(item.x, _labelFor(item.x), item.y);
             });
             if (result.length > 3) {
               individual.comments = result[1];
@@ -937,8 +935,8 @@
         return _fetchEntity(iri, complete);
       },
       test: () => {
-       // return _fetchForIndividual("http://www.AMSL/GDK/ontologie#KFZ_gestohlen_001", `${_iriForPrefix('owl')}DatatypeProperty`);
-        return _fetchClass("http://www.AMSL/GDK/ontologie#Wirtschaftliche_Konsequenzen", true);
+        return _fetchForIndividual("http://www.AMSL/GDK/ontologie#KFZ_gestohlen_001", `${_iriForPrefix('owl')}DatatypeProperty`);
+      //  return _fetchClass("http://www.AMSL/GDK/ontologie#Wirtschaftliche_Konsequenzen", true);
       },
       clear: _deleteAll,
       import: _importTTL,
