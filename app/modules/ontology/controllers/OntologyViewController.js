@@ -228,6 +228,7 @@
         });
 
         result.splice(0, 1)[0].forEach((individual) => {
+          individual.cases = [];
           _addInstanceOfRelation(clazz, individual);
         });
 
@@ -279,14 +280,32 @@
       const individual = this.data.nodes.get(iri);
       if (!angular.isUndefined(individual)) {
         _addDataRelations([individual]);
+        const iris = {};
         angular.forEach(individual.objectProperties, function(propIri) {
           angular.forEach(propIri, function(v) {
-            promises.push(OntologyDataService.fetchIndividual(v.target, true));
+              iris[v.target] = true;
           });
+        });
+        angular.forEach(individual.reverseObjectProperties, function(propIri) {
+          angular.forEach(propIri, function(v) {
+              iris[v.target] = true;
+          });
+        });
+        angular.forEach(iris, function(value, key) {
+          promises.push(OntologyDataService.fetchIndividual(key, true));
         });
       }
       Promise.all(promises).then((result) => {
         angular.forEach(result, (item) => {
+          item.cases = [];
+          angular.forEach(this.data.cases, (c) => {
+            const found = c.individuals.find((i) => {
+              return i.iri === item.iri;
+            });
+            if (!angular.isUndefined(found)) {
+              item.cases.push(c.identifier);
+            }
+          });
           _addNode(item);
         });
         result.push(individual);
@@ -439,7 +458,7 @@
         $scope.data.focusedNode = undefined;
         this.data.nodes.clear();
         this.data.edges.clear();
-        $scope.data.selectedCases = angular.copy(this.data.cases);
+
       });
     };
     this.toggleSidebar = function(id) {
@@ -459,9 +478,13 @@
         return angular.isUndefined($scope.data.focusedNode);
       }
       if (data === 'fadeOut') {
-
         return angular.isUndefined($scope.data.selectedNode);
       }
+
+      if (data === 'resetGraph') {
+        return $scope.getModeLabel() !== "Incidents";
+      }
+
     };
 
 
@@ -491,6 +514,7 @@
       this.reset();
       $scope.data.selectedNode = undefined;
       $scope.data.focusedNode = undefined;
+      $scope.data.selectedCases = angular.copy(this.data.cases);
       _loadIndividualNodes();
     };
     $scope.nextLevel = () => {

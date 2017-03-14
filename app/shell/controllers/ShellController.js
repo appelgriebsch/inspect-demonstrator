@@ -22,6 +22,10 @@
       });
     };
 
+    $scope.getModeLabel = () => {
+      return this.activeModeLabel;
+    };
+
     $scope.getActiveMode = () => {
       return this.activeMode;
     };

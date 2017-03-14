@@ -493,11 +493,12 @@
         const promises = [
           _fetch(individualIri, _iriFor('rdf-type'), _iriFor('owl-individual'), 'subject'),
           _fetch(individualIri, _iriFor('rdfs-comment'), _iriFor('owl-individual'), 'subject'),
-          _fetchForIndividual(individualIri, dataPropType)
+          _fetchForIndividual(individualIri, dataPropType, false)
 
         ];
         if (deep === true) {
-          promises.push(_fetchForIndividual(individualIri, objectPropType));
+          promises.push(_fetchForIndividual(individualIri, objectPropType, false));
+          promises.push(_fetchForIndividual(individualIri, objectPropType, true));
         }
 
         Promise.all(promises).then((result) => {
@@ -519,6 +520,12 @@
               result[3].forEach((item) => {
                 individual.addObjectProperty(item.x, _labelFor(item.x), item.y);
               });
+              result[3].forEach((item) => {
+                individual.addObjectProperty(item.x, _labelFor(item.x), item.y);
+              });
+              result[4].forEach((item) => {
+                individual.addReverseObjectProperty(item.x, _labelFor(item.x), item.y);
+              });
             }
             resolve(individual);
           }
@@ -527,7 +534,7 @@
         });
       });
     };
-    const _fetchForIndividual = function(individualIri, objType) {
+    const _fetchForIndividual = function(individualIri, objType, reverse) {
       if (angular.isUndefined(individualIri)) {
         return Promise.reject(new Error('Individual iri may not be null.'));
       }
@@ -541,14 +548,23 @@
           predicate: _iriFor('rdf-type'),
           object: _iriFor('owl-individual')
         }, {
-          subject: individualIri,
-          predicate: db.v('x'),
-          object: db.v('y')
-        }, {
           subject: db.v('x'),
           predicate: _iriFor('rdf-type'),
           object: objType
         }];
+        if (reverse === false) {
+          searchArray.push({
+            subject: individualIri,
+            predicate: db.v('x'),
+            object: db.v('y')
+          });
+        } else {
+          searchArray.push({
+            subject: db.v('y'),
+            predicate: db.v('x'),
+            object: individualIri
+          });
+        }
 
         db.search(searchArray, {}, function(err, result) {
           if (err) {

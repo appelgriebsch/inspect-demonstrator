@@ -64,16 +64,30 @@
             c.name = value[0].target;
           }
         });
+        const temp = {};
+
         const caseEntityPropertyIri = `${individual.ontologyIri}${caseEntityPropertyName}`;
         angular.forEach(individual.objectProperties, function(value, key) {
           if (key === caseEntityPropertyIri) {
             angular.forEach(value, function(prop) {
-              promises.push(OntologyDataService.fetchIndividual(prop.target, true));
+              temp[prop.target] = true;
             });
           } else {
             // TODO: load other ObjectProperties of case?
           }
         });
+        const caseInverseEntityPropertyIri = `${individual.ontologyIri}${caseEntityInversePropertyName}`;
+        angular.forEach(individual.reverseObjectProperties, function(value, key) {
+          if (key === caseInverseEntityPropertyIri) {
+            angular.forEach(value, function(prop) {
+              temp[prop.target] = true;
+            });
+          }
+        });
+        angular.forEach(temp, function(value, key) {
+          promises.push(OntologyDataService.fetchIndividual(key, true));
+        });
+
         Promise.all(promises).then((result) => {
           // delete case relations
           angular.forEach(result, (value, index) => {

@@ -12,6 +12,7 @@
       this.saved = false;
       this.datatypeProperties = {};
       this.objectProperties = {};
+      this.reverseObjectProperties = {};
     }
     static addProperty(propertyArray, label, propertyIri, target) {
       const prop = {label: label, target: target};
@@ -55,6 +56,28 @@
         throw Error('Target iri must not be null!');
       }
       if (OwlIndividual.removeProperty(this.objectProperties, propertyIri, targetInstanceIri)) {
+        this.saved = false;
+      }
+    }
+    addReverseObjectProperty(propertyIri, label, targetInstanceIri) {
+      if (angular.isUndefined(propertyIri)) {
+        throw Error('Property iri must not be null!');
+      }
+      if (angular.isUndefined(targetInstanceIri)) {
+        throw Error('Target iri must not be null!');
+      }
+      if (OwlIndividual.addProperty(this.reverseObjectProperties, label, propertyIri, targetInstanceIri)) {
+        this.saved = false;
+      }
+    }
+    removeReverseObjectProperty(propertyIri, targetInstanceIri) {
+      if (angular.isUndefined(propertyIri)) {
+        throw Error('Property iri must not be null!');
+      }
+      if (angular.isUndefined(targetInstanceIri)) {
+        throw Error('Target iri must not be null!');
+      }
+      if (OwlIndividual.removeProperty(this.reverseObjectProperties, propertyIri, targetInstanceIri)) {
         this.saved = false;
       }
     }
