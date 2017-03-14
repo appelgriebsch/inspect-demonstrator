@@ -144,6 +144,9 @@
           <input type="checkbox" ng-checked="isCaseChecked(case)" ng-click="toggleCases(case)"/>
           {{case.identifier}}
         </label>
+        <md-input-container class="opt-graph-input">
+          <input required md-no-asterisk  aria-label="Farbe" type="color" ng-model="ctl.graphOptions.groups[case.identifier].color.background" ng-change="colorChange(case)">
+        </md-input-container>
       </li>
     </ul>
   </md-sidenav>

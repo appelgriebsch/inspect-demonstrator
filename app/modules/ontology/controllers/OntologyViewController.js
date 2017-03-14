@@ -3,7 +3,7 @@
   'use strict';
 
   function OntologyViewController($scope, $state, $q, $location, $mdSidenav, OntologyDataService, CaseOntologyDataService) {
-
+    this.caseColors = ["#ff0000", "#ff9900", "#00ff00", "#336600", "#660033", "#669999"];
     this.graphOptions = {
       height: '100%',
       width: '100%',
@@ -93,6 +93,7 @@
       focusedNode: {},
       selectedCases: [],
       level: 1,
+      caseColors: [],
     };
 
     $scope.physicsEnabled = true;
@@ -170,7 +171,11 @@
         item.title = item.label;
         item.id = item.iri;
       } else if (OntologyDataService.isIndividual(item)){
-        item.group = 'instanceNode';
+        if (item.cases.length === 0) {
+          item.group = 'instanceNode';
+        } else {
+          item.group = item.cases[0];
+        }
         item.title = `${item.label} of type ${item.classIri.replace(OntologyDataService.ontologyIri(),'')}`;
         item.id = item.iri;
       }  else {
@@ -392,8 +397,12 @@
       }).then((result) => {
         this.data.classes = result[0];
         this.data.cases = result[1];
-        $scope.data.selectedCases = angular.copy(result[1]);
+        angular.forEach((this.data.cases), (c,v) => {
+          this.graphOptions.groups[c.identifier] = angular.copy(this.graphOptions.groups.instanceNode);
+          this.graphOptions.groups[c.identifier].color.background = this.caseColors[v % this.caseColors.length];
 
+        });
+        $scope.data.selectedCases = angular.copy(result[1]);
         _createGraph();
         _activateMode();
         $scope.setReady(true);
@@ -508,10 +517,7 @@
       else {
         $scope.data.selectedCases.push(item);
       }
-      console.log($scope.data.selectedCases);
-
       const remove = [];
-
       angular.forEach(this.data.nodes.get({returnType:"Object"}), (node) => {
         let found = false;
 
@@ -541,6 +547,11 @@
       });
       return idx > -1;
     };
+    $scope.colorChange = () => {
+      this.network.setOptions(this.graphOptions);
+    };
+
+
     $scope.physicsOnOff = () => {
       if ($scope.physicsEnabled === true) {
         this.network.physics.enabled = true;
