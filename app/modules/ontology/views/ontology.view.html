@@ -139,11 +139,11 @@
     <h3 class="h3_title_entities">Case</h3>
     <hr style="width: 100%">
     <ul>
-      <li>
-        <p>select</p>
-      </li>
-      <li>
-        <p>color</p>
+      <li ng-repeat="case in ctl.data.cases">
+        <label>
+          <input type="checkbox" ng-checked="isCaseChecked(case)" ng-click="toggleCases(case)"/>
+          {{case.identifier}}
+        </label>
       </li>
     </ul>
   </md-sidenav>

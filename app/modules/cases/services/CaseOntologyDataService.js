@@ -87,6 +87,22 @@
         });
       });
     };
+    const _loadCases = () => {
+      return new Promise((resolve, reject) => {
+        _loadCasesOverview().then((cases) => {
+          const promises = [];
+          angular.forEach(cases, (c) => {
+            promises.push(_loadCase(`${OntologyDataService.ontologyIri()}${c.identifier}`, true));
+          });
+          return Promise.all(promises);
+        }).then((cases) => {
+          resolve(cases);
+        }).catch((err) => {
+          $log.error(err);
+          reject(new Error('Could not load cases !'));
+        });
+      });
+    };
 
     const _loadCase = (identifier, deep) => {
       if (angular.isUndefined(identifier)) {
@@ -94,8 +110,6 @@
       }
       return new Promise((resolve, reject) => {
         OntologyDataService.fetchIndividual(identifier, deep).then((individual) => {
-          console.log("case individual", individual);
-
           return _convertToCase(individual);
         }).then((result) =>  {
           const c = result[0];
@@ -500,6 +514,15 @@
       },
       loadCase: (identifier) => {
         return _loadCase(`${OntologyDataService.ontologyIri()}${identifier}`, true);
+      },
+      loadCases: () => {
+        return _loadCases();
+      },
+      isCase: (individual) => {
+        if (!OntologyDataService.isIndividual(individual)) {
+          return false;
+        }
+        return individual.classIri === `${OntologyDataService.ontologyIri()}${caseClass}`;
       },
       loadCasesOverview: () => {
         return _loadCasesOverview();

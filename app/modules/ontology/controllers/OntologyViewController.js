@@ -84,11 +84,14 @@
       edges: new vis.DataSet(),
       lastSearchedItem: undefined,
       classes: [],
-
+      cases: [],
+      allNodes: [],
+      allEdges: [],
     };
     $scope.data = {
       selectedNode: {},
       focusedNode: {},
+      selectedCases: [],
       level: 1,
     };
 
@@ -143,11 +146,12 @@
       setOption(edge, options, 'type');
       setOption(edge, options, 'dashes');
       if (options.bidirectional === true) {
-       edge.arrows = 'to, from';
+        edge.arrows = 'to, from';
       } else {
         edge.arrows = 'to';
       }
       this.data.edges.add(edge);
+      this.data.allEdges.push(edge);
     };
 
     const _addNode = (item) => {
@@ -160,6 +164,7 @@
       if (!angular.isUndefined(item.id) && this.data.nodes.get(item.id)) {
         return item.id;
       }
+
       if (OntologyDataService.isClass(item)){
         item.group = 'classNode';
         item.title = item.label;
@@ -173,6 +178,7 @@
         item.title = item.label;
       }
       this.data.nodes.add(item);
+      this.data.allNodes.push(item);
       return item.id;
     };
 
@@ -220,9 +226,9 @@
           _addInstanceOfRelation(clazz, individual);
         });
 
-     /*   result.splice(0, 1)[0].forEach((objectProperty) => {
+        /*   result.splice(0, 1)[0].forEach((objectProperty) => {
          _addObjectRelation(clazz, objectProperty);
-        });*/
+         });*/
         this.network.fit();
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
@@ -296,8 +302,18 @@
     const _loadIndividualNodes = () => {
       OntologyDataService.fetchAllInstances(true).then((result) => {
         angular.forEach(result, (individual) => {
-          _addNode(individual);
-          individual.expanded = true;
+          if (!CaseOntologyDataService.isCase(individual)) {
+            individual.cases = [];
+            angular.forEach(this.data.cases, (c) => {
+              const found = c.individuals.find((i) => {
+                return i.iri === individual.iri;
+              });
+              if (!angular.isUndefined(found)) {
+                individual.cases.push(c.identifier);
+              }
+            });
+            _addNode(individual);
+          }
         });
         _addObjectRelations(result);
         _addDataRelations(result);
@@ -308,47 +324,7 @@
         $scope.setReady(true);
       });
     };
-
-    /*
-     const _loadIndividualNodes = (iri, level) => {
-     OntologyDataService.fetchAllInstances(true).then((result) => {
-     result.forEach((individual) => {
-     //  console.log(individual);
-     _addNode(individual, 'instanceNode');
-     });
-     const that = this;
-     result.forEach((individual) => {
-     angular.forEach(individual.objectProperties, function(value, key) {
-     angular.forEach(value, function(v) {
-     _addRelation(
-     that.data.nodes.get(individual.iri),
-     that.data.nodes.get(v.target),
-     v.label
-     );
-     });
-     });
-     });
-     result.forEach((individual) => {
-     angular.forEach(individual.datatypeProperties, function(value, key) {
-     angular.forEach(value, function(v) {
-     _addRelation(
-     that.data.nodes.get(individual.iri),
-     that.data.nodes.get(_addNode({label: v.target})),
-     v.label
-     );
-     });
-     });
-     });
-     this.network.fit();
-     }).catch((err) => {
-     $scope.setError('SearchAction', 'search', err);
-     $scope.setReady(true);
-     });
-     };
-     */
-
-
-    var _createGraph = () => {
+    const _createGraph = () => {
 
       var container = document.getElementById('ontology-graph');
       this.network = new vis.Network(container, this.data, this.graphOptions);
@@ -366,10 +342,10 @@
           return;
         }
         /*if ((params.edges !== undefined) && (params.edges.length > 0)) {
-          var selectedEdgeId = params.edges[0];
-          this.selectedNode = this.data.edges.get(selectedEdgeId);
+         var selectedEdgeId = params.edges[0];
+         this.selectedNode = this.data.edges.get(selectedEdgeId);
 
-        }*/
+         }*/
       });
     };
 
@@ -387,10 +363,10 @@
         $scope.setModeLabel('Model');
         if (this.network) {
           /*this.network.on('selectNode', (params) => {
-            var selectedNodeId = params.nodes[0];
-            var selectedNode = this.data.nodes.get(selectedNodeId);
-            _loadClassNode(selectedNode.identifier);
-          });*/
+           var selectedNodeId = params.nodes[0];
+           var selectedNode = this.data.nodes.get(selectedNodeId);
+           _loadClassNode(selectedNode.identifier);
+           });*/
           if (!angular.isUndefined(this.data.lastSearchedItem)) {
             _loadClassNode(this.data.lastSearchedItem);
           }
@@ -410,10 +386,14 @@
       promises.push(CaseOntologyDataService.initialize());
       Promise.all(promises).then(() => {
         return Promise.all([
-           OntologyDataService.fetchAllClasses(),
+          OntologyDataService.fetchAllClasses(),
+          CaseOntologyDataService.loadCases()
         ]);
       }).then((result) => {
         this.data.classes = result[0];
+        this.data.cases = result[1];
+        $scope.data.selectedCases = angular.copy(result[1]);
+
         _createGraph();
         _activateMode();
         $scope.setReady(true);
@@ -450,12 +430,12 @@
         $scope.data.focusedNode = undefined;
         this.data.nodes.clear();
         this.data.edges.clear();
-
+        $scope.data.selectedCases = angular.copy(this.data.cases);
       });
     };
     this.toggleSidebar = function(id) {
       $q.when(true).then(() => {
-          $mdSidenav(id).toggle();
+        $mdSidenav(id).toggle();
       });
     };
 
@@ -515,6 +495,52 @@
     };
 
 
+    $scope.toggleCases = (item) => {
+      let idx = -1;
+      angular.forEach($scope.data.selectedCases, (c, v) => {
+        if (c.identifier === item.identifier) {
+          idx = v;
+        }
+      });
+      if (idx > -1) {
+        $scope.data.selectedCases.splice(idx, 1);
+      }
+      else {
+        $scope.data.selectedCases.push(item);
+      }
+      console.log($scope.data.selectedCases);
+
+      const remove = [];
+
+      angular.forEach(this.data.nodes.get({returnType:"Object"}), (node) => {
+        let found = false;
+
+        if (angular.isUndefined(node.cases) || $scope.data.selectedCases.length === 0) {
+          found = false;
+        } else {
+          angular.forEach($scope.data.selectedCases, (c) => {
+            if (node.cases.indexOf(c.identifier) > -1) {
+              found = true;
+            }
+          });
+        }
+        if (found === false) {
+          remove.push(node.id);
+        }
+      });
+      this.data.nodes.remove(remove);
+    };
+
+
+    $scope.isCaseChecked = (item) => {
+      let idx = -1;
+      angular.forEach($scope.data.selectedCases, (c, v) => {
+        if (c.identifier === item.identifier) {
+          idx = v;
+        }
+      });
+      return idx > -1;
+    };
     $scope.physicsOnOff = () => {
       if ($scope.physicsEnabled === true) {
         this.network.physics.enabled = true;
