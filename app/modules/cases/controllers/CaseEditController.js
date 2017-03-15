@@ -38,7 +38,7 @@
     $scope.showAttributsknotenActive = 'active';
     $scope.showKantenActive = 'active';
     $scope.showPhysikalischeActive = 'active';
-    
+
     var allNodes;
     var allEdges;
     var highlightActive = false;
@@ -233,7 +233,7 @@
     const _createGraph = () => {
       const container = document.getElementById('ontology-graph');
       const t = $scope.data['case'].generateNodesAndEdges();
-      
+
       this.data.nodes.add(t.nodes);
       this.data.edges.add(t.edges);
 
@@ -447,7 +447,7 @@
           $scope.$apply();
         }
       }
-      
+
       if (!rightSideNavIsOpen && params.nodes.length > 0) {
         //open
         $scope.toggleSidebarRight();
@@ -501,7 +501,7 @@
      if (highlightActive === true) {
       allNodes = this.data['nodes'].get({returnType:"Object"});
       allEdges = this.data['edges'].get({returnType:"Object"});
-      
+
         // reset all nodes
         for (var nodeId in allNodes) {
           allNodes[nodeId].hidden = false;
@@ -520,7 +520,7 @@
         $scope.gradBtnHide = 'ng-hide';
         this.network.physics.physicsEnabled = true;
         this.network.physics.startedStabilization = true;
-        
+
         $scope.updateNodes("clearfocus");
         $scope.updateEdges();
 
@@ -736,8 +736,6 @@
     });
 
     $scope.$on('case-save', () => {
-      //console.log("case", $scope.data['case']);
-      //console.log("initialCase", $scope.data.initialCase);
       CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
      });
       this.graphOptions._id = $scope.data.case.identifier;

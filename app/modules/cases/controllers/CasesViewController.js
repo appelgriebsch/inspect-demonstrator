@@ -47,14 +47,13 @@
           return $scope.writeLog('info', info);
         }).then(() => {
           CaseOntologyDataService.reset();
-          return CaseOntologyDataService.initialize();
-        }).then(() => {
           $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
           $scope.setReady();
         }).catch((err) => {
           $scope.setError('ReceiveAction', 'import_export', err);
           $scope.setReady(true);
         });
+        this.initialize();
       }
     });
 
