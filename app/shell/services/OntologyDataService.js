@@ -635,17 +635,23 @@
         });
       });
     };
-    const _removeIndividual = (individualIri) => {
+    const _removeIndividual = (individual) => {
+      if (angular.isUndefined(individual)) {
+        return Promise.reject(new Error('Individual must not be null.'));
+      }
+      if (typeof individual === OwlIndividual) {
+        return Promise.reject(new Error('Must be of type OwlIndividual but was type of: '+typeof individual));
+      }
       return new Promise((resolve, reject) => {
         db.get({
-          subject: individualIri
+          subject: individual.iri
         }, function(err, results) {
           if (err) {
             reject(err);
           } else {
             let triples = results;
             db.get({
-              object: individualIri
+              object: individual.iri
             }, function(err2, results2) {
               if (err2) {
                 reject(err2);
@@ -793,7 +799,7 @@
       });
     };
 
-    const _removeAllIndividualProperties = (subject, property) => {
+    const _removeIndividualProperties = (subject, property) => {
       if (angular.isUndefined(subject)) {
         return Promise.reject(new Error('Subject must not be undefined.'));
       }
@@ -935,11 +941,11 @@
       removeIndividualProperty: (subject, property, object) => {
         return _addOrRemoveIndividualProperty(subject, property, object, 'remove');
       },
-      removeAllIndividualProperties: (subject, property) => {
-        return _removeAllIndividualProperties(subject, property);
+      removeIndividualProperties: (subject, property) => {
+        return _removeIndividualProperties(subject, property);
       },
-      removeIndividual: (individualIri) => {
-        return _removeIndividual(individualIri);
+      removeIndividual: (individual) => {
+        return _removeIndividual(individual);
       },
       ontologyIri: function() {
         return angular.copy(_iriForPrefix('ontology'));
