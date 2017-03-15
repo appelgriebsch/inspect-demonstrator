@@ -442,8 +442,7 @@
         });
 
         //TODO: if individual is a member of several cases, it shouldn't be deleted completely
-
-        OntologyDataService.removeIndividual(individual.iri).then(() => {
+        OntologyDataService.removeIndividual(individual).then(() => {
           resolve();
         }).catch((err) => {
           reject(err);

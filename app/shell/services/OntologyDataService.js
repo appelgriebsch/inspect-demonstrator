@@ -640,32 +640,35 @@
       if (typeof individual === OwlIndividual) {
         return Promise.reject(new Error('Must be of type OwlIndividual but was type of: '+typeof individual));
       }
-      return new Promise((resolve, reject) => {
-        db.get({
-          subject: individual.iri
-        }, function(err, results) {
-          if (err) {
-            reject(err);
-          } else {
-            let triples = results;
-            db.get({
-              object: individual.iri
-            }, function(err2, results2) {
-              if (err2) {
-                reject(err2);
-              } else {
-                triples = triples.concat(results2);
-                db.del(triples, function(err3) {
-                  if (err3) {
-                    reject(err3);
-                  } else {
-                    resolve(triples);
-                  }
-                });
-              }
-            });
-          }
-        });
+      if (angular.isUndefined(individual.iri)) {
+        return Promise.reject(new Error('Individual iri must not be null.'));
+      }
+     return new Promise((resolve, reject) => {
+       db.get({
+         subject: individual.iri
+       }, function(err, results) {
+         if (err) {
+           reject(err);
+         } else {
+           let triples = results;
+           db.get({
+             object: individual.iri
+           }, function(err2, results2) {
+             if (err2) {
+               reject(err2);
+             } else {
+               triples = triples.concat(results2);
+               db.del(triples, function(err3) {
+                 if (err3) {
+                   reject(err3);
+                 } else {
+                   resolve(triples);
+                 }
+               });
+             }
+           });
+         }
+       });
       });
     };
 

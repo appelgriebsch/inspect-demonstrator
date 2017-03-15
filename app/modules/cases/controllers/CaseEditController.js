@@ -751,6 +751,24 @@
       });
     };
 
+    $scope.renameNode = function(event) {
+      // Appending dialog to document.body to cover sidenav in docs app
+      const confirm = $mdDialog.prompt()
+        .title('Rename Node')
+        .placeholder('Node name')
+        .ariaLabel('Node name')
+        .initialValue($scope.selectedKnotenName )
+        .targetEvent(event)
+        .ok('Save')
+        .cancel('Cancel');
+
+      $mdDialog.show(confirm).then(function(result) {
+        $scope.status = 'You decided to name your dog ' + result + '.';
+      }, function() {
+        $scope.status = 'You didn\'t name your dog.';
+      });
+    };
+
     $scope.deleteNode = () => {
       $scope.setBusy('Deleting node...');
       const individuals = $scope.data['case'].individuals.filter((i) => {
@@ -759,6 +777,7 @@
         }
       });
       if (individuals.length > 0) {
+
         this.data.nodes.remove($scope.selectedKnotenNameFull);
         // XXX: removes the individual completely! what should happen if the individual is also in another case?
         CaseOntologyDataService.removeIndividual(individuals[0], $scope.data['case']).then(() => {
