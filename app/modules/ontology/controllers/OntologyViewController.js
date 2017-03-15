@@ -3,7 +3,7 @@
   'use strict';
 
   function OntologyViewController($scope, $state, $q, $location, $mdSidenav, OntologyDataService, CaseOntologyDataService) {
-    this.caseColors = ["#ff0000", "#ff9900", "#00ff00", "#336600", "#660033", "#669999"];
+    this.caseColors = ["#ff0000", "#ff9900", "#660033", "#00ff00", "#336600", "#660033", "#669999"];
     this.graphOptions = {
       height: '100%',
       width: '100%',

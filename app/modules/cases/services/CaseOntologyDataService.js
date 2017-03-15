@@ -57,6 +57,8 @@
         const promises = [c];
         if (individual.comments.length > 0) {
           c.description = individual.comments[0];
+        } else {
+          c.description = [];
         }
         const caseNamePropertyIri = `${individual.ontologyIri}${caseNamePropertyName}`;
         angular.forEach(individual.datatypeProperties, function(value, key) {
