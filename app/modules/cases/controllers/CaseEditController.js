@@ -59,6 +59,8 @@
       };
     }
 
+
+
     var _showNodeDialog = (nodeId) => {
       if (!nodeId) {
         return;
@@ -73,19 +75,6 @@
         windowClass: 'large-Modal',
         locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: CaseOntologyDataService.getDatatypeProperties(), instances: angular.copy($scope.data['case'].individuals)}
       }).then(function(result) {
-        if (result.toBeDeleted === true) {
-          $scope.setBusy('Deleting node...');
-          that.data.nodes.remove(result.individual.iri);
-          // XXX: removes the individual completely! what should happen if the individual is also in another case?
-          CaseOntologyDataService.removeIndividual(result.individual, $scope.data['case']).then(() => {
-            that.network.fit();
-            $scope.setReady(true);
-          }).catch((err) => {
-            $scope.setError('DeleteAction', 'delete', err);
-            $scope.setReady(true);
-          });
-
-        }
         if (result.toBeRenamed === true) {
           $scope.setBusy('Renaming node...');
           const oldIri = result.individual.iri;
@@ -760,6 +749,28 @@
         $scope.setError('AddAction', 'add', err);
         $scope.setReady(true);
       });
+    };
+
+    $scope.deleteNode = () => {
+      $scope.setBusy('Deleting node...');
+      const individuals = $scope.data['case'].individuals.filter((i) => {
+        if (i.iri === $scope.selectedKnotenNameFull) {
+          return true;
+        }
+      });
+      if (individuals.length > 0) {
+        this.data.nodes.remove($scope.selectedKnotenNameFull);
+        // XXX: removes the individual completely! what should happen if the individual is also in another case?
+        CaseOntologyDataService.removeIndividual(individuals[0], $scope.data['case']).then(() => {
+          this.network.fit();
+          $scope.setReady(true);
+        }).catch((err) => {
+          $scope.setError('DeleteAction', 'delete', err);
+          $scope.setReady(true);
+        });
+      } else {
+        $scope.setReady(true);
+      }
     };
 
     //<editor-fold desc="Initialization">
