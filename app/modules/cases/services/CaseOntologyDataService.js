@@ -291,6 +291,7 @@
       if ((type !== 'add') && (type !== 'remove')) {
         return Promise.reject(new Error('Type must be \'add\' or \'remove\'!'));
       }
+
       return new Promise((resolve, reject) => {
         let subjectIndividual = {};
         let objectIndividual = {};

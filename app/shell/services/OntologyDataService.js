@@ -515,11 +515,8 @@
               }*/
               individual.addDatatypeProperty(item.x, _labelFor(item.x), item.y);
             });
-            if (result.length > 3) {
+            if (result.length === 5) {
               individual.comments = result[1];
-              result[3].forEach((item) => {
-                individual.addObjectProperty(item.x, _labelFor(item.x), item.y);
-              });
               result[3].forEach((item) => {
                 individual.addObjectProperty(item.x, _labelFor(item.x), item.y);
               });
@@ -527,6 +524,7 @@
                 individual.addReverseObjectProperty(item.x, _labelFor(item.x), item.y);
               });
             }
+
             resolve(individual);
           }
         }).catch((err) => {
