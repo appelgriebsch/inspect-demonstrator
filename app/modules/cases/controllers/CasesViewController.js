@@ -33,9 +33,7 @@
     };
 
     $scope.$on('import-ontology', () => {
-
       var targetPath = OntologySharingService.requestOpenFile();
-
       if ((targetPath !== undefined) && (targetPath.length > 0)) {
 
         $scope.setBusy('Importing ontology...');
@@ -47,14 +45,13 @@
           return $scope.writeLog('info', info);
         }).then(() => {
           CaseOntologyDataService.reset();
-          return CaseOntologyDataService.initialize();
-        }).then(() => {
           $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
-          $scope.setReady();
+          this.initialize();
         }).catch((err) => {
           $scope.setError('ReceiveAction', 'import_export', err);
           $scope.setReady(true);
         });
+
       }
     });
 

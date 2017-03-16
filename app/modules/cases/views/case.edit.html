@@ -131,21 +131,24 @@
           </ul>
           <h3 class="h3_title_entities">Edit individual</h3>
           <hr style="width: 100%">
-          <ul>
+         <ul>
             <li>
-              <p>Rename</p>
-            </li>
-            <li>
-              <p>Type</p>
-            </li>
-            <li>
-              <p>Object relation</p>
-            </li>
-            <li>
-              <p>Value relation</p>
-            </li>
-            <li>
-              <p>Delete</p>
+              <md-button class="md-raised-cases" ng-click="renameNode($event)">
+                <i class="material-icons infoIcon">mode_edit</i>
+                Rename node
+              </md-button>
+              <!--<md-button class="md-raised-cases" ng-click="changeTypeForNode($event)">
+                <i class="material-icons infoIcon">storage</i>
+                Change Type
+              </md-button>-->
+              <md-button class="md-raised-cases" ng-click="editEdges()">
+                <i class="material-icons infoIcon">trending_flat</i>
+                Edit edges
+              </md-button>
+              <md-button class="md-raised-cases" ng-click="deleteNode()">
+                <i class="material-icons infoIcon">delete</i>
+                Delete node
+              </md-button>
             </li>
           </ul>
         </md-sidenav>
