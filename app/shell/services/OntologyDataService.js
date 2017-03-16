@@ -20,7 +20,8 @@
     const OwlObjectProperty = require(path.join(__dirname, '../models/OwlObjectProperty'));
     const OwlDatatypeProperty = require(path.join(__dirname, '../models/OwlDatatypeProperty'));
 
-    const regexRemoveQuotationMarks = /^""([\w-\d:'\.`_]+)"/;
+    const regexString = /^"([\s\S]+?)"$/;
+    const regexGeneral = /^"(\d+)"\^\^(.+)$/;
     const regexIriCheck = /\s+/m;
 
     const knownIris = [{
@@ -128,8 +129,8 @@
             } else {
               const promises = [];
               angular.forEach(result, (item) => {
-                  promises.push(_exportObject(item.subject));
-                });
+                promises.push(_exportObject(item.subject));
+              });
               Promise.all(promises).then((result) => {
                 resolve(result);
               });
@@ -307,6 +308,7 @@
     };
 
     const _fetch = (iri, predicate, rdfsType, type) => {
+
       return new Promise((resolve, reject) => {
         const searchArray = [];
         if (type === 'subject') {
@@ -332,7 +334,6 @@
             predicate: predicate,
             object: iri
           });
-
         }
         db.search(searchArray, {}, function(err, result) {
           if (err) {
@@ -385,8 +386,8 @@
         db.get({
           subject: iri,
           //predicate: _iriFor('rdf-type'),
-     //     predicate: db.v('y'),
-      //    object: db.v('x')
+          //     predicate: db.v('y'),
+          //    object: db.v('x')
         }, (err, result) => {
           if (err) {
             reject(err);
@@ -477,6 +478,27 @@
       });
     };
 
+    const _parseDatatypePropertyValue = (value) => {
+      let match;
+      while ((match = regexString.exec(value)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (match.index === regexString.lastIndex) {
+          regexString.lastIndex++;
+        }
+        return { value:match[1], type: undefined };
+      }
+      while ((match = regexGeneral.exec(value)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (match.index === regexString.lastIndex) {
+          regexString.lastIndex++;
+        }
+        if (match[2] === "http://www.w3.org/2001/XMLSchema#integer") {
+          return { value: parseInt(match[1]), type: match[2] };
+        }
+      }
+      throw Error("Couldn't parse: "+value);
+    };
+
     const _fetchIndividual = (individualIri, deep) => {
       if (angular.isUndefined(individualIri)) {
         return Promise.reject(new Error('Individual iri may not be null.'));
@@ -508,18 +530,11 @@
             const individual = new OwlIndividual(_iriForPrefix('ontology'), result[0][0], individualIri);
             individual.comments = result[1];
             result[2].forEach((item) => {
-             //TODO: doesn't work with numerical or date time values
-              /*if (typeof item.y  === 'string') {
-                // remove leading and trailing quotation marks
-                  value = regexRemoveQuotationMarks.exec(value)[1];
-              }*/
-              individual.addDatatypeProperty(item.x, _labelFor(item.x), item.y);
+              // TODO: do something about the potential type of a DatatypeProperty
+              individual.addDatatypeProperty(item.x, _labelFor(item.x), _parseDatatypePropertyValue(item.y).value);
             });
-            if (result.length > 3) {
+            if (result.length === 5) {
               individual.comments = result[1];
-              result[3].forEach((item) => {
-                individual.addObjectProperty(item.x, _labelFor(item.x), item.y);
-              });
               result[3].forEach((item) => {
                 individual.addObjectProperty(item.x, _labelFor(item.x), item.y);
               });
@@ -527,6 +542,7 @@
                 individual.addReverseObjectProperty(item.x, _labelFor(item.x), item.y);
               });
             }
+
             resolve(individual);
           }
         }).catch((err) => {
@@ -635,17 +651,26 @@
         });
       });
     };
-    const _removeIndividual = (individualIri) => {
+    const _removeIndividual = (individual) => {
+      if (angular.isUndefined(individual)) {
+        return Promise.reject(new Error('Individual must not be null.'));
+      }
+      if (typeof individual === OwlIndividual) {
+        return Promise.reject(new Error('Must be of type OwlIndividual but was type of: '+typeof individual));
+      }
+      if (angular.isUndefined(individual.iri)) {
+        return Promise.reject(new Error('Individual iri must not be null.'));
+      }
       return new Promise((resolve, reject) => {
         db.get({
-          subject: individualIri
+          subject: individual.iri
         }, function(err, results) {
           if (err) {
             reject(err);
           } else {
             let triples = results;
             db.get({
-              object: individualIri
+              object: individual.iri
             }, function(err2, results2) {
               if (err2) {
                 reject(err2);
@@ -665,6 +690,8 @@
       });
     };
 
+
+
     const _insertIndividual = (individual) => {
       if (angular.isUndefined(individual)) {
         return Promise.reject(new Error('Individual must not be null.'));
@@ -679,14 +706,62 @@
           if (exists === true) {
             reject(new Error(`Iri: ${individual.iri} already exists!`));
           } else {
-            db.put(individual.toSaveTriples(), function(err) {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
+            console.log("insert ", individual);
+            const triples = [{
+              subject: individual.iri,
+              predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+              object: 'http://www.w3.org/2002/07/owl#NamedIndividual'
+            }, {
+              subject: individual.iri,
+              predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+              object: individual.classIri
+            }];
+            //comments
+            angular.forEach(individual.comments, (comment) => {
+              triples.push({
+                subject: individual.iri,
+                predicate: 'http://www.w3.org/2000/01/rdf-schema#comment',
+                object: comment
+              });
             });
+            const promises = [];
+            promises.push(new Promise((resolve2, reject2) => {
+              db.put(triples, function (err2) {
+                if (err2) {
+                  reject2(err2);
+                } else {
+                  resolve2([]);
+                }});
+            }));
+            angular.forEach(individual.objectProperties, (props, propIri) => {
+              angular.forEach(props, (propValue) => {
+                promises.push(Promise.all([
+                  _fetchObjectProperty(propIri),
+                  _fetchIndividual(propValue.target, false)
+                ]));
+              });
+            });
+            angular.forEach(individual.datatypeProperties, (props, propIri) => {
+              angular.forEach(props, (propValue) => {
+                promises.push(Promise.all([
+                  _fetchDatatypeProperty(propIri),
+                  Promise.resolve(propValue.target)
+                ]));
+              });
+            });
+            return Promise.all(promises);
           }
+          return Promise.resolve([undefined, [], []]);
+        }).then((result) => {
+          const promises = [];
+          angular.forEach(result, (arr, i) => {
+            if (arr.length > 1) {
+              promises.push(_addOrRemoveIndividualProperty(individual, arr[0], arr[1], 'add'));
+            }
+          });
+          return Promise.all(promises);
+        }).then(() => {
+          resolve();
         }).catch((err) => {
           reject(err);
         });
@@ -793,7 +868,7 @@
       });
     };
 
-    const _removeAllIndividualProperties = (subject, property) => {
+    const _removeIndividualProperties = (subject, property) => {
       if (angular.isUndefined(subject)) {
         return Promise.reject(new Error('Subject must not be undefined.'));
       }
@@ -864,6 +939,7 @@
         triple.object = object.iri;
       }
       if (property instanceof OwlDatatypeProperty) {
+        // todo: change
         triple.object = `"${object}"`;
       }
       return new Promise((resolve, reject) => {
@@ -876,12 +952,13 @@
         });
       });
     };
+
     return {
       initialize: function() {
         db = LevelGraphDBService.initialize('ontology');
 
         return Promise.all([
-         _fetchOntologyIri()
+          _fetchOntologyIri()
         ]);
       },
       isInitialized: () => {
@@ -935,11 +1012,11 @@
       removeIndividualProperty: (subject, property, object) => {
         return _addOrRemoveIndividualProperty(subject, property, object, 'remove');
       },
-      removeAllIndividualProperties: (subject, property) => {
-        return _removeAllIndividualProperties(subject, property);
+      removeIndividualProperties: (subject, property) => {
+        return _removeIndividualProperties(subject, property);
       },
-      removeIndividual: (individualIri) => {
-        return _removeIndividual(individualIri);
+      removeIndividual: (individual) => {
+        return _removeIndividual(individual);
       },
       ontologyIri: function() {
         return angular.copy(_iriForPrefix('ontology'));
@@ -950,10 +1027,7 @@
       fetchEntity: (iri, complete) => {
         return _fetchEntity(iri, complete);
       },
-      test: () => {
-        return _fetchForIndividual("http://www.AMSL/GDK/ontologie#KFZ_gestohlen_001", `${_iriForPrefix('owl')}DatatypeProperty`);
-      //  return _fetchClass("http://www.AMSL/GDK/ontologie#Wirtschaftliche_Konsequenzen", true);
-      },
+
       clear: _deleteAll,
       import: _importTTL,
       export: _exportTTL

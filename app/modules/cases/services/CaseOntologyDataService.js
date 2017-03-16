@@ -26,6 +26,7 @@
     const _createCase = (identifier) => {
       const c = new Case(identifier, sysCfg.user, new Date());
       c.name = identifier;
+      c.description = [];
       return OntologyDataService.insertIndividual(_convertToIndividual(c));
     };
 
@@ -290,6 +291,7 @@
       if ((type !== 'add') && (type !== 'remove')) {
         return Promise.reject(new Error('Type must be \'add\' or \'remove\'!'));
       }
+
       return new Promise((resolve, reject) => {
         let subjectIndividual = {};
         let objectIndividual = {};
@@ -387,23 +389,31 @@
       }
       return new Promise((resolve, reject) => {
         const individual = _convertToIndividual(case_);
-        let nameProperty;
-        const promises2= [];
+        let nameProperty = undefined;
+        const promises= [];
         angular.forEach(datatypeProperties, (prop) => {
           if (prop.label === caseNamePropertyName) {
             nameProperty = prop;
           }
         });
-        OntologyDataService.removeAllIndividualProperties(individual, nameProperty).then(() => {
-          angular.forEach(individual.datatypeProperties[nameProperty.iri], (prop) => {
-            promises2.push(OntologyDataService.addIndividualProperty(individual, nameProperty, prop.target));
-          });
-          return Promise.all(promises2);
+        OntologyDataService.removeIndividual(individual).then(() => {
+
+          return OntologyDataService.insertIndividual(individual);
         }).then(() => {
           resolve();
         }).catch((err) => {
           reject(err);
         });
+       /* OntologyDataService.removeIndividualProperties(individual, nameProperty).then(() => {
+          angular.forEach(individual.datatypeProperties[nameProperty.iri], (prop) => {
+            promises.push(OntologyDataService.addIndividualProperty(individual, nameProperty, prop.target));
+          });
+          return Promise.all(promises);
+        }).then(() => {
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });*/
       });
     };
     const _removeIndividual = (individual, case_) => {
@@ -432,8 +442,7 @@
         });
 
         //TODO: if individual is a member of several cases, it shouldn't be deleted completely
-
-        OntologyDataService.removeIndividual(individual.iri).then(() => {
+        OntologyDataService.removeIndividual(individual).then(() => {
           resolve();
         }).catch((err) => {
           reject(err);
