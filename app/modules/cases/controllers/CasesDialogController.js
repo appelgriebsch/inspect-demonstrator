@@ -21,16 +21,11 @@
       valueRelations: [],
     };
 
-    $scope.delete = function() {
-      $mdDialog.hide({individual: $scope.data.individual, toBeDeleted: true});
-    };
     $scope.close = () => {
       $mdDialog.cancel();
     };
 
-    $scope.rename = () => {
-      $mdDialog.hide({individual: $scope.data.individual, toBeRenamed: true, newName: $scope.data.individual.label});
-    };
+
     $scope.removeObjectRelation = (index) => {
       if ((index > -1 ) && (index < $scope.data.objectRelations.length)) {
         $mdDialog.hide({individualIri: $scope.data.individual.iri, removeRelation: true, relation: $scope.data.objectRelations[index]});
@@ -70,7 +65,6 @@
         $mdDialog.hide({individualIri: $scope.data.individual.iri, addRelation: true, relation: relation});
       }
     };
-
 
 
     const _createValueRelation = (propertyIri, value)=>{
@@ -117,6 +111,7 @@
             $scope.data.individual = individual;
           }
         });
+        console.log("individual", nodeId, $scope.data.individual);
         angular.forEach($scope.data.individual.objectProperties, (array, key) => {
           angular.forEach(array, (item) => {
             const relation = _createObjectRelation(key, item.target);
