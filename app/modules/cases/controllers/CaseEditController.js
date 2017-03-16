@@ -75,16 +75,6 @@
         windowClass: 'large-Modal',
         locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: CaseOntologyDataService.getDatatypeProperties(), instances: angular.copy($scope.data['case'].individuals)}
       }).then(function(result) {
-        if (result.toBeRenamed === true) {
-          $scope.setBusy('Renaming node...');
-          const oldIri = result.individual.iri;
-          _renameNode(oldIri, result.newName).then(() => {
-            $scope.setReady(true);
-          }).catch((err) => {
-            $scope.setError('EditAction', 'mode edit', err);
-            $scope.setReady(true);
-          });
-        }
         if (result.addRelation === true) {
           $scope.setBusy('Adding relation...');
           if (result.relation.type === 'object') {
@@ -167,7 +157,9 @@
 
     const _addValueRelation = (individualIri, relation) => {
       return new Promise((resolve, reject) => {
-        CaseOntologyDataService.addDatatypeProperty($scope.data['case'], individualIri, relation.propIri, relation.targetValue).then(()=> {
+        //TODO: add type if applicable
+        const type = undefined;
+        CaseOntologyDataService.addDatatypeProperty($scope.data['case'], individualIri, relation.propIri, relation.targetValue, type).then(()=> {
           const id = uuid.v4();
           this.data.nodes.add({id: id, label: relation.targetValue, title: relation.targetValue, group: 'dataNode'});
           this.data.edges.add({from: individualIri, to: id, label: relation.propLabel, title: relation.propLabel});
@@ -751,8 +743,13 @@
       });
     };
 
-    $scope.renameNode = function(event) {
-      // Appending dialog to document.body to cover sidenav in docs app
+    $scope.editEdges = () => {
+      _showNodeDialog($scope.selectedKnotenNameFull );
+    };
+
+
+
+    $scope.renameNode = (event) => {
       const confirm = $mdDialog.prompt()
         .title('Rename Node')
         .placeholder('Node name')
@@ -763,9 +760,21 @@
         .cancel('Cancel');
 
       $mdDialog.show(confirm).then(function(result) {
-        $scope.status = 'You decided to name your dog ' + result + '.';
-      }, function() {
-        $scope.status = 'You didn\'t name your dog.';
+        console.log(result);
+        const individuals = $scope.data['case'].individuals.filter((i) => {
+          if (i.iri === $scope.selectedKnotenNameFull) {
+            return true;
+          }
+        });
+        if (individuals.length > 0) {
+
+          _renameNode(individuals[0].iri, result).then(() => {
+            $scope.setReady(true);
+          }).catch((err) => {
+            $scope.setError('EditAction', 'mode edit', err);
+            $scope.setReady(true);
+          });
+        }
       });
     };
 

@@ -104,47 +104,6 @@
         this.saved = false;
       }
     }
-
-    toSaveTriples() {
-      const triples = [];
-      const iri = this.iri;
-
-      const toPropTriples = function(properties) {
-        angular.forEach(properties, (targets, key) => {
-          angular.forEach(targets, (prop) => {
-            triples.push({
-              subject: iri,
-              predicate: key,
-              object: prop.target
-            });
-          });
-        });
-      };
-      // type definition
-      triples.push({
-        subject: this.iri,
-        predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-        object: 'http://www.w3.org/2002/07/owl#NamedIndividual'
-      });
-      triples.push({
-        subject: this.iri,
-        predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-        object: this.classIri
-      });
-      //comments
-      angular.forEach(this.comments, (comment) => {
-        triples.push({
-          subject: this.iri,
-          predicate: 'http://www.w3.org/2000/01/rdf-schema#comment',
-          object: comment
-        });
-      });
-
-      toPropTriples(this.datatypeProperties);
-      toPropTriples(this.objectProperties);
-      return triples;
-    }
-
   }
   module.exports = OwlIndividual;
 
