@@ -1,6 +1,6 @@
 /*ul {
   list-style: square url("sqpurple.gif");
-}*/
+  }*/
 
 .cases-tree-collapse-link {
   font-size: 20px;
@@ -23,4 +23,157 @@ md-dialog {
   position: absolute;
   top:0; bottom: 0; left: 0; right: 0;
   margin: auto
+}
+
+.opt-graph-title {
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  font-weight: 400;
+  text-transform: uppercase;
+  text-align: center;
+  padding:2%;
+  width: 100%;
+}
+
+.h3_title{
+  text-transform: uppercase;
+  text-align:center;
+  letter-spacing: 5px;
+}
+
+.h3_title_entities{
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 5px;
+  margin-left: 40px;
+}
+
+.opt-graph-input{
+  width: 100%;
+  padding-right: 8%;
+  float: left;
+}
+
+.graphCol{
+  list-style-type: none;
+  width: 100%;
+  position: fixed;
+  height: 90%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.instanzCol{
+  width: 20%;
+  height: 80%;
+  float:left;
+  padding: 30px 14px 25px;
+  border-right: 1px solid #617d8b;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.attributsCol {
+  width: 20%;
+  height: 80%;
+  float: left;
+  padding: 33px 44px;
+  border-right: 1px solid #617d8b;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.kantenCol{
+  width: 20%;
+  height: 80%;
+  float:left;
+  padding: 30px 14px 25px;
+  border-right: 1px solid #617d8b;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.physikCol{
+  width: 20%;
+  height: 80%;
+  float:left;
+  padding: 30px 14px 25px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.switchPos{
+  position: absolute;
+  bottom: 0;
+}
+
+.cbTextCenter{
+  text-align: center;
+}
+
+.infoIcon{
+  vertical-align: middle;
+}
+
+.infoIcon:hover{
+  color: #ff0000;
+}
+
+.ttFont{
+  font-size: 14px;
+}
+
+.menuUL{
+  list-style-type: none;
+  margin: 1;
+  padding: 0;
+  width: 100%;
+}
+
+.menuLI {
+  float:left;
+  cursor: pointer;
+}
+
+.menuLI a {
+  font-size:12px;
+  color:#686868;
+  letter-spacing: 1px;
+  padding:10px;
+  height:30px;
+  text-transform:uppercase;
+
+
+  -webkit-transition:all 0.2s linear;
+  -moz-transition:all 0.2s linear;
+  -o-transition:all 0.2s linear;
+  transition:all 0.2s linear;
+}
+
+.menuLI a.active {
+  border-bottom: 1px solid #efefef;
+}
+
+.menuLI a:hover:not(.active) {
+  background: #efefef;
+}
+
+.selectedKnotenNameTitle{
+  margin-left: 10%;
+}
+
+.md-raised-cases{
+  width: 100%;
+  float: none;
+  text-align: left;
+}
+
+.nextLevelBtn{
+  float: left;
+  width: 40%;
+}
+
+.nextLevelSlider{
+  float: left;
+  width: 20%;
 }

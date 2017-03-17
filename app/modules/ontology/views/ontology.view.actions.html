@@ -1,9 +1,0 @@
-<div layout-fill layout="column" layout-align="center center">
-  <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('add-data', $event)">
-    <md-icon>add</md-icon>
-  </md-button>
-</div>
-<div layout-fill layout="column" layout-align="center center">
-  <md-switch class="md-primary" ng-model="shell.activeMode" ng-change="shell.sendEvent('mode-changed', shell.activeMode)"></md-switch>
-  <span>{{ shell.activeModeLabel }}</span>
-</div>

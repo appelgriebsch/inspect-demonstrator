@@ -5,12 +5,13 @@
   function OntologyModule(config) {
 
     var moduleConfig = config;
-
+    const stateView = `${moduleConfig.state}.view`;
+    const stateViewSideNav = `sidenav@${stateView}`;
     angular.module('electron-app')
       .config(function($stateProvider, $urlRouterProvider) {
 
         $stateProvider
-          .state(`${moduleConfig.state}`, {
+          .state(moduleConfig.state, {
             url: '/ontology',
             views: {
               'module': {
@@ -21,42 +22,31 @@
               }
             }
           })
-          .state(`${moduleConfig.state}.view`, {
+          .state(stateView, {
             url: '/view',
             views: {
               'content': {
                 templateUrl: `${moduleConfig.path}/views/ontology.view.html`,
                 controller: 'OntologyViewController as ctl'
               },
-              'actions@app': {
-                templateUrl: `${moduleConfig.path}/views/ontology.view.actions.html`
+              //TODO: change!
+              'sidenav@app.ontology.view': {
+                templateUrl: `${moduleConfig.path}/views/ontology.view.sidenav.html`,
+                controller: 'OntologyViewSideNavController as ctl'
               }
             }
-          })
-          .state(`${moduleConfig.state}.form`, {
-            url: '/form',
-            views: {
-              'content': {
-                templateUrl: `${moduleConfig.path}/views/ontology.form.html`,
-                controller: 'OntologyFormController as ctl'
-              },
-              'actions@app': {
-                templateUrl: `${moduleConfig.path}/views/ontology.form.actions.html`
-              }
-            }
-          })
+          });
       });
 
-    var OntologyDataService = require('./services/OntologyDataService');
 
-    var OntologyViewController = require('./controllers/OntologyViewController');
-    var OntologyFormController = require('./controllers/OntologyFormController');
 
-    angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
+    const OntologyViewController = require('./controllers/OntologyViewController');
+    const OntologyViewSideNavController = require('./controllers/OntologyViewSideNavController');
 
-    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$location', '$mdSidenav', 'OntologyDataService', OntologyViewController]);
-    angular.module('electron-app').controller('OntologyFormController', ['$scope', '$state', '$q',  '$location', 'OntologyDataService', OntologyFormController]);
 
+
+    angular.module('electron-app').controller('OntologyViewSideNavController', ['$scope', '$state', '$q','$mdSidenav', OntologyViewSideNavController]);
+    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$location', '$mdSidenav', 'OntologyDataService', 'CaseOntologyDataService', OntologyViewController]);
   }
 
   module.exports = OntologyModule;

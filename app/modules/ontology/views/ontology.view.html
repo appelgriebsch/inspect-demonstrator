@@ -1,6 +1,5 @@
 <div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
-  <md-autocomplete class="sticky-top transparent-blur"
-                   ng-hide="shell.activeMode"
+ <!--<md-autocomplete class="sticky-top transparent-blur"
                    md-input-minlength="2"
                    md-input-maxlength="18"
                    md-selected-item="ctl.query"
@@ -16,10 +15,9 @@
   </md-autocomplete>
   <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed' ng-click="ctl.toggleSidebar('sidebar-left')">
     <md-icon>chevron_right</md-icon>
-  </md-button>
-  <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed ontology-sidebar-right-btn-closed' ng-click="ctl.toggleSidebar('sidebar-right')">
-    <md-icon>chevron_left</md-icon>
-  </md-button>
+  </md-button>-->
+  <div ui-view="sidenav"></div>
+
 
   <md-sidenav class="md-sidenav-left md-whiteframe-8dp" md-component-id="sidebar-left" layout="column">
     <div layout-align="space-between start" layout="row" >
@@ -54,34 +52,5 @@
     </md-input-container>
 
   </md-sidenav>
-
   <div id="ontology-graph" flex layout-fill></div>
-
-  <md-sidenav class="md-sidenav-right md-whiteframe-8dp" md-component-id="sidebar-right" layout="column">
-    <div layout-align="space-between start" layout="row" >
-
-      <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-right-btn-opened' ng-click="ctl.toggleSidebar('sidebar-right')" >
-        <md-icon>chevron_right</md-icon>
-      </md-button>
-      <h3>Nodes</h3>
-    </div>
-    <md-input-container class="sidebar-input">
-      <label>Selected Element</label>
-      <input ng-model="ctl.selectedElement.label" readonly></input>
-    </md-input-container>
-    <md-input-container class="sidebar-input">
-      <label>Description</label>
-      <textarea ng-model="ctl.selectedElement.title" readonly></textarea>
-    </md-input-container>
-    <md-list class="md-dense" flex>
-      <md-subheader class="md-no-sticky">Visible instances</md-subheader>
-      <md-list-item  ng-repeat="inst in ctl.visibleInstances">
-        <div class="md-list-item-text" layout="column">
-          {{inst}}
-        </div>
-      </md-list-item>
-    </md-list>
-  </md-sidenav>
-
-
 </div>
