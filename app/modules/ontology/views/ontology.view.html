@@ -1,6 +1,5 @@
 <div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
-  <md-autocomplete class="sticky-top transparent-blur"
-                   ng-hide="shell.activeMode"
+ <!--<md-autocomplete class="sticky-top transparent-blur"
                    md-input-minlength="2"
                    md-input-maxlength="18"
                    md-selected-item="ctl.query"
@@ -16,10 +15,9 @@
   </md-autocomplete>
   <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed' ng-click="ctl.toggleSidebar('sidebar-left')">
     <md-icon>chevron_right</md-icon>
-  </md-button>
-  <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed ontology-sidebar-right-btn-closed' ng-click="ctl.toggleSidebar('sidebar-right')">
-    <md-icon>chevron_left</md-icon>
-  </md-button>
+  </md-button>-->
+  <div ui-view="sidenav"></div>
+
 
   <md-sidenav class="md-sidenav-left md-whiteframe-8dp" md-component-id="sidebar-left" layout="column">
     <div layout-align="space-between start" layout="row" >
@@ -54,102 +52,5 @@
     </md-input-container>
 
   </md-sidenav>
-
   <div id="ontology-graph" flex layout-fill></div>
-
-  <!--<md-sidenav class="md-sidenav-right md-whiteframe-8dp" md-component-id="sidebar-right" layout="column">
-    <div layout-align="space-between start" layout="row" >
-
-      <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-right-btn-opened' ng-click="ctl.toggleSidebar('sidebar-right')" >
-        <md-icon>chevron_right</md-icon>
-      </md-button>
-      <h3>Nodes</h3>
-    </div>
-    <md-input-container class="sidebar-input">
-      <label>Selected Element</label>
-      <input ng-model="ctl.selectedElement.label" readonly></input>
-    </md-input-container>
-    <md-input-container class="sidebar-input">
-      <label>Description</label>
-      <textarea ng-model="ctl.selectedElement.title" readonly></textarea>
-    </md-input-container>
-    <md-list class="md-dense" flex>
-      <md-subheader class="md-no-sticky">Visible instances</md-subheader>
-      <md-list-item  ng-repeat="inst in ctl.visibleInstances">
-        <div class="md-list-item-text" layout="column">
-          {{inst}}
-        </div>
-      </md-list-item>
-    </md-list>
-  </md-sidenav>-->
-  <md-sidenav class="md-sidenav-right md-whiteframe-8dp" md-component-id="sidebar-right" layout="column" md-disable-backdrop md-whiteframe="4">
-    <h3 class="h3_title_entities">Focus</h3>
-    <hr style="width: 100%">
-    <ul>
-      <li>
-        <p><b>Selected node:</b> {{data.selectedNode.label}}</p>
-      </li>
-      <li>
-        <p><b>Focused node:</b> {{data.focusedNode.label}}</p>
-      </li>
-      <li>
-
-        <md-button class="md-raised-cases" ng-click="setFocus(this)" ng-disabled="isEnabled('setFocus')">
-          <i class="material-icons infoIcon">add_location</i>
-          Set Focus
-        </md-button>
-
-        <div>
-          <div class="nextLevelBtn">
-            <md-button class="md-raised-cases" ng-click="nextLevel(this)" ng-disabled="isEnabled('nextLevel')">
-              <i class="material-icons infoIcon">directions</i>
-              Next level
-            </md-button>
-          </div>
-          <div class="nextLevelSlider">
-            <md-slider-container class="opt-graph-input" ng-disabled="isEnabled('nextLevel')">
-              <md-icon md-svg-icon="device:brightness-low"></md-icon>
-              <md-slider min="1" max="3" aria-label="Größe" flex md-discrete ng-model="data.level"></md-slider>
-            </md-slider-container>
-          </div>
-        </div>
-
-        <md-button class="md-raised-cases {{gradBtnHide}}" ng-click="clearFocus()" ng-disabled="isEnabled('clearFocus')">
-          <i class="material-icons infoIcon">cancel</i>
-          Clear focus
-        </md-button>
-
-        <md-switch ng-model="physicsEnabled" layout-align="left center" aria-label="Switch 2" class="md-warn {{gradBtnHide}}" type="checkbox" ng-change="physicsOnOff()">
-          <h5>Physik</h5>
-        </md-switch>
-
-        <md-button class="md-raised-cases"  ng-click="fadeOut(this)" ng-disabled="isEnabled('fadeOut')">
-          <i class="material-icons infoIcon">visibility_off</i>
-          Fade out
-        </md-button>
-
-        <hr style="text-align: left; width: 25%">
-
-        <md-button class="md-raised-cases" ng-click="resetGraph()" ng-disabled="isEnabled('resetGraph')">
-          <i class="material-icons infoIcon">replay</i>
-          Reset Graph
-        </md-button>
-      </li>
-    </ul>
-    <h3 class="h3_title_entities">Case</h3>
-    <hr style="width: 100%">
-    <ul>
-      <li ng-repeat="case in ctl.data.cases">
-        <label>
-          <input type="checkbox" ng-checked="isCaseChecked(case)" ng-click="toggleCases(case)"/>
-          {{case.identifier}}
-        </label>
-        <md-input-container class="opt-graph-input">
-          <input required md-no-asterisk  aria-label="Farbe" type="color" ng-model="ctl.graphOptions.groups[case.identifier].color.background" ng-change="colorChange(case)">
-        </md-input-container>
-      </li>
-    </ul>
-  </md-sidenav>
-
-
 </div>

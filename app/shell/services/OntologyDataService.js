@@ -613,7 +613,9 @@
             default: return Promise.reject(new Error(`Not found: ${rdfsType}`));
           }
           angular.forEach(iris, (iri) => {
-            promises.push(func(iri, complete));
+         //   if (!iri.startsWith()) {
+                promises.push(func(iri, complete));
+           // }
           });
           return Promise.all(promises);
         }).then((entities) => {
@@ -644,7 +646,9 @@
             reject(err);
           } else {
             angular.forEach(result, (value) => {
-              iris.push(value.subject);
+             if (value.subject.startsWith(_iriForPrefix('ontology'))) {
+                iris.push(value.subject);
+              }
             });
             resolve(iris);
           }
@@ -689,9 +693,6 @@
         });
       });
     };
-
-
-
     const _insertIndividual = (individual) => {
       if (angular.isUndefined(individual)) {
         return Promise.reject(new Error('Individual must not be null.'));
@@ -706,7 +707,6 @@
           if (exists === true) {
             reject(new Error(`Iri: ${individual.iri} already exists!`));
           } else {
-            console.log("insert ", individual);
             const triples = [{
               subject: individual.iri,
               predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
