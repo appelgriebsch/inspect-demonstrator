@@ -2,7 +2,7 @@
   "name": "inspect.demonstrator",
   "productName": "inspect.demonstrator",
   "description": "A demonstrator for the funded INSPECT project",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "author": "Wincor Nixdorf International GmbH",
   "main": "index.js",
   "scripts": {
