@@ -10,11 +10,9 @@
     })
     .config(function($stateProvider, $urlRouterProvider) {
 
-      var appcfg = require('./appcfg');
-      var defaultRoute = appcfg.modules[appcfg.defaultModule].url;
-
+      const appcfg = require('./appcfg');
       // for all unmatched entries
-      $urlRouterProvider.otherwise(defaultRoute);
+      $urlRouterProvider.otherwise('/otherwise');
 
       // separate states
       $stateProvider
@@ -22,7 +20,11 @@
           url: '/app',
           abstract: true,
           templateUrl: './shell/views/shell.html',
-          controller: 'ShellController as shell'
+          controller: 'ShellController as shell',
+        })
+        .state('otherwise', {
+          url: "/otherwise",
+          redirectTo: appcfg.modules[appcfg.defaultModule].state
         });
     })
     .run(['$rootScope', '$state', '$stateParams',
@@ -33,6 +35,16 @@
         // to active whenever 'contacts.list' or one of its decendents is active.
         $rootScope.$state = $state;
         $rootScope.$stateParams = $stateParams;
+
+        // making redirectTo work with angular-ui-router 0.4.x
+        $rootScope.$on('$stateChangeStart', function (event, toState) {
+          const redirect = toState.redirectTo;
+          if (redirect) {
+            event.preventDefault();
+            $state.go(redirect);
+          }
+        });
+
       }
     ]);
 
@@ -43,6 +55,8 @@
   const LevelGraphService = require('./shell/services/LevelGraphService');
 
   const OntologyDataService = require('./shell/services/OntologyDataService');
+
+  const MessageService = require('./shell/services/MessageService');
 
   const ModuleProvider = require('./scripts/ModuleProvider');
   const ShellController = require('./shell/controllers/ShellController');
@@ -57,8 +71,10 @@
   angular.module('electron-app').service('ActivityService', ['ActivityDataService', ActivityService]);
 
   angular.module('electron-app').service('LevelGraphService', [LevelGraphService]);
+  angular.module('electron-app').service('MessageService', ['$rootScope', MessageService]);
   angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
 
-  angular.module('electron-app').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', 'modules', 'ActivityService', ShellController]);
+  angular.module('electron-app').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', 'modules', 'ActivityService', 'MessageService', ShellController]);
+
 
 })(global.angular);

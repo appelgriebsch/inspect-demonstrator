@@ -1,56 +1,98 @@
-<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
- <!--<md-autocomplete class="sticky-top transparent-blur"
-                   md-input-minlength="2"
-                   md-input-maxlength="18"
-                   md-selected-item="ctl.query"
-                   md-search-text="ctl.searchText"
-                   md-items="item in ctl.findTerm(ctl.searchText)"
-                   md-item-text="item.label"
-                   md-selected-item-change="ctl.search()"
-                   md-floating-label="Search Term">
+<div flex layout-fill layout="column" ng-cloak>
+  <md-toolbar class="transparent-blur sticky-top">
+    <div class="md-toolbar-tools" >
+      <md-button class="md-icon-button md-primary" ng-click="$ctrl.toggleSidebar('ontology-sidenav-left')">
+        <md-icon>chevron_right</md-icon>
+      </md-button>
+      <ontology-autocomplete items="$ctrl.items" on-item-selected="$ctrl.itemSelected(item)" layout-fill></ontology-autocomplete>
 
-    <md-item-template>
-      <span md-highlight-text="ctrl.searchText">{{ item.label }}</span>
-    </md-item-template>
-  </md-autocomplete>
-  <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed' ng-click="ctl.toggleSidebar('sidebar-left')">
-    <md-icon>chevron_right</md-icon>
-  </md-button>-->
-  <div ui-view="sidenav"></div>
-
-
-  <md-sidenav class="md-sidenav-left md-whiteframe-8dp" md-component-id="sidebar-left" layout="column">
-    <div layout-align="space-between start" layout="row" >
-      <h3>{{ ctl.ontology.label }}</h3>
-      <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-left-btn-opened' ng-click="ctl.toggleSidebar('sidebar-left')">
+      <md-button class="md-icon-button md-primary" ng-click="$ctrl.toggleSidebar('ontology-sidenav-right')">
         <md-icon>chevron_left</md-icon>
       </md-button>
     </div>
-    <md-input-container class="sidebar-input">
-      <label>Title</label>
-      <textarea ng-model="ctl.ontology.title" readonly></textarea>
-    </md-input-container>
-    <md-input-container class="sidebar-input">
-      <label>Description</label>
-      <textarea ng-model="ctl.ontology.comment" readonly></textarea>
-    </md-input-container>
-    <md-input-container class="sidebar-input">
-      <label>Author</label>
-      <input ng-model="ctl.ontology.creator" readonly></input>
-    </md-input-container>
-    <md-input-container class="sidebar-input">
-      <label>Version</label>
-      <input ng-model="ctl.ontology.version" readonly></input>
-    </md-input-container>
-    <md-input-container class="sidebar-input">
-      <label>Selected Element</label>
-      <input ng-model="ctl.selectedElement.label" readonly></input>
-    </md-input-container>
-    <md-input-container class="sidebar-input">
-      <label>Description</label>
-      <textarea ng-model="selectedElement.title" readonly></textarea>
-    </md-input-container>
+  </md-toolbar>
 
-  </md-sidenav>
+
+
+  <!--<md-autocomplete class="sticky-top transparent-blur"
+                    md-input-minlength="2"
+                    md-input-maxlength="18"
+                    md-selected-item="vm.query"
+                    md-search-text="vm.searchText"
+                    md-items="item in vm.findTerm(vm.searchText)"
+                    md-item-text="item.label"
+                    md-selected-item-change="vm.search()"
+                    md-floating-label="Search Term">
+
+     <md-item-template>
+       <span md-highlight-text="ctrl.searchText">{{ item.label }}</span>
+     </md-item-template>
+   </md-autocomplete>
+   <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-btn-closed' ng-click="vm.toggleSidebar('sidebar-left')">
+     <md-icon>chevron_right</md-icon>
+   </md-button>-->
+
+  <!-- -->
+  <!--  <div ui-view="left-sidenav"></div>-->
+
+
+  <!--  <md-sidenav class="md-sidenav-left md-whiteframe-8dp" md-component-id="sidebar-left" layout="column">
+      <div layout-align="space-between start" layout="row" >
+        <h3>{{ vm.ontology.label }}</h3>
+        <md-button class='md-icon-button ontology-sidebar-btn ontology-sidebar-left-btn-opened' ng-click="vm.toggleSidebar('sidebar-left')">
+          <md-icon>chevron_left</md-icon>
+        </md-button>
+      </div>
+      <md-input-container class="sidebar-input">
+        <label>Title</label>
+        <textarea ng-model="vm.ontology.title" readonly></textarea>
+      </md-input-container>
+      <md-input-container class="sidebar-input">
+        <label>Description</label>
+        <textarea ng-model="vm.ontology.comment" readonly></textarea>
+      </md-input-container>
+      <md-input-container class="sidebar-input">
+        <label>Author</label>
+        <input ng-model="vm.ontology.creator" readonly></input>
+      </md-input-container>
+      <md-input-container class="sidebar-input">
+        <label>Version</label>
+        <input ng-model="vm.ontology.version" readonly></input>
+      </md-input-container>
+      <md-input-container class="sidebar-input">
+        <label>Selected Element</label>
+        <input ng-model="vm.selectedElement.label" readonly></input>
+      </md-input-container>
+      <md-input-container class="sidebar-input">
+        <label>Description</label>
+        <textarea ng-model="selectedElement.title" readonly></textarea>
+      </md-input-container>
+
+    </md-sidenav>-->
   <div id="ontology-graph" flex layout-fill></div>
+
+  <ontology-sidenav alignment="'left'" component-id="'ontology-sidenav-left'" on-close="$ctrl.toggleSidebar(componentId)">
+
+    <header>Options2</header>
+    <content>My content2</content>
+  </ontology-sidenav>
+  <ontology-sidenav alignment="'right'" component-id="'ontology-sidenav-right'" on-close="$ctrl.toggleSidebar(componentId)">
+    <header>Options</header>
+    <content>
+      <ontology-options selected-nodes="$ctrl.selectedNodes"
+                        filters="$ctrl.filters"
+                        palette="$ctrl.palette"
+                        hidden-nodes-stack-size="$ctrl.hiddenNodesStackSize"
+                        on-set-focus="$ctrl.setFocus()"
+                        on-reset="$ctrl.reset()"
+                        on-hide-nodes="$ctrl.hideNodes()"
+                        on-show-nodes="$ctrl.showNodes()"
+                        on-zoom-to="$ctrl.zoomTo(nodeId)"
+                        on-show-neighbours="$ctrl.showNeighbours(depth)"
+                        on-filter-changed="$ctrl.filterChanged(id, color, enabled)">
+
+      </ontology-options></content>
+
+  </ontology-sidenav>
+
 </div>

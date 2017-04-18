@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function ShellController($scope, $log, $q, $mdSidenav, modulesProvider, ActivityService) {
+  function ShellController($scope, $log, $q, $mdSidenav, modulesProvider, ActivityService, MessageService) {
 
     var app = require('electron').remote.app;
     var appCfg = app.sysConfig();
@@ -36,6 +36,17 @@
         this.statusMessage = msg;
         this.isDirty = false;
       });
+    };
+    const _setBusy = (event, data) => {
+      $scope.setBusy(data.msg);
+    };
+
+    const _setReady = (event, data) => {
+      $scope.setReady(data.dirty);
+    };
+
+    const _setError = (event, data) => {
+      $scope.setError(data.template, data.icon, data.error);
     };
 
     $scope.setReady = (dirty) => {
@@ -89,6 +100,9 @@
 
     this.initialize = function() {
       this.modules = modulesProvider.modules;
+      MessageService.subscribe($scope, 'set-busy-event', _setBusy);
+      MessageService.subscribe($scope, 'set-ready-event', _setReady);
+      MessageService.subscribe($scope, 'set-error-event', _setError);
       return Promise.all([
         ActivityService.initialize(),
         Notification.requestPermission()

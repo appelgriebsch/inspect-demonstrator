@@ -1,4 +1,4 @@
-(function(angular) {
+(function() {
   'use strict';
 
   const OwlEntity = require('./OwlEntity');
@@ -15,4 +15,4 @@
   }
   module.exports = OwlObjectProperty;
 
-})(global.angular);
+})();

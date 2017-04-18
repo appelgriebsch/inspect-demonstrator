@@ -452,7 +452,7 @@
 
     return {
       initialize: ()  => {
-        if (isInitialized) {
+       /* if (isInitialized) {
           return Promise.resolve();
         }
         return new Promise((resolve, reject) => {
@@ -495,7 +495,8 @@
           }).catch((err) => {
             reject(err);
           });
-        });
+        });*/
+       return Promise.resolve();
       },
       createCase: (identifier) => {
         return _createCase(identifier);
@@ -544,11 +545,12 @@
         return _loadCases();
       },
       isCase: (individual) => {
-        if (!OntologyDataService.isIndividual(individual)) {
-          return false;
-        }
-        return individual.classIri === `${OntologyDataService.ontologyIri()}${caseClass}`;
+       // if (!OntologyDataService.isIndividual(individual)) {
+        //  return false;
+       // }
+        return individual.classIris.indexOf(`${OntologyDataService.ontologyIri()}${caseClass}`) > -1;
       },
+
       loadCasesOverview: () => {
         return _loadCasesOverview();
       },

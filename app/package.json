@@ -33,7 +33,7 @@
     "angular-route": "^1.5.0",
     "angular-sanitize": "^1.4.5",
     "angular-timeline": "^1.2.1",
-    "angular-ui-router": "^0.3.0",
+    "angular-ui-router": "^0.4.0",
     "angular-ui-tree": "^2.16.0",
     "animate.css": "^3.4.0",
     "asar": "^0.11.0",
