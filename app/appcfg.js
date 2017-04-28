@@ -54,8 +54,8 @@
                 url: '/app/emv/view',
                 state: 'app.emv',
                 label: 'EMV',
-                tooltip: 'EMV Test String',
-                icon: 'security'
+                tooltip: 'EMV Import',
+                icon: 'nfc'
             }
         }
     };
