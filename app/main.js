@@ -54,9 +54,6 @@
 
   const LevelGraphService = require('./shell/services/LevelGraphService');
 
-  const OntologyDataService = require('./shell/services/OntologyDataService');
-
-  const MessageService = require('./shell/services/MessageService');
 
   const ModuleProvider = require('./scripts/ModuleProvider');
   const ShellController = require('./shell/controllers/ShellController');
@@ -71,10 +68,8 @@
   angular.module('electron-app').service('ActivityService', ['ActivityDataService', ActivityService]);
 
   angular.module('electron-app').service('LevelGraphService', [LevelGraphService]);
-  angular.module('electron-app').service('MessageService', ['$rootScope', MessageService]);
-  angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
 
-  angular.module('electron-app').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', 'modules', 'ActivityService', 'MessageService', ShellController]);
+  angular.module('electron-app').controller('ShellController', ['$scope', '$log', '$q', '$mdSidenav', 'modules', 'ActivityService',  ShellController]);
 
 
 })(global.angular);

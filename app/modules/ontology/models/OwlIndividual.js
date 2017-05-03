@@ -2,7 +2,7 @@
   'use strict';
   const OwlEntity = require('./OwlEntity');
 
-  class OwlIndividual2 extends OwlEntity{
+  class OwlIndividual extends OwlEntity{
     constructor(ontologyIri, classIris, instanceIri) {
       super(ontologyIri, instanceIri);
       if (!classIris) {
@@ -16,7 +16,7 @@
       this.objectProperties = [];
       this.reverseObjectProperties = [];
     }
-    static addProperty(propertyArray, label, propertyIri, target) {
+  /*  static addProperty(propertyArray, label, propertyIri, target) {
       const property = {
         iri:propertyIri,
         label: label,
@@ -43,7 +43,7 @@
       if (!targetInstanceIri) {
         throw Error('Target iri must not be null!');
       }
-      if (OwlIndividual2.addProperty(this.objectProperties, label, propertyIri, targetInstanceIri)) {
+      if (OwlIndividual.addProperty(this.objectProperties, label, propertyIri, targetInstanceIri)) {
         this.saved = false;
       }
     }
@@ -54,7 +54,7 @@
       if (!targetInstanceIri) {
         throw Error('Target iri must not be null!');
       }
-      if (OwlIndividual2.removeProperty(this.objectProperties, propertyIri, targetInstanceIri)) {
+      if (OwlIndividual.removeProperty(this.objectProperties, propertyIri, targetInstanceIri)) {
         this.saved = false;
       }
     }
@@ -65,7 +65,7 @@
       if (!targetInstanceIri) {
         throw Error('Target iri must not be null!');
       }
-      if (OwlIndividual2.addProperty(this.reverseObjectProperties, label, propertyIri, targetInstanceIri)) {
+      if (OwlIndividual.addProperty(this.reverseObjectProperties, label, propertyIri, targetInstanceIri)) {
         this.saved = false;
       }
     }
@@ -76,7 +76,7 @@
       if (!targetInstanceIri) {
         throw Error('Target iri must not be null!');
       }
-      if (OwlIndividual2.removeProperty(this.reverseObjectProperties, propertyIri, targetInstanceIri)) {
+      if (OwlIndividual.removeProperty(this.reverseObjectProperties, propertyIri, targetInstanceIri)) {
         this.saved = false;
       }
     }
@@ -87,7 +87,7 @@
       if (!value) {
         throw Error('Value must not be null!');
       }
-      if (OwlIndividual2.addProperty(this.datatypeProperties, label, propertyIri, value)) {
+      if (OwlIndividual.addProperty(this.datatypeProperties, label, propertyIri, value)) {
         this.saved = false;
       }
     }
@@ -99,11 +99,11 @@
       if (!value) {
         throw Error('Value must not be null!');
       }
-      if (OwlIndividual2.removeProperty(this.datatypeProperties, propertyIri, value)) {
+      if (OwlIndividual.removeProperty(this.datatypeProperties, propertyIri, value)) {
         this.saved = false;
       }
-    }
+    }*/
   }
-  module.exports = OwlIndividual2;
+  module.exports = OwlIndividual;
 
 })();

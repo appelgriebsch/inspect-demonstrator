@@ -2,7 +2,7 @@
   'use strict';
 
   class TagFilter {
-    constructor(priority, tag, name, isVisible, enabled = false) {
+    constructor(priority, tag, name, hasColor, isVisible, enabled = false) {
       if (priority === undefined) {
         throw Error('Priority must not be null!');
       }
@@ -17,7 +17,7 @@
       this.priority = priority;
       this.name = name;
       this.enabled = enabled;
-      this.hasColor = true;
+      this.hasColor = hasColor;
       this.isVisible = isVisible;
     }
 

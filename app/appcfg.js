@@ -30,7 +30,7 @@
         tooltip: 'Browse the Ontology',
         icon: 'blur_on'
       },
-      cases: {
+     /* cases: {
         path: 'modules/cases',
         name: 'CasesModule',
         url: '/app/cases/view',
@@ -38,7 +38,7 @@
         label: 'Cases',
         tooltip: 'Working with Cases',
         icon: 'fingerprint'
-      },
+      },*/
       activities: {
         path: 'modules/activities',
         name: 'ActivityModule',

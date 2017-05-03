@@ -8,6 +8,7 @@
     /** immutable after initialization **/
       // all nodes
     const _nodes = new vis.DataSet();
+    let _nodesArray = [];
     // all edges
     const _edges = new vis.DataSet();
     let _cases = [];
@@ -35,7 +36,7 @@
 
     const _tags = {
       NO_CASE: 'NO_CASE',
-      CONNECTED_TO_INDIVIDUAL: 'CONNECTED_TO_INDIVIDUAL',
+      NOT_CONNECTED_TO_INDIVIDUAL: 'NOT_CONNECTED_TO_INDIVIDUAL',
     };
     const _focusNodes = (nodeIds) => {
       if (nodeIds === undefined || !Array.isArray(nodeIds)) {
@@ -151,143 +152,125 @@
       _viewport.edges.update(result.edges);
       return result;
     };
+
     const _createDatatypeNodes = (individual) => {
-      const nodes = [];
-      const caseLabels = _findCaseLabels(individual.objectProperties, "http://www.AMSL/GDK/ontologie#ist_Bestandteil_von")
-        .concat(_findCaseLabels(individual.reverseObjectProperties, "http://www.AMSL/GDK/ontologie#beinhaltet"));
-      const tags = (caseLabels.length === 0) ? [_nodeTypes.DATA_NODE, _tags.NO_CASE] : [_nodeTypes.DATA_NODE].concat(caseLabels);
-      individual.datatypeProperties.forEach((prop) => {
-        nodes.push({
-          id: `${individual.iri}_${prop.iri}_${prop.target}`,
-          // group: '',
-          title: prop.target,
-          label: prop.target,
-          type: _nodeTypes.DATA_NODE,
-          group: _nodeTypes.DATA_NODE,
-          tags: tags
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.getCaseIdentifiersFor(individual.iri).then((caseIdentifiers) => {
+          const tags = (caseIdentifiers.length === 0) ? [_nodeTypes.DATA_NODE, _tags.NO_CASE] : [_nodeTypes.DATA_NODE].concat(caseIdentifiers);
+          const nodes = individual.datatypeProperties.map((prop) => {
+            return {
+              id: `${individual.iri}_${prop.iri}_${prop.target}`,
+              title: prop.target,
+              label: prop.target,
+              type: _nodeTypes.DATA_NODE,
+              group: _nodeTypes.DATA_NODE,
+              tags: tags
+            };
+          });
+          resolve(nodes);
+        }).catch((err) => {
+          reject(err);
         });
       });
-      return nodes;
     };
     const _createDatatypeEdges = (individual) => {
-      const edges = [];
-      individual.datatypeProperties.forEach((prop) => {
-        edges.push({
-          id: `${individual.iri}_${prop.iri}_${prop.target}`,
-          from: individual.iri,
-          to: `${individual.iri}_${prop.iri}_${prop.target}`,
-          title: prop.label,
-        });
-      });
-      return edges;
+      return Promise.resolve(
+        individual.datatypeProperties.map((prop) => {
+          return {
+            id: `${individual.iri}_${prop.iri}_${prop.target}`,
+            from: individual.iri,
+            to: `${individual.iri}_${prop.iri}_${prop.target}`,
+            title: prop.label,
+          };
+        })
+      );
     };
     const _createInstanceOfEdges = (instance) => {
-      const edges = [];
-      for (const iri of instance.classIris) {
-        const clazz = _nodes.get(iri);
-        edges.push({
-          id: `${instance.iri}_instance_of_${clazz.id}`,
-          from: instance.iri,
-          to: clazz.id,
-          title: 'type of',
-          tags: [_edgeTypes.INSTANCE_OF_EDGE],
-          dashes: true
-        });
-      }
-      return edges;
+      return Promise.resolve(
+        instance.classIris.map((iri) => {
+          const clazz = _nodes.get(iri);
+          return {
+            id: `${instance.iri}_instance_of_${clazz.id}`,
+            from: instance.iri,
+            to: clazz.id,
+            title: 'type of',
+            tags: [_edgeTypes.INSTANCE_OF_EDGE],
+            dashes: true
+          };
+        })
+      );
     };
     const _createSubClassOfEdges = (clazz) => {
-      const edges = [];
-      for (const iri of clazz.parentClassIris) {
-        edges.push({
-          id: `${clazz.iri}_subclass_of_${iri}`,
-          from: clazz.iri,
-          to: iri,
-          title: 'subclass of',
-          tags: [_edgeTypes.SUBCLASS_OF_EDGE],
-          dashes: true
-        });
-      }
-      return edges;
+      return Promise.resolve(
+        clazz.parentClassIris.map((iri) => {
+          return {
+            id: `${clazz.iri}_subclass_of_${iri}`,
+            from: clazz.iri,
+            to: iri,
+            title: 'subclass of',
+            tags: [_edgeTypes.SUBCLASS_OF_EDGE],
+            dashes: true
+          };
+        })
+      );
     };
 
     const _createObjectTypeEdges = (property) => {
-      const edges = [];
-      if ((property.domainIris.length === 0) || (property.rangeIris.length === 0)) {
-        return edges;
-      }
-      for (const sourceIri of property.domainIris) {
-        for (const targetIri of property.rangeIris) {
-          edges.push({
-            id: `${sourceIri}_${property.iri}_${targetIri}`,
-            from: sourceIri,
-            to: targetIri,
-            title: property.label,
-            filterLabels: [''],
-          });
+      return new Promise((resolve, reject) => {
+        const edges = [];
+        for (const sourceIri of property.domainIris) {
+          for (const targetIri of property.rangeIris) {
+            edges.push({
+              id: `${sourceIri}_${property.iri}_${targetIri}`,
+              from: sourceIri,
+              to: targetIri,
+              title: property.label,
+            });
+          }
         }
-      }
-      return edges;
+        resolve(edges);
+      });
     };
 
     const _createObjectEdges = (individual) => {
-      const edges = [];
-      individual.objectProperties.forEach((prop) => {
-        edges.push({
-          id: `${individual.iri}_${prop.iri}_${prop.target}`,
-          from: individual.iri,
-          to: prop.target,
-          title: prop.label,
-          filterLabels: [''],
-        });
-      });
-      return edges;
+      return Promise.resolve(
+        individual.objectProperties.map((prop) => {
+          return {
+            id: `${individual.iri}_${prop.iri}_${prop.target}`,
+            from: individual.iri,
+            to: prop.target,
+            title: prop.label,
+          };
+        })
+      );
     };
     const _createClassNode = (clazz) => {
-      return {
+      return Promise.resolve({
         id: clazz.iri,
         label: clazz.label,
         title: clazz.label,
         type: _nodeTypes.CLASS_NODE,
         group: _nodeTypes.CLASS_NODE,
-        tags: [_nodeTypes.CLASS_NODE]
-
-      };
-    };
-    const _findCaseLabels = (props, propIri, array = []) => {
-      const caseLabels = [].concat(array);
-      for (const prop of props) {
-        if (prop.iri !== propIri) {
-          continue;
-        }
-        const case_ = _cases.find((c) => {
-          return c.iri === prop.target;
-        });
-
-        if (!case_) {
-          continue;
-        }
-        const index = caseLabels.indexOf(case_.label);
-        if (index < 0) {
-          caseLabels.push(case_.label);
-        }
-      }
-      return caseLabels;
+        tags: clazz.individualIris.length > 0 ? [_nodeTypes.CLASS_NODE] : [_nodeTypes.CLASS_NODE, _tags.NOT_CONNECTED_TO_INDIVIDUAL]
+      });
     };
     const _createIndividualNode = (individual) => {
-      const caseLabels = _findCaseLabels(individual.objectProperties, "http://www.AMSL/GDK/ontologie#ist_Bestandteil_von")
-        .concat(_findCaseLabels(individual.reverseObjectProperties, "http://www.AMSL/GDK/ontologie#beinhaltet"));
-
-      const group = (caseLabels.length === 0) ?  _tags.NO_CASE : caseLabels[0];
-      const tags = (caseLabels.length === 0) ? [_nodeTypes.INDIVIDUAL_NODE, _tags.NO_CASE] : [_nodeTypes.INDIVIDUAL_NODE].concat(caseLabels);
-      return {
-        id: individual.iri,
-        label: individual.label,
-        title: individual.label,
-        type: _nodeTypes.INDIVIDUAL_NODE,
-        group: group,
-        tags: tags
-      };
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.getCaseIdentifiersFor(individual.iri).then((caseIdentifiers) => {
+          const group = (caseIdentifiers.length === 0) ?  _tags.NO_CASE : caseIdentifiers[0];
+          const tags = (caseIdentifiers.length === 0) ? [_nodeTypes.INDIVIDUAL_NODE, _tags.NO_CASE] : [_nodeTypes.INDIVIDUAL_NODE].concat(caseIdentifiers);
+          resolve({
+            id: individual.iri,
+            label: individual.label,
+            title: individual.label,
+            type: _nodeTypes.INDIVIDUAL_NODE,
+            group: group,
+            tags: tags
+          });
+        }).catch((err) => {
+          reject(err);
+        });
+      });
     };
 
     const _showNeighbors = (nodeIds, depth) => {
@@ -311,7 +294,7 @@
       result.edges = _edges.get({
         filter: (edge) => {
           return _isEdgeHidden(edge, _viewport.nodes) === false;
-      }});
+        }});
       _viewport.edges.update(result.edges);
       return result;
     };
@@ -383,14 +366,13 @@
       if ((visited.indexOf(nodeId) > -1) || (depth < 0)) {
         return result;
       }
-      // regardless if it's filtered out or not, this node was visited
+      // regardless if it's visible or not, this node was visited
       result.visited.push(nodeId);
 
-
-      const isFilteredOut = _applyItemFilters(nodeDataSet.get(nodeId), nodeDataSet, edgeDataset, filters);
+      const isHidden = _isNodeHidden(nodeDataSet.get(nodeId), nodeDataSet, edgeDataset, filters);
       // either the node is added to the result set, or
       // it is not in the current filters
-      if (isFilteredOut === true) {
+      if (isHidden === false) {
         result.neighbors.push(nodeId);
       } else {
         return result;
@@ -402,7 +384,6 @@
       const adjacentNodeIds = _findAdjacentNodes(nodeId, nodeDataSet, edgeDataset);
       adjacentNodeIds.forEach((id) => {
         const r = _findNeighbors(id, nodeDataSet, edgeDataset, filters, depth - 1, result.visited, result.neighbors);
-        //result.visited = result.visited.concat(r.visited);
         result.visited = r.visited;
         result.neighbors = r.neighbors;
       });
@@ -421,101 +402,157 @@
       return false;
     };
 
-
-    const _updateFilter = (id, enabled) => {
+    const _updateVisibility = () => {
       const result = {
         nodes: [],
         edges: [],
       };
-      if ((enabled !== true) && (enabled !== false)) {
-        return result;
-      }
-      const filter = _nodeFilters.find((f) => {
-        return f.id === id;
-      });
-      if (filter === undefined) {
-        return result;
-      }
-      filter.enabled = enabled;
       result.nodes = _viewport.nodes.get().map((node) => {
-        node.hidden = _isNodeHidden(node, _viewport.nodes, _viewport.edges, _nodeFilters);
-        return node;
-      });
+        const hidden = _isNodeHidden(node, _viewport.nodes, _viewport.edges, _nodeFilters);
+        if (hidden !== node.hidden) {
+          node.hidden = hidden;
+          return node;
+        }
+        return null;
+      }).reduce((accumulator, node) => {
+        if (node !== null) {
+          accumulator.push(node);
+        }
+        return accumulator;
+      },[]);
       _viewport.nodes.update(result.nodes);
 
       result.edges = _viewport.edges.get().map((edge) => {
-        edge.hidden = _isEdgeHidden(edge, _viewport.nodes);
-        return edge;
-      });
+        const hidden = _isEdgeHidden(edge, _viewport.nodes);
+        if (hidden !== edge.hidden) {
+          edge.hidden = hidden;
+          return edge;
+        }
+        return null;
+      }).reduce((accumulator, edge) => {
+        if (edge !== null) {
+          accumulator.push(edge);
+        }
+        return accumulator;
+      },[]);
       _viewport.edges.update(result.edges);
 
       return result;
     };
 
-    const _createItems = (objects, creationFunc, dataset) => {
-      objects.forEach(function(object){
-        dataset.add(creationFunc(object));
+    const _updateFilter = (id, enabled) => {
+      if ((enabled !== true) && (enabled !== false)) {
+        return { nodes: [], edges:[] };
+      }
+      const filter = _nodeFilters.find((f) => {
+        return f.id === id;
       });
+      if (filter === undefined) {
+        return { nodes: [], edges:[] };
+      }
+      filter.enabled = enabled;
+      return _updateVisibility();
     };
-    const _createNodes = (objects, creationFunc) => {
-      _createItems(objects, creationFunc, _nodes);
-    };
-    const _createEdges = (objects, creationFunc) => {
-      _createItems(objects, creationFunc, _edges);
+
+    const _createItems = (objects, creationFunc, dataset) => {
+      const promises = objects.map((o) => {
+        return creationFunc(o);
+      });
+      return Promise.all(promises);
     };
     const _createViewport = () => {
-      const result = {
-        nodes: [],
-        edges: [],
-        stackSize: 0,
-        filters: []
-      };
-      _hiddenNodeIdsStack = [];
+      return new Promise((resolve, reject) => {
+        const result = {
+          nodes: [],
+          edges: [],
+          stackSize: 0,
+          filters: []
+        };
+        Promise.all([
+          _createNodeFilters(),
+          _createEdgeFilters()
+        ]).then((filters) => {
+          _nodeFilters = filters[0];
+          _edgeFilters = filters[1];
 
-      _nodeFilters = _createNodeFilters();
-      _edgeFilters = _createEdgeFilters();
+          _hiddenNodeIdsStack = [];
+          _viewport.nodes.clear();
+          _viewport.edges.clear();
 
-      _viewport.nodes.clear();
-      _viewport.edges.clear();
-
-      _viewport.nodes.add(_applyNodeFilters(_nodes, _edges, _nodeFilters));
-      _viewport.edges.add(_applyEdgeFilters(_nodes, _edges, _edgeFilters));
-      result.nodes = _viewport.nodes.get();
-      result.edges = _viewport.edges.get();
-      result.filters = _createNodeFilters()
-        .concat(_createEdgeFilters())
-        .filter((f) => {
-          return f.isVisible === true;
+          _viewport.nodes.add(_applyNodeFilters(_nodes, _edges, _nodeFilters));
+          _viewport.edges.add(_applyEdgeFilters(_nodes, _edges, _edgeFilters));
+          result.nodes = _viewport.nodes.get();
+          result.edges = _viewport.edges.get();
+          result.filters = _nodeFilters
+            .concat(_edgeFilters)
+            .filter((f) => {
+              return f.isVisible === true;
+            });
+          resolve(result);
+        }).catch((err) => {
+          reject(err);
         });
-      return result;
+      });
     };
 
-    const _createEdgeFilters = () => {
-      const filters = [];
+    const _reset = () => {
+      return new Promise((resolve, reject) => {
+        const result = {
+          nodes: [],
+          edges: [],
+          stackSize: 0,
+          filters: []
+        };
+        _hiddenNodeIdsStack = [];
+        _viewport.nodes.clear();
+        _viewport.edges.clear();
 
-      return filters;
+        _viewport.nodes.add(_applyNodeFilters(_nodes, _edges, _nodeFilters));
+        _viewport.edges.add(_applyEdgeFilters(_nodes, _edges, _edgeFilters));
+        result.nodes = _viewport.nodes.get();
+        result.edges = _viewport.edges.get();
+        result.filters = _nodeFilters
+          .concat(_edgeFilters)
+          .filter((f) => {
+            return f.isVisible === true;
+          });
+        resolve(result);
+      });
+    };
+    const _createEdgeFilters = () => {
+
+      return Promise.resolve([]);
     };
 
     const _createNodeFilters = () => {
-      const filters = [];
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.getCaseIdentifiers().then((cases) => {
+          const filters = [];
 
-      // node type filters
-      filters.push(new TypeFilter(1, _nodeTypes.CLASS_NODE, "Class Nodes", true, true, false));
-      filters.push(new TypeFilter(1, _nodeTypes.INDIVIDUAL_NODE, "Individual Nodes", false, true, false));
-      filters.push(new TypeFilter(1, _nodeTypes.DATA_NODE, "Data Nodes", true, true, false));
+          // node type filters
+          filters.push(new TypeFilter(1, _nodeTypes.CLASS_NODE, "Class Nodes", true, true, true));
 
-      // case filters
-      filters.push(new TagFilter(2, _tags.NO_CASE, "Nodes without cases", true,  false));
-      _cases.forEach((c) => {
-        filters.push(new TagFilter(2, c.label, c.label, true, false));
+          filters.push(new TypeFilter(1, _nodeTypes.INDIVIDUAL_NODE, "Individual Nodes", false, true, false));
+          filters.push(new TypeFilter(1, _nodeTypes.DATA_NODE, "Data Nodes", true, true, false));
+
+          // case filters
+          filters.push(new TagFilter(3, _tags.NO_CASE, "Nodes without cases", true, true, false));
+
+          cases.forEach((c) => {
+            filters.push(new TagFilter(4, c.id, c.name, true, true, false));
+          });
+
+          // classes which are not connected to an individual
+          filters.push(new TagFilter(3, _tags.NOT_CONNECTED_TO_INDIVIDUAL, "Classes not connected to an Individual", false, true, true));
+
+          filters.sort((f1, f2) => {
+            return f1.priority > f2.priority;
+          });
+          resolve(filters);
+        }).catch((err) => {
+          reject(err);
+        });
       });
-
-      // TODO: unconnected nodes filter
-
-      filters.sort((f1, f2) => {
-        return f1.priority > f2.priority;
-      });
-      return filters;
     };
 
     const _applyItemFilters = (item, nodes, edges, filters = []) => {
@@ -552,7 +589,6 @@
       return newArray;
     };
 
-
     const _applyEdgeFilters = (nodes, edges, filters = []) => {
 
       if (nodes === undefined) {
@@ -571,62 +607,76 @@
 
 
     const _createNodesAndEdges = (classes, individuals, objectProperties) => {
-      // filter out the cases
-      _cases = individuals.filter((i) => {
-        return CaseOntologyDataService.isCase(i);
-      });
-      individuals = individuals.filter((i) => {
-        return !CaseOntologyDataService.isCase(i);
-      });
-      // updating filter labels
-      _cases.forEach((c) => {
-        _tags[c.label] = c.label;
-      });
+      return new Promise((resolve, reject) => {
+        // filter out the cases
+        _cases = individuals.filter((i) => {
+          return CaseOntologyDataService.isCaseIndividual(i);
+        });
+        individuals = individuals.filter((i) => {
+          return !CaseOntologyDataService.isCaseIndividual(i);
+        });
+        // updating filter labels
+        _cases.forEach((c) => {
+          _tags[c.label] = c.label;
+        });
 
-      // add all class nodes
-      _createNodes(classes, _createClassNode);
-      // add all individual nodes
-      _createNodes(individuals, _createIndividualNode);
-      // add all datatype nodes
-      _createNodes(individuals, _createDatatypeNodes);
-
-      // add all datatype edges
-      _createEdges(individuals, _createDatatypeEdges);
-      // add subclass edges for class nodes
-      _createEdges(classes, _createSubClassOfEdges);
-      // add objectProperty edges between classes
-      _createEdges(objectProperties, _createObjectTypeEdges);
-      // add instance of edges for individual nodes
-      _createEdges(individuals, _createInstanceOfEdges);
-      // add objectProperty edges between individuals
-      _createEdges(individuals, _createObjectEdges);
-
-      // filter out all edges which are not connected or belonging to a case
-      // TODO
+        classes = classes.filter((i) => {
+          return !CaseOntologyDataService.isCaseClass(i);
+        });
+        // add all class nodes
+        _createItems(classes, _createClassNode).then((nodes) => {
+          _nodes.add(nodes);
+          // add all individual nodes
+          return _createItems(individuals, _createIndividualNode);
+        }).then((nodes) => {
+          _nodes.add(nodes);
+          // add all datatype nodes
+          return _createItems(individuals, _createDatatypeNodes);
+        }).then((nodes) => {
+          _nodes.add([].concat.apply([], nodes));
+          return Promise.all([
+            // add all datatype edges
+            _createItems(individuals, _createDatatypeEdges),
+            // add subclass edges for class nodes
+            _createItems(classes, _createSubClassOfEdges),
+            // add objectProperty edges between classes
+            _createItems(objectProperties, _createObjectTypeEdges),
+            // add instance of edges for individual nodes
+            _createItems(individuals, _createInstanceOfEdges),
+            // add objectProperty edges between individuals
+            _createItems(individuals, _createObjectEdges)
+          ]);
+        }).then((result) => {
+          //flatten the result
+          result = [].concat.apply([], result);
+          const edges = result.reduce((accumulator, e) => {
+            if (e.length > 0) {
+              accumulator = accumulator.concat(e);
+            }
+            return accumulator;
+          }, []);
+          _edges.add(edges);
+          resolve();
+        });
+      });
     };
 
     const _initialize = () => {
-      if (_initialized === true) {
-        return Promise.resolve();
-      }
       return new Promise((resolve, reject) => {
-        Promise.all([
-          CaseOntologyDataService.initialize(),
-          OntologyDataService.initialize(),
-        ]).then(() => {
+        OntologyDataService.initialize().then(() => {
           return Promise.all([
-            OntologyDataService.fetchAllClasses({superClasses: true}),
+            OntologyDataService.fetchAllClasses({superClasses: true, individuals: true}),
             OntologyDataService.fetchAllIndividuals({ datatypeProperties: true, objectProperties: true }),
             OntologyDataService.fetchAllObjectProperties({domain: true, range: true}),
+            CaseOntologyDataService.initialize()
           ]);
         }).then((result) => {
-          try {
-            _createNodesAndEdges(result[0], result[1], result[2]);
-            _initialized = true;
-            resolve(_createViewport());
-          } catch(e) {
-            reject(e);
-          }
+          return _createNodesAndEdges(result[0], result[1], result[2]);
+        }).then(() => {
+          return _createViewport();
+        }).then((result) => {
+          _initialized = true;
+          resolve(result);
         }).catch((err) => {
           reject(err);
         });
@@ -674,13 +724,8 @@
         });
       },
       reset: () => {
-        return new Promise((resolve, reject) => {
-          try {
-            resolve(_createViewport());
-          } catch(e) {
-            reject(e);
-          }
-        });
+        //return _createViewport();
+        return _reset();
       },
       tags: () => {
         return _tags;

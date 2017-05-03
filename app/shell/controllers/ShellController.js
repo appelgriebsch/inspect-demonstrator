@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function ShellController($scope, $log, $q, $mdSidenav, modulesProvider, ActivityService, MessageService) {
+  function ShellController($scope, $log, $q, $mdSidenav, modulesProvider, ActivityService) {
 
     var app = require('electron').remote.app;
     var appCfg = app.sysConfig();
@@ -100,9 +100,6 @@
 
     this.initialize = function() {
       this.modules = modulesProvider.modules;
-      MessageService.subscribe($scope, 'set-busy-event', _setBusy);
-      MessageService.subscribe($scope, 'set-ready-event', _setReady);
-      MessageService.subscribe($scope, 'set-error-event', _setError);
       return Promise.all([
         ActivityService.initialize(),
         Notification.requestPermission()

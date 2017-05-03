@@ -2,10 +2,10 @@
 
   'use strict';
 
-  function OntologyOptionsController($scope, $log, $mdDialog) {
+  function OntologyOptionsController($scope, $mdDialog) {
     const vm = this;
-    let _isFocused = false;
     vm.depth = 0;
+    vm.selectedNodes = [];
 
     vm.isDisabled = (data) => {
       if (data === 'showNeighbors') {
@@ -60,7 +60,7 @@
       })
         .then((result) => {
           filter.color = result.color;
-          vm.onFilterChanged({id: filter.id, color: result.color, checked: filter.checked});
+          vm.onColorChanged({id: filter.id, color: result.color});
         }, () => {
 
         });
@@ -89,6 +89,9 @@
         },
         true
       );
+
+
+
     };
 
   }

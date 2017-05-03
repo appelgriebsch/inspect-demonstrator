@@ -2,8 +2,9 @@
 
   'use strict';
 
-  function OntologyViewController($scope, $state, $q, $mdSidenav, GraphService, MessageService) {
+  function OntologyViewController($scope, $state, $q, $mdSidenav, GraphService, OntologySharingService) {
     const vm = this;
+    vm.state = $state;
 
     this.graphOptions = {
       height: '100%',
@@ -27,17 +28,20 @@
         }
       },
       edges: {
-        arrows: 'to'
+        arrows: 'to',
       },
-      physics: {
-        barnesHut: {
-          gravitationalConstant: -13250,
-          centralGravity: 0.75,
-          springLength: 135,
-          damping: 0.28,
-          avoidOverlap: 1
+      "physics": {
+        "barnesHut": {
+          "gravitationalConstant": -24650,
+          "centralGravity": 0,
+          "springLength": 300,
+          "springConstant": 0.08,
+          "damping": 1,
+          "avoidOverlap": 1
         },
-        minVelocity: 0.75
+        "maxVelocity": 40,
+        "minVelocity": 0.75,
+        "timestep": 0.86
       },
       interaction: {
         hover: true,
@@ -119,15 +123,6 @@
         _resetViewport(nodes, edges);
         _setFilters(filters);
 
-
-       /* const clusterDataNodesOptions = {
-          joinCondition: (node) => {
-            return node.type === 'CLASS_NODE';
-          },
-          clusterNodeProperties: {id: 'CLASS_NODE', borderWidth:3, shape:'database'}
-        };
-        vm.network.cluster(clusterDataNodesOptions);*/
-
         // when a node is selected all incoming and outgoing edges of that node
         // are selected too, that's why this event is used for displaying the
         // meta data of a selected item
@@ -137,7 +132,6 @@
             $scope.$apply();
           }
         });
-
         resolve();
       });
     };
@@ -165,7 +159,7 @@
         }
       });
       vm.data.nodes.update(nodes);
-     // vm.data.nodes.remove(nodeIdsToBeRemoved);
+      // vm.data.nodes.remove(nodeIdsToBeRemoved);
       vm.data.edges.update(edges);
 
       vm.items = nodes.map((node) => {
@@ -179,22 +173,22 @@
       for (const f of filters) {
         if (f.hasColor === true) {
           f.color = vm.palette[ i % vm.palette.length];
-          vm.filterChanged(f.id, f.color);
+          vm.colorChanged(f.id, f.color);
           i++;
         }
       }
     };
 
-    this.$onInit = () => {
-      MessageService.setBusy('Loading ontology data...');
+    vm.$onInit = () => {
+      $scope.setBusy('Loading ontology data...');
 
       GraphService.initialize().then((result) => {
         return _createGraph(result.nodes, result.edges, result.filters);
       }).then(() => {
-        MessageService.setReady(true);
+        $scope.setReady(true);
       }).catch((err) => {
-        MessageService.setError('SearchAction', 'search', err);
-        MessageService.setReady(true);
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
       });
     };
 
@@ -214,7 +208,7 @@
       GraphService.focusNodes(nodeIds).then((result) => {
         _resetViewport(result.nodes, result.edges);
       }).catch((err) => {
-        MessageService.setError('SearchAction', 'search', err);
+        $scope.setError('SearchAction', 'search', err);
       });
     };
     vm.toggleSidebar = (componentId) => {
@@ -227,7 +221,7 @@
         });
     };
     vm.reset = () => {
-      MessageService.setBusy('Resetting Graph...');
+      $scope.setBusy('Resetting Graph...');
       vm.selectedNodes = [];
       vm.selectedEdges = [];
 
@@ -236,10 +230,10 @@
       GraphService.reset().then((result) => {
         vm.hiddenNodesStackSize = result.stackSize;
         _resetViewport(result.nodes, result.edges);
-        MessageService.setReady(true);
+        $scope.setReady(true);
       }).catch((err) => {
-        MessageService.setError('SearchAction', 'search', err);
-        MessageService.setReady(true);
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
       });
     };
 
@@ -254,7 +248,7 @@
         vm.selectedNodes = [];
         vm.network.unselectAll();
       }).catch((err) => {
-        MessageService.setError('SearchAction', 'search', err);
+        $scope.setError('SearchAction', 'search', err);
       });
     };
 
@@ -264,7 +258,7 @@
         vm.data.edges.update(result.edges);
         vm.hiddenNodesStackSize = result.stackSize;
       }).catch((err) => {
-        MessageService.setError('SearchAction', 'search', err);
+        $scope.setError('SearchAction', 'search', err);
       });
     };
 
@@ -275,7 +269,7 @@
       GraphService.showNeighbors(nodeIds, depth).then((result) => {
         _updateViewport(result.nodes, result.edges);
       }).catch((err) => {
-        MessageService.setError('SearchAction', 'search', err);
+        $scope.setError('SearchAction', 'search', err);
       });
     };
     vm.zoomTo = (nodeId) => {
@@ -289,24 +283,75 @@
         animation: true
       });
     };
-    vm.filterChanged = (id, color, enabled) => {
-      if (color !== undefined) {
-        const groupOptions = {};
-        groupOptions[id] = _createColorOptions(color);
-        vm.network.setOptions({
-          groups: groupOptions
-        });
-      }
-      if (enabled !== undefined) {
-        GraphService.updateFilter(id, enabled).then((result) => {
-          //_updateViewport(result.nodes, result.edges);
-          vm.data.nodes.update(result.nodes);
-          vm.data.edges.update(result.edges);
-        }).catch((err) => {
-          MessageService.setError('SearchAction', 'search', err);
-        });
-      }
+    vm.colorChanged = (id, color) => {
+      const groupOptions = {};
+      groupOptions[id] = _createColorOptions(color);
+      vm.network.setOptions({
+        groups: groupOptions
+      });
+
     };
+    vm.filterChanged = (id, enabled) => {
+      GraphService.updateFilter(id, enabled).then((result) => {
+        vm.data.nodes.update(result.nodes);
+        vm.data.edges.update(result.edges);
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+      });
+
+    };
+    /** events from the actions menu**/
+    $scope.$on('edit-node', () => {
+      console.log(vm.state);
+     //$state.go('app.cases.edit', {caseId: caseId});
+    });
+    $scope.$on('import-ontology', () => {
+      const targetPath = OntologySharingService.requestOpenFile();
+      if ((targetPath !== undefined) && (targetPath.length > 0)) {
+
+        $scope.setBusy('Importing ontology...');
+        OntologySharingService.import(targetPath[0]).then(() => {
+          const info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
+          info.description = 'The ontology has been imported successfully.';
+          info.object = {};
+          info.result = {};
+          return $scope.writeLog('info', info);
+        }).then(() => {
+          $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
+          vm.$onInit();
+        }).catch((err) => {
+          $scope.setError('ReceiveAction', 'import_export', err);
+          $scope.setReady(true);
+        });
+
+      }
+    });
+
+    $scope.$on('export-ontology', () => {
+
+      const targetPath = OntologySharingService.requestSaveFile();
+
+      if (targetPath !== undefined) {
+
+        $scope.setBusy('Exporting ontology...');
+
+        OntologySharingService.export(targetPath).then(() => {
+
+          const info = $scope.createEventFromTemplate('SendAction', 'share');
+          info.description = 'The ontology has been exported successfully.';
+          info.object = {};
+          info.result = {};
+          return $scope.writeLog('info', info);
+        }).then(() => {
+          $scope.notify('Export finished successfully', 'The ontology has been exported successfully.');
+          $scope.setReady();
+        }).catch((err) => {
+          $scope.setError('SendAction', 'share', err);
+          $scope.setReady(true);
+        });
+      }
+    });
+
   }
 
 
