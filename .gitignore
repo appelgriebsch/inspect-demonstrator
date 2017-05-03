@@ -30,3 +30,6 @@ app/node_modules
 
 # vim backup files
 .*~
+
+#Visual Studio Code
+.vscode/*

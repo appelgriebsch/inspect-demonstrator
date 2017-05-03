@@ -1,0 +1,20 @@
+<md-tabs md-dynamic-height md-border-bottom ng-init="ctl.initialize()" class="tabsdemoStaticTabs" md-selected="data.selectedIndex">
+    <md-tab id="tab1">
+        <md-tab-label>Startscreen</md-tab-label>
+        <md-tab-body>
+            <img class="emvImage" ng-src="{{ctl.emvStartScreen}}">
+        </md-tab-body>
+    </md-tab>
+    <md-tab id="tab2">
+        <md-tab-label>Timestamp 1</md-tab-label>
+        <md-tab-body>
+            <img class="emvImage" ng-src="{{ctl.emvTime1}}">
+        </md-tab-body>
+    </md-tab>
+    <md-tab id="tab3">
+        <md-tab-label>Timestamp 2</md-tab-label>
+        <md-tab-body>
+            <img class="emvImage" ng-src="{{ctl.emvTime2}}">
+        </md-tab-body>
+    </md-tab>
+</md-tabs>

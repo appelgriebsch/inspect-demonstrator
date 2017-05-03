@@ -13,14 +13,14 @@
         icon: 'local_library'
       },
       /*incidents: {
-        path: 'modules/incidents',
-        name: 'IncidentModule',
-        url: '/app/incidents/view',
-        state: 'app.incidents',
-        label: 'Incidents',
-        tooltip: 'Access your incidents',
-        icon: 'content_copy'
-      },*/
+       path: 'modules/incidents',
+       name: 'IncidentModule',
+       url: '/app/incidents/view',
+       state: 'app.incidents',
+       label: 'Incidents',
+       tooltip: 'Access your incidents',
+       icon: 'content_copy'
+       },*/
       ontology: {
         path: 'modules/ontology',
         name: 'OntologyModule',
@@ -30,15 +30,15 @@
         tooltip: 'Browse the Ontology',
         icon: 'blur_on'
       },
-     /* cases: {
-        path: 'modules/cases',
-        name: 'CasesModule',
-        url: '/app/cases/view',
-        state: 'app.cases',
-        label: 'Cases',
-        tooltip: 'Working with Cases',
-        icon: 'fingerprint'
-      },*/
+      /* cases: {
+       path: 'modules/cases',
+       name: 'CasesModule',
+       url: '/app/cases/view',
+       state: 'app.cases',
+       label: 'Cases',
+       tooltip: 'Working with Cases',
+       icon: 'fingerprint'
+       },*/
       activities: {
         path: 'modules/activities',
         name: 'ActivityModule',
@@ -47,9 +47,18 @@
         label: 'Activities',
         tooltip: 'Access your activities',
         icon: 'import_export'
+      },
+      emv: {
+        path: 'modules/emv',
+        name: 'EmvModule',
+        url: '/app/emv/view',
+        state: 'app.emv',
+        label: 'EMV',
+        tooltip: 'EMV Import',
+        icon: 'nfc'
       }
     }
   };
 
-})();
 
+})();
