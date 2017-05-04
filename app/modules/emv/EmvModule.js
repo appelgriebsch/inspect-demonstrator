@@ -19,7 +19,8 @@
                             'header@app': {
                                 template: `${moduleConfig.label}`
                             }
-                        }
+                        },
+                        redirectTo: `${moduleConfig.state}.view`
                     })
                     .state(`${moduleConfig.state}.view`, {
                         url: '/view',
