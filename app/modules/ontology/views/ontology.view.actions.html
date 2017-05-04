@@ -1,0 +1,25 @@
+<md-fab-speed-dial class="md-fab md-fab-bottom-right md-scale" md-open="shell.fabOpen" md-direction="up">
+  <md-fab-trigger>
+    <md-button class="md-fab">
+      <md-icon>menu</md-icon>
+    </md-button>
+  </md-fab-trigger>
+  <md-fab-actions>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('import-ontology', $event)">
+      <md-tooltip md-direction="left">Import Ontology</md-tooltip>
+      <md-icon>import_export</md-icon>
+    </md-button>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('export-ontology', $event)">
+      <md-tooltip md-direction="left">Share Ontology</md-tooltip>
+      <md-icon>share</md-icon>
+    </md-button>
+  <!--  <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('edit-case', $event)">
+      <md-tooltip md-direction="left">Edit Case</md-tooltip>
+      <md-icon>fingerprint</md-icon>
+    </md-button>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('edit-node', $event)">
+      <md-tooltip md-direction="left">Edit Node</md-tooltip>
+      <md-icon>lens</md-icon>
+    </md-button>-->
+  </md-fab-actions>
+</md-fab-speed-dial>

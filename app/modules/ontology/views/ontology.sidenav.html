@@ -1,0 +1,22 @@
+<div ng-cloak >
+  <md-sidenav ng-class="$ctrl.alignment === 'left' ? 'md-sidenav-left' : 'md-sidenav-right'" class="md-whiteframe-4dp" md-component-id="{{::$ctrl.componentId}}" md-disable-backdrop>
+    <md-toolbar>
+      <div class="md-toolbar-tools" ng-show="$ctrl.alignment === 'left'">
+        <h4 ng-transclude="headerSlot"></h4>
+        <span flex></span>
+        <md-button class="md-icon-button md-default" ng-click="$ctrl.onClose({componentId: $ctrl.componentId})">
+          <md-icon>chevron_left</md-icon>
+        </md-button>
+      </div>
+      <div class="md-toolbar-tools" ng-show="$ctrl.alignment === 'right'">
+        <md-button class="md-icon-button md-default" ng-click="$ctrl.onClose({componentId: $ctrl.componentId})">
+          <md-icon>chevron_right</md-icon>
+        </md-button>
+        <span flex></span>
+        <h4 ng-transclude="headerSlot"></h4>
+      </div>
+    </md-toolbar>
+    <div ng-transclude="contentSlot">
+    </div>
+  </md-sidenav>
+</div>

@@ -37,6 +37,17 @@
         this.isDirty = false;
       });
     };
+    const _setBusy = (event, data) => {
+      $scope.setBusy(data.msg);
+    };
+
+    const _setReady = (event, data) => {
+      $scope.setReady(data.dirty);
+    };
+
+    const _setError = (event, data) => {
+      $scope.setError(data.template, data.icon, data.error);
+    };
 
     $scope.setReady = (dirty) => {
       $q.when(true).then(() => {
