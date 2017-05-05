@@ -59,8 +59,8 @@
     const CaseOntologyDataService = require('./services/CaseOntologyDataService');
     const OntologySharingService = require('./services/OntologySharingService');
 
-    angular.module('electron-app').service('GraphService', ['OntologyDataService', 'CaseOntologyDataService2', GraphService]);
-    angular.module('electron-app').service('CaseOntologyDataService2', ['$log', '$filter', 'OntologyDataService', CaseOntologyDataService]);
+    angular.module('electron-app').service('GraphService', ['OntologyDataService', 'CaseOntologyDataService', GraphService]);
+    angular.module('electron-app').service('CaseOntologyDataService', ['$log', '$filter', 'OntologyDataService', CaseOntologyDataService]);
     angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
     angular.module('electron-app').service('OntologySharingService', ['OntologyDataService', OntologySharingService]);
 

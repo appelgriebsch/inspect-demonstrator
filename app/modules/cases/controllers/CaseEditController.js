@@ -6,7 +6,8 @@
 
   function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, $log, CaseOntologyDataService, GraphDataService) {
     //<editor-fold desc="Constructor">
-    this.state = $state.$current;
+    const vm = this;
+    vm.state = $state.$current;
 
     this.graphOptions = {};
     this.network = undefined;
@@ -806,7 +807,7 @@
      * Initializes dependant services.
      * After completion the case and the ontology class structure is loaded.
      */
-    this.initialize = () => {
+    vm.$onInit = () => {
       if (angular.isUndefined($state.params.caseId)) {
         $state.go('app.cases.view');
         return;
@@ -817,6 +818,7 @@
         //GraphDataService.initialize()
       ]).then(() => {
         $scope.data.classesTree = CaseOntologyDataService.getClassTree();
+        console.log("classtree",$scope.data.classesTree);
         return Promise.all([
           CaseOntologyDataService.loadCase($state.params.caseId),
           //GraphDataService.loadOptions($state.params.caseId)

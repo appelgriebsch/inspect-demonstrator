@@ -1,20 +1,20 @@
-<div flex layout-fill layout="column" ng-cloak ng-init="ctl.initialize()">
+<div flex layout-fill layout="column" >
   <md-content>
-    <md-button class="md-primary" ng-click="newCase()">
+    <md-button class="md-primary" ng-click="$ctrl.newCase()">
       <md-icon>create_new_folder</md-icon>
       New case
     </md-button>
 
     <div layout="row">
-      <md-switch id="open-closed-switch" class="md-primary" aria-label="Show case with status" ng-model="viewData.showCaseStatus" ng-true-value="'open'" ng-false-value="'closed'" ng-change="filter()">
-        Show {{viewData.showCaseStatus}} cases
+      <md-switch id="open-closed-switch" class="md-primary" aria-label="Show case with status" ng-model="$ctrl.showCaseStatus" ng-true-value="'open'" ng-false-value="'closed'" ng-change="$ctrl.filter()">
+        Show {{$ctrl.showCaseStatus}} cases
       </md-switch>
-      <md-switch class="md-primary" aria-label="Show cases created by" ng-model="viewData.showCaseCreator" ng-true-value="'own'" ng-false-value="'all'" ng-change="filter()">
-        Show {{viewData.showCaseCreator}} cases
+      <md-switch class="md-primary" aria-label="Show cases created by" ng-model="$ctrl.showCaseCreator" ng-true-value="'own'" ng-false-value="'all'" ng-change="$ctrl.filter()">
+        Show {{$ctrl.showCaseCreator}} cases
       </md-switch>
     </div>
 
-    <div ng-repeat="case in data.filteredCases" layout="row" layout-padding>
+    <div ng-repeat="case in $ctrl.filteredCases" layout="row" layout-padding>
       <md-button class="md-icon-button md-primary" ng-click="openCase(case.identifier)" >
         <md-icon>folder_shared</md-icon>
       </md-button>

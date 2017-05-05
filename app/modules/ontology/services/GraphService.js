@@ -495,7 +495,7 @@
       });
     };
 
-    const _reset = () => {
+    const _resetViewport = () => {
       return new Promise((resolve, reject) => {
         const result = {
           nodes: [],
@@ -623,7 +623,7 @@
         classes = classes.filter((i) => {
           return !CaseOntologyDataService.isCaseClass(i);
         });
-        // add all class nodes
+         // add all class nodes
         _createItems(classes, _createClassNode).then((nodes) => {
           _nodes.add(nodes);
           // add all individual nodes
@@ -662,8 +662,20 @@
     };
 
     const _initialize = () => {
+      if (_initialized === true) {
+        return Promise.resolve({
+          nodes: _viewport.nodes.get(),
+          edges: _viewport.edges.get(),
+          stackSize: _hiddenNodeIdsStack.length,
+          filters: _nodeFilters
+        });
+      }
       return new Promise((resolve, reject) => {
         OntologyDataService.initialize().then(() => {
+          _nodes.clear();
+          _edges.clear();
+          _edgeFilters = [];
+          _nodeFilters = [];
           return Promise.all([
             OntologyDataService.fetchAllClasses({superClasses: true, individuals: true}),
             OntologyDataService.fetchAllIndividuals({ datatypeProperties: true, objectProperties: true }),
@@ -685,6 +697,10 @@
 
     return {
       initialize: () => {
+        return _initialize();
+      },
+      reinitialize: () => {
+        _initialized = false;
         return _initialize();
       },
       hideNodes: (nodeIds) => {
@@ -725,7 +741,7 @@
       },
       reset: () => {
         //return _createViewport();
-        return _reset();
+        return _resetViewport();
       },
       tags: () => {
         return _tags;
