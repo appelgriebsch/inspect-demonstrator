@@ -721,6 +721,39 @@
         });
       });
     };
+    const _removeEntity = (iri) => {
+      if (!iri) {
+        return Promise.reject(new Error('Iri must not be null.'));
+      }
+      return new Promise((resolve, reject) => {
+        db.get({
+          subject: iri
+        }, function(err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            let triples = results;
+            db.get({
+              object: iri
+            }, function(err2, results2) {
+              if (err2) {
+                reject(err2);
+              } else {
+                triples = triples.concat(results2);
+                db.del(triples, function(err3) {
+                  if (err3) {
+                    reject(err3);
+                  } else {
+                    resolve(triples);
+                  }
+                });
+              }
+            });
+          }
+        });
+      });
+    };
+
     const _removeIndividual = (individual) => {
       if (!individual) {
         return Promise.reject(new Error('Individual must not be null.'));
@@ -760,7 +793,7 @@
       });
     };
     const _insertIndividual = (individual) => {
-      if (angular.isUndefined(individual)) {
+      if (!individual) {
         return Promise.reject(new Error('Individual must not be null.'));
       }
       try {
@@ -771,23 +804,41 @@
       return new Promise((resolve, reject) => {
         _iriExists(individual.iri).then((exists)  => {
           if (exists === true) {
-            reject(new Error(`Iri: ${individual.iri} already exists!`));
+            throw Error(`Iri: ${individual.iri} already exists!`);
           } else {
             const triples = [{
               subject: individual.iri,
               predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
               object: 'http://www.w3.org/2002/07/owl#NamedIndividual'
-            }, {
-              subject: individual.iri,
-              predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
-              object: individual.classIri
             }];
+            // classes
+            individual.classIris.forEach((iri) => {
+              triples.push({
+                subject: individual.iri,
+                predicate: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+                object: iri
+              });
+            });
             //comments
-            angular.forEach(individual.comments, (comment) => {
+            individual.comments.forEach((comment) => {
               triples.push({
                 subject: individual.iri,
                 predicate: 'http://www.w3.org/2000/01/rdf-schema#comment',
                 object: comment
+              });
+            });
+            individual.objectProperties.forEach((prop) => {
+              triples.push({
+                subject: individual.iri,
+                predicate: prop.iri,
+                object: prop.target
+              });
+            });
+            individual.datatypeProperties.forEach((prop) => {
+              triples.push({
+                subject: individual.iri,
+                predicate: prop.iri,
+                object: `"${prop.target}"`
               });
             });
             const promises = [];
@@ -799,33 +850,8 @@
                   resolve2([]);
                 }});
             }));
-            angular.forEach(individual.objectProperties, (props, propIri) => {
-              angular.forEach(props, (propValue) => {
-                promises.push(Promise.all([
-                  _fetchObjectProperty(propIri),
-                  _fetchIndividual(propValue.target, false)
-                ]));
-              });
-            });
-            angular.forEach(individual.datatypeProperties, (props, propIri) => {
-              angular.forEach(props, (propValue) => {
-                promises.push(Promise.all([
-                  _fetchDatatypeProperty(propIri),
-                  Promise.resolve(propValue.target)
-                ]));
-              });
-            });
             return Promise.all(promises);
           }
-          return Promise.resolve([undefined, [], []]);
-        }).then((result) => {
-          const promises = [];
-          angular.forEach(result, (arr, i) => {
-            if (arr.length > 1) {
-              promises.push(_addOrRemoveIndividualProperty(individual, arr[0], arr[1], 'add'));
-            }
-          });
-          return Promise.all(promises);
         }).then(() => {
           resolve();
         }).catch((err) => {
@@ -835,10 +861,10 @@
     };
 
     const _changeIri = (oldIri, newIri) => {
-      if (angular.isUndefined(oldIri)) {
+      if (!oldIri) {
         return Promise.reject(new Error('Old Iri must not be null.'));
       }
-      if (angular.isUndefined(newIri)) {
+      if (!newIri) {
         return Promise.reject(new Error('New Iri must not be null.'));
       }
       const _update = (oldTriple, newTriple) => {
@@ -974,19 +1000,19 @@
     };
 
     const _addOrRemoveIndividualProperty = (subject, property, object, type) => {
-      if (angular.isUndefined(subject)) {
+      if (!subject) {
         return Promise.reject(new Error('Subject must not be undefined.'));
       }
       if (!(subject instanceof OwlIndividual)) {
         return Promise.reject(new Error('Subject must be of type OwlIndividual.'));
       }
-      if (angular.isUndefined(property)) {
+      if (!property) {
         return Promise.reject(new Error('Property must not be undefined.'));
       }
       if (!((property instanceof OwlObjectProperty) || (property instanceof OwlDatatypeProperty))) {
         return Promise.reject(new Error('Property must be of type OwlObjectProperty or OwlDatatypeProperty.'));
       }
-      if (angular.isUndefined(object)) {
+      if (!object) {
         return Promise.reject(new Error('Object must not be undefined.'));
       }
       if ((property instanceof OwlObjectProperty) && !(object instanceof OwlIndividual)) {
@@ -999,7 +1025,7 @@
       if (type === 'remove') {
         func = db.del;
       }
-      if (angular.isUndefined(func)) {
+      if (!func) {
         return Promise.resolve();
       }
       const triple = {
@@ -1087,13 +1113,17 @@
       removeIndividual: (individual) => {
         return _removeIndividual(individual);
       },
+      removeEntity: (iri) => {
+        return _removeEntity(iri);
+      },
+
       ontologyIri: function() {
         return _iriForPrefix('ontology');
       },
       fetchIndividualsForClass: (classIri, options) => {
         return _fetchIndividualIrisForClass(classIri, options);
       },
-        clear: _deleteAll,
+      clear: _deleteAll,
       import: _importTTL,
       export: _exportTTL
     };
