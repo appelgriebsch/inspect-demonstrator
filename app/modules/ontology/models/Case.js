@@ -23,6 +23,7 @@
       this.name = '';
       this.description = description;
       this.individualIris = [];
+      this.individuals = [];
       this.datatypeProperties = [];
       this.objectProperties = [];
     }

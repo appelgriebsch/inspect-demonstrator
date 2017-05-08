@@ -59,80 +59,60 @@
         $mdSidenav(componentId).toggle();
       };
     }
-
-
-
     var _showNodeDialog = (nodeId) => {
       if (!nodeId) {
         return;
       }
-      var that = this;
       $mdDialog.show({
-        controller: 'CasesDialogController',
-        controllerAs: 'ctl',
+        controller: 'CasesDialogController as $ctrl',
         templateUrl: 'modules/cases/views/dialog.html',
         parent: angular.element(document.body),
         clickOutsideToClose: false,
         windowClass: 'large-Modal',
-        locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: CaseOntologyDataService.getDatatypeProperties(), instances: angular.copy($scope.data['case'].individuals)}
+        locals: {nodeId: nodeId, objectProperties: CaseOntologyDataService.getObjectProperties(), datatypeProperties: CaseOntologyDataService.getDatatypeProperties(), instances: $scope.data['case'].individuals}
       }).then(function(result) {
         if (result.addRelation === true) {
-          $scope.setBusy('Adding relation...');
-          if (result.relation.type === 'object') {
-            _addObjectRelation(result.individualIri, result.relation).then(() => {
-              $scope.setReady(true);
+          if (result.type === 'object') {
+            _addObjectRelation(result.individual, result.property, result.target).then(() => {
             }).catch((err) => {
               $scope.setError('EditAction', 'mode edit', err);
-              $scope.setReady(true);
             });
           }
-          if (result.relation.type === 'value') {
-            _addValueRelation(result.individualIri, result.relation).then(() => {
-              $scope.setReady(true);
+          if (result.type === 'value') {
+            _addValueRelation(result.individual, result.property, result.target).then(() => {
             }).catch((err) => {
               $scope.setError('EditAction', 'mode edit', err);
-              $scope.setReady(true);
             });
           }
         }
         if (result.removeRelation === true) {
-          $scope.setBusy('Removing relation...');
-          if (result.relation.type === 'object') {
-            _removeObjectRelation(result.individualIri, result.relation).then(() => {
-              $scope.setReady(true);
+          if (result.type === 'object') {
+            _removeObjectRelation(result.individual, result.property, result.target).then(() => {
             }).catch((err) => {
               $scope.setError('EditAction', 'mode edit', err);
-              $scope.setReady(true);
             });
           }
-          if (result.relation.type === 'value') {
-            _removeValueRelation(result.individualIri, result.relation).then(() => {
-              $scope.setReady(true);
+          if (result.type === 'value') {
+            _removeValueRelation(result.individual, result.property, result.target).then(() => {
             }).catch((err) => {
               $scope.setError('EditAction', 'mode edit', err);
-              $scope.setReady(true);
             });
           }
         }
       });
     };
 
-    const _removeValueRelation = (individualIri, relation) => {
+    const _removeValueRelation = (individual, property, target) => {
       return new Promise((resolve, reject) => {
-        CaseOntologyDataService.removeDatatypeProperty($scope.data['case'], individualIri, relation.propIri, relation.targetValue).then(()=> {
-          const that = this;
-          const nodes = [];
+        CaseOntologyDataService.removeDatatypeProperty(individual, property, target).then(()=> {
+          const node = _createDataNode(individual.iri, property.iri, target);
           const edges = this.data.edges.get({
             filter: function (edge) {
-              const result = edge.from === individualIri && that.data.nodes.get(edge.to).label === relation.targetValue && edge.label === relation.propLabel;
-              if (result === true) {
-                nodes.push(edge.to)
-              }
-              return result;
+              return edge.from === individual.iri && edge.to === node.id && edge.label ===  property.label;
             }
           });
           this.data.edges.remove(edges);
-          this.data.nodes.remove(nodes);
+          this.data.nodes.remove(node);
           resolve();
         }).catch((err) => {
           reject(err);
@@ -140,12 +120,12 @@
       });
     };
 
-    const _removeObjectRelation = (individualIri, relation) => {
+    const _removeObjectRelation = (individual, property, target) => {
       return new Promise((resolve, reject) => {
-        CaseOntologyDataService.removeObjectProperty($scope.data['case'], individualIri, relation.propIri, relation.targetIri).then(()=> {
+        CaseOntologyDataService.removeObjectProperty(individual, property, target).then(()=> {
           const edges = this.data.edges.get({
             filter: function (edge) {
-              return edge.from === individualIri && edge.to === relation.targetIri && edge.label === relation.propLabel;
+              return edge.from === individual.iri && edge.to === target.iri && edge.label ===  property.label;
             }
           });
           this.data.edges.remove(edges);
@@ -156,14 +136,12 @@
       });
     };
 
-    const _addValueRelation = (individualIri, relation) => {
+    const _addValueRelation = (individual, property, target) => {
       return new Promise((resolve, reject) => {
-        //TODO: add type if applicable
-        const type = undefined;
-        CaseOntologyDataService.addDatatypeProperty($scope.data['case'], individualIri, relation.propIri, relation.targetValue, type).then(()=> {
-          const id = uuid.v4();
-          this.data.nodes.add({id: id, label: relation.targetValue, title: relation.targetValue, group: 'dataNode'});
-          this.data.edges.add({from: individualIri, to: id, label: relation.propLabel, title: relation.propLabel});
+        CaseOntologyDataService.addDatatypeProperty(individual, property, target).then(()=> {
+          const node = _createDataNode(individual.iri, property.iri, target);
+          vm.data.nodes.add(node);
+          vm.data.edges.add({from: individual.iri, to: node.id, label: property.label, title: property.label});
           resolve();
         }).catch((err) => {
           reject(err);
@@ -171,10 +149,10 @@
       });
     };
 
-    const _addObjectRelation = (individualIri, relation) => {
+    const _addObjectRelation = (individual, property, target) => {
       return new Promise((resolve, reject) => {
-        CaseOntologyDataService.addObjectProperty($scope.data['case'], individualIri, relation.propIri, relation.targetIri).then(()=> {
-          this.data.edges.add({from: individualIri, to: relation.targetIri, label: relation.propLabel, title: relation.propLabel});
+        CaseOntologyDataService.addObjectProperty(individual, property, target).then(()=> {
+          this.data.edges.add({from: individual.iri, to: target.iri, label: property.label, title:  property.label});
           resolve();
         }).catch((err) => {
           reject(err);
@@ -185,46 +163,79 @@
     const _renameNode = (oldIri, newName) => {
       return new Promise((resolve, reject) => {
         // change node name
-        CaseOntologyDataService.renameIndividual($scope.data['case'], oldIri, newName).then((individual) => {
-          if (!angular.isUndefined(individual)) {
-            const newNode = $scope.data['case'].generateNode(individual);
-            // add new node
-            this.data.nodes.add(newNode);
-            //update edges
-            var updates = [];
-            angular.forEach(this.data.edges.get(), (edge) => {
-              if (edge.from === oldIri) {
-                updates.push({id: edge.id, from: individual.iri});
-              }
-              if (edge.to === oldIri) {
-                updates.push({id: edge.id, to: individual.iri});
-              }
-            });
-            this.data.edges.update(updates);
-            //delete old node
-            this.data.nodes.remove(oldIri);
-            this.network.fit();
-          }
+        CaseOntologyDataService.renameIndividual(oldIri, newName).then((individual) => {
+          const position = vm.network.getPositions([oldIri])[oldIri];
+
+          const edgesToUpdate = vm.data.edges.get(vm.network.getPositions([oldIri])[oldIri]);
+          edgesToUpdate.forEach((edge) => {
+            if (edge.from === oldIri) {
+              edge.from = individual.iri;
+            }
+            if (edge.to === oldIri) {
+              edge.to = individual.iri;
+            }
+          });
+
+          vm.data.nodes.add(_createIndividualNode(individual));
+          vm.data.edges.update(edgesToUpdate);
+          vm.data.nodes.remove(oldIri);
+          vm.network.moveNode(individual.iri, position.x, position.y);
           resolve();
         }).catch((err) => {
           reject(err);
         });
       });
     };
-
-    const _createGraph = () => {
-      const container = document.getElementById('ontology-graph');
-      const t = $scope.data['case'].generateNodesAndEdges();
-
-      this.data.nodes.add(t.nodes);
-      this.data.edges.add(t.edges);
-
+    const  _createIndividualNode = (individual) => {
+      return {
+        id: individual.iri,
+        label: individual.label,
+        title: `${individual.label} of type ${individual.classIris[0]}` ,
+        group: 'instanceNode'
+      };
+    };
+    const _createDataNode = (individualIri, propertyIri, target) => {
+      const nodeId = `${individualIri}_${propertyIri}_${target}`;
+      return {
+        id: nodeId,
+        label: target,
+        title: target,
+        group: 'dataNode'
+      }
+    };
+    const _createGraph = (individuals) => {
       $scope.setBusy('Loading Graph...');
+      const container = document.getElementById('ontology-graph');
+      const nodes = [];
+      const edges = [];
+      individuals.forEach((i) => {
+        nodes.push(_createIndividualNode(i));
+        i.datatypeProperties.forEach((prop) => {
+          const node = _createDataNode(i.iri, prop.iri, prop.target);
+          nodes.push(node);
+          edges.push({
+            from: i.iri,
+            to: node.id,
+            label: prop.label,
+            title: prop.label
+          });
+        });
+        i.objectProperties.forEach((prop) => {
+          edges.push({
+            from: i.iri,
+            to: prop.target,
+            label: prop.label,
+            title: prop.label
+          });
+        });
+      });
+      this.data.nodes.add(nodes);
+      this.data.edges.add(edges);
       GraphDataService.initialize().then(() => {
         return Promise.all([
           GraphDataService.loadOptions($state.params.caseId),
           GraphDataService.loadOptions($state.params.caseId + 'autosetup')
-          ]);
+        ]);
       }).then((result) => {
 
         $scope.data['graph'] = result[0];
@@ -246,9 +257,7 @@
             }
           }
         });
-
         this.network.on("click",$scope.fokusGraph);
-
         $scope.setReady(true);
       }).catch((err) => {
         if (err.name == "not_found") {
@@ -334,12 +343,12 @@
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
       this.network.on('doubleClick', (params) => {
-          if (params.nodes.length > 0) {
-            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
-              _showNodeDialog(params.nodes[0]);
-            }
+        if (params.nodes.length > 0) {
+          if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+            _showNodeDialog(params.nodes[0]);
           }
-        });
+        }
+      });
       this.network.on("click",$scope.fokusGraph);
     };
 
@@ -361,12 +370,12 @@
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
       this.network.on('doubleClick', (params) => {
-          if (params.nodes.length > 0) {
-            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
-              _showNodeDialog(params.nodes[0]);
-            }
+        if (params.nodes.length > 0) {
+          if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+            _showNodeDialog(params.nodes[0]);
           }
-        });
+        }
+      });
       this.network.on("click",$scope.fokusGraph);
     };
 
@@ -385,12 +394,12 @@
       }
       this.network = new vis.Network(container, this.data, this.graphOptions);
       this.network.on('doubleClick', (params) => {
-          if (params.nodes.length > 0) {
-            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
-              _showNodeDialog(params.nodes[0]);
-            }
+        if (params.nodes.length > 0) {
+          if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+            _showNodeDialog(params.nodes[0]);
           }
-        });
+        }
+      });
       this.network.on("click",$scope.fokusGraph);
     };
 
@@ -412,12 +421,12 @@
         this.network = new vis.Network(container, this.data, this.graphOptions);
       }
       this.network.on('doubleClick', (params) => {
-          if (params.nodes.length > 0) {
-            if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
-              _showNodeDialog(params.nodes[0]);
-            }
+        if (params.nodes.length > 0) {
+          if (this.data.nodes.get(params.nodes[0]).group === 'instanceNode') {
+            _showNodeDialog(params.nodes[0]);
           }
-        });
+        }
+      });
       this.network.on("click", $scope.fokusGraph);
     };
 
@@ -480,9 +489,9 @@
     };
 
     $scope.clearFocus = (params) => {
-     if (highlightActive === true) {
-      allNodes = this.data['nodes'].get({returnType:"Object"});
-      allEdges = this.data['edges'].get({returnType:"Object"});
+      if (highlightActive === true) {
+        allNodes = this.data['nodes'].get({returnType:"Object"});
+        allEdges = this.data['edges'].get({returnType:"Object"});
 
         // reset all nodes
         for (var nodeId in allNodes) {
@@ -616,10 +625,10 @@
       allEdges = this.data['edges'].get({returnType:"Object"});
       // reset all nodes
       for (var nodeId in allNodes) {
-         allNodes[nodeId].hidden = false;
+        allNodes[nodeId].hidden = false;
       }
 
-        // reset all edges
+      // reset all edges
       for (var edgeId in allEdges) {
         allEdges[edgeId].hidden = false;
       }
@@ -719,7 +728,7 @@
 
     $scope.$on('case-save', () => {
       CaseOntologyDataService.saveCase($scope.data['case']).then(() => {
-     });
+      });
       this.graphOptions._id = $scope.data.case.identifier;
       GraphDataService.save(this.graphOptions);
       $scope.data['autosetup']._id = $scope.data.case.identifier + 'autosetup';
@@ -736,7 +745,7 @@
     $scope.newInstanceNode = (clazzIri) => {
       const r = Math.floor((Math.random() * 1000) + 1);
       CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node_${r}`, $scope.data['case']).then((individual) => {
-        this.data.nodes.add($scope.data['case'].generateNode(individual));
+        this.data.nodes.add(_createIndividualNode(individual));
         this.network.fit();
       }).catch((err) => {
         $scope.setError('AddAction', 'add', err);
@@ -745,10 +754,10 @@
     };
 
     $scope.editEdges = () => {
-      _showNodeDialog($scope.selectedKnotenNameFull );
+      if (this.data.nodes.get($scope.selectedKnotenNameFull).group === 'instanceNode') {
+        _showNodeDialog($scope.selectedKnotenNameFull );
+      }
     };
-
-
 
     $scope.renameNode = (event) => {
       const confirm = $mdDialog.prompt()
@@ -759,47 +768,28 @@
         .targetEvent(event)
         .ok('Save')
         .cancel('Cancel');
-
       $mdDialog.show(confirm).then(function(result) {
-        console.log(result);
-        const individuals = $scope.data['case'].individuals.filter((i) => {
-          if (i.iri === $scope.selectedKnotenNameFull) {
-            return true;
-          }
+        _renameNode($scope.selectedKnotenNameFull, result).then(() => {
+          $scope.setReady(true);
+        }).catch((err) => {
+          $scope.setError('EditAction', 'mode edit', err);
+          $scope.setReady(true);
         });
-        if (individuals.length > 0) {
-
-          _renameNode(individuals[0].iri, result).then(() => {
-            $scope.setReady(true);
-          }).catch((err) => {
-            $scope.setError('EditAction', 'mode edit', err);
-            $scope.setReady(true);
-          });
-        }
       });
     };
 
     $scope.deleteNode = () => {
       $scope.setBusy('Deleting node...');
-      const individuals = $scope.data['case'].individuals.filter((i) => {
-        if (i.iri === $scope.selectedKnotenNameFull) {
-          return true;
-        }
-      });
-      if (individuals.length > 0) {
 
+      // XXX: removes the individual completely! what should happen if the individual is also in another case?
+      CaseOntologyDataService.removeIndividual($scope.selectedKnotenNameFull).then(() => {
         this.data.nodes.remove($scope.selectedKnotenNameFull);
-        // XXX: removes the individual completely! what should happen if the individual is also in another case?
-        CaseOntologyDataService.removeIndividual(individuals[0], $scope.data['case']).then(() => {
-          this.network.fit();
-          $scope.setReady(true);
-        }).catch((err) => {
-          $scope.setError('DeleteAction', 'delete', err);
-          $scope.setReady(true);
-        });
-      } else {
+        this.network.fit();
         $scope.setReady(true);
-      }
+      }).catch((err) => {
+        $scope.setError('DeleteAction', 'delete', err);
+        $scope.setReady(true);
+      });
     };
 
     //<editor-fold desc="Initialization">
@@ -818,17 +808,11 @@
         //GraphDataService.initialize()
       ]).then(() => {
         $scope.data.classesTree = CaseOntologyDataService.getClassTree();
-        console.log("classtree",$scope.data.classesTree);
-        return Promise.all([
-          CaseOntologyDataService.loadCase($state.params.caseId),
-          //GraphDataService.loadOptions($state.params.caseId)
-        ]);
+        return  CaseOntologyDataService.loadCase($state.params.caseId);
       }).then((result) => {
         $scope.data['case'] = result[0];
         $scope.data.initialCase = angular.copy(result[0]);
-        //$scope.data['graph'] = result[1];
-        //$scope.data.initialGraph = angular.copy(result[1]);
-        _createGraph();
+        _createGraph(result[1]);
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);

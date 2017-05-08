@@ -19,11 +19,10 @@
       $scope.setBusy('Initializing Case..');
       const identifier = 'Fall_' + new Date().getTime();
       CaseOntologyDataService.createCase(identifier).then(() => {
-
         $state.go('app.cases.edit', {caseId: identifier});
         $scope.setReady(true);
       }).catch((err) => {
-        $scope.setError('SearchAction', 'search', err);
+        $scope.setError('InsertAction', 'insert', err);
         $scope.setReady(true);
       });
     };
@@ -94,7 +93,6 @@
         }
         return false;
       });
-      console.log(vm.filteredCases);
       $scope.setReady(true);
     };
 

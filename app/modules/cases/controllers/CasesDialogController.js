@@ -3,134 +3,144 @@
   'use strict';
 
   function CasesDialogController($scope, $state, $mdDialog, nodeId, objectProperties, datatypeProperties, individuals) {
-    this.state = $state.$current;
-    $scope.data = {
-      // readonly data
-      individual: {},
-      objectProperties: objectProperties,
-      datatypeProperties: datatypeProperties,
-      individuals: individuals,
+    const vm = this;
+    vm.state = $state.$current;
 
-      // changeable data
-      selectedObjectPropertyIri: undefined,
-      selectedIndividualIri: undefined,
-      selectedDatatypePropertyIri: undefined,
-      selectedDatatypePropertyTarget: undefined,
+    vm.individual = individuals.find((i) => {
+      return (i.iri === nodeId);
+    });
 
-      objectRelations: [],
-      valueRelations: [],
-    };
+    vm.individuals = individuals;
+    vm.objectProperties = objectProperties;
+    vm.datatypeProperties = datatypeProperties;
+
+    vm.objectRelations = [] ;
+    vm.individual.objectProperties.forEach((prop) => {
+      const target = individuals.find((i) => {
+        return i.iri === prop.target;
+      });
+      if (target) {
+        vm.objectRelations.push({
+          iri: prop.iri,
+          label: prop.label,
+          targetIri: target.iri,
+          target: target.label
+        });
+      }
+    });
+    vm.valueRelations = vm.individual.datatypeProperties.map((prop) => {
+      return {
+        iri: prop.iri,
+        label: prop.label,
+        target: prop.target
+      };
+    });
+    vm.selectedObjectPropertyIri = undefined;
+    vm.selectedIndividualIri = undefined;
+    vm.selectedDatatypePropertyIri = undefined;
+    vm.selectedDatatypePropertyTarget = undefined;
 
     $scope.close = () => {
       $mdDialog.cancel();
     };
 
-
     $scope.removeObjectRelation = (index) => {
-      if ((index > -1 ) && (index < $scope.data.objectRelations.length)) {
-        $mdDialog.hide({individualIri: $scope.data.individual.iri, removeRelation: true, relation: $scope.data.objectRelations[index]});
+      if ((index < 0 ) || (index >= vm.objectRelations.length)) {
+        $mdDialog.cancel();
+        return;
       }
+      const prop = vm.objectProperties.find((p) => {
+        return p.iri === vm.objectRelations[index].iri;
+      });
+      const target = vm.individuals.find((i) => {
+        return i.iri === vm.objectRelations[index].targetIri;
+      });
+      if (angular.isUndefined(prop) || angular.isUndefined(target)) {
+        $mdDialog.cancel();
+        return;
+      }
+      $mdDialog.hide({
+        individual: vm.individual,
+        removeRelation: true,
+        property: prop,
+        target : target,
+        type: 'object'
+      });
     };
 
     $scope.removeValueRelation = (index) => {
-      if ((index > -1 ) && (index < $scope.data.valueRelations.length)) {
-        $mdDialog.hide({individualIri: $scope.data.individual.iri, removeRelation: true, relation: $scope.data.valueRelations[index]});
+      if ((index < 0 ) || (index >= vm.valueRelations.length)) {
+        $mdDialog.cancel();
+        return;
       }
+      const prop = vm.datatypeProperties.find((p) => {
+        return p.iri === vm.valueRelations[index].iri;
+      });
+       if (angular.isUndefined(prop)) {
+        $mdDialog.cancel();
+        return;
+      }
+      $mdDialog.hide({
+        individual: vm.individual,
+        removeRelation: true,
+        property: prop,
+        target : vm.valueRelations[index].target,
+        type: 'value'
+      });
     };
 
     $scope.addObjectRelation = () => {
-      if (angular.isUndefined($scope.data.selectedObjectPropertyIri)) {
+      if (angular.isUndefined(vm.selectedObjectPropertyIri)) {
+        $mdDialog.cancel();
         return;
       }
-      if (angular.isUndefined($scope.data.selectedIndividualIri)) {
+      if (angular.isUndefined(vm.selectedIndividualIri)) {
+        $mdDialog.cancel();
         return;
       }
-      const relation = _createObjectRelation($scope.data.selectedObjectPropertyIri, $scope.data.selectedIndividualIri);
-
-      if (!angular.isUndefined(relation)) {
-        $mdDialog.hide({individualIri: $scope.data.individual.iri, addRelation: true, relation: relation});
+      const prop = vm.objectProperties.find((p) => {
+        return p.iri === vm.selectedObjectPropertyIri;
+      });
+      const target = vm.individuals.find((i) => {
+        return i.iri === vm.selectedIndividualIri;
+      });
+      if (angular.isUndefined(prop) || angular.isUndefined(target)) {
+        $mdDialog.cancel();
+        return;
       }
+      $mdDialog.hide({
+        individual: vm.individual,
+        addRelation: true,
+        property: prop,
+        target : target,
+        type: 'object'
+      });
     };
 
     $scope.addDatatypeRelation = () => {
-      if (angular.isUndefined($scope.data.selectedDatatypePropertyIri)) {
+      if (angular.isUndefined(vm.selectedDatatypePropertyIri)) {
+        $mdDialog.cancel();
         return;
       }
-      if (angular.isUndefined($scope.data.selectedDatatypePropertyTarget)) {
+      if (angular.isUndefined(vm.selectedDatatypePropertyTarget)) {
+        $mdDialog.cancel();
         return;
       }
-      const relation = _createValueRelation($scope.data.selectedDatatypePropertyIri, $scope.data.selectedDatatypePropertyTarget);
-
-      if (!angular.isUndefined(relation)) {
-        $mdDialog.hide({individualIri: $scope.data.individual.iri, addRelation: true, relation: relation});
-      }
-    };
-
-
-    const _createValueRelation = (propertyIri, value)=>{
-      const relation = {type: 'value'};
-      angular.forEach($scope.data.datatypeProperties, (prop) => {
-        if (prop.iri === (propertyIri)) {
-          relation.propIri =  prop.iri;
-          relation.propLabel =  prop.label;
-        }
+      const prop = vm.datatypeProperties.find((p) => {
+        return p.iri === vm.selectedDatatypePropertyIri;
       });
-      relation.targetValue =  value;
-      if (angular.isUndefined(relation.propIri)) {
-        return undefined;
+      if (angular.isUndefined(prop)) {
+        $mdDialog.cancel();
+        return;
       }
-      return relation;
-    };
-
-    const _createObjectRelation = (propertyIri, individualIri)=>{
-      const relation = {type: 'object'};
-      angular.forEach($scope.data.objectProperties, (prop) => {
-        if (prop.iri === (propertyIri)) {
-          relation.propIri =  prop.iri;
-          relation.propLabel =  prop.label;
-        }
+      $mdDialog.hide({
+        individual: vm.individual,
+        addRelation: true,
+        property: prop,
+        target : vm.selectedDatatypePropertyTarget,
+        type: 'value'
       });
-      angular.forEach($scope.data.individuals, (individual) => {
-        if (individual.iri === (individualIri)) {
-          relation.targetIri =  individual.iri;
-          relation.targetLabel =  individual.label;
-        }
-      });
-      if (angular.isUndefined(relation.propIri) || angular.isUndefined(relation.targetIri)) {
-        return undefined;
-      }
-      return relation;
     };
-
-
-
-    return {
-      initialize: function() {
-        angular.forEach(individuals, (individual) => {
-          if (individual.iri === nodeId) {
-            $scope.data.individual = individual;
-          }
-        });
-        console.log("individual", nodeId, $scope.data.individual);
-        angular.forEach($scope.data.individual.objectProperties, (array, key) => {
-          angular.forEach(array, (item) => {
-            const relation = _createObjectRelation(key, item.target);
-            if (!angular.isUndefined(relation)) {
-              $scope.data.objectRelations.push(relation);
-            }
-          });
-        });
-        angular.forEach($scope.data.individual.datatypeProperties, (array, key) => {
-          angular.forEach(array, (item) => {
-            const relation = _createValueRelation(key, item.target);
-            if (!angular.isUndefined(relation)) {
-              $scope.data.valueRelations.push(relation);
-            }
-          });
-        });
-      }
-    };
-
   }
   module.exports = CasesDialogController;
 
