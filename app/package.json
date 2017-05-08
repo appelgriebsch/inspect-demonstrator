@@ -1,61 +1,61 @@
 {
-  "name": "inspect.demonstrator",
-  "productName": "inspect.demonstrator",
-  "description": "A demonstrator for the funded INSPECT project",
-  "version": "1.3.0",
-  "author": "Wincor Nixdorf International GmbH",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/appelgriebsch/inspect-demonstrator.git"
-  },
-  "keywords": [
-    "electron",
-    "boilerplate",
-    "angularjs"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/appelgriebsch/inspect-demonstrator/issues"
-  },
-  "homepage": "https://github.com/appelgriebsch/inspect-demonstrator#readme",
-  "dependencies": {
-    "angular": "^1.5.0",
-    "angular-animate": "^1.5.0",
-    "angular-aria": "^1.5.0",
-    "angular-centered": "^1.0.0",
-    "angular-material": "^1.0.0",
-    "angular-messages": "^1.5.3",
-    "angular-mocks": "^1.5.0",
-    "angular-route": "^1.5.0",
-    "angular-sanitize": "^1.4.5",
-    "angular-timeline": "^1.2.1",
-    "angular-ui-router": "^0.4.0",
-    "angular-ui-tree": "^2.16.0",
-    "animate.css": "^3.4.0",
-    "asar": "^0.13.0",
-    "duet": "^4.0.0",
-    "duet-channel": "^1.0.0",
-    "electron-debug": "^1.0.0",
-    "electron-devtools-installer": "^2.0.0",
-    "electron-notifications": "^1.0.0",
-    "filenamify-url": "^1.0.0",
-    "level": "^1.5.0",
-    "levelgraph": "^2.0.0",
-    "levelgraph-jsonld": "^1.0.0",
-    "levelgraph-n3": "^2.0.0",
-    "levelgraph-query": "^1.0.4",
-    "mime": "^1.3.4",
-    "node-servicefinder": "appelgriebsch/node-servicefinder",
-    "pdfjs-dist": "^1.5.0",
-    "pouchdb": "^6.0.0",
-    "pouchdb-find": "^0.10.0",
-    "pouchdb-quick-search": "^1.1.0",
-    "rimraf": "^2.4.3",
-    "uuid": "^3.0.0",
-    "vis": "^4.16.1"
-  }
+    "name": "inspect.demonstrator",
+    "productName": "inspect.demonstrator",
+    "description": "A demonstrator for the funded INSPECT project",
+    "version": "1.4.0",
+    "author": "Wincor Nixdorf International GmbH",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/appelgriebsch/inspect-demonstrator.git"
+    },
+    "keywords": [
+        "electron",
+        "boilerplate",
+        "angularjs"
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/appelgriebsch/inspect-demonstrator/issues"
+    },
+    "homepage": "https://github.com/appelgriebsch/inspect-demonstrator#readme",
+    "dependencies": {
+        "angular": "^1.5.0",
+        "angular-animate": "^1.5.0",
+        "angular-aria": "^1.5.0",
+        "angular-centered": "^1.0.0",
+        "angular-material": "^1.0.0",
+        "angular-messages": "^1.5.3",
+        "angular-mocks": "^1.5.0",
+        "angular-route": "^1.5.0",
+        "angular-sanitize": "^1.4.5",
+        "angular-timeline": "^1.2.1",
+        "angular-ui-router": "^0.4.0",
+        "angular-ui-tree": "^2.16.0",
+        "animate.css": "^3.4.0",
+        "asar": "^0.13.0",
+        "duet": "^4.0.0",
+        "duet-channel": "^1.0.0",
+        "electron-debug": "^1.0.0",
+        "electron-devtools-installer": "^2.0.0",
+        "electron-notifications": "^1.0.0",
+        "filenamify-url": "^1.0.0",
+        "level": "^1.5.0",
+        "levelgraph": "^2.0.0",
+        "levelgraph-jsonld": "^1.0.0",
+        "levelgraph-n3": "^2.0.0",
+        "levelgraph-query": "^1.0.4",
+        "mime": "^1.3.4",
+        "node-servicefinder": "appelgriebsch/node-servicefinder",
+        "pdfjs-dist": "^1.5.0",
+        "pouchdb": "^6.0.0",
+        "pouchdb-find": "^0.10.0",
+        "pouchdb-quick-search": "^1.1.0",
+        "rimraf": "^2.4.3",
+        "uuid": "^3.0.0",
+        "vis": "^4.16.1"
+    }
 }
