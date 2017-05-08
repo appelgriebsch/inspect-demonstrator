@@ -3,8 +3,30 @@
   'use strict';
 
   function GraphDataService(PouchDBService) {
+    const app = require('electron').remote.app;
+    const sysCfg = app.sysConfig();
 
     let db;
+
+    const _getIfExists = (id) => {
+      return db.get(id).then((result) =>  {
+        return Promise.resolve(result);
+      }).catch(()  =>{
+        return Promise.resolve();
+      });
+    };
+
+    const _createNewCaseMetadata = (caseIdentifier) => {
+      const doc = this.templates.caseMetaData || {};
+      doc._id = `case_metadata_${caseIdentifier}`;
+      doc.createdBy = sysCfg.user;
+      doc.createdOn = new Date();
+      doc.lastEditedOn = new Date();
+      doc.lastEditedOn = sysCfg.user;
+      return _saveOptions(doc);
+    };
+
+
 
     const _saveOptions = (options) => {
 
@@ -35,7 +57,7 @@
         // just examples for now
         const templates = {
           _id: '_design/templates',
-          version: '1.0',
+          version: '1.1',
           graphOptions: {
             height: '100%',
             width: '100%',
@@ -93,13 +115,13 @@
                   color: '#ff0000'
                 },
                 color: {
-                border: '#ff0000',
-                background: '#ffffff',
-                hover: {
                   border: '#ff0000',
-                  background: '#ffffff'
-                }
-              },
+                  background: '#ffffff',
+                  hover: {
+                    border: '#ff0000',
+                    background: '#ffffff'
+                  }
+                },
                 shape: 'box',
               },
               dataNode: {
@@ -109,43 +131,51 @@
                 },
                 shape: 'box',
                 color: {
-                border: '#000000',
-                background: '#ffffff',
-                hover: {
-                  border: '#ff0000',
-                  background: '#ffffff'
+                  border: '#000000',
+                  background: '#ffffff',
+                  hover: {
+                    border: '#ff0000',
+                    background: '#ffffff'
+                  }
                 }
               }
-        }
-      },
-      physics: {
-        barnesHut: {
-          gravitationalConstant: -13250,
-          centralGravity: 0.75,
-          springLength: 135,
-          damping: 0.28,
-          avoidOverlap: 1
-        },
-        maxVelocity: 100,
-        minVelocity: 0.75
-      },
-      interaction: {
-        hover: true,
-        hoverConnectedEdges: false,
-        selectConnectedEdges: true
-      }
-    },
-    caseOptions: {
-      _id: '',
-      nodeSize: 12,
-      nodeColor: 'green'
-    },
-    autoSetupOptions: {
-      instanzKnoten : true,
-      attributsKnoten: true,
-      kanten: true
-    }
-  };
+            },
+            physics: {
+              barnesHut: {
+                gravitationalConstant: -13250,
+                centralGravity: 0.75,
+                springLength: 135,
+                damping: 0.28,
+                avoidOverlap: 1
+              },
+              maxVelocity: 100,
+              minVelocity: 0.75
+            },
+            interaction: {
+              hover: true,
+              hoverConnectedEdges: false,
+              selectConnectedEdges: true
+            }
+          },
+          caseOptions: {
+            _id: '',
+            nodeSize: 12,
+            nodeColor: 'green'
+          },
+          caseMetaData: {
+            _id: '',
+            createdBy: 'Unknown',
+            lastEditedBy: 'Unknown',
+            createdOn: '',
+            lastEditedOn: '',
+            investigator: 'Unknown'
+          },
+          autoSetupOptions: {
+            instanzKnoten : true,
+            attributsKnoten: true,
+            kanten: true
+          }
+        };
         this.templates = templates;
 
         return PouchDBService.initialize('graph').then((pouchdb) => {
@@ -160,6 +190,26 @@
 
       loadOptions: (id)  => {
         return db.get(id);
+      },
+
+      loadCaseMetadata: (caseIdentifier)  => {
+        const id = `case_metadata_${caseIdentifier}`;
+        return new Promise((resolve, reject) => {
+          _getIfExists(id).then((result) => {
+            if (!result) {
+              return _createNewCaseMetadata(caseIdentifier);
+            } else {
+              return Promise.resolve(result);
+            }
+          }).then((result) => {
+            resolve(result);
+          }).catch((err) => {
+            reject(err);
+          });
+        });
+      },
+      createNewCaseMetadata: (caseIdentifier) => {
+        return _createNewCaseMetadata(caseIdentifier);
       },
       newCaseOptions: () => {
         var doc = this.templates.caseOptions || {};

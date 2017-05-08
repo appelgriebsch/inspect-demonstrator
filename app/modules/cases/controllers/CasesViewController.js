@@ -2,24 +2,24 @@
 
   'use strict';
 
-  function CasesViewController($scope, $state, $log, CaseOntologyDataService, OntologySharingService) {
+  function CasesViewController($scope, $state, CaseOntologyDataService, OntologySharingService, GraphDataService) {
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
+    const vm = this;
+    vm.state = $state.$current;
 
-    this.state = $state.$current;
-    $scope.data = {
-      cases: [],
-      filteredCases: []
-    };
-    $scope.viewData = {
-      showCaseStatus: 'open', // open, closed
-      showCaseCreator: 'own' // own, all
-    };
+    vm.cases = [];
+    vm.filteredCases = [];
 
-    $scope.newCase =  () => {
+    vm.showCaseStatus = 'open'; // open, closed
+    vm.showCaseCreator = 'own'; // own, all
+
+
+    vm.newCase =  () => {
       $scope.setBusy('Initializing Case..');
       const identifier = 'Fall_' + new Date().getTime();
       CaseOntologyDataService.createCase(identifier).then(() => {
+
         $state.go('app.cases.edit', {caseId: identifier});
         $scope.setReady(true);
       }).catch((err) => {
@@ -80,37 +80,39 @@
       }
     });
 
-    $scope.filter = () => {
+    vm.filter = () => {
       $scope.setBusy('Filtering...');
-      $scope.data.filteredCases = $scope.data.cases.filter((c) => {
-        if ($scope.viewData.showCaseCreator === 'own') {
-          if ((c.status === $scope.viewData.showCaseStatus) && (c.createdBy === sysCfg.user)) {
+      vm.filteredCases = vm.cases.filter((c) => {
+        if (vm.showCaseCreator === 'own') {
+          if ((c.status === vm.showCaseStatus) && (c.createdBy === sysCfg.user)) {
             return true;
           }
         } else {
-          if ((c.status === $scope.viewData.showCaseStatus)) {
+          if ((c.status === vm.showCaseStatus)) {
             return true;
           }
         }
         return false;
       });
+      console.log(vm.filteredCases);
       $scope.setReady(true);
     };
 
-    this.initialize = () => {
-      $scope.setBusy('Initializing...');
-      CaseOntologyDataService.initialize().then(() => {
-        $scope.data.cases = [];
-        return CaseOntologyDataService.loadCasesOverview();
-      }).then((cases) => {
-        $scope.data.cases = cases;
-        $scope.filter();
+    vm.$onInit = () => {
+      $scope.setBusy('Loading case data...');
+      Promise.all([
+        CaseOntologyDataService.initialize(),
+        GraphDataService.initialize(),
+      ]).then((result) => {
+        vm.cases = result[0];
+        vm.filter();
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
       });
     };
+
   }
   module.exports = CasesViewController;
 

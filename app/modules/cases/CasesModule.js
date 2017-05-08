@@ -27,7 +27,7 @@
             views: {
               'content': {
                 templateUrl: `${moduleConfig.path}/views/cases.view.html`,
-                controller: 'CasesViewController as ctl'
+                controller: 'CasesViewController as $ctrl'
               },
               'actions@app': {
                 templateUrl: `${moduleConfig.path}/views/cases.view.actions.html`
@@ -42,7 +42,7 @@
             views: {
               'content': {
                 templateUrl: `${moduleConfig.path}/views/case.edit.html`,
-                controller: 'CaseEditController as ctl'
+                controller: 'CaseEditController as $ctrl'
               },
               'actions@app': {
                 templateUrl: `${moduleConfig.path}/views/case.edit.actions.html`
@@ -54,8 +54,7 @@
 
 
 
-    const CaseOntologyDataService = require('./services/CaseOntologyDataService');
-    const OntologySharingService = require('./services/OntologySharingService');
+
     const GraphDataService = require('./services/GraphDataService');
 
     const CasesViewController = require('./controllers/CasesViewController');
@@ -66,10 +65,8 @@
 
 
     angular.module('electron-app').service('GraphDataService', ['PouchDBService', GraphDataService]);
-    angular.module('electron-app').service('CaseOntologyDataService', ['$log', '$filter', 'OntologyDataService', CaseOntologyDataService]);
-    angular.module('electron-app').service('OntologySharingService', ['OntologyDataService', OntologySharingService]);
 
-    angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', '$log', 'CaseOntologyDataService', 'OntologySharingService', CasesViewController]);
+    angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', 'CaseOntologyDataService', 'OntologySharingService', 'GraphDataService', CasesViewController]);
     angular.module('electron-app').controller('CasesDialogController', ['$scope', '$state', '$mdDialog', 'nodeId', 'objectProperties', 'datatypeProperties', 'instances', CasesDialogController]);
     angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', '$log','CaseOntologyDataService', 'GraphDataService', CaseEditController]);
     angular.module('electron-app').controller('CasesTreeController', ['$scope', '$state',CasesTreeController]);

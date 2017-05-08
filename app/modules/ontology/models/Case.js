@@ -67,8 +67,8 @@
           });
         });
       });*/
-      throw Error("Not yet implemented!");
-      //return result;
+     // throw Error("Not yet implemented!");
+      return result;
     }
   }
   module.exports = Case;

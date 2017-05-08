@@ -301,10 +301,6 @@
 
     };
     /** events from the actions menu**/
-    $scope.$on('edit-node', () => {
-      console.log(vm.state);
-     //$state.go('app.cases.edit', {caseId: caseId});
-    });
     $scope.$on('import-ontology', () => {
       const targetPath = OntologySharingService.requestOpenFile();
       if ((targetPath !== undefined) && (targetPath.length > 0)) {
@@ -318,6 +314,8 @@
           return $scope.writeLog('info', info);
         }).then(() => {
           $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
+          return GraphService.reinitialize();
+        }).then(() => {
           vm.$onInit();
         }).catch((err) => {
           $scope.setError('ReceiveAction', 'import_export', err);
