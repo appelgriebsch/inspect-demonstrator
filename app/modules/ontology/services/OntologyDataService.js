@@ -20,9 +20,9 @@
     const OwlObjectProperty = require(path.join(__dirname, '../models/OwlObjectProperty'));
     const OwlDatatypeProperty = require(path.join(__dirname, '../models/OwlDatatypeProperty'));
 
-    const regexString = /^"([\s\S]+?)"$/;
-    const regexGeneral = /^"(\d+)"\^\^(.+)$/;
+    const regexDatatype = /"([^"]+)"(?:\^\^(.+))?/;
     const regexIriCheck = /\s+/m;
+
 
     const knownIris = [{
       prefix: 'owl',
@@ -44,23 +44,27 @@
       iri: 'http://www.w3.org/2001/XMLSchema#'
     }];
 
+
     const _deleteAll = () => {
       return new Promise((resolve, reject) => {
-        db.get({}, function(err, list) {
+        db.search({
+          subject: db.v('subject'),
+          predicate: db.v('predicate'),
+          object: db.v('object')
+        }, {}, function(err, result) {
           if (err) {
             reject(err);
           } else {
-            const promises = [];
-            list.forEach((triple) => {
-              promises.push(new Promise((resolve2, reject2) => {
-                db.del(triple, function(err2) {
+            const promises = result.map((o) => {
+              return new Promise((resolve2, reject2) => {
+                db.del(o, function(err2) {
                   if (err2) {
                     reject2(err2);
                   } else {
                     resolve2();
                   }
                 });
-              }));
+              });
             });
             Promise.all(promises).then(() => {
               resolve();
@@ -71,9 +75,6 @@
         });
       });
     };
-
-
-
     const _importTTL = (path) => {
 
       return new Promise((resolve, reject) => {
@@ -93,84 +94,34 @@
       });
     };
 
-    const _exportObject = (iri) => {
-      return new Promise((resolve, reject) => {
-        db.search([{
-            subject: iri,
-            predicate: db.v('p'),
-            object: db.v('o')
-          }], {
-            n3: {
-              subject: iri,
-              predicate: db.v('p'),
-              object: db.v('o')
-            }
-          },
-          function(err, result) {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(result);
-            }
-          });
-      });
-    };
-
-    const _exportType = (type) => {
-      return new Promise((resolve, reject) => {
-        db.get({
-            predicate: `${_iriForPrefix('rdf')}type`,
-            object: type,
-
-          },
-          function(err, result) {
-            if (err) {
-              reject(err);
-            } else {
-              const promises = [];
-              angular.forEach(result, (item) => {
-                promises.push(_exportObject(item.subject));
-              });
-              Promise.all(promises).then((result) => {
-                resolve(result);
-              });
-            }
-          });
-      });
-    };
 
     const _exportTTL = (path) => {
       if (!db) {
         return Promise.resolve();
       }
       return new Promise((resolve, reject) => {
-        Promise.all([
-          _exportType(`${_iriForPrefix('owl')}Ontology`),
-          _exportType(`${_iriForPrefix('owl')}Annotation`),
-          _exportType(`${_iriForPrefix('owl')}AnnotationProperty`),
-          _exportType(`${_iriForPrefix('owl')}DatatypeProperty`),
-          _exportType(`${_iriForPrefix('owl')}ObjectProperty`),
-          _exportType(`${_iriForPrefix('owl')}Class`),
-          _exportType(`${_iriForPrefix('owl')}NamedIndividual`)
-        ]).then((result) => {
-          const stream = fs.createWriteStream(path);
-          result.forEach((result2) => {
-            result2.forEach((item) => {
-              stream.write(item);
-            });
-          });
-          stream.end('\n');
-          stream.on('finish', () => {
-            resolve();
-          });
-          stream.on('error', (err) => {
-            reject(err);
-          });
-        }).catch((err) => {
+        const fileStream = fs.createWriteStream(path);
+        const dbStream = db.searchStream({
+          subject: db.v('s'),
+          predicate: db.v('p'),
+          object: db.v('o'),
+        },  {
+          n3: {
+            subject: db.v('s'),
+            predicate: db.v('p'),
+            object: db.v('o')
+          }
+        });
+        fileStream.on('finish', () => {
+          resolve();
+        });
+        fileStream.on('error', (err) => {
           reject(err);
         });
+        dbStream.pipe(fileStream);
       });
     };
+
 
     const _fetchOntologyIri = () => {
       return new Promise((resolve, reject) => {
@@ -523,23 +474,9 @@
 
     const _parseDatatypePropertyValue = (value) => {
       let match;
-      while ((match = regexString.exec(value)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (match.index === regexString.lastIndex) {
-          regexString.lastIndex++;
-        }
-        return { value:match[1], type: undefined };
+      if ((match = regexDatatype.exec(value)) !== null) {
+        return { value:match[1], type: match[2] };
       }
-      while ((match = regexGeneral.exec(value)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (match.index === regexString.lastIndex) {
-          regexString.lastIndex++;
-        }
-        if (match[2] === "http://www.w3.org/2001/XMLSchema#integer") {
-          return { value: parseInt(match[1]), type: match[2] };
-        }
-      }
-      throw Error("Couldn't parse: "+value);
     };
 
     const _fetchIndividual = (individualIri, options) => {
@@ -588,12 +525,18 @@
             individual.comments = result[1];
 
             individual.datatypeProperties = result[2].map((item) => {
-              // TODO: do something about the potential type of a DatatypeProperty
-              return {
-                iri: item.x,
-                label:  _labelFor(item.x),
-                target: _parseDatatypePropertyValue(item.y).value
-              };
+              const parsedItem = _parseDatatypePropertyValue(item.y);
+              if (parsedItem) {
+                // TODO: do something about the potential type of a DatatypeProperty
+                return {
+                  iri: item.x,
+                  label: _labelFor(item.x),
+                  target: parsedItem.value,
+                  targetType: parsedItem.type
+                };
+              } else {
+                console.log('Could not parse value:', item);
+              }
             });
 
             individual.objectProperties = result[3].map((item) => {
@@ -1050,14 +993,15 @@
       });
     };
 
+
     return {
       initialize: () => {
         if (!db) {
           db = LevelGraphDBService.initialize('ontology');
+
         }
         return Promise.all([
-          _fetchOntologyIri()
-        ]);
+          _fetchOntologyIri()]);
       },
       isIndividual: (object) => {
         return object instanceof  OwlIndividual;
