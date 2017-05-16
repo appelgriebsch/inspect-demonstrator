@@ -142,9 +142,9 @@
       vm.data.nodes.add(nodes);
       vm.data.edges.add(edges);
 
-      vm.items = nodes.map((node) => {
+    /*  vm.items = nodes.map((node) => {
         return {id: node.id, label: node.label};
-      });
+      });*/
 
       vm.network.fit();
     };
@@ -185,6 +185,10 @@
       GraphService.initialize().then((result) => {
         return _createGraph(result.nodes, result.edges, result.filters);
       }).then(() => {
+        return GraphService.searchTerms();
+      }).then((result) => {
+        vm.items = result;
+
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
@@ -196,7 +200,7 @@
     /** inner events **/
     vm.itemSelected = (item) => {
       //if (vm.data.nodes)
-      vm.network.selectNodes([item.id]);
+      //vm.network.selectNodes([item.id]);
       vm.selectedNodes = [item];
       vm.setFocus();
     };

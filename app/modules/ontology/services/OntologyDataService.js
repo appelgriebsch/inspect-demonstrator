@@ -993,8 +993,7 @@
       });
     };
 
-
-    return {
+     return {
       initialize: () => {
         if (!db) {
           db = LevelGraphDBService.initialize('ontology');
@@ -1026,6 +1025,12 @@
       },
       fetchObjectProperty(iri, options) {
         return _fetchObjectProperty(iri, options);
+      },
+      fetchAllIndividualIris() {
+        return _fetchAllIrisForType(_iriFor('owl-individual'));
+      },
+      fetchAllClassIris() {
+        return _fetchAllIrisForType(_iriFor('owl-class'));
       },
       fetchAllIndividuals(options) {
         return _fetchAllForType(_iriFor('owl-individual'), options);

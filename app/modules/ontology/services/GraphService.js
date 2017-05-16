@@ -661,6 +661,26 @@
       });
     };
 
+    const _searchTerms = () => {
+      return new Promise((resolve, reject) => {
+        Promise.all([
+          OntologyDataService.fetchAllIndividualIris(),
+          OntologyDataService.fetchAllClassIris()
+        ]).then((result) => {
+          const iris = [];
+          result[0].forEach((iri) => {
+            iris.push({id: iri, label: iri.replace(OntologyDataService.ontologyIri(), '')});
+          });
+          result[1].forEach((iri) => {
+            iris.push({id: iri, label: iri.replace(OntologyDataService.ontologyIri(), '')});
+          });
+          resolve(iris);
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+
     const _initialize = () => {
       if (_initialized === true) {
         return Promise.resolve({
@@ -738,6 +758,9 @@
             reject(e);
           }
         });
+      },
+      searchTerms: () => {
+       return _searchTerms();
       },
       reset: () => {
         //return _createViewport();

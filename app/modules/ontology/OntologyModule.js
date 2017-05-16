@@ -44,12 +44,12 @@
     // load and register controllers
     const OntologyViewController = require('./controllers/OntologyViewController');
     const OntologyOptionsController = require('./controllers/OntologyOptionsController');
-    const OntologyMetadataController = require('./controllers/OntologyMetadataController');
+   // const OntologyMetadataController = require('./controllers/OntologyMetadataController');
     const OntologyAutoCompleteController = require('./controllers/OntologyAutoCompleteController');
 
 
     angular.module('electron-app').controller('OntologyOptionsController', ['$scope', '$mdDialog',  OntologyOptionsController]);
-    angular.module('electron-app').controller('OntologyMetadataController', [OntologyMetadataController]);
+ //   angular.module('electron-app').controller('OntologyMetadataController', [OntologyMetadataController]);
     angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q',  '$mdSidenav', 'GraphService', 'OntologySharingService', OntologyViewController]);
     angular.module('electron-app').controller('OntologyAutoCompleteController', [OntologyAutoCompleteController]);
 
