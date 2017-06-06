@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function CasesViewController($scope, $state, CaseOntologyDataService, OntologySharingService, GraphDataService) {
+  function CasesViewController($scope, $state, OntologyDataService, CaseOntologyDataService, OntologySharingService, GraphDataService) {
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
     const vm = this;
@@ -13,7 +13,6 @@
 
     vm.showCaseStatus = 'open'; // open, closed
     vm.showCaseCreator = 'own'; // own, all
-
 
     vm.newCase =  () => {
       $scope.setBusy('Initializing Case..');
@@ -98,10 +97,12 @@
 
     vm.$onInit = () => {
       $scope.setBusy('Loading case data...');
-      Promise.all([
-        CaseOntologyDataService.initialize(),
-        GraphDataService.initialize(),
-      ]).then((result) => {
+      OntologyDataService.initialize().then(() => {
+        return Promise.all([
+          CaseOntologyDataService.initialize(),
+          GraphDataService.initialize(),
+        ]);
+      }).then((result) => {
         vm.cases = result[0];
         vm.filter();
         $scope.setReady(true);

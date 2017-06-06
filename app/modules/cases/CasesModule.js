@@ -51,26 +51,31 @@
             }
           });
       });
-
-
-
-
     const GraphDataService = require('./services/GraphDataService');
 
+    // load and register controllers
     const CasesViewController = require('./controllers/CasesViewController');
     const CaseEditController = require('./controllers/CaseEditController');
-    const CasesTreeController = require('./controllers/CasesTreeController');
+    const ClassTreeController = require('./controllers/ClassTreeController');
     const CasesDialogController = require('./controllers/CasesDialogController');
 
-
+    angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', 'OntologyDataService', 'CaseOntologyDataService', 'OntologySharingService', 'GraphDataService', CasesViewController]);
+    angular.module('electron-app').controller('CasesDialogController', ['$scope', '$state', '$mdDialog', 'nodeId', 'objectProperties', 'datatypeProperties', 'instances', CasesDialogController]);
+    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', '$log','CaseOntologyDataService', 'GraphDataService', CaseEditController]);
+    angular.module('electron-app').controller('ClassTreeController', ['$scope', ClassTreeController]);
 
     angular.module('electron-app').service('GraphDataService', ['PouchDBService', GraphDataService]);
 
-    angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', 'CaseOntologyDataService', 'OntologySharingService', 'GraphDataService', CasesViewController]);
-    angular.module('electron-app').controller('CasesDialogController', ['$scope', '$state', '$mdDialog', 'nodeId', 'objectProperties', 'datatypeProperties', 'instances', CasesDialogController]);
-    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', '$log','CaseOntologyDataService', 'GraphDataService', CaseEditController]);
-    angular.module('electron-app').controller('CasesTreeController', ['$scope', '$state',CasesTreeController]);
-
+    // components
+    angular.module('electron-app').component('classTree', {
+      templateUrl: `${moduleConfig.path}/views/tree.html`,
+      replace: 'true',
+      bindings: {
+        treeData: '=',
+        onNodeClicked: '&'
+      },
+      controller: 'ClassTreeController'
+    });
 
   }
 

@@ -1,10 +1,10 @@
-(function() {
+(function () {
   'use strict';
 
   const OwlEntity = require('./OwlEntity');
 
   class OwlDatatypeProperty extends OwlEntity {
-    constructor(ontologyIri, propertyIri) {
+    constructor (ontologyIri, propertyIri) {
       super(ontologyIri, propertyIri);
 
       this.domainIris = [];
@@ -12,5 +12,4 @@
     }
   }
   module.exports = OwlDatatypeProperty;
-
 })();

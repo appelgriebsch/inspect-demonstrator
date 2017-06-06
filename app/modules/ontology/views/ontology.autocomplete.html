@@ -1,13 +1,14 @@
 <md-autocomplete
                  md-input-minlength="2"
-                 md-input-maxlength="18"
+                 md-input-maxlength="50"
+                 md-no-cache="true"
                  md-selected-item="$ctrl.selectedItem"
                  md-search-text="$ctrl.searchText"
                  md-items="item in $ctrl.findTerm($ctrl.searchText)"
                  md-item-text="item.label"
-                 md-selected-item-change="$ctrl.onItemSelected({item: $ctrl.selectedItem})"
+                 md-selected-item-change="itemSelected()"
                  md-floating-label="Search Term" layout-fill>
-
+<!--md-selected-item-change="$ctrl.onItemSelected({item: $ctrl.selectedItem})"-->
   <md-item-template>
     <span md-highlight-text="ctrl.searchText">{{ item.label }}</span>
   </md-item-template>

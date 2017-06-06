@@ -1,7 +1,7 @@
-(function(angular) {
+(function (angular) {
   'use strict';
 
-  function CaseOntologyDataService($log, $filter, OntologyDataService) {
+  function CaseOntologyDataService ($log, $filter, OntologyDataService) {
     const path = require('path');
 
     const app = require('electron').remote.app;
@@ -27,6 +27,40 @@
     let datatypeProperties = [];
     let _classTree = [];
 
+
+
+    const _buildClassTree = () => {
+      return new Promise((resolve, reject) => {
+        OntologyDataService.fetchAllClasses({superClasses: true})
+          .then((classes) => {
+            // filter out all classes we don't need
+            classes = classes.filter((c) => {
+              return (c.name.search(regexExcludedClasses) < 0);
+            });
+            // transform classes into nodes
+            const nodes = classes.map((c) => {
+              return { id: c.iri, title: c.label, children: [] };
+            });
+            // make a map for easy lookup
+            const map = new Map(nodes.map((n) =>
+              [n.id, n]
+            ));
+            const result = [];
+            // populate the children array and add nodes without parents to the result
+            classes.forEach((c) => {
+              const node = map.get(c.iri);
+              c.parentClassIris.forEach((iri) => {
+                map.get(iri).children.push(node);
+              });
+              if (c.parentClassIris.length === 0) {
+                result.push(node);
+              }
+            });
+            resolve(result);
+          }).catch(reject);
+      });
+    };
+
     const _createCase = (identifier) => {
       return new Promise((resolve, reject) => {
         const c = new Case(identifier, sysCfg.user, new Date());
@@ -44,7 +78,7 @@
     const _convertToIndividual = (case_) => {
       const ontologyIri = OntologyDataService.ontologyIri();
       const caseIri = `${ontologyIri}${case_.identifier}`;
-      const individual =  OntologyDataService.createIndividual(ontologyIri, [_caseClassIri], caseIri);
+      const individual = OntologyDataService.createIndividual(ontologyIri, [_caseClassIri], caseIri);
       individual.datatypeProperties.push({iri: _caseNamePropertyIri, label: caseNamePropertyName, target: case_.name});
       individual.objectProperties = case_.individualIris.map((iri) => {
         return { iri: _caseEntityPropertyIri, label: caseEntityPropertyName, target: iri};
@@ -55,39 +89,6 @@
       return individual;
     };
 
-
-    const _buildClassTree = () => {
-      return new Promise((resolve, reject) => {
-        OntologyDataService.fetchAllClasses({
-          superClasses: true,
-          subClasses: true
-        }).then((classes) => {
-          const map = {};
-          const classTree = [];
-          classes = classes.filter((c) => {
-            return (c.name.search(regexExcludedClasses) < 0);
-          });
-          classes.forEach((c) => {
-            if (!map[c.iri]) {
-              map[c.iri] = {iri: c.iri, name: c.name, subClasses: []};
-            } else {
-              map[c.iri].name = c.name;
-            }
-            c.parentClassIris.forEach((iri) => {
-              if (!map[iri]) {
-                map[iri] = {iri: iri, name: c.name, subClasses: [c.iri]};
-              } else {
-                map[iri].subClasses.push(map[c.iri]);
-              }
-            });
-            if (c.parentClassIris.length === 0) {
-              classTree.push(map[c.iri]);
-            }
-          });
-          resolve(classTree);
-        });
-      });
-    };
     const _createAndAddIndividual = (classIri, instanceName, case_) => {
       if (!classIri) {
         return Promise.reject(new Error('Class iri is undefined.'));
@@ -100,29 +101,18 @@
       }
       return new Promise((resolve, reject) => {
         const ontologyIri = OntologyDataService.ontologyIri();
-        const caseIndividual = _convertToIndividual(case_);
         const individual = OntologyDataService.createIndividual(ontologyIri, [classIri], `${ontologyIri}${instanceName}`);
         individual.objectProperties.push({
           iri: _caseEntityInversePropertyIri,
           label: caseEntityInversePropertyName,
-          target: caseIndividual.iri
-        });
-        caseIndividual.objectProperties.push({
-          iri: _caseEntityPropertyIri,
-          label: caseEntityPropertyName,
-          target: individual.iri
+          target: `${ontologyIri}${case_.identifier}`
         });
         OntologyDataService.insertIndividual(individual).then(() => {
-          return OntologyDataService.addIndividualProperty(caseIndividual, _caseEntityProperty, individual, 'add');
-        }).then(()=> {
           resolve(individual);
-        }).catch((err) => {
-          reject(err);
-        });
+        }).catch(reject);
       });
     };
     const _addOrRemoveProperty = (individual, property, target, type) => {
-
       if (angular.isUndefined(individual)) {
         return Promise.reject(new Error('Individual must not be null!'));
       }
@@ -135,7 +125,7 @@
       if (angular.isUndefined(type)) {
         return Promise.reject(new Error('Type must not be null!'));
       }
-       if ((type !== 'add') && (type !== 'remove')) {
+      if ((type !== 'add') && (type !== 'remove')) {
         return Promise.reject(new Error('Type must be "add" or "remove"!'));
       }
 
@@ -160,11 +150,8 @@
               });
             });
             resolve(individual);
-          }).catch((err) => {
-            reject(err);
-          });
+          }).catch(reject);
         }
-
       });
     };
 
@@ -185,16 +172,16 @@
         const newIri = `${OntologyDataService.ontologyIri()}${newName}`;
         if (newIri === individualIri) {
           resolve(newIri);
-          return;
+          return
         }
         OntologyDataService.iriExists(newIri).then((result) => {
           if (result === true) {
             throw new Error('Name already exists!');
           }
           return OntologyDataService.changeIri(individualIri, newIri);
-        }).then(()  => {
+        }).then(() => {
           return OntologyDataService.fetchIndividual(newIri, {datatypeProperties: true, objectProperties: true});
-        }).then((result)  => {
+        }).then((result) => {
           _cases.forEach((c) => {
             c.individuals = c.individuals.map((i) => {
               if (i.iri === individualIri) {
@@ -219,15 +206,14 @@
       }
       return new Promise((resolve, reject) => {
         const individual = _convertToIndividual(case_);
-        let nameProperty = undefined;
-        const promises= [];
+        let nameProperty;
+
         angular.forEach(datatypeProperties, (prop) => {
           if (prop.label === caseNamePropertyName) {
             nameProperty = prop;
           }
         });
         OntologyDataService.removeIndividual(individual).then(() => {
-
           return OntologyDataService.insertIndividual(individual);
         }).then(() => {
           resolve();
@@ -241,7 +227,7 @@
         return Promise.reject(new Error('Individual iri must not be null!'));
       }
       return new Promise((resolve, reject) => {
-        //TODO: if individual is a member of several cases, it shouldn't be deleted completely
+        // TODO: if individual is a member of several cases, it shouldn't be deleted completely
         OntologyDataService.removeEntity(individualIri).then(() => {
           resolve();
         }).catch((err) => {
@@ -262,30 +248,25 @@
 
     const _getCaseIdentifiersFor = (individualIri) => {
       if (!individualIri) {
-        return Promise.reject(Error('Iri may not be undefined.'));
+        throw Error('Iri may not be undefined.');
       }
-      return new Promise((resolve, reject) => {
-        const result = [];
-        _cases.forEach((c) => {
-          if (c.individualIris.indexOf(individualIri) > -1){
-            result.push(c.identifier);
-          }
-        });
-        resolve(result);
+      return _cases.filter((c) => {
+        return (c.individualIris.indexOf(individualIri) > -1);
+      }).map((c) => {
+        return c.identifier;
       });
     };
 
     const _loadCaseIndividuals = (case_) => {
       return new Promise((resolve, reject) => {
-        const promises = case_.individualIris.map((iri) =>  {
-          return OntologyDataService.fetchIndividual(iri, {datatypeProperties: true, objectProperties: true});
+        const promises = case_.individualIris.map((iri) => {
+          return OntologyDataService.fetchIndividual(iri, {datatypeProperties: true, objectProperties: true, parentClassIris: true, allParentClassIris: true});
         });
         Promise.all(promises).then((result) => {
           case_.individuals = result;
           resolve(result);
         });
       });
-
     };
 
     const _loadCase = (individual) => {
@@ -318,51 +299,51 @@
       return c;
     };
 
-    return {
-      initialize: ()  => {
-        if (_initialized === true) {
-          return Promise.resolve(_cases);
-        }
-        return new Promise((resolve, reject) => {
-          OntologyDataService.initialize().then(() => {
-            _caseClassIri = `${OntologyDataService.ontologyIri()}${caseClassName}`;
-            _caseNamePropertyIri = `${OntologyDataService.ontologyIri()}${caseNamePropertyName}`;
-            _caseEntityPropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityPropertyName}`;
-            _caseEntityInversePropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityInversePropertyName}`;
+    const _initialize = () => {
+      return new Promise((resolve, reject) => {
+        _caseClassIri = `${OntologyDataService.ontologyIri()}${caseClassName}`;
+        _caseNamePropertyIri = `${OntologyDataService.ontologyIri()}${caseNamePropertyName}`;
+        _caseEntityPropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityPropertyName}`;
+        _caseEntityInversePropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityInversePropertyName}`;
 
-            return Promise.all([
-              OntologyDataService.fetchIndividualsForClass(_caseClassIri, {
-                objectProperties: true,
-                reverseObjectProperties: true,
-                datatypeProperties: true,
-                comments: true,
-              }),
-              OntologyDataService.fetchAllObjectProperties(),
-              OntologyDataService.fetchAllDatatypeProperties(),
-              _buildClassTree(),
-            ]).then((result) => {
-              _cases = result[0].map((individual) => {
-                return _loadCase(individual);
-              });
-              _initialized = true;
-              objectProperties = result[1];
-              datatypeProperties = result[2];
-              _classTree = result[3];
-
-
-              _caseEntityProperty = objectProperties.find((prop) => {
-                return prop.iri === _caseEntityPropertyIri;
-              });
-              _caseEntityInverseProperty = objectProperties.find((prop) => {
-                return prop.iri === _caseEntityInversePropertyIri;
-              });
-
-              resolve(_cases);
-            }).catch((err) => {
-              reject(err);
-            });
+        Promise.all([
+          OntologyDataService.fetchIndividualsForClass(_caseClassIri, {
+            objectProperties: true,
+            reverseObjectProperties: true,
+            datatypeProperties: true,
+            comments: true
+          }),
+          OntologyDataService.fetchAllObjectProperties(),
+           OntologyDataService.fetchAllDatatypeProperties(),
+          // _buildClassTree(),
+        ]).then((result) => {
+          _cases = result[0].map((individual) => {
+            return _loadCase(individual);
           });
+          objectProperties = result[1];
+          datatypeProperties = result[2];
+        /*  _initialized = true;
+          objectProperties = result[1];
+          datatypeProperties = result[2];
+          _classTree = result[3];
+
+          _caseEntityProperty = objectProperties.find((prop) => {
+            return prop.iri === _caseEntityPropertyIri;
+          });
+          _caseEntityInverseProperty = objectProperties.find((prop) => {
+            return prop.iri === _caseEntityInversePropertyIri;
+          });
+  */
+          resolve(_cases);
+        }).catch((err) => {
+          reject(err);
         });
+      });
+    };
+
+    return {
+      initialize: () => {
+        return _initialize();
       },
       createCase: (identifier) => {
         return _createCase(identifier);
@@ -386,8 +367,8 @@
         return _removeIndividual(individualIri);
       },
 
-      getClassTree: () => {
-        return angular.copy(_classTree);
+      classTree: () => {
+        return _buildClassTree();
       },
       addObjectProperty: (individual, property, target) => {
         return _addOrRemoveProperty(individual, property, target, 'add');
@@ -405,10 +386,10 @@
         return _renameIndividual(individualIri, newName);
       },
       loadCase: (identifier) => {
-        const case_ =  _cases.find((c) => {
+        const case_ = _cases.find((c) => {
           return c.identifier === identifier;
         });
-
+        // TODO: load case from db
         return Promise.all([
           Promise.resolve(case_),
           _loadCaseIndividuals(case_)
@@ -425,9 +406,8 @@
       },
       isCaseClass: (clazz) => {
         return clazz.iri === `${OntologyDataService.ontologyIri()}${caseClassName}`;
-      },
+      }
     };
   }
   module.exports = CaseOntologyDataService;
-
 })(global.angular);

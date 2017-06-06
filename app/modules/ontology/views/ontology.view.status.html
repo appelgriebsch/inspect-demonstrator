@@ -1,10 +1,14 @@
-<div class="statusLine animated fadeInUp" layout="column" layout-fill ng-cloak ng-init="ctl.initialize()">
+<div class="statusLine animated fadeInUp" layout="column" layout-fill ng-cloak >
   <md-divider layout-fill layout-padding></md-divider>
-  <div layout-fill layout="row" ng-if="ctl.document.meta.author !== undefined">
-    <span><b>Selected Node(s)</b></span>
+  <div layout-fill layout="row">
+    <span><b>{{$ctrl.name}}</b></span>
     <span flex></span>
-    <!-- <small>{{ ctl.document.meta.datePublished | date: 'short' }}</small>-->
+    <!--<small>Something:</small>-->
+
   </div>
-  <!--  <span>{{ ctl.document.meta.headline }}</span>
-    <span>{{ ctl.document.meta.description }}</span>-->
+  <span ng-if="$ctrl.nodeType === 'individual'">Types: {{$ctrl.types}}</span>
+  <span ng-if="$ctrl.nodeType === 'individual'">Belongs to: {{$ctrl.cases}}</span>
+  <span ng-if="$ctrl.nodeType === 'class'">Parents: {{$ctrl.parents}}</span>
+  <span ng-if="$ctrl.nodeType === 'class'">Children: {{$ctrl.children}}</span>
+
 </div>

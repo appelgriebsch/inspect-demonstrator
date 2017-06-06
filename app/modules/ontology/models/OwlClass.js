@@ -1,10 +1,10 @@
-(function() {
+(function () {
   'use strict';
 
   const OwlEntity = require('./OwlEntity');
 
-  class OwlClass extends OwlEntity{
-    constructor(ontologyIri, classIri) {
+  class OwlClass extends OwlEntity {
+    constructor (ontologyIri, classIri) {
       super(ontologyIri, classIri);
 
       this.name = OwlEntity.extractName(classIri, ontologyIri);
@@ -14,5 +14,4 @@
     }
   }
   module.exports = OwlClass;
-
 })();

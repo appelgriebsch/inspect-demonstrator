@@ -1,5 +1,4 @@
-<div flex layout-fill layout="column" >
-  <md-content>
+<div flex  layout="column" >
     <md-button class="md-primary" ng-click="$ctrl.newCase()">
       <md-icon>create_new_folder</md-icon>
       New case
@@ -24,6 +23,4 @@
       <div flex="30">{{case.name}}</div>
       <div hide-xs>Created by {{case.createdBy}}, last edited on {{case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</div>
     </div>
-  </md-content>
-
 </div>

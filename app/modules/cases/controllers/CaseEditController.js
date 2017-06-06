@@ -9,19 +9,20 @@
     const vm = this;
     vm.state = $state.$current;
 
-    this.graphOptions = {};
-    this.network = undefined;
-    this.data = {
+    vm.graphOptions = {};
+    vm.network = undefined;
+    vm.data = {
       nodes: new vis.DataSet(),
       edges: new vis.DataSet(),
     };
+    vm.classTree =  [];
+
     $scope.data = {
       'case': {},
       initialCase: {},
       'graph': {},
       initalGraph: {},
       'autosetup': {},
-      classesTree: [],
       selectedNode: undefined
     };
     $scope.grapOpt = [];
@@ -742,9 +743,11 @@
     };
     //</editor-fold>
 
-    $scope.newInstanceNode = (clazzIri) => {
+    vm.newInstanceNode = (id) => {
+      console.log("add instance ", id);
       const r = Math.floor((Math.random() * 1000) + 1);
-      CaseOntologyDataService.createAndAddIndividual(clazzIri, `Node_${r}`, $scope.data['case']).then((individual) => {
+      CaseOntologyDataService.createAndAddIndividual(id, `Node_${r}`, $scope.data['case']).then((individual) => {
+        $scope.data['case'].individuals.push(individual);
         this.data.nodes.add(_createIndividualNode(individual));
         this.network.fit();
       }).catch((err) => {
@@ -807,12 +810,16 @@
         CaseOntologyDataService.initialize(),
         //GraphDataService.initialize()
       ]).then(() => {
-        $scope.data.classesTree = CaseOntologyDataService.getClassTree();
-        return  CaseOntologyDataService.loadCase($state.params.caseId);
+          return Promise.all([
+          CaseOntologyDataService.loadCase($state.params.caseId),
+          CaseOntologyDataService.classTree()
+          ]);
       }).then((result) => {
-        $scope.data['case'] = result[0];
-        $scope.data.initialCase = angular.copy(result[0]);
-        _createGraph(result[1]);
+        $scope.data['case'] = result[0][0];
+        $scope.data.initialCase = angular.copy(result[0][0]);
+        _createGraph(result[0][1]);
+        console.log("classtree", result[1]);
+        vm.classTree = result[1];
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);

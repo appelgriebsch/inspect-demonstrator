@@ -1,9 +1,7 @@
-(function() {
-
+(function () {
   'use strict';
 
-  function OntologySharingService(OntologyDataService) {
-
+  function OntologySharingService (OntologyDataService) {
     const electron = require('electron');
     const app = electron.remote.app;
     const dialog = electron.remote.dialog;
@@ -12,14 +10,12 @@
     const path = require('path');
 
     const _requestTemporaryFile = (id, attachment) => {
-
       const fileName = path.join(app.getPath('temp'), `${id}.mhtml`);
       fs.writeFileSync(fileName, attachment.data);
       return fileName;
     };
 
     const _requestFile = (func, filter) => {
-
       const filters = [];
 
       if (filter) {
@@ -39,8 +35,7 @@
       });
     };
 
-
-    const _import = (path)  => {
+    const _import = (path) => {
       return new Promise((resolve, reject) => {
         OntologyDataService.clear().then(() => {
           return OntologyDataService.import(path);
@@ -54,10 +49,7 @@
 
     const _export = (path) => {
       return OntologyDataService.export(path);
-
     };
-
-
 
     return {
       import: _import,
@@ -73,5 +65,4 @@
   }
 
   module.exports = OntologySharingService;
-
 })();

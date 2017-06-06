@@ -1,0 +1,28 @@
+<script type="text/ng-template" id="node_renderer.html">
+  <div class="tree-node tree-node-content">
+    <a class="md-icon-button  md-primary"  style="cursor: pointer;" ng-if="node.children && node.children.length > 0" data-nodrag ng-click="toggle(this)">
+      <md-icon>
+        <span ng-if="!collapsed">remove</span>
+        <span ng-if="collapsed">add</span>
+      </md-icon>
+    </a>
+    <a class="md-icon-button md-primary" ng-if="!node.children || !node.children.length > 0" >
+      <md-icon>do not disturb</md-icon>
+    </a>
+    <span style="cursor: pointer;" ng-click="$ctrl.onNodeClicked({id: node.id})">{{node.title}} ({{node.children.length}})</span>
+  </div>
+  <ol ui-tree-nodes="" ng-model="node.children" ng-if="!collapsed">
+    <li ng-repeat="node in node.children" ui-tree-node  collapsed="true" ng-include="'node_renderer.html'">
+    </li>
+  </ol>
+</script>
+
+<div  ng-cloak ui-tree style="font-size: 12px;">
+    <ol ui-tree-nodes="" ng-model="$ctrl.treeData">
+      <li ng-repeat="node in $ctrl.treeData" ui-tree-node collapsed="true" ng-include="'node_renderer.html'">
+      </li>
+    </ol>
+</div>
+
+
+
