@@ -869,7 +869,7 @@
           }
         });
         Promise.all(promises).then((classes) => {
-          const promises = []
+          const promises = [];
           classes.forEach((clazz) => {
             clazz.parentClassIris.forEach((iri) => {
               if (result.indexOf(iri) < 0) {

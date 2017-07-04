@@ -163,13 +163,14 @@
             hasColor: true,
             type: 'schema'
           });
-        /*  filters.push({
+          filters.push({
             id:_nodeTypes.DATA_NODE,
             name: "Data Nodes",
-            hasCheckBox: false,
-            hasColor: true
+            hasCheckBox: true,
+            hasColor: true,
+            type: 'data'
           });
-*/
+
           /* filters.push({
             id:  _tags.NO_CASE,
             name: "Nodes without case",
@@ -425,34 +426,13 @@
             }
           });
           // add datatype nodes
-          nodes = nodes.concat(_createDatatypeNodes(result[0][0], result[0][1]));
-          edges = edges.concat(_createDatatypeEdges(result[0][0]));
-        /*  individuals.push(individual);
-          // add individual nodes that are not cases and the corresponding edges to the result
-          individuals.forEach((individual_) => {
-            const individualCases = CaseOntologyDataService.getCaseIdentifiersFor(individual.iri);
-            const filter = filters.find((f) => {
-              return ((individualCases.indexOf(f.id) > -1) && (f.enabled === true));
-            });
-            if (!CaseOntologyDataService.isCaseIndividual(individual_) && filter) {
-              nodes.push(_createIndividualNode(individual_));
-              individual_.objectProperties.forEach((prop) => {
-                if (nodeIds.indexOf(prop.target) > -1) {
-                  edges.push(_createObjectEdge(individual_.iri, prop.iri, prop.label, prop.target));
-                }
-              });
-              individual_.classIris.forEach((iri) => {
-                if (nodeIds.indexOf(iri) > -1) {
-                  edges.push(_createInstanceOfEdge(individual_, iri));
-                }
-              });
-            }
+          const dataNodeFilter = filters.find((f) => {
+              return ((f.id === _nodeTypes.DATA_NODE) && (f.enabled === true));
           });
-
-          // add datatype nodes
-          nodes = nodes.concat(_createDatatypeNodes(individual));
-          edges = edges.concat(_createDatatypeEdges(individual));
-*/
+          if (dataNodeFilter) {
+            nodes = nodes.concat(_createDatatypeNodes(result[0][0], result[0][1]));
+            edges = edges.concat(_createDatatypeEdges(result[0][0]));
+          }
           resolve({nodes: nodes, edges: edges});
         }).catch(reject);
       });

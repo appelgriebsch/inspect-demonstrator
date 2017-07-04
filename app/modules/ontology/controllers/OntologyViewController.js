@@ -144,20 +144,20 @@
       vm.network.fit();
     };
 
-    const _removeSchemaNodes = () => {
+    const _removeNodesOfType = (type) => {
       const nodeIds = vm.data.nodes.getIds({
         filter: (n) => {
-          return (n.type === GraphService.nodeTypes.CLASS_NODE);
+          return (n.type === type);
         }
       });
-      vm.data.nodes.remove(nodeIds)
+      vm.data.nodes.remove(nodeIds);
       const edgeIds = vm.data.edges.getIds({
         filter: (e) => {
           return ((nodeIds.indexOf(e.from) > -1) || (nodeIds.indexOf(e.to) > -1));
         }
 
       });
-      vm.data.edges.remove(edgeIds)
+      vm.data.edges.remove(edgeIds);
       vm.network.fit();
     };
 
@@ -258,6 +258,7 @@
       const filters = vm.filters.map((f) => {
         return {id: f.id, enabled: f.enabled};
       });
+      depth = 3;
       GraphService.neighbors(node, filters, depth, vm.data.nodes.getIds()).then((result) => {
         const nodes = vm.applyColors(result.nodes);
         vm.data.nodes.update(nodes);
@@ -291,21 +292,14 @@
       if (enabled === false) {
         vm.selectedNodes = [];
         if (filter.type === 'schema') {
-          _removeSchemaNodes();
+          _removeNodesOfType(GraphService.nodeTypes.CLASS_NODE);
+        }
+        if (filter.type === 'data') {
+          _removeNodesOfType(GraphService.nodeTypes.DATA_NODE);
         }
         if (filter.type === 'case') {
           _removeCaseNodes(id);
         }
-      } else {
-        /* GraphService.updateFilter(id, enabled).then((result) => {
-         console.log("filter result", result);
-         const nodes = vm.applyColors(result.nodes);
-         vm.data.nodes.update(nodes);
-         vm.data.edges.update(result.edges);
-         vm.network.fit();
-         }).catch((err) => {
-         $scope.setError('SearchAction', 'search', err);
-         }); */
       }
     };
 
