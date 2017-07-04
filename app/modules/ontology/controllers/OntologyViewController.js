@@ -373,37 +373,6 @@
         });
       }
     });
-    /*  $scope.$on('import-ontology', () => {
-     const targetPath = OntologySharingService.requestOpenFile();
-     if ((targetPath !== undefined) && (targetPath.length > 0)) {
-     $scope.setBusy('Importing ontology...');
-     OntologySharingService.import(targetPath[0]).then(() => {
-     CaseOntologyDataService.reset();
-     return CaseOntologyDataService.initialize();
-     }).then(CaseOntologyDataService.createMetadataForCases)
-     .then(GraphService.initialize)
-     .then(GraphService.createFilters)
-     .then((result) => {
-     _createGraph();
-     _setFilters(result);
-     return GraphService.searchTerms();
-     }).then((result) => {
-     vm.autocomplete.items = result;
-
-     const info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
-     info.description = 'The ontology has been imported successfully.';
-     info.object = {};
-     info.result = {};
-     return $scope.writeLog('info', info);
-     }).then(() => {
-     $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
-     $scope.setReady(true);
-     }).catch((err) => {
-     $scope.setError('ReceiveAction', 'import_export', err);
-     $scope.setReady(true);
-     });
-     }
-     });*/
 
     $scope.$on('export-ontology', () => {
       const targetPath = OntologySharingService.requestSaveFile();

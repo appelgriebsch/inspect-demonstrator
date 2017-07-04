@@ -813,60 +813,6 @@
           .catch(reject);
       });
     };
-
-    const _changeIri = (oldIri, newIri) => {
-      if (!oldIri) {
-        return Promise.reject(new Error('Old Iri must not be null.'));
-      }
-      if (!newIri) {
-        return Promise.reject(new Error('New Iri must not be null.'));
-      }
-      const _update = (oldTriple, newTriple) => {
-        return new Promise((resolve, reject) => {
-          db.del(oldTriple, function (err) {
-            db.put(newTriple, function (err2) {
-              resolve(true);
-            });
-          });
-        });
-      };
-
-      return new Promise((resolve, reject) => {
-        db.get({
-          subject: oldIri
-        }, function (err, results) {
-          if (err) {
-            reject(err);
-          } else {
-            const promises = [];
-            angular.forEach(results, (triple) => {
-              const newTriple = angular.copy(triple);
-              newTriple.subject = newIri;
-              promises.push(_update(triple, newTriple));
-            });
-            Promise.all(promises).then(() => {
-              db.get({
-                object: oldIri
-              }, function (err, results) {
-                if (err) {
-                  reject(err);
-                } else {
-                  const promises = [];
-                  angular.forEach(results, (triple) => {
-                    const newTriple = angular.copy(triple);
-                    newTriple.object = newIri;
-                    promises.push(_update(triple, newTriple));
-                  });
-                  Promise.all(promises).then(() => {
-                    resolve();
-                  });
-                }
-              });
-            });
-          }
-        });
-      });
-    };
     const _fetchIndividualIrisForClass = (classIri, options) => {
       if (classIri === undefined) {
         return Promise.reject(new Error('Class iri is undefined.'));
@@ -944,56 +890,7 @@
       });
     };
 
-    const _addOrRemoveIndividualProperty = (subject, property, object, type) => {
-      if (!subject) {
-        return Promise.reject(new Error('Subject must not be undefined.'));
-      }
-      if (!(subject instanceof OwlIndividual)) {
-        return Promise.reject(new Error('Subject must be of type OwlIndividual.'));
-      }
-      if (!property) {
-        return Promise.reject(new Error('Property must not be undefined.'));
-      }
-      if (!((property instanceof OwlObjectProperty) || (property instanceof OwlDatatypeProperty))) {
-        return Promise.reject(new Error('Property must be of type OwlObjectProperty or OwlDatatypeProperty.'));
-      }
-      if (!object) {
-        return Promise.reject(new Error('Object must not be undefined.'));
-      }
-      if ((property instanceof OwlObjectProperty) && !(object instanceof OwlIndividual)) {
-        return Promise.reject(new Error('Object must be of type OwlIndividual.'));
-      }
-      let func;
-      if (type === 'add') {
-        func = db.put;
-      }
-      if (type === 'remove') {
-        func = db.del;
-      }
-      if (!func) {
-        return Promise.resolve();
-      }
-      const triple = {
-        subject: subject.iri,
-        predicate: property.iri
-      };
-      if (property instanceof OwlObjectProperty) {
-        triple.object = object.iri;
-      }
-      if (property instanceof OwlDatatypeProperty) {
-        // todo: change
-        triple.object = `"${object}"`;
-      }
-      return new Promise((resolve, reject) => {
-        func(triple, function (err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
-    };
+
     const _fetchIndividualIrisWith = (propertyIri, otherIndividualIri, type) => {
       if (!_isValidString(propertyIri)) {
         return Promise.reject(Error(`Property iri: ${propertyIri} is not valid.`));
@@ -1083,9 +980,6 @@
       createIndividual: (ontologyIri, classIri, instanceIri) => {
         return new OwlIndividual(ontologyIri, classIri, instanceIri);
       },
-      changeIri (oldIri, newIri) {
-        return _changeIri(oldIri, newIri);
-      },
       fetchIndividual (individualIri, options) {
         return _fetchIndividual(individualIri, options);
       },
@@ -1115,12 +1009,6 @@
       },
       insertIndividual: (individual) => {
         return _insertIndividual(individual);
-      },
-      addIndividualProperty: (subject, property, object) => {
-        return _addOrRemoveIndividualProperty(subject, property, object, 'add');
-      },
-      removeIndividualProperty: (subject, property, object) => {
-        return _addOrRemoveIndividualProperty(subject, property, object, 'remove');
       },
       removeIndividual: (individual) => {
         return _removeIndividual(individual);

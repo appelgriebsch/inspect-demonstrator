@@ -77,19 +77,7 @@
         };
       },
       retrieveCaseMetadata: function(caseIdentifier) {
-
-
         return db.get(`${caseIdentifier}_metadata`);
-        /*return Promise.resolve(
-          db.get(`${caseIdentifier}_metadata`)
-            .then((result) => {
-              console.log("data ", caseIdentifier, result);
-          }).catch((err) => {
-            console.log("err ", caseIdentifier, err);
-            throw err;
-          })
-
-        );*/
       },
       saveCaseMetadata: function(data) {
         return _saveCaseMetadata(data);
