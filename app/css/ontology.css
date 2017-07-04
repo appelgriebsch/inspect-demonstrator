@@ -10,42 +10,14 @@ md-autocomplete[md-floating-label].transparent-blur, .transparent-blur {
   margin-top: 0.5em;
   font-size: 12px;
 }
-/*.md-icon-button.ontology-sidebar-btn {
-  height: 32px;
-  width: 32px;
-  line-height: 32px;
+
+
+div.tree-nodes {
+  margin-left: 0;
+  padding-left: 1em;
+}
+div.tree-node button {
   padding: 0;
-  margin: 0.5em 0 0 0;
-}
-.md-icon-button.ontology-sidebar-btn-closed {
-  z-index: 1;
-  position: fixed;
-}
-
-.md-icon-button.ontology-sidebar-right-btn-closed {
-  right:25px;
-}
-
-.md-icon-button.ontology-sidebar-left-btn-opened {
-  margin-right: 1em;
-  margin-top: 1em;
-  padding:0 ;
-}
-
-.md-icon-button.ontology-sidebar-right-btn-opened {
-  margin-right: 1em;
-  margin-top: 1em;
-  padding:0 ;
-}
-
-md-input-container.sidebar-input {
-  margin: 10px 30px;
-}
-*/
-.badge > .badge-label {
-  vertical-align: baseline;
-  font-size: 0.75em;
-  position: relative;
-  top: 1em;
-  left: -1.5em;
+  margin: 0;
+  min-width: 0;
 }

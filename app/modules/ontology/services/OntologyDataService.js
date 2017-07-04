@@ -216,9 +216,9 @@
      * @returns {Promise}
      * @private
      */
-    const _iriExists = (iri) => {
-      if (!iri) {
-        return Promise.reject(new Error('Iri may not be null.'));
+    const _iriExists = (iri, type) => {
+      if (!_isValidString(iri)) {
+        return Promise.reject(new Error('Iri is no valid string.'));
       }
       return new Promise((resolve, reject) => {
         db.get({
@@ -247,30 +247,17 @@
       return (!((str.length === 0) || (str.trim().length === 0)));
     };
 
-    //TODO: remove
     const _isIriValid = (iri) => {
-      if (iri === undefined) {
-        throw new Error('Iri may not be undefined.');
-      }
-      if (iri === null) {
-        throw new Error('Iri may not be null.');
-      }
-      if (typeof iri !== 'string') {
-        throw new Error(`Iri (${iri}) must be a string.`);
-      }
-      if (iri.length === 0) {
-        throw new Error('Iri may not be an empty string.');
+      if (!_isValidString(iri)) {
+        return false;
       }
       if (regexIriCheck.test(iri)) {
-        throw new Error(`Iri (${iri}) may not contain a space.`);
+        return false;
       }
+      return true;
     };
 
     const _fetch = (iri, predicate, rdfsType, type) => {
-      if (!db) {
-        return Promise.resolve([]);
-      }
-
       return new Promise((resolve, reject) => {
         const searchArray = [];
         if (type === 'subject') {
@@ -530,7 +517,10 @@
             return iri.startsWith(_iriForPrefix('ontology'));
           });
           individual = new OwlIndividual(_iriForPrefix('ontology'), classIris, individualIri);
-          individual.comments = result[1];
+          individual.comments = result[1].map((item) => {
+            // remove leading and trailing quotation marks
+            return item.slice(1, -1);
+          });
 
           individual.datatypeProperties = result[2].map((item) => {
             const parsedItem = _parseDatatypePropertyValue(item.y);
@@ -742,14 +732,25 @@
         });
       });
     };
+
+    const _writeToDb = (triples) => {
+      return new Promise((resolve, reject) => {
+        db.put(triples, function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(true);
+          }
+        });
+      });
+    };
+
     const _insertIndividual = (individual) => {
       if (!individual) {
         return Promise.reject(new Error('Individual must not be null.'));
       }
-      try {
-        _isIriValid(individual.iri);
-      } catch (err) {
-        return Promise.reject(err);
+      if (!_isIriValid(individual.iri)) {
+        return Promise.reject(new Error('Individual iri is not valid.'));
       }
       return new Promise((resolve, reject) => {
         _iriExists(individual.iri).then((exists) => {
@@ -774,7 +775,7 @@
               triples.push({
                 subject: individual.iri,
                 predicate: 'http://www.w3.org/2000/01/rdf-schema#comment',
-                object: comment
+                object: `"${comment}"`
               });
             });
             individual.objectProperties.forEach((prop) => {
@@ -784,24 +785,29 @@
                 object: prop.target
               });
             });
-            individual.datatypeProperties.forEach((prop) => {
+            individual.reverseObjectProperties.forEach((prop) => {
               triples.push({
-                subject: individual.iri,
+                subject: prop.target,
                 predicate: prop.iri,
-                object: `"${prop.target}"`
+                object: individual.iri
               });
             });
-            const promises = [];
-            promises.push(new Promise((resolve2, reject2) => {
-              db.put(triples, function (err2) {
-                if (err2) {
-                  reject2(err2);
-                } else {
-                  resolve2([]);
-                }
-              });
-            }));
-            return Promise.all(promises);
+            individual.datatypeProperties.forEach((prop) => {
+              if (prop.type) {
+                  triples.push({
+                    subject: individual.iri,
+                    predicate: prop.iri,
+                    object: `"${prop.target}"^^${prop.type}`
+                  });
+              } else {
+                triples.push({
+                  subject: individual.iri,
+                  predicate: prop.iri,
+                  object: `"${prop.target}"`
+                });
+              }
+            });
+            return _writeToDb(triples);
           }
         }).then(resolve)
           .catch(reject);
@@ -907,40 +913,7 @@
       });
     };
 
-    const _removeIndividualProperties = (subject, property) => {
-      if (subject === undefined) {
-        return Promise.reject(new Error('Subject must not be undefined.'));
-      }
-      if (!(subject instanceof OwlIndividual)) {
-        return Promise.reject(new Error('Subject must be of type OwlIndividual.'));
-      }
-      if (property === undefined) {
-        return Promise.reject(new Error('Property must not be undefined.'));
-      }
-      if (!((property instanceof OwlObjectProperty) || (property instanceof OwlDatatypeProperty))) {
-        return Promise.reject(new Error('Property must be of type OwlObjectProperty or OwlDatatypeProperty.'));
-      }
-      return new Promise((resolve, reject) => {
-        // get all properties
-        db.get({
-          subject: subject.iri,
-          predicate: property.iri
-        }, function (err, results) {
-          if (err) {
-            reject(err)
-          } else {
-            db.del(results, function (err2) {
-              if (err2) {
-                reject(err2)
-              } else {
-                resolve()
-              }
-            })
-          }
-        })
-      })
-    }
-    const _fetchAllParentIrisFor = (classIris) => {
+   const _fetchAllParentIrisFor = (classIris) => {
       return new Promise((resolve, reject) => {
         const result = [];
         const promises = [];
@@ -1021,7 +994,55 @@
         });
       });
     };
-
+    const _fetchIndividualIrisWith = (propertyIri, otherIndividualIri, type) => {
+      if (!_isValidString(propertyIri)) {
+        return Promise.reject(Error(`Property iri: ${propertyIri} is not valid.`));
+      }
+      if (!_isValidString(otherIndividualIri)) {
+        return Promise.reject(Error(`Individual iri: ${otherIndividualIri} is not valid.`));
+      }
+      if (!_isValidString(type)) {
+        return Promise.reject(Error(`Type: ${type} is not valid.`));
+      }
+      return new Promise((resolve, reject) => {
+        const searchArray = [{
+          subject: db.v('x'),
+          predicate: _iriFor('rdf-type'),
+          object: _iriFor('owl-individual')
+        }, {
+          subject: otherIndividualIri,
+          predicate: _iriFor('rdf-type'),
+          object: _iriFor('owl-individual')
+        }, {
+          subject: propertyIri,
+          predicate: _iriFor('rdf-type'),
+          object: _iriFor('owl-objectProperty')
+        }];
+        if (type === 'subject') {
+          searchArray.push({
+            subject: db.v('x'),
+            predicate: propertyIri,
+            object: otherIndividualIri
+          });
+        }
+        if (type === 'object') {
+          searchArray.push({
+            subject: otherIndividualIri,
+            predicate: propertyIri,
+            object: db.v('x')
+          });
+        }
+        db.search(searchArray, {}, function (err, result) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result.map((item) => {
+              return item.x;
+            }));
+          }
+        });
+      });
+    };
     const _isOfType = (iri, type) => {
       if (!_isValidString(iri)) {
         return Promise.reject(Error(`Iri: ${iri} is not valid.`));
@@ -1101,9 +1122,6 @@
       removeIndividualProperty: (subject, property, object) => {
         return _addOrRemoveIndividualProperty(subject, property, object, 'remove');
       },
-      removeIndividualProperties: (subject, property) => {
-        return _removeIndividualProperties(subject, property);
-      },
       removeIndividual: (individual) => {
         return _removeIndividual(individual);
       },
@@ -1116,7 +1134,9 @@
       fetchIndividualsForClass: (classIri, options) => {
         return _fetchIndividualIrisForClass(classIri, options);
       },
-
+      fetchIndividualIrisWith: (propertyIri, otherIndividualIri, type) => {
+        return _fetchIndividualIrisWith(propertyIri, otherIndividualIri, type);
+      },
       clear: _deleteAll,
       import: _importTTL,
       export: _exportTTL

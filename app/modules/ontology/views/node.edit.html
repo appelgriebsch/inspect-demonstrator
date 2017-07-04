@@ -1,0 +1,243 @@
+<!--<div ng-cloak layout="row" layout-fill>
+  <md-content ng-cloak  flex  layout-padding>
+     <md-card>
+      <md-card-content layout-padding>
+        <h4>General</h4>
+        <md-input-container class="md-block">
+          <label for="node-name">Name</label>
+          <input md-minlength="5" required id="node-name" aria-label="Node Name" data-ng-model="$ctrl.object.label" >
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label for="node-comment">Comment</label>
+          <textarea id="node-comment" aria-label="Node Comment" data-ng-model="$ctrl.object.comment"></textarea>
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label for="node-type">Type</label>
+          <md-select id="node-type" required placeholder="Select the type of the Node" ng-model="$ctrl.object.class">
+            <md-option value="{{class.id}}" ng-repeat="class in $ctrl.classes | orderBy:'label'">{{class.label}}</md-option>
+          </md-select>
+        </md-input-container>
+
+        <div  layout="row" layout-wrap>
+          <md-checkbox ng-checked="$ctrl.exists(case.id, $ctrl.object.cases)" ng-click="$ctrl.toggle(case.id, $ctrl.object.cases)" ng-repeat="case in $ctrl.cases" flex="40" >
+            {{ case.label }}
+          </md-checkbox>
+        </div>
+      </md-card-content>
+    </md-card>
+
+    <md-card ng-hide="$ctrl.individuals.length === 0">
+      <md-card-content layout-padding>
+        <h4>Add relations to other nodes</h4>
+        <md-input-container class="md-block">
+          <label for="node-object-relations">Relation</label>
+          <md-select id="node-object-relations"  placeholder="Select an object relation to add" ng-model="$ctrl.selectedObjectRelation">
+            <md-option value="{{prop.id}}" ng-repeat="prop in $ctrl.objectRelations | orderBy:'label'">{{prop.label}}</md-option>
+          </md-select>
+        </md-input-container>
+        <md-input-container class="md-block" >
+          <label for="node-object-relations-target">Target Node</label>
+          <md-select id="node-object-relations-target"  placeholder="Select a target node" ng-model="$ctrl.selectedIndividual" ng-disabled="!$ctrl.selectedObjectRelation">
+            <md-option value="{{individual.id}}" ng-repeat="individual in $ctrl.individuals | orderBy:'label'">{{individual.label}}</md-option>
+          </md-select>
+        </md-input-container>
+        <div layout="row">
+          <md-button class="md-button md-default" ng-click="$ctrl.clearObjectRelation()" ng-disabled="!$ctrl.selectedObjectRelation && !$ctrl.selectedIndividual" aria-label="Clear object relation">
+            Clear
+          </md-button>
+          <span flex></span>
+          <md-button class="md-button md-primary" ng-click="$ctrl.addObjectRelation()" ng-disabled="!$ctrl.selectedObjectRelation || !$ctrl.selectedIndividual" aria-label="Add object relation">
+            Add relation
+          </md-button>
+        </div>
+      </md-card-content>
+      <md-divider></md-divider>
+      <md-card-content>
+        <h4>Existing relations to other nodes</h4>
+      </md-card-content>
+      <md-card-content layout-padding>
+        <div ng-repeat="(index, item) in $ctrl.object.objectRelations" layout="row" layout-margin layout-padding>
+          <md-input-container flex="50">
+            <input aria-label="Object Relation" type="text" value="{{item.relationLabel}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="30">
+            <input aria-label="Target Object" type="text" value="{{item.targetLabel}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="20">
+            <md-button class="md-button md-primary" ng-click="$ctrl.removeObjectRelation(index)" type="button">
+              Remove
+            </md-button>
+          </md-input-container>
+        </div>
+      </md-card-content>
+    </md-card>
+
+    <md-card>
+      <md-card-content layout-padding>
+        <h4>Add Data</h4>
+        <md-input-container class="md-block">
+          <label for="node-data-relations">Relation</label>
+          <md-select id="node-data-relations"  placeholder="Select a data relation to add" ng-model="$ctrl.selectedDataRelation">
+            <md-option value="{{prop.id}}" ng-repeat="prop in $ctrl.dataRelations | orderBy:'label'">{{prop.label}}</md-option>
+          </md-select>
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label for="node-data-relations-type">Type of Data</label>
+          <md-select id="node-data-relations-type"  placeholder="Select the data type" ng-model="$ctrl.selectedDataRelationType">
+            <md-option value="{{type.id}}" ng-repeat="type in $ctrl.dataTypes | orderBy:'label'">{{type.label}}</md-option>
+          </md-select>
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label for="node-data-relations-target">Data</label>
+          <input md-minlength="1"  id="node-data-relations-target" aria-label="Data" data-ng-model="$ctrl.selectedDataRelationTarget" >
+        </md-input-container>
+        <div layout="row">
+          <md-button class="md-button md-default" ng-click="$ctrl.clearDataRelation()" ng-disabled="!$ctrl.selectedDataRelation && !$ctrl.selectedDataRelationTarget" aria-label="Clear data relation">
+            Clear
+          </md-button>
+          <span flex></span>
+          <md-button class="md-button md-primary" ng-click="$ctrl.addDataRelation()" ng-disabled="!$ctrl.selectedDataRelation || !$ctrl.selectedDataRelationTarget" aria-label="Add data relation">
+            Add relation
+          </md-button>
+        </div>
+      </md-card-content>
+      <md-divider></md-divider>
+      <md-card-content>
+        <h4>Existing Data</h4>
+      </md-card-content>
+      <md-card-content layout-padding>
+        <div ng-repeat="(index, item) in $ctrl.object.dataRelations" layout="row" layout-margin layout-padding>
+          <md-input-container flex="50">
+            <input aria-label="Object Relation" type="text" value="{{item.relationLabel}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="30">
+            <input aria-label="Target Object" type="text" value="{{item.target}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="20">
+            <md-button class="md-button md-primary" ng-click="$ctrl.removeDataRelation(index)" type="button">
+              Remove
+            </md-button>
+          </md-input-container>
+        </div>
+      </md-card-content>
+    </md-card>
+  </md-content>
+</div>-->
+<div ng-cloak layout="row" layout-fill>
+  <md-content ng-cloak  flex  layout-padding>
+    <form name="form">
+      <h3>General</h3>
+
+      <md-input-container class="md-block">
+        <label for="node-name">Name</label>
+        <input md-minlength="5" required id="node-name" aria-label="Node Name" data-ng-model="$ctrl.object.label"  ng-pattern="/^[^\s]+$/">
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label for="node-comment">Comment</label>
+        <textarea id="node-comment" aria-label="Node Comment" data-ng-model="$ctrl.object.comment"></textarea>
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label for="node-type">Type</label>
+        <md-select id="node-type" required placeholder="Select the type of the Node" ng-model="$ctrl.object.class">
+          <md-option value="{{class.id}}" ng-repeat="class in $ctrl.classes | orderBy:'label'">{{class.label}}</md-option>
+        </md-select>
+      </md-input-container>
+
+      <div  layout="row" layout-wrap>
+        <md-checkbox ng-checked="$ctrl.exists(case.id, $ctrl.object.cases)" ng-click="$ctrl.toggle(case.id, $ctrl.object.cases)" ng-repeat="case in $ctrl.cases" flex="40" >
+          {{ case.label }}
+        </md-checkbox>
+      </div>
+
+      <div ng-hide="$ctrl.individuals.length === 0">
+        <h3>Relations to other nodes</h3>
+        <md-input-container class="md-block">
+          <label for="node-object-relations">Relation</label>
+          <md-select id="node-object-relations"  placeholder="Select an object relation to add" ng-model="$ctrl.selectedObjectRelation">
+            <md-option value="{{prop.id}}" ng-repeat="prop in $ctrl.objectRelations | orderBy:'label'">{{prop.label}}</md-option>
+          </md-select>
+        </md-input-container>
+        <md-input-container class="md-block" >
+          <label for="node-object-relations-target">Target Node</label>
+          <md-select id="node-object-relations-target"  placeholder="Select a target node" ng-model="$ctrl.selectedIndividual" ng-disabled="!$ctrl.selectedObjectRelation">
+            <md-option value="{{individual.id}}" ng-repeat="individual in $ctrl.individuals | orderBy:'label'">{{individual.label}}</md-option>
+          </md-select>
+        </md-input-container>
+        <div layout="row">
+          <md-button class="md-button md-default" ng-click="$ctrl.clearObjectRelation()" ng-disabled="!$ctrl.selectedObjectRelation && !$ctrl.selectedIndividual" aria-label="Clear object relation">
+            Clear
+          </md-button>
+          <span flex></span>
+          <md-button class="md-button md-primary" ng-click="$ctrl.addObjectRelation()" ng-disabled="!$ctrl.selectedObjectRelation || !$ctrl.selectedIndividual" aria-label="Add object relation">
+            Add relation
+          </md-button>
+        </div>
+      </div>
+
+      <div ng-hide="$ctrl.object.objectRelations.length === 0">
+        <h4>Existing Relations</h4>
+        <div ng-repeat="(index, item) in $ctrl.object.objectRelations" layout="row" layout-margin layout-padding >
+
+          <md-input-container flex="50">
+            <input aria-label="Object Relation" type="text" value="{{item.relationLabel}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="30">
+            <input aria-label="Target Object" type="text" value="{{item.targetLabel}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="20">
+            <md-button class="md-button md-primary" ng-click="$ctrl.removeObjectRelation(index)" type="button">
+              Remove
+            </md-button>
+          </md-input-container>
+        </div>
+      </div>
+      <h3>Additional Data</h3>
+      <md-input-container class="md-block">
+        <label for="node-data-relations">Relation</label>
+        <md-select id="node-data-relations"  placeholder="Select a data relation to add" ng-model="$ctrl.selectedDataRelation">
+          <md-option value="{{prop.id}}" ng-repeat="prop in $ctrl.dataRelations | orderBy:'label'">{{prop.label}}</md-option>
+        </md-select>
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label for="node-data-relations-type">Type of Data</label>
+        <md-select id="node-data-relations-type"  placeholder="Select the data type" ng-model="$ctrl.selectedDataRelationType">
+          <md-option value="{{type.id}}" ng-repeat="type in $ctrl.dataTypes | orderBy:'label'">{{type.label}}</md-option>
+        </md-select>
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label for="node-data-relations-target">Data</label>
+        <input md-minlength="1"  id="node-data-relations-target" aria-label="Data" data-ng-model="$ctrl.selectedDataRelationTarget" >
+      </md-input-container>
+      <div layout="row">
+        <md-button class="md-button md-default" ng-click="$ctrl.clearDataRelation()" ng-disabled="!$ctrl.selectedDataRelation && !$ctrl.selectedDataRelationTarget" aria-label="Clear data relation">
+          Clear
+        </md-button>
+        <span flex></span>
+        <md-button class="md-button md-primary" ng-click="$ctrl.addDataRelation()" ng-disabled="!$ctrl.selectedDataRelation || !$ctrl.selectedDataRelationTarget" aria-label="Add data relation">
+          Add relation
+        </md-button>
+      </div>
+      <div ng-hide="$ctrl.object.dataRelations.length === 0">
+        <h4>Existing Data</h4>
+        <div ng-repeat="(index, item) in $ctrl.object.dataRelations" layout="row" layout-margin layout-padding >
+          <md-input-container flex="50">
+            <input aria-label="Object Relation" type="text" value="{{item.relationLabel}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="30">
+            <input aria-label="Target Object" type="text" value="{{item.target}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="20">
+            <md-button class="md-button md-primary" ng-click="$ctrl.removeDataRelation(index)" type="button">
+              Remove
+            </md-button>
+          </md-input-container>
+        </div>
+      </div>
+    </form>
+  </md-content>
+</div>
+
+
+
+
+

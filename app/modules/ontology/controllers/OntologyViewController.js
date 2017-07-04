@@ -1,7 +1,7 @@
 (function (angular, vis) {
   'use strict';
 
-  function OntologyViewController ($scope, $state, $q, $mdSidenav, OntologyDataService, GraphService, CaseOntologyDataService, OntologySharingService) {
+  function OntologyViewController ($scope, $state, $q, $mdSidenav, GraphService, CaseOntologyDataService, OntologySharingService) {
     const vm = this;
     vm.state = $state.$current;
 
@@ -172,24 +172,22 @@
         }
       }
     };
-
     vm.$onInit = () => {
       $scope.setBusy('Loading ontology data...');
-
-      OntologyDataService.initialize()
-        .then(CaseOntologyDataService.initialize)
+      CaseOntologyDataService.initialize()
         .then(GraphService.initialize)
+        .then(GraphService.createFilters)
         .then((result) => {
           _createGraph();
           _setFilters(result);
           return GraphService.searchTerms();
         }).then((result) => {
-          vm.autocomplete.items = result;
-          $scope.setReady(true);
-        }).catch((err) => {
-          $scope.setError('SearchAction', 'search', err);
-          $scope.setReady(true);
-        });
+        vm.autocomplete.items = result;
+        $scope.setReady(true);
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+        $scope.setReady(true);
+      });
     };
 
     /** inner events **/
@@ -299,15 +297,15 @@
           _removeCaseNodes(id);
         }
       } else {
-       /* GraphService.updateFilter(id, enabled).then((result) => {
-          console.log("filter result", result);
-          const nodes = vm.applyColors(result.nodes);
-          vm.data.nodes.update(nodes);
-          vm.data.edges.update(result.edges);
-          vm.network.fit();
-        }).catch((err) => {
-          $scope.setError('SearchAction', 'search', err);
-        }); */
+        /* GraphService.updateFilter(id, enabled).then((result) => {
+         console.log("filter result", result);
+         const nodes = vm.applyColors(result.nodes);
+         vm.data.nodes.update(nodes);
+         vm.data.edges.update(result.edges);
+         vm.network.fit();
+         }).catch((err) => {
+         $scope.setError('SearchAction', 'search', err);
+         }); */
       }
     };
 
@@ -351,20 +349,61 @@
       if ((targetPath !== undefined) && (targetPath.length > 0)) {
         $scope.setBusy('Importing ontology...');
         OntologySharingService.import(targetPath[0]).then(() => {
-          const info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
-          info.description = 'The ontology has been imported successfully.';
-          info.object = {};
-          info.result = {};
-          return $scope.writeLog('info', info);
-        }).then(() => {
+          CaseOntologyDataService.reset();
+          return CaseOntologyDataService.initialize();
+        }).then(CaseOntologyDataService.createMetadataForCases)
+          .then(GraphService.initialize)
+          .then(_createGraph)
+          .then(GraphService.createFilters)
+          .then(_setFilters)
+          .then(GraphService.searchTerms)
+          .then((result) => {
+            vm.autocomplete.items = result;
+            const info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
+            info.description = 'The ontology has been imported successfully.';
+            info.object = {};
+            info.result = {};
+            return $scope.writeLog('info', info);
+          }).then(() => {
           $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
-          vm.$onInit();
+          $scope.setReady(true);
         }).catch((err) => {
           $scope.setError('ReceiveAction', 'import_export', err);
           $scope.setReady(true);
         });
       }
     });
+    /*  $scope.$on('import-ontology', () => {
+     const targetPath = OntologySharingService.requestOpenFile();
+     if ((targetPath !== undefined) && (targetPath.length > 0)) {
+     $scope.setBusy('Importing ontology...');
+     OntologySharingService.import(targetPath[0]).then(() => {
+     CaseOntologyDataService.reset();
+     return CaseOntologyDataService.initialize();
+     }).then(CaseOntologyDataService.createMetadataForCases)
+     .then(GraphService.initialize)
+     .then(GraphService.createFilters)
+     .then((result) => {
+     _createGraph();
+     _setFilters(result);
+     return GraphService.searchTerms();
+     }).then((result) => {
+     vm.autocomplete.items = result;
+
+     const info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
+     info.description = 'The ontology has been imported successfully.';
+     info.object = {};
+     info.result = {};
+     return $scope.writeLog('info', info);
+     }).then(() => {
+     $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
+     $scope.setReady(true);
+     }).catch((err) => {
+     $scope.setError('ReceiveAction', 'import_export', err);
+     $scope.setReady(true);
+     });
+     }
+     });*/
 
     $scope.$on('export-ontology', () => {
       const targetPath = OntologySharingService.requestSaveFile();
@@ -386,6 +425,9 @@
           $scope.setReady(true);
         });
       }
+    });
+    $scope.$on('edit-cases', () => {
+      $state.go('app.ontology.cases');
     });
   }
 

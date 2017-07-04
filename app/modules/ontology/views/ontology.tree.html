@@ -1,0 +1,24 @@
+<div class="tree tree-nodes">
+  <div data-ng-include="'tree-node.html'"  data-ng-repeat="node in $ctrl.treeNodes"  data-ng-controller="TreeNodeController"></div>
+</div>
+<script type="text/ng-template" id="tree-node.html">
+  <div class="tree-node" layout="row" layout-align="start center">
+  <md-button class="md-default md-no-ink" ng-click="toggleExpanded()" aria-label="Expand or collapse node">
+      <md-icon data-ng-if="isLeaf()" >remove</md-icon>
+      <md-icon data-ng-if="!isLeaf() && !node.expanded" >expand_more</md-icon>
+      <md-icon data-ng-if="!isLeaf() && node.expanded">expand_less</md-icon>
+    </md-button>
+    <md-truncate  class="md-body-1" >
+      <md-tooltip>{{node.label}}</md-tooltip>
+      {{node.label}} ({{node.children.length}})
+    </md-truncate>
+    <md-button class="md-default md-no-ink" ng-click="$parent.onNodeClicked({id: node.id})" aria-label="Click on node" >
+      <md-icon>add_circle_outline</md-icon>
+    </md-button>
+  </div>
+  <div class="tree-nodes" data-ng-if="node.expanded === true">
+    <div data-ng-include="'tree-node.html'" data-ng-repeat="node in node.children" data-ng-controller="TreeNodeController"></div>
+  </div>
+</script>
+
+

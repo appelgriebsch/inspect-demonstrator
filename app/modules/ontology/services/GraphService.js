@@ -32,8 +32,7 @@
       'http://www.AMSL/GDK/ontologie#Uebertragungsweg': '\uf0ec'
     };
 
-    const _createDatatypeNodes = (individual) => {
-      const caseIdentifiers = CaseOntologyDataService.getCaseIdentifiersFor(individual.iri);
+    const _createDatatypeNodes = (individual,caseIdentifiers) => {
       return individual.datatypeProperties.map((prop) => {
         return {
           id: `${individual.iri}_${prop.iri}_${prop.target}`,
@@ -59,8 +58,7 @@
       }
     };
 
-    const _createIndividualNode = (individual) => {
-      const caseIdentifiers = CaseOntologyDataService.getCaseIdentifiersFor(individual.iri);
+    const _createIndividualNode = (individual, caseIdentifiers) => {
       const node = {
         id: individual.iri,
         label: individual.label,
@@ -156,7 +154,7 @@
 
     const _createNodeFilters = () => {
       return new Promise((resolve, reject) => {
-        CaseOntologyDataService.getCaseIdentifiers().then((cases) => {
+        CaseOntologyDataService.loadCaseList().then((cases) => {
           const filters = [];
           filters.push({
             id: _nodeTypes.CLASS_NODE,
@@ -179,12 +177,12 @@
           }); */
           cases.forEach((c) => {
             filters.push({
-              id: c.id,
+              id: c.identifier,
               name: c.name,
               hasCheckBox: true,
               hasColor: true,
               type: 'case'
-            })
+            });
           });
           resolve(filters);
         }).catch((err) => {
@@ -214,11 +212,8 @@
     };
 
     const _initialize = () => {
-      return new Promise((resolve, reject) => {
-        _createNodeFilters().then((filters) => {
-          resolve(filters);
-        }).catch(reject);
-      });
+      return Promise.resolve();
+
     };
 
     const _fetchClassNode = (iri, filters) => {
@@ -235,8 +230,12 @@
 
     const _fetchIndividualNode = (iri, filters) => {
       return new Promise((resolve, reject) => {
-        OntologyDataService.fetchIndividual(iri, { allParentClassIris: true })
-          .then(_createIndividualNode)
+        Promise.all([
+          OntologyDataService.fetchIndividual(iri, { allParentClassIris: true }),
+          CaseOntologyDataService.getCaseIdentifiersFor(iri)
+        ]).then((result) => {
+          return _createIndividualNode(result[0], result[1]);
+        })
           .then((node) => {
             let add = false;
             filters.forEach((f) => {
@@ -276,8 +275,34 @@
 
     const _fetchNodesForCase = (id) => {
       return new Promise((resolve, reject) => {
-        CaseOntologyDataService.loadCase(id).then((result) => {
-          // create nodes
+
+        CaseOntologyDataService.loadCase(id, true).then((result) => {
+          const promises = [];
+          result.individuals.forEach((individual) => {
+            promises.push(Promise.all([
+              Promise.resolve(individual),
+              CaseOntologyDataService.getCaseIdentifiersFor(individual.iri)
+            ]));
+          });
+          return Promise.all(promises);
+        }).then((result) => {
+          let nodes = [];
+          let edges = [];
+          result.forEach((r) => {
+            const individual = r[0];
+            const caseIdentifiers = r[1];
+            nodes.push(_createIndividualNode(individual, caseIdentifiers));
+
+            individual.objectProperties.forEach((prop) => {
+              edges.push(_createObjectEdge(individual.iri, prop.iri, prop.label, prop.target));
+            });
+            nodes = nodes.concat(_createDatatypeNodes(individual, caseIdentifiers));
+            edges = edges.concat(_createDatatypeEdges(individual));
+          });
+          console.log(result);
+
+          /*// create nodes
+          // TODO: !!!!
           let nodes = _createItems(result[1], _createIndividualNode);
           nodes = [].concat.apply(nodes, _createItems(result[1], _createDatatypeNodes));
 
@@ -285,6 +310,7 @@
           let edges = [].concat.apply([], _createItems(result[1], _createObjectEdges));
           edges = [].concat.apply(edges, _createItems(result[1], _createDatatypeEdges));
 
+           */
           resolve({nodes: nodes, edges: edges});
         });
       });
@@ -342,7 +368,7 @@
           });
           if (filter && filter.enabled === true) {
             individual.classIris.forEach((iri) => {
-              nodeIds.push(iri)
+              nodeIds.push(iri);
               promises.push(OntologyDataService.fetchClass(iri, {allParentClassIris: true}));
             });
           }
@@ -352,24 +378,56 @@
           classes.forEach((clazz) => {
             nodes.push(_createClassNode(clazz));
           });
-          const promises = [];
+          const promises = [Promise.all([
+            Promise.resolve(individual),
+            CaseOntologyDataService.getCaseIdentifiersFor(individual.iri)
+          ])];
           // fetch neighboring individuals (outgoing edges)
           individual.objectProperties.forEach((prop) => {
             if (nodeIds.indexOf(prop.target) < 0) {
               nodeIds.push(prop.target);
-              promises.push(OntologyDataService.fetchIndividual(prop.target, options));
+              promises.push(Promise.all([
+                OntologyDataService.fetchIndividual(prop.target, options),
+                CaseOntologyDataService.getCaseIdentifiersFor(prop.target)
+              ]));
             }
           });
           // fetch neighboring individuals (incoming edges)
           individual.reverseObjectProperties.forEach((prop) => {
             if (nodeIds.indexOf(prop.target) < 0) {
               nodeIds.push(prop.target);
-              promises.push(OntologyDataService.fetchIndividual(prop.target, options));
+              promises.push(Promise.all([
+                OntologyDataService.fetchIndividual(prop.target, options),
+                CaseOntologyDataService.getCaseIdentifiersFor(prop.target)
+              ]));
             }
           });
           return Promise.all(promises);
-        }).then((individuals) => {
-          individuals.push(individual);
+        }).then((result) => {
+          result.forEach((r) => {
+            const individual_ = r[0];
+            const individualCases = r[1];
+            const filter = filters.find((f) => {
+              return ((individualCases.indexOf(f.id) > -1) && (f.enabled === true));
+            });
+            if (!CaseOntologyDataService.isCaseIndividual(individual_) && filter) {
+              nodes.push(_createIndividualNode(individual_, individualCases));
+              individual_.objectProperties.forEach((prop) => {
+                if (nodeIds.indexOf(prop.target) > -1) {
+                  edges.push(_createObjectEdge(individual_.iri, prop.iri, prop.label, prop.target));
+                }
+              });
+              individual_.classIris.forEach((iri) => {
+                if (nodeIds.indexOf(iri) > -1) {
+                  edges.push(_createInstanceOfEdge(individual_, iri));
+                }
+              });
+            }
+          });
+          // add datatype nodes
+          nodes = nodes.concat(_createDatatypeNodes(result[0][0], result[0][1]));
+          edges = edges.concat(_createDatatypeEdges(result[0][0]));
+        /*  individuals.push(individual);
           // add individual nodes that are not cases and the corresponding edges to the result
           individuals.forEach((individual_) => {
             const individualCases = CaseOntologyDataService.getCaseIdentifiersFor(individual.iri);
@@ -394,7 +452,7 @@
           // add datatype nodes
           nodes = nodes.concat(_createDatatypeNodes(individual));
           edges = edges.concat(_createDatatypeEdges(individual));
-
+*/
           resolve({nodes: nodes, edges: edges});
         }).catch(reject);
       });
@@ -450,7 +508,7 @@
             if (nodeIds.indexOf(iri) < 0) {
               nodeIds.push(iri);
               promises.push(OntologyDataService.fetchClass(iri, options));
-            };
+            }
           });
           // fetch classes connected to object properties
           properties.forEach((prop) => {
@@ -496,17 +554,21 @@
           });
           // fetch individuals
           const promises = clazz.individualIris.map((iri) => {
-            return OntologyDataService.fetchIndividual(iri, {allParentClassIris: true});
+            return Promise.all([
+              OntologyDataService.fetchIndividual(iri, {allParentClassIris: true}),
+              CaseOntologyDataService.getCaseIdentifiersFor(iri)
+            ]);
           });
           return Promise.all(promises);
-        }).then((individuals) => {
-          individuals.forEach((individual) => {
-            const individualCases = CaseOntologyDataService.getCaseIdentifiersFor(individual.iri);
+        }).then((result) => {
+          result.forEach((r) => {
+            const individual = r[0];
+            const individualCases = r[1];
             const filter = filters.find((f) => {
               return ((individualCases.indexOf(f.id) > -1) && (f.enabled === true));
             });
             if (filter) {
-              nodes.push(_createIndividualNode(individual));
+              nodes.push(_createIndividualNode(individual, individualCases));
               edges.push(_createInstanceOfEdge(individual, clazz.iri));
             }
           });
@@ -543,14 +605,18 @@
       neighbors: (node, filters, depth, graphNodeIds) => {
         return _neighbors(node, filters, depth, graphNodeIds);
       },
+      createFilters: () => {
+        return _createNodeFilters();
+      },
       searchTerms: () => {
         return _searchTerms();
       },
-       tags: () => {
+      tags: () => {
         return _tags;
       },
-      caseNodes: (id, enabled) => {
-        return _fetchNodesForCase(id, enabled);
+
+      caseNodes: (id) => {
+        return _fetchNodesForCase(id);
       },
       nodeTypes: _nodeTypes
     };
