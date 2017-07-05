@@ -418,6 +418,12 @@
                   edges.push(_createObjectEdge(individual_.iri, prop.iri, prop.label, prop.target));
                 }
               });
+              individual_.reverseObjectProperties.forEach((prop) => {
+                if (nodeIds.indexOf(prop.target) > -1) {
+                  //edges.push(_createObjectEdge(individual_.iri, prop.iri, prop.label, prop.target));
+                  edges.push(_createObjectEdge(prop.target, prop.iri, prop.label, individual_.iri));
+                }
+              });
               individual_.classIris.forEach((iri) => {
                 if (nodeIds.indexOf(iri) > -1) {
                   edges.push(_createInstanceOfEdge(individual_, iri));
@@ -556,8 +562,7 @@
         }).catch(reject);
       });
     };
-
-    const _neighbors = (node, filters = [], depth = 1, graphNodeIds = []) => {
+    const findNeighbors = (node, filters = [], graphNodeIds = []) => {
       return new Promise((resolve, reject) => {
         Promise.all([
           OntologyDataService.isClass(node.id),
@@ -569,11 +574,71 @@
           if (result[1] === true) {
             return _neighborsForIndividual(node, filters, graphNodeIds);
           }
-          reject(Error(`Iri: ${node.id} identifies neither a class nor an individual.`));
+          //if neither
+          return Promise.resolve({nodes: [], edges: []});
         }).then(resolve)
           .catch(reject);
       });
     };
+
+    const bfs = (node, depth = 1, filters = [], graphNodeIds = []) => {
+      console.log("called bfs with node=",node.id,depth);
+      node.depth = 0;
+      return bfs_([node], [], depth, filters, graphNodeIds, [], []);
+    };
+
+
+    const bfs_ = (queue, visited, depth, filters = [], graphNodeIds = [], nodes, edges) => {
+      console.log("called bfs_ with queue=",queue," visited=",visited," depth=",depth);
+      nodes = nodes.slice(0);
+      edges = edges.slice(0);
+      queue = queue.slice(0);
+      visited = visited.slice(0);
+      if ((queue.length === 0) || (depth < 1)) {
+        return Promise.resolve({ nodes: nodes, edges: edges});
+      }
+      const currentNode = queue.shift();
+      console.log("currentNode", currentNode);
+      visited.push(currentNode);
+      if (currentNode.depth === depth) {
+        return Promise.resolve({ nodes: nodes, edges: edges});
+      }
+      return new Promise((resolve, reject) => {
+        findNeighbors(currentNode, filters, graphNodeIds).then(function(neighbors) {
+          neighbors.nodes.forEach((n) => {
+            // if node isn't already queued and has not been visited yet, add to queue
+            const foundInVisited = visited.find((item) => {
+              return item.id === n.id;
+            });
+            const foundInQueue = queue.find((item) => {
+              return item.id === n.id;
+            });
+            if (!foundInQueue && !foundInVisited) {
+              n.depth = currentNode.depth + 1;
+              queue.push(n);
+            }
+            const foundInNodes = nodes.find((item) => {
+              return item.id === n.id;
+            });
+            if (!foundInNodes && !foundInVisited) {
+              nodes.push(n);
+            }
+          });
+          neighbors.edges.forEach((e)  => {
+            const foundInEdges = edges.find((item) => {
+              return item.id === e.id;
+            });
+            if (!foundInEdges) {
+              edges.push(e);
+            }
+          });
+          console.log("bfs_ neighbor nodes",  neighbors.nodes);
+          resolve(bfs_(queue, visited, depth, filters, graphNodeIds, nodes, edges));
+        }).catch(reject);
+      });
+    }
+
+
 
     return {
       initialize: () => {
@@ -583,7 +648,8 @@
         return _focusNodes(nodeIds, filters);
       },
       neighbors: (node, filters, depth, graphNodeIds) => {
-        return _neighbors(node, filters, depth, graphNodeIds);
+        return bfs(node, depth, filters, graphNodeIds);
+       // return _neighbors([node], filters, depth, graphNodeIds);
       },
       createFilters: () => {
         return _createNodeFilters();
