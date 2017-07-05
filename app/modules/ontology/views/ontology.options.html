@@ -21,10 +21,6 @@
           <md-tooltip>Focus selected nodes</md-tooltip>
           <md-icon>center_focus_strong</md-icon>
         </md-button>
-        <md-button class="md-icon-button md-mini md-primary" ng-click="$ctrl.onShowNeighbours({depth: 1})" ng-disabled="$ctrl.isDisabled('showNeighbors')" >
-          <md-tooltip>Expand node</md-tooltip>
-          <md-icon>open_with</md-icon>
-        </md-button>
         <md-button class="md-icon-button md-mini md-primary" ng-click="$ctrl.onRemoveNodes()" ng-disabled="$ctrl.isDisabled('removeNodes')">
           <md-tooltip>Remove selected nodes</md-tooltip>
           <md-icon>remove_circle_outline</md-icon>
@@ -34,12 +30,15 @@
           <md-icon>replay</md-icon>
         </md-button>
       </div>
-     <!-- <div>
-        <span>Show connected nodes:</span>
-        <md-slider class="md-primary" flex md-discrete ng-model="$ctrl.depth" step="1" min="0" max="1" aria-label="Show node neighborhood" ng-disabled="$ctrl.isDisabled('showNeighbors')" ng-change="$ctrl.onShowNeighbours({depth: $ctrl.depth})">
+      <div layout="row" layout-align="left center" layout-wrap>
+        <md-slider class="md-primary" flex md-discrete ng-model="$ctrl.depth" step="1" min="0" max="10" aria-label="Show node neighborhood" ng-disabled="$ctrl.isDisabled('showNeighbors')">
         </md-slider>
+        <md-button class="md-icon-button md-mini md-primary" ng-click="$ctrl.onShowNeighbours({depth: $ctrl.depth})" ng-disabled="$ctrl.isDisabled('showNeighbors')" >
+          <md-tooltip>Expand node</md-tooltip>
+          <md-icon>open_with</md-icon>
+        </md-button>
       </div>
-      <md-button class="md-raised  md-primary"  ng-click="$ctrl.onReset()" ng-disabled="$ctrl.isDisabled('resetGraph')" layout-fill>
+     <!-- <md-button class="md-raised  md-primary"  ng-click="$ctrl.onReset()" ng-disabled="$ctrl.isDisabled('resetGraph')" layout-fill>
         <md-tooltip>Reset graph. This will reset all changes.</md-tooltip>
         <md-icon>replay</md-icon>
         Reset

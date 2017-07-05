@@ -15,6 +15,9 @@
       if (data === 'removeNodes') {
         return vm.selectedNodes.length < 1;
       }
+      if (data === 'showNeighbors') {
+        return vm.selectedNodes.length < 1;
+      }
       if (data === 'resetGraph') {
         return false;
       }

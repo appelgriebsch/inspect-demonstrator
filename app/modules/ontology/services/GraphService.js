@@ -172,10 +172,10 @@
           });
 
           /* filters.push({
-            id:  _tags.NO_CASE,
-            name: "Nodes without case",
-            hasCheckBox: false
-          }); */
+           id:  _tags.NO_CASE,
+           name: "Nodes without case",
+           hasCheckBox: false
+           }); */
           cases.forEach((c) => {
             filters.push({
               id: c.identifier,
@@ -303,13 +303,13 @@
           console.log(result);
 
           /*// create nodes
-          // TODO: !!!!
-          let nodes = _createItems(result[1], _createIndividualNode);
-          nodes = [].concat.apply(nodes, _createItems(result[1], _createDatatypeNodes));
+           // TODO: !!!!
+           let nodes = _createItems(result[1], _createIndividualNode);
+           nodes = [].concat.apply(nodes, _createItems(result[1], _createDatatypeNodes));
 
-          // create edges
-          let edges = [].concat.apply([], _createItems(result[1], _createObjectEdges));
-          edges = [].concat.apply(edges, _createItems(result[1], _createDatatypeEdges));
+           // create edges
+           let edges = [].concat.apply([], _createItems(result[1], _createObjectEdges));
+           edges = [].concat.apply(edges, _createItems(result[1], _createDatatypeEdges));
 
            */
           resolve({nodes: nodes, edges: edges});
@@ -433,7 +433,7 @@
           });
           // add datatype nodes
           const dataNodeFilter = filters.find((f) => {
-              return ((f.id === _nodeTypes.DATA_NODE) && (f.enabled === true));
+            return ((f.id === _nodeTypes.DATA_NODE) && (f.enabled === true));
           });
           if (dataNodeFilter) {
             nodes = nodes.concat(_createDatatypeNodes(result[0][0], result[0][1]));
@@ -582,12 +582,62 @@
     };
 
     const bfs = (node, depth = 1, filters = [], graphNodeIds = []) => {
-      console.log("called bfs with node=",node.id,depth);
       node.depth = 0;
-      return bfs_([node], [], depth, filters, graphNodeIds, [], []);
+     // return bfs_([node], [], depth, filters, graphNodeIds, [], []);
+      return bfs2_([node], [], depth, filters, graphNodeIds, [], []);
+
     };
 
-
+    const bfs2_ = (queue, visited, depth, filters = [], graphNodeIds = [], nodes, edges) => {
+      //console.log("called bfs_concurrent with queue=", queue, " visited=", visited, " depth=", depth);
+      nodes = nodes.slice(0);
+      edges = edges.slice(0);
+      visited = visited.slice(0);
+      if ((queue.length === 0) || (depth < 1) || (queue[0].depth === depth)) {
+        return Promise.resolve({nodes: nodes, edges: edges});
+      }
+      const d = queue[0].depth;
+      const promises = [];
+      queue.forEach((n) => {
+        promises.push(findNeighbors(n, filters, graphNodeIds));
+        visited.push(n);
+      });
+      queue = [];
+      return new Promise((resolve, reject) => {
+        Promise.all(promises).then((result) => {
+          result.forEach((neighbors) => {
+            neighbors.nodes.forEach((n) => {
+              // if node isn't already queued and has not been visited yet, add to queue
+              const foundInVisited = visited.find((item) => {
+                return item.id === n.id;
+              });
+              const foundInQueue = queue.find((item) => {
+                return item.id === n.id;
+              });
+              if (!foundInQueue && !foundInVisited) {
+                n.depth = d + 1;
+                queue.push(n);
+              }
+              const foundInNodes = nodes.find((item) => {
+                return item.id === n.id;
+              });
+              if (!foundInNodes && !foundInVisited) {
+                nodes.push(n);
+              }
+            });
+            neighbors.edges.forEach((e) => {
+              const foundInEdges = edges.find((item) => {
+                return item.id === e.id;
+              });
+              if (!foundInEdges) {
+                edges.push(e);
+              }
+            });
+          });
+          resolve(bfs2_(queue, visited, depth, filters, graphNodeIds, nodes, edges));
+        }).catch(reject);
+      });
+    };
     const bfs_ = (queue, visited, depth, filters = [], graphNodeIds = [], nodes, edges) => {
       console.log("called bfs_ with queue=",queue," visited=",visited," depth=",depth);
       nodes = nodes.slice(0);
@@ -636,7 +686,7 @@
           resolve(bfs_(queue, visited, depth, filters, graphNodeIds, nodes, edges));
         }).catch(reject);
       });
-    }
+    };
 
 
 
@@ -649,7 +699,7 @@
       },
       neighbors: (node, filters, depth, graphNodeIds) => {
         return bfs(node, depth, filters, graphNodeIds);
-       // return _neighbors([node], filters, depth, graphNodeIds);
+        // return _neighbors([node], filters, depth, graphNodeIds);
       },
       createFilters: () => {
         return _createNodeFilters();

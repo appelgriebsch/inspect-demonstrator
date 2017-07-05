@@ -258,12 +258,10 @@
       const filters = vm.filters.map((f) => {
         return {id: f.id, enabled: f.enabled};
       });
-    //  depth = 10;
       GraphService.neighbors(node, filters, depth, vm.data.nodes.getIds()).then((result) => {
         const nodes = vm.applyColors(result.nodes);
         vm.data.nodes.update(nodes);
         vm.data.edges.update(result.edges);
-
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
