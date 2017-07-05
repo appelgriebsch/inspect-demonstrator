@@ -47,6 +47,9 @@
               templateUrl: `${moduleConfig.path}/views/cases.view.html`,
               controller: 'CasesViewController as $ctrl'
             },
+            'actions@app': {
+              templateUrl: `${moduleConfig.path}/views/cases.view.actions.html`
+            }
           }
         }).state(`${moduleConfig.state}.case`, {
           url: '/case',

@@ -3,12 +3,12 @@
 </div>
 <script type="text/ng-template" id="tree-node.html">
   <div class="tree-node" layout="row" layout-align="start center">
-  <md-button class="md-default md-no-ink" ng-click="toggleExpanded()" aria-label="Expand or collapse node">
-      <md-icon data-ng-if="isLeaf()" >remove</md-icon>
-      <md-icon data-ng-if="!isLeaf() && !node.expanded" >expand_more</md-icon>
-      <md-icon data-ng-if="!isLeaf() && node.expanded">expand_less</md-icon>
-    </md-button>
-    <md-truncate  class="md-body-1" >
+    <!-- <md-button class="md-default md-no-ink" ng-click="toggleExpanded()" aria-label="Expand or collapse node">
+       <md-icon data-ng-if="isLeaf()" >remove</md-icon>
+        <md-icon data-ng-if="!isLeaf() && !node.expanded" >expand_more</md-icon>
+        <md-icon data-ng-if="!isLeaf() && node.expanded">expand_less</md-icon>
+    </md-button>-->
+    <md-truncate  class="md-body-1"   ng-click="toggleExpanded()" ng-class="{treeExpandable: node.children.length > 0, treeNonExpandable:  node.children.length === 0}">
       <md-tooltip>{{node.label}}</md-tooltip>
       {{node.label}} ({{node.children.length}})
     </md-truncate>
