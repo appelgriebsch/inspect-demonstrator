@@ -1,44 +1,50 @@
 <div flex layout-fill layout="column" ng-cloak>
-    <!-- so that FontAwesome is loaded -->
-    <i class="fa fa-flag" style="visibility: hidden"></i>
-     <md-toolbar class="transparent-blur sticky-top">
-      <div class="md-toolbar-tools" >
-        <md-button class="md-icon-button md-primary" ng-click="$ctrl.toggleSidebar('ontology-sidenav-left')">
-          <md-icon>chevron_right</md-icon>
-        </md-button>
-        <ontology-autocomplete
-          items="$ctrl.autocomplete.items"
-          on-item-selected="$ctrl.itemSelected(item)"
-          layout-fill>
+  <!-- so that FontAwesome is loaded -->
+  <i class="fa fa-flag" style="visibility: hidden"></i>
+  <md-toolbar class="transparent-blur sticky-top">
+    <div class="md-toolbar-tools" >
+      <md-button class="md-icon-button md-primary" ng-click="$ctrl.toggleSidebar('ontology-sidenav-left')">
+        <md-icon>chevron_right</md-icon>
+      </md-button>
+      <ontology-autocomplete
+        items="$ctrl.autocomplete.items"
+        on-item-selected="$ctrl.itemSelected(item)"
+        layout-fill>
 
-        </ontology-autocomplete>
+      </ontology-autocomplete>
 
-        <md-button class="md-icon-button md-primary" ng-click="$ctrl.toggleSidebar('ontology-sidenav-right')">
-          <md-icon>chevron_left</md-icon>
-        </md-button>
-      </div>
-    </md-toolbar>
+      <md-button class="md-icon-button md-primary" ng-click="$ctrl.toggleSidebar('ontology-sidenav-right')">
+        <md-icon>chevron_left</md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
 
-    <div id="ontology-graph" flex layout-fill></div>
+  <div id="ontology-graph" flex layout-fill></div>
 
-<!--    <ontology-sidenav alignment="'left'" component-id="'ontology-sidenav-left'" on-close="$ctrl.toggleSidebar(componentId)">
-    <header>Metadata</header>
-      <content><ontology-metadata/></content>
-    </ontology-sidenav>-->
-    <ontology-sidenav alignment="'right'" component-id="'ontology-sidenav-right'" on-close="$ctrl.toggleSidebar(componentId)">
-      <header>Options</header>
-      <content>
-        <ontology-options selected-nodes="$ctrl.selectedNodes"
-                          filters="$ctrl.filters"
-                          palette="$ctrl.palette"
-                          hidden-nodes-stack-size="$ctrl.hiddenNodesStackSize"
-                          on-set-focus="$ctrl.setFocus($ctrl.selectedNodes)"
-                          on-reset="$ctrl.reset()"
-                          on-remove-nodes="$ctrl.removeNodes()"
-                          on-zoom-to="$ctrl.zoomTo(nodeId)"
-                          on-show-neighbours="$ctrl.showNeighbours(depth)"
-                          on-filter-changed="$ctrl.filterChanged(id, enabled)"
-                          on-color-changed="$ctrl.colorChanged(id, color)">
-        </ontology-options></content>
-    </ontology-sidenav>
+  <ontology-sidenav alignment="'left'" component-id="'ontology-sidenav-left'" on-close="$ctrl.toggleSidebar(componentId)">
+    <header>Lists</header>
+    <content>
+      <ontology-lists
+        case-data="$ctrl.lists.caseData"
+        class-individuals-data="$ctrl.lists.classIndividualsData"
+      >
+
+      </ontology-lists>
+    </content>
+  </ontology-sidenav>
+  <ontology-sidenav alignment="'right'" component-id="'ontology-sidenav-right'" on-close="$ctrl.toggleSidebar(componentId)">
+    <header>Options</header>
+    <content>
+      <ontology-options selected-nodes="$ctrl.selectedNodes"
+                        filters="$ctrl.filters"
+                        palette="$ctrl.palette"
+                        on-set-focus="$ctrl.setFocus($ctrl.selectedNodes)"
+                        on-reset="$ctrl.reset()"
+                        on-remove-nodes="$ctrl.removeNodes()"
+                        on-zoom-to="$ctrl.zoomTo(nodeId)"
+                        on-show-neighbours="$ctrl.showNeighbours(depth)"
+                        on-filter-changed="$ctrl.filterChanged(id, enabled)"
+                        on-color-changed="$ctrl.colorChanged(id, color)">
+      </ontology-options></content>
+  </ontology-sidenav>
 </div>

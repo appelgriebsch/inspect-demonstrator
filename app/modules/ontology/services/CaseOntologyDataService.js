@@ -16,7 +16,6 @@
     let _caseNamePropertyIri = '';
     let _caseEntityPropertyIri = '';
     let _caseEntityInversePropertyIri = '';
-    let _cases = [];
     const regexExcludedClasses = new RegExp(`_:[a-zA-Z0-9]+|${caseClassName}`, 'g');
     let _initialized = false;
 
@@ -29,6 +28,54 @@
       // filter out all classes we don't need
       return  classes.filter((c) => {
         return (c.name.search(regexExcludedClasses) < 0);
+      });
+    };
+    const sortByName = (item1, item2) => {
+      return item1.name.localeCompare(item2.name);
+    };
+
+    const _buildClassIndividualsTree = () => {
+      return new Promise((resolve, reject) => {
+        OntologyDataService.fetchAllIndividuals().then((individuals) => {
+          const result = _classes.map((c) => {
+            const individuals_ = individuals.filter((item) => {
+              return item.classIris.indexOf(c.iri) > -1;
+            }).map((item) => {
+              return {id: item.iri, name: item.label };
+            }).sort(sortByName);
+            return {id: c.iri, name: c.label, individuals: individuals_};
+          }).reduce((accumulator, item) => {
+            if (item.individuals.length > 0) {
+              accumulator.push(item);
+            }
+            return accumulator;
+          }, []).sort(sortByName);
+          console.log(result);
+
+          resolve(result);
+        }).catch(reject);
+      });
+    };
+
+    const _buildCaseTree = () => {
+      return new Promise((resolve, reject) => {
+        OntologyDataService.fetchIndividualsForClass(_caseClassIri).then((cases) => {
+          const promises = cases.map((c) => {
+            return _loadCase2(c.label, true);
+          });
+          return Promise.all(promises);
+        }).then((cases) => {
+          const result = cases.map((c) => {
+            const individuals = c.individuals.map((i)=> {
+              return {id: i.iri, name: i.label};
+            });
+            individuals.sort(sortByName);
+            return {id: c.identifier, name: c.name, individuals: individuals};
+          });
+          result.sort(sortByName);
+          resolve(result);
+        }).catch(reject);
+
       });
     };
 
@@ -66,7 +113,6 @@
         c.description = [];
         c.status = 'open';
         OntologyDataService.insertIndividual(_convertToIndividual(c)).then(() => {
-          _cases.push(c);
           return CaseMetadataService.saveCaseMetadata(c.metaData());
         }).then(() => {
           resolve(c);
@@ -368,7 +414,7 @@
 
     const _initialize = () => {
       if (_initialized === true) {
-        return Promise.resolve(_cases);
+        return Promise.resolve();
       }
       return new Promise((resolve, reject) => {
         Promise.all([
@@ -424,6 +470,13 @@
       },
       classTree: () => {
         return Promise.resolve(_classTree);
+      },
+      classIndividualsTree: () => {
+        return _buildClassIndividualsTree();
+      },
+
+      caseTree: () => {
+        return _buildCaseTree();
       },
       saveAsIndividual: (object) => {
         return _saveAsIndividual(object);

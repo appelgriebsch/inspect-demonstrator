@@ -62,6 +62,10 @@
     vm.autocomplete = {
       items: []
     };
+    vm.lists = {
+      caseData: [],
+      classIndividualsData: []
+    };
 
 
     /** for options menu **/
@@ -183,6 +187,13 @@
           return GraphService.searchTerms();
         }).then((result) => {
         vm.autocomplete.items = result;
+        return Promise.all([
+          CaseOntologyDataService.caseTree(),
+          CaseOntologyDataService.classIndividualsTree()
+        ]);
+      }).then((result) => {
+        vm.lists.caseData = result[0];
+        vm.lists.classIndividualsData = result[1];
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
@@ -336,6 +347,7 @@
     };
 
     /** events from the actions menu**/
+    //TODO: case list!
     $scope.$on('import-ontology', () => {
       const targetPath = OntologySharingService.requestOpenFile();
       if ((targetPath !== undefined) && (targetPath.length > 0)) {

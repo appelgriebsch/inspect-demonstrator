@@ -104,6 +104,9 @@
     const TreeController = require('./controllers/TreeController');
     const TreeNodeController = require('./controllers/TreeNodeController');
     const NodeEditController = require('./controllers/NodeEditController');
+    const ListsController = require('./controllers/ListsController');
+
+
 
     angular.module('electron-app').controller('OntologyOptionsController', ['$scope', '$mdDialog', OntologyOptionsController]);
     angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$mdSidenav', 'GraphService', 'CaseOntologyDataService', 'OntologySharingService', OntologyViewController]);
@@ -116,6 +119,7 @@
     angular.module('electron-app').controller('TreeController', ['$scope', TreeController]);
     angular.module('electron-app').controller('TreeNodeController', ['$scope', TreeNodeController]);
     angular.module('electron-app').controller('NodeEditController', ['$scope', '$state', 'CaseOntologyDataService', NodeEditController]);
+    angular.module('electron-app').controller('ListsController', ['$scope',  ListsController]);
 
 
     // load and register services
@@ -195,6 +199,18 @@
         onNodeClicked: '&'
       },
       controller: 'TreeController'
+    });
+
+    angular.module('electron-app').component('ontologyLists', {
+      templateUrl: `${moduleConfig.path}/views/ontology.lists.html`,
+      replace: 'true',
+      bindings: {
+        caseData: '<',
+        classIndividualsData: '<',
+
+
+      },
+      controller: 'ListsController'
     });
   }
 

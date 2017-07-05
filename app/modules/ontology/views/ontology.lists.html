@@ -1,0 +1,16 @@
+<md-content layout="column">
+  <div>section 2 (class tree + entities)</div>
+  <ontology-tree tree-data="$ctrl.classIndividualsData"
+                 node-children="individuals"
+                 node-label="name"
+                 on-node-clicked="$ctrl.onNodeClicked(id)"></ontology-tree>
+  <div>
+    <h3>section 3 (Fälle/Entitäten) </h3>
+    <ontology-tree tree-data="$ctrl.caseData"
+                   node-children="individuals"
+                   node-label="name"
+                   on-node-clicked="$ctrl.onNodeClicked(id)"></ontology-tree>
+
+  </div>
+  <div>section 4 (nodes multiple cases)</div>
+</md-content>
