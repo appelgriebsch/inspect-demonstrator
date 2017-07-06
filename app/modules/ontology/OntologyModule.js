@@ -196,7 +196,6 @@
         nodeId: '@',
         nodeLabel: '@',
         nodeChildren: '@',
-        onNodeClicked: '&'
       },
       controller: 'TreeController'
     });

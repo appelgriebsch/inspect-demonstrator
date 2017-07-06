@@ -125,6 +125,29 @@
     };
 
 
+    const _attachAction = (clazz, clickActions)=> {
+      clazz.clickActions = clickActions;
+      clazz.children.forEach((c) => {
+        _attachAction(c, clickActions);
+      });
+    };
+
+    const _createTreeData = () => {
+      const clickActions = [{
+        icon: 'add',
+        func: vm.onNodeClicked,
+      }];
+      return new Promise((resolve, reject) => {
+        CaseOntologyDataService.classTree().then((result) => {
+          vm.classTree = result.map((c) => {
+            _attachAction(c, clickActions);
+            return c;
+          });
+          resolve();
+        }).catch(reject);
+      });
+    };
+
     //<editor-fold desc="Initialization">
     /**
      * Initializes dependant services.
@@ -147,13 +170,12 @@
       ]).then(() => {
         return Promise.all([
           CaseOntologyDataService.loadCase($state.params.caseId),
-          CaseOntologyDataService.classTree(),
-          GraphService.caseNodes($state.params.caseId)
+          GraphService.caseNodes($state.params.caseId),
+          _createTreeData()
         ]);
       }).then((result) => {
         vm.currentCase = angular.copy(result[0]);
-        vm.classTree = result[1];
-        _createGraph(result[2].nodes, result[2].edges);
+        _createGraph(result[1].nodes, result[1].edges);
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);

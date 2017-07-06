@@ -164,18 +164,19 @@
             type: 'schema'
           });
           filters.push({
-            id:_nodeTypes.DATA_NODE,
+            id: _nodeTypes.DATA_NODE,
             name: "Data Nodes",
             hasCheckBox: true,
             hasColor: true,
             type: 'data'
           });
 
-          /* filters.push({
-           id:  _tags.NO_CASE,
-           name: "Nodes without case",
-           hasCheckBox: false
-           }); */
+          filters.push({
+            id:  _tags.NO_CASE,
+            name: "Nodes without case",
+            hasCheckBox: true,
+            hasColor: true,
+          });
           cases.forEach((c) => {
             filters.push({
               id: c.identifier,
@@ -268,7 +269,7 @@
           if (result[1] === true) {
             return _fetchIndividualNode(nodeId, filters);
           }
-          reject(Error(`Iri: ${nodeId} identifies neither a class nor an individual.`));
+          throw Error(`Iri: ${nodeId} identifies neither a class nor an individual.`);
         }).then(resolve)
           .catch(reject);
       });
@@ -300,29 +301,14 @@
             nodes = nodes.concat(_createDatatypeNodes(individual, caseIdentifiers));
             edges = edges.concat(_createDatatypeEdges(individual));
           });
-          console.log(result);
-
-          /*// create nodes
-           // TODO: !!!!
-           let nodes = _createItems(result[1], _createIndividualNode);
-           nodes = [].concat.apply(nodes, _createItems(result[1], _createDatatypeNodes));
-
-           // create edges
-           let edges = [].concat.apply([], _createItems(result[1], _createObjectEdges));
-           edges = [].concat.apply(edges, _createItems(result[1], _createDatatypeEdges));
-
-           */
           resolve({nodes: nodes, edges: edges});
-        });
+        }).catch(reject);
       });
     };
 
     const _focusNodes = (nodeIds, filters) => {
       if (nodeIds === undefined || !Array.isArray(nodeIds)) {
         Promise.reject('Node Ids must be of type array!');
-      }
-      if (filters === undefined || !Array.isArray(filters)) {
-        Promise.reject('Filters must be of type array!');
       }
       const promises = nodeIds.map((id) => {
         return _fetchNode(id, filters);
@@ -453,7 +439,7 @@
         return ((f.id === _nodeTypes.CLASS_NODE) && f.enabled);
       });
       if (!filter) {
-        return Promise.resolve([]);
+        return Promise.resolve({nodes: [], edges: []});
       }
       return new Promise((resolve, reject) => {
         const options = {
@@ -550,6 +536,9 @@
           result.forEach((r) => {
             const individual = r[0];
             const individualCases = r[1];
+            if (individualCases.length === 0) {
+              individualCases.push( _tags.NO_CASE);
+            }
             const filter = filters.find((f) => {
               return ((individualCases.indexOf(f.id) > -1) && (f.enabled === true));
             });
@@ -583,13 +572,13 @@
 
     const bfs = (node, depth = 1, filters = [], graphNodeIds = []) => {
       node.depth = 0;
-     // return bfs_([node], [], depth, filters, graphNodeIds, [], []);
-      return bfs2_([node], [], depth, filters, graphNodeIds, [], []);
+      // return bfs_([node], [], depth, filters, graphNodeIds, [], []);
+      return bfs2_([node], [], depth, filters, graphNodeIds);
 
     };
 
-    const bfs2_ = (queue, visited, depth, filters = [], graphNodeIds = [], nodes, edges) => {
-      //console.log("called bfs_concurrent with queue=", queue, " visited=", visited, " depth=", depth);
+    const bfs2_ = (queue, visited, depth, filters = [], graphNodeIds = [], nodes = [], edges= []) => {
+      //  console.log("called bfs_concurrent with queue=", queue, " visited=", visited, " depth=", depth);
       nodes = nodes.slice(0);
       edges = edges.slice(0);
       visited = visited.slice(0);
@@ -639,7 +628,7 @@
       });
     };
     const bfs_ = (queue, visited, depth, filters = [], graphNodeIds = [], nodes, edges) => {
-      console.log("called bfs_ with queue=",queue," visited=",visited," depth=",depth);
+      // console.log("called bfs_ with queue=",queue," visited=",visited," depth=",depth);
       nodes = nodes.slice(0);
       edges = edges.slice(0);
       queue = queue.slice(0);
@@ -648,7 +637,6 @@
         return Promise.resolve({ nodes: nodes, edges: edges});
       }
       const currentNode = queue.shift();
-      console.log("currentNode", currentNode);
       visited.push(currentNode);
       if (currentNode.depth === depth) {
         return Promise.resolve({ nodes: nodes, edges: edges});
@@ -682,7 +670,6 @@
               edges.push(e);
             }
           });
-          console.log("bfs_ neighbor nodes",  neighbors.nodes);
           resolve(bfs_(queue, visited, depth, filters, graphNodeIds, nodes, edges));
         }).catch(reject);
       });
@@ -710,7 +697,6 @@
       tags: () => {
         return _tags;
       },
-
       caseNodes: (id) => {
         return _fetchNodesForCase(id);
       },

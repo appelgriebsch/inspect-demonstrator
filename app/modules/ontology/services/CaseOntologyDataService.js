@@ -38,6 +38,7 @@
       return new Promise((resolve, reject) => {
         OntologyDataService.fetchAllIndividuals().then((individuals) => {
           const result = _classes.map((c) => {
+
             const individuals_ = individuals.filter((item) => {
               return item.classIris.indexOf(c.iri) > -1;
             }).map((item) => {
@@ -50,8 +51,6 @@
             }
             return accumulator;
           }, []).sort(sortByName);
-          console.log(result);
-
           resolve(result);
         }).catch(reject);
       });
@@ -429,7 +428,7 @@
           return Promise.all([
             OntologyDataService.fetchAllObjectProperties(),
             OntologyDataService.fetchAllDatatypeProperties(),
-            OntologyDataService.fetchAllClasses({superClasses: true})
+            OntologyDataService.fetchAllClasses({superClasses: true}),
           ]);
         }).then((result) => {
           _objectProperties = result[0];
@@ -474,7 +473,6 @@
       classIndividualsTree: () => {
         return _buildClassIndividualsTree();
       },
-
       caseTree: () => {
         return _buildCaseTree();
       },

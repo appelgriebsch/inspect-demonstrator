@@ -9,6 +9,7 @@
       const node =  {
         id: data[vm.nodeId],
         label: data[vm.nodeLabel],
+        clickActions: data.clickActions,
       };
       if (data[vm.nodeChildren]) {
         node.children = data[vm.nodeChildren].map((d) => {
@@ -46,10 +47,6 @@
           return _convertDataForNode(d);
         });
       }
-    };
-    // XXX: not sure how to call the TreeController method from within the child scope
-    $scope.onNodeClicked = (id) => {
-      vm.onNodeClicked(id);
     };
     vm.$onInit = () => {
     };

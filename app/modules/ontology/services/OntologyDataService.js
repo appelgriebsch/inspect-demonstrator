@@ -794,11 +794,11 @@
             });
             individual.datatypeProperties.forEach((prop) => {
               if (prop.type) {
-                  triples.push({
-                    subject: individual.iri,
-                    predicate: prop.iri,
-                    object: `"${prop.target}"^^${prop.type}`
-                  });
+                triples.push({
+                  subject: individual.iri,
+                  predicate: prop.iri,
+                  object: `"${prop.target}"^^${prop.type}`
+                });
               } else {
                 triples.push({
                   subject: individual.iri,
@@ -859,7 +859,7 @@
       });
     };
 
-   const _fetchAllParentIrisFor = (classIris) => {
+    const _fetchAllParentIrisFor = (classIris) => {
       return new Promise((resolve, reject) => {
         const result = [];
         const promises = [];
@@ -961,6 +961,19 @@
         });
       });
     };
+
+    const _get = (triples) => {
+      return new Promise((resolve, reject) => {
+        db.get(triples, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    };
+
     return {
       initialize: () => {
         if (!db) {

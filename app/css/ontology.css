@@ -16,16 +16,25 @@ div.tree-nodes {
   margin-left: 0;
   padding-left: 1em;
 }
-div.tree-node button {
+div.tree-node .md-icon-button  {
   padding: 0;
-  margin: 0;
-  min-width: 0;
+  margin: 0 3px;
+
+  height: 24px;
+  width: 24px;
+}
+div.tree-node md-icon {
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
+  min-height: 14px;
+  min-width: 14px;
 }
 
-.treeExpandable {
+.expandable {
   cursor: pointer;
 }
 
-.treeNonExpandable {
+.nonExpandable {
   cursor: auto;
 }

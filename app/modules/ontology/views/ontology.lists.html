@@ -1,16 +1,23 @@
-<md-content layout="column">
-  <div>section 2 (class tree + entities)</div>
-  <ontology-tree tree-data="$ctrl.classIndividualsData"
-                 node-children="individuals"
-                 node-label="name"
-                 on-node-clicked="$ctrl.onNodeClicked(id)"></ontology-tree>
-  <div>
-    <h3>section 3 (Fälle/Entitäten) </h3>
-    <ontology-tree tree-data="$ctrl.caseData"
+<md-content>
+  <section>
+    <md-subheader class="md-primary expandable" ng-click="$ctrl.hideList1 = !$ctrl.hideList1">Entities</md-subheader>
+    <ontology-tree ng-hide="$ctrl.hideList1"
+                   tree-data="$ctrl.classIndividualsData"
                    node-children="individuals"
-                   node-label="name"
-                   on-node-clicked="$ctrl.onNodeClicked(id)"></ontology-tree>
-
-  </div>
-  <div>section 4 (nodes multiple cases)</div>
+                   node-label="name"></ontology-tree>
+  </section>
+  <section>
+    <md-subheader class="md-primary expandable"  ng-click="$ctrl.hideList2 = !$ctrl.hideList2">Cases</md-subheader>
+    <ontology-tree
+                   ng-hide="$ctrl.hideList2"
+                   tree-data="$ctrl.caseData"
+                    node-label="name"></ontology-tree>
+  </section>
+  <section>
+    <md-subheader class="md-primary expandable"  ng-click="$ctrl.hideList3 = !$ctrl.hideList3">Nodes with multiple Cases</md-subheader>
+    <!--<ontology-tree
+      ng-hide="$ctrl.hideList3"
+      tree-data="$ctrl.caseData"
+      node-label="name"></ontology-tree>-->
+  </section>
 </md-content>
