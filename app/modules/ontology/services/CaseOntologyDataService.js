@@ -34,11 +34,31 @@
       return item1.name.localeCompare(item2.name);
     };
 
-    const _buildClassIndividualsTree = () => {
+    const _buildTreeData = () => {
+      const noCaseName = "[No case]";
       return new Promise((resolve, reject) => {
-        OntologyDataService.fetchAllIndividuals().then((individuals) => {
-          const result = _classes.map((c) => {
-
+        OntologyDataService.fetchAllIndividuals({
+          objectProperties: true,
+          reverseObjectProperties: true,
+          datatypeProperties: true
+        }).then((individuals) => {
+          const cases =  individuals.filter((i)=> {
+            return i.classIris.indexOf(_caseClassIri) > -1;
+          }).map((i) => {
+            let name = i.datatypeProperties.find((p) => {
+              return p.iri === _caseNamePropertyIri;
+            });
+            if (name) {
+              name = name.target;
+            } else {
+              name = i.label;
+            }
+            return { id: i.iri, name: name};
+          });
+          individuals = individuals.filter((i)=> {
+            return i.classIris.indexOf(_caseClassIri) < 0;
+          });
+          const classIndividualsTree = _classes.map((c) => {
             const individuals_ = individuals.filter((item) => {
               return item.classIris.indexOf(c.iri) > -1;
             }).map((item) => {
@@ -51,28 +71,56 @@
             }
             return accumulator;
           }, []).sort(sortByName);
-          resolve(result);
-        }).catch(reject);
-      });
-    };
 
-    const _buildCaseTree = () => {
-      return new Promise((resolve, reject) => {
-        OntologyDataService.fetchIndividualsForClass(_caseClassIri).then((cases) => {
-          const promises = cases.map((c) => {
-            return _loadCase2(c.label, true);
+          const individualsWithCases = individuals.map((i)=> {
+            // get all cases for an individual
+            const individualCases = i.objectProperties.filter((p) => {
+              return p.iri === _caseEntityInversePropertyIri;
+            }).concat(i.reverseObjectProperties.filter((p) => {
+              return p.iri === _caseEntityPropertyIri;
+            })).map((p) => {
+              return { id: p.target };
+            }).reduce((accumulator, item) => {
+              const case_ = cases.find((i) => {
+                return i.id === item.id;
+              });
+              const found = accumulator.find((i) => {
+                return item.id === i.id;
+              });
+              if (!found && case_) {
+                item.name = case_.name;
+                accumulator.push(item);
+              }
+              return accumulator;
+            }, []);
+            if (individualCases.length === 0) {
+              individualCases.push({id: 'none', name: noCaseName});
+            }
+            return {id: i.iri, name: i.label, cases: individualCases};
           });
-          return Promise.all(promises);
-        }).then((cases) => {
-          const result = cases.map((c) => {
-            const individuals = c.individuals.map((i)=> {
-              return {id: i.iri, name: i.label};
+          // aggregating the individuals by case
+          const caseTree = individualsWithCases.reduce((accumulator, item) => {
+            item.cases.forEach((c) => {
+              // console.log(c.name);
+              let case_ = accumulator.find((c_) => {
+                return c.id === c_.id;
+              });
+              if (!case_) {
+                case_ = {id: c.id, name: c.name, individuals: []};
+                accumulator.push(case_);
+              }
+              case_.individuals.push(item);
             });
-            individuals.sort(sortByName);
-            return {id: c.identifier, name: c.name, individuals: individuals};
+            return accumulator;
+          }, []);
+          caseTree.sort(sortByName);
+
+          // filtering the individuals belonging to multiple cases
+          const multipleCasesTree = individualsWithCases.filter((i) => {
+            return i.cases.length > 1;
           });
-          result.sort(sortByName);
-          resolve(result);
+
+          resolve({classIndividualsTree: classIndividualsTree, caseTree: caseTree, multipleCasesTree: multipleCasesTree});
         }).catch(reject);
 
       });
@@ -470,11 +518,8 @@
       classTree: () => {
         return Promise.resolve(_classTree);
       },
-      classIndividualsTree: () => {
-        return _buildClassIndividualsTree();
-      },
-      caseTree: () => {
-        return _buildCaseTree();
+      treeData: () => {
+        return _buildTreeData();
       },
       saveAsIndividual: (object) => {
         return _saveAsIndividual(object);

@@ -48,16 +48,18 @@
   <!-- Filters -->
   <section>
   <md-subheader class="md-primary">Filter</md-subheader>
-     <md-list class="md-dense" flex>
-       <md-list-item  ng-repeat="f in $ctrl.filters">
-         <p>{{f.name}}</p>
-         <md-button  class="md-secondary md-icon-button"  ng-click="$ctrl.showDialog($event, f.id)" aria-label="Pick a color" ng-show="f.hasColor" >
+
+
+     <md-list class="md-dense" >
+       <md-list-item  class="md-no-proxy md-body-1" ng-repeat="f in $ctrl.filters">
+         <md-checkbox class="md-primary md-secondary" ng-model="f.enabled" ng-change="$ctrl.onFilterChanged({id: f.id, enabled: f.enabled})" ng-show="f.hasCheckBox">
+           <md-tooltip>Show/Hide nodes</md-tooltip>
+         </md-checkbox>
+         <md-button  class="md-icon-button md-secondary" aria-label="Pick a color" ng-show="f.hasColor" ng-click="$ctrl.showDialog($event, f.id)">
            <md-tooltip >Choose a color</md-tooltip>
            <md-icon ng-style="{'color': f.color}" >adjust</md-icon>
          </md-button>
-         <md-checkbox class="md-secondary md-primary" ng-model="f.enabled" ng-change="$ctrl.onFilterChanged({id: f.id, enabled: f.enabled})" ng-show="f.hasCheckBox">
-           <md-tooltip>Show/Hide nodes</md-tooltip>
-         </md-checkbox>
+         <p class="md-truncate">{{f.name}}</p>
        </md-list-item>
      </md-list>
    </section>

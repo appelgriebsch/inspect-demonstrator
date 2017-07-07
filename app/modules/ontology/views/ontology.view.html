@@ -27,13 +27,14 @@
       <ontology-lists
         case-data="$ctrl.lists.caseData"
         class-individuals-data="$ctrl.lists.classIndividualsData"
+        multiple-case-data="$ctrl.lists.multipleCaseData"
       >
 
       </ontology-lists>
     </content>
   </ontology-sidenav>
   <ontology-sidenav alignment="'right'" component-id="'ontology-sidenav-right'" on-close="$ctrl.toggleSidebar(componentId)">
-    <header>Options</header>
+    <header>Exploration</header>
     <content>
       <ontology-options selected-nodes="$ctrl.selectedNodes"
                         filters="$ctrl.filters"

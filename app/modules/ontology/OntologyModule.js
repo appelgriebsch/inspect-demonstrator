@@ -206,7 +206,7 @@
       bindings: {
         caseData: '<',
         classIndividualsData: '<',
-
+        multipleCaseData: '<'
 
       },
       controller: 'ListsController'

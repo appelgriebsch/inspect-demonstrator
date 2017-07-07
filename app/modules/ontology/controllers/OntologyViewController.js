@@ -115,9 +115,15 @@
         }
       });
     };
-    const _removeCaseNodes = (caseIdentifier) => {
+    const _removeCaseNodes = (iri) => {
+      //TODO: do properly
+      const caseIdentifier = iri.split("#")[1];
       const nodeIds = vm.data.nodes.getIds({
         filter: (n) => {
+          if (iri === 'none') {
+
+            return (Array.isArray(n.cases) && (n.cases.length === 0));
+          }
           return (Array.isArray(n.cases) && (n.cases.length === 1) && (n.cases[0] === caseIdentifier));
         }
       });
@@ -133,6 +139,7 @@
 
     const _setFilters = (filters) => {
       vm.filters = filters;
+
       let i = 0;
       for (const f of filters) {
         if (f.hasColor === true) {
@@ -143,18 +150,24 @@
       }
     };
 
-    const _showCaseNodes = (id) => {
-      $scope.setBusy('Loading case data...');
-      GraphService.caseNodes(id).then((result) => {
-        const nodes = vm.applyColors(result.nodes);
-        vm.data.nodes.update(nodes);
-        vm.data.edges.update(result.edges);
-
-        $scope.setReady(true);
-      }).catch((err) => {
-        $scope.setError('SearchAction', 'search', err);
-        $scope.setReady(true);
+    const _showCaseNodes = (caseId) => {
+      const case_ =  vm.lists.caseData.find((c) => {
+        return c.id === caseId;
       });
+      if (case_) {
+        $scope.setBusy('Loading case data...');
+        const nodeIds = case_.children.map((i) => {
+          return i.id;
+        });
+        //GraphService.nodes(nodeIds, vm.data.nodes.getIds(), vm.filters, false).then((result) => {
+        GraphService.nodes(nodeIds, vm.data.nodes.getIds(), [], true).then((result) => {
+          _updateNodesAndEdges(result);
+          $scope.setReady(true);
+        }).catch((err) => {
+          $scope.setError('SearchAction', 'search', err);
+          $scope.setReady(true);
+        });
+      }
     };
 
     const _updateNodesAndEdges = (data) => {
@@ -189,11 +202,8 @@
 
     const _createTreeData = () => {
       return new Promise((resolve, reject) => {
-        Promise.all([
-          CaseOntologyDataService.caseTree(),
-          CaseOntologyDataService.classIndividualsTree()
-        ]).then((result) => {
-          vm.lists.caseData = result[0].map((c) => {
+        CaseOntologyDataService.treeData().then((result) => {
+          vm.lists.caseData = result.caseTree.map((c) => {
             c.children = c.individuals.map((i) => {
               i.clickActions = [{
                 icon: 'my_location',
@@ -210,7 +220,24 @@
             }];
             return c;
           });
-          vm.lists.classIndividualsData = result[1].map((c) => {
+          vm.lists.multipleCaseData = result.multipleCasesTree.map((i) => {
+            i.children = i.cases.map((c) => {
+              c.clickActions = [{
+                icon: 'visibility',
+                func: _showCaseNodes,
+              }, {
+                icon: 'visibility_off',
+                func: _removeCaseNodes,
+              }];
+              return c;
+            });
+            i.clickActions = [{
+              icon: 'my_location',
+              func: vm.zoomTo,
+            }];
+            return i;
+          });
+          vm.lists.classIndividualsData = result.classIndividualsTree.map((c) => {
             c.children = c.individuals.map((i) => {
               i.clickActions = [{
                 icon: 'my_location',
@@ -398,35 +425,6 @@
         });
       }
     });
-    /* $scope.$on('import-ontology', () => {
-     const targetPath = OntologySharingService.requestOpenFile();
-     if ((targetPath !== undefined) && (targetPath.length > 0)) {
-     $scope.setBusy('Importing ontology...');
-     OntologySharingService.import(targetPath[0]).then(() => {
-     CaseOntologyDataService.reset();
-     return CaseOntologyDataService.initialize();
-     }).then(CaseOntologyDataService.createMetadataForCases)
-     .then(GraphService.initialize)
-     .then(_createGraph)
-     .then(GraphService.createFilters)
-     .then(_setFilters)
-     .then(GraphService.searchTerms)
-     .then((result) => {
-     vm.autocomplete.items = result;
-     const info = $scope.createEventFromTemplate('ReceiveAction', 'import_export');
-     info.description = 'The ontology has been imported successfully.';
-     info.object = {};
-     info.result = {};
-     return $scope.writeLog('info', info);
-     }).then(() => {
-     $scope.notify('Import finished successfully', 'The ontology has been imported successfully.');
-     $scope.setReady(true);
-     }).catch((err) => {
-     $scope.setError('ReceiveAction', 'import_export', err);
-     $scope.setReady(true);
-     });
-     }
-     });*/
 
     $scope.$on('export-ontology', () => {
       const targetPath = OntologySharingService.requestSaveFile();

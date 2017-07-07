@@ -25,11 +25,6 @@
     };
 
     /** inner events **/
-    // TODO: directly calling a controller method doesn't seem to work because
-    // of ng-repeat, don't know how to properly address that
-    $scope.zoom = (data) => {
-      vm.onZoomTo(data);
-    };
     vm.showDialog = function (event, filterId) {
       const filter = vm.filters.find((f) => {
         return f.id === filterId;

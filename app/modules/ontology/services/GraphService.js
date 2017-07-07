@@ -161,14 +161,14 @@
             name: 'Schema Information',
             hasCheckBox: true,
             hasColor: true,
-            type: 'schema'
+            type: 'type'
           });
           filters.push({
             id: _nodeTypes.DATA_NODE,
             name: "Data Nodes",
             hasCheckBox: true,
             hasColor: true,
-            type: 'data'
+            type: 'type'
           });
 
           filters.push({
@@ -177,6 +177,7 @@
             hasCheckBox: true,
             hasColor: true,
           });
+          cases.sort((c1, c2) => { return c1.name.localeCompare(c2.name);} );
           cases.forEach((c) => {
             filters.push({
               id: c.identifier,
@@ -277,7 +278,6 @@
 
     const _fetchNodesForCase = (id) => {
       return new Promise((resolve, reject) => {
-
         CaseOntologyDataService.loadCase(id, true).then((result) => {
           const promises = [];
           result.individuals.forEach((individual) => {
@@ -306,9 +306,125 @@
       });
     };
 
+    const _fetchIndividualNode2 = (iri) => {
+      return new Promise((resolve, reject) => {
+        let edges = [];
+        let nodes = [];
+        Promise.all([
+          OntologyDataService.fetchIndividual(iri, {
+            allParentClassIris: true,
+            objectProperties: true,
+            reverseObjectProperties: true,
+            datatypeProperties: true
+          }),
+          CaseOntologyDataService.getCaseIdentifiersFor(iri)
+        ]).then((result) => {
+          const individual = result[0];
+          individual.objectProperties.forEach((prop) => {
+              edges.push(_createObjectEdge(individual.iri, prop.iri, prop.label, prop.target));
+          });
+          individual.reverseObjectProperties.forEach((prop) => {
+            edges.push(_createObjectEdge(prop.target, prop.iri, prop.label, individual.iri));
+          });
+          individual.classIris.forEach((iri) => {
+             edges.push(_createInstanceOfEdge(individual, iri));
+          });
+          nodes = nodes.concat(_createDatatypeNodes(result[0], result[1]));
+          edges = edges.concat(_createDatatypeEdges(result[0]));
+          return _createIndividualNode(result[0], result[1]);
+        }).then((node) => {
+            nodes.push(node);
+            resolve({nodes: nodes, edges: edges});
+          }).catch(reject);
+      });
+    };
+
+
+    const _fetchNode2 = (nodeId) => {
+      if (!nodeId) {
+        return Promise.reject(Error('Id must not be undefined.'));
+      }
+      return new Promise((resolve, reject) => {
+        Promise.all([
+          OntologyDataService.isClass(nodeId),
+          OntologyDataService.isIndividual(nodeId)
+        ]).then((result) => {
+         /* if (result[0] === true) {
+            return _fetchClassNode(nodeId);
+          }*/
+          if (result[1] === true) {
+            return _fetchIndividualNode2(nodeId);
+          }
+          throw Error(`Iri: ${nodeId} identifies neither a class nor an individual.`);
+        }).then(resolve)
+          .catch(reject);
+      });
+    };
+
+    const _nodes = (nodeIds, graphNodeIds, filters = [], withoutFilters = false) => {
+      if (!nodeIds || !Array.isArray(nodeIds)) {
+        return Promise.reject('Node Ids must be of type array!');
+      }
+      const promises = nodeIds.filter((id) => {
+        return graphNodeIds.indexOf(id) < 0;
+      }).map((id) => {
+        return _fetchNode2(id);
+      });
+      return new Promise((resolve, reject) => {
+        Promise.all(promises).then((result) => {
+          const nodes = result.reduce((accumulator, item) => {
+            item.nodes.forEach((n) => {
+              const found = accumulator.find((n_) => {
+                return n.id === n_.id;
+              });
+              if (!found) {
+                accumulator.push(n);
+              }
+            });
+            return accumulator;
+          }, []).filter((n) => {
+            if (withoutFilters === true) {
+              return true;
+            }
+            /*const shown = filters.find((f) => {
+              if ((f.type === 'type') && (n.type === f.id)) {
+                console.log("data node???", (f.enabled === true), n);
+                return f.enabled === true;
+              }
+              if ((f.type === 'case') && (n.cases.indexOf(f.id) > -1)) {
+                return f.enabled === true;
+              }
+              return false;
+
+            });*/
+            //TODO: implement filtering!!!
+            return true;
+          });
+
+          const newGraphNodes = graphNodeIds.concat(nodes.map((n) => {
+            return n.id;
+          }));
+          const edges = result.reduce((accumulator, item) => {
+              item.edges.forEach((e) => {
+                const found = accumulator.find((e_) => {
+                  return e.id === e_.id;
+                });
+                if (!found) {
+                  accumulator.push(e);
+                }
+              });
+              return accumulator;
+          }, []).filter((e) => {
+            return ((newGraphNodes.indexOf(e.from) > -1) && (newGraphNodes.indexOf(e.to) > -1));
+          });
+          resolve({nodes: nodes, edges: edges});
+        }).catch(reject);
+      });
+    };
+
     const _focusNodes = (nodeIds, filters) => {
       if (nodeIds === undefined || !Array.isArray(nodeIds)) {
-        Promise.reject('Node Ids must be of type array!');
+        return Promise.reject('Node Ids must be of type array!');
       }
       const promises = nodeIds.map((id) => {
         return _fetchNode(id, filters);
@@ -325,7 +441,6 @@
         }).catch(reject);
       });
     };
-
     const _neighborsForIndividual = (node, filters, graphNodeIds) => {
       if (!node) {
         return Promise.reject(Error('Node must not be undefined.'));
@@ -684,6 +799,9 @@
       focusNodes: (nodeIds, filters) => {
         return _focusNodes(nodeIds, filters);
       },
+      nodes: (nodeIds, graphNodeIds, filters, withoutFilters) => {
+        return _nodes(nodeIds, graphNodeIds, filters, withoutFilters);
+      },
       neighbors: (node, filters, depth, graphNodeIds) => {
         return bfs(node, depth, filters, graphNodeIds);
         // return _neighbors([node], filters, depth, graphNodeIds);
@@ -697,8 +815,8 @@
       tags: () => {
         return _tags;
       },
-      caseNodes: (id) => {
-        return _fetchNodesForCase(id);
+      caseNodes: (caseId) => {
+        return _fetchNodesForCase(caseId);
       },
       nodeTypes: _nodeTypes
     };
