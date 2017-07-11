@@ -139,6 +139,12 @@
         }
     });
 
+    app.on('window-all-closed', app.quit);
+    app.on('before-quit', () => {
+      mainWindow.removeAllListeners('close');
+      mainWindow.close();
+    });
+
     app.serviceFinder = function(serviceName, protocol, subTypes, includeLocal) {
         return new ServiceFinder(serviceName, protocol, subTypes, includeLocal);
     };
