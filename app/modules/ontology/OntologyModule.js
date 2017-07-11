@@ -2,9 +2,6 @@
   'use strict';
 
   function OntologyModule (config) {
-    const _loadColorPicker = () => {
-
-    };
 
     var moduleConfig = config;
     angular.module('electron-app')

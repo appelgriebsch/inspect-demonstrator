@@ -4,7 +4,7 @@
   const OwlEntity = require('./OwlEntity');
 
   class OwlObjectProperty extends OwlEntity {
-    constructor (ontologyIri, propertyIri, type) {
+    constructor (ontologyIri, propertyIri) {
       super(ontologyIri, propertyIri);
       this.domainIris = [];
       this.rangeIris = [];

@@ -295,133 +295,6 @@
         });
       });
     };
-    /**
-     *
-     * @param classIri
-     * @param options determines what information to load, can involve: comments, subClasses, superClasses, individuals, objectProperties, datatypeProperties
-     * @returns {*}
-     * @private
-     */
-    const _fetchClass = (classIri, options) => {
-      try {
-        _isIriValid(classIri);
-      } catch (err) {
-        return Promise.reject(err);
-      }
-      if (!options) {
-        options = {};
-      }
-      return new Promise((resolve, reject) => {
-        const promises = [
-          _fetch(classIri, _iriFor('rdf-type'), _iriFor('owl-class'), 'subject')
-        ];
-        if (options.comments === true) {
-          promises.push(_fetch(classIri, _iriFor('rdfs-comment'), _iriFor('owl-class'), 'subject'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.subClasses === true) {
-          promises.push(_fetch(classIri, _iriFor('rdfs-subClass'), _iriFor('owl-class'), 'object'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.superClasses === true) {
-          promises.push(_fetch(classIri, _iriFor('rdfs-subClass'), _iriFor('owl-class'), 'subject'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.individuals === true) {
-          promises.push(_fetch(classIri, _iriFor('rdf-type'), _iriFor('owl-individual'), 'object'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.objectProperties === true) {
-          promises.push(_fetchObjectPropertyIrisForClassIri(classIri));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.datatypeProperties === true) {
-          // TODO: implement
-          // promises.push(_fetchDatatypePropertyIrisForClassIri(classIri));
-          promises.push(Promise.resolve([]));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.allParentClassIris === true) {
-          promises.push(_fetchAllParentIrisFor([classIri]));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        Promise.all(promises).then((result) => {
-          if (!(result) || (result[0].length === 0)) {
-            throw new Error(`Class with iri ${classIri} not found.`);
-          } else {
-            const clazz = new OwlClass(_iriForPrefix('ontology'), classIri);
-            clazz.comments = result[1];
-            clazz.childClassIris = result[2];
-            clazz.parentClassIris = result[3];
-            clazz.individualIris = result[4];
-            clazz.objectPropertyIris = result[5];
-            clazz.allParentClassIris = result[7];
-
-            resolve(clazz);
-          }
-        }).catch((err) => {
-          reject(err);
-        });
-      });
-    };
-    const _fetchObjectProperty = (propertyIri, options) => {
-      if (propertyIri === undefined) {
-        return Promise.reject(new Error('Property iri may not be null.'));
-      }
-      if (!options) {
-        options = {};
-      }
-      return new Promise((resolve, reject) => {
-        const predDomain = `${_iriForPrefix('rdfs')}domain`;
-        const predRange = `${_iriForPrefix('rdfs')}range`;
-        const predInverseOf = `${_iriForPrefix('owl')}inverseOf`;
-        const symmetricProp = `${_iriForPrefix('owl')}SymmetricProperty`;
-        const promises = [
-          _fetch(propertyIri, _iriFor('rdf-type'), _iriFor('owl-objectProperty'), 'subject')
-        ];
-        if (options.comments === true) {
-          promises.push(_fetch(propertyIri, _iriFor('rdfs-comment'), _iriFor('owl-objectProperty'), 'subject'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.domain === true) {
-          promises.push(_fetch(propertyIri, predDomain, _iriFor('owl-objectProperty'), 'subject'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.range === true) {
-          promises.push(_fetch(propertyIri, predRange, _iriFor('owl-objectProperty'), 'subject'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.inverse === true) {
-          promises.push(_fetch(propertyIri, predInverseOf, _iriFor('owl-objectProperty'), 'subject'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        Promise.all(promises).then((result) => {
-          if (!(result) || (result[0].length === 0)) {
-            reject(new Error(`ObjectProperty with iri ${propertyIri} not found.`));
-          } else {
-            const property = new OwlObjectProperty(_iriForPrefix('ontology'), propertyIri);
-            property.comments = result[1];
-            property.domainIris = result[2];
-            property.rangeIris = result[3];
-            property.inverseOfIris = result[4];
-            resolve(property);
-          }
-        }).catch((err) => {
-          reject(err);
-        });
-      });
-    };
 
     const _fetchDatatypeProperty = (propertyIri, options) => {
       if (!propertyIri) {
@@ -467,101 +340,15 @@
       });
     };
 
-    const _parseDatatypePropertyValue = (value) => {
+    const _parseLiteralValue = (value) => {
       let match;
       if ((match = regexDatatype.exec(value)) !== null) {
         return { value: match[1], type: match[2] };
       }
+      return value;
     };
 
-    const _fetchIndividual = (individualIri, options) => {
-      return new Promise((resolve, reject) => {
-        if (_isValidString(individualIri) !== true) {
-          throw Error(`Iri ${individualIri} is not a valid string.`);
-        }
-        if (!options) {
-          options = {};
-        }
 
-        const dataPropType = `${_iriForPrefix('owl')}DatatypeProperty`;
-        const objectPropType = `${_iriForPrefix('owl')}ObjectProperty`;
-        const promises = [
-          _fetch(individualIri, _iriFor('rdf-type'), _iriFor('owl-individual'), 'subject')
-        ];
-        if (options.comments === true) {
-          promises.push(_fetch(individualIri, _iriFor('rdfs-comment'), _iriFor('owl-individual'), 'subject'));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.datatypeProperties === true) {
-          promises.push(_fetchForIndividual(individualIri, dataPropType, false));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.objectProperties === true) {
-          promises.push(_fetchForIndividual(individualIri, objectPropType, false));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        if (options.reverseObjectProperties === true) {
-          promises.push(_fetchForIndividual(individualIri, objectPropType, true));
-        } else {
-          promises.push(Promise.resolve([]));
-        }
-        let individual;
-        Promise.all(promises).then((result) => {
-          if (!(result) || (result[0].length === 0)) {
-            throw new Error(`Individual with iri ${individualIri} not found.`);
-          }
-          const classIris = result[0].filter((iri) => {
-            return iri.startsWith(_iriForPrefix('ontology'));
-          });
-          individual = new OwlIndividual(_iriForPrefix('ontology'), classIris, individualIri);
-          individual.comments = result[1].map((item) => {
-            // remove leading and trailing quotation marks
-            return item.slice(1, -1);
-          });
-
-          individual.datatypeProperties = result[2].map((item) => {
-            const parsedItem = _parseDatatypePropertyValue(item.y);
-            if (parsedItem) {
-              // TODO: do something about the potential type of a DatatypeProperty
-              return {
-                iri: item.x,
-                label: _labelFor(item.x),
-                target: parsedItem.value,
-                targetType: parsedItem.type
-              };
-            }
-            throw Error(`Could not parse value: ${item}`);
-          });
-
-          individual.objectProperties = result[3].map((item) => {
-            return {
-              iri: item.x,
-              label: _labelFor(item.x),
-              target: item.y
-            };
-          });
-
-          individual.reverseObjectProperties = result[4].map((item) => {
-            return {
-              iri: item.x,
-              label: _labelFor(item.x),
-              target: item.y
-            };
-          });
-          if (options.allParentClassIris === true) {
-            return _fetchAllParentIrisFor(classIris);
-          } else {
-            return Promise.resolve([]);
-          }
-        }).then((result) => {
-          individual.allParentClassIris = result;
-          resolve(individual);
-        }).catch(reject);
-      });
-    };
     const _fetchForIndividual = function (individualIri, objType, reverse) {
       if (!individualIri) {
         return Promise.reject(new Error('Individual iri may not be null.'));
@@ -610,16 +397,17 @@
           let func;
           switch (rdfsType) {
             case _iriFor('owl-class'):
-              func = _fetchClass;
+              func = _fetchEntity;
               break;
             case _iriFor('owl-objectProperty'):
-              func = _fetchObjectProperty;
+              func = _fetchEntity;
               break;
             case _iriFor('owl-datatypeProperty'):
               func = _fetchDatatypeProperty;
               break;
             case _iriFor('owl-individual'):
-              func = _fetchIndividual;
+              //func = _fetchIndividual;
+              func = _fetchEntity;
               break;
             default: return Promise.reject(new Error(`Not found: ${rdfsType}`));
           }
@@ -821,7 +609,7 @@
         _fetch(classIri, _iriFor('rdf-type'), _iriFor('owl-individual'), 'object').then((result) => {
           const promises = [];
           result.forEach((iri) => {
-            promises.push(_fetchIndividual(iri, options));
+            promises.push(_fetchEntity(iri, options));
           });
           return Promise.all(promises);
         }).then(resolve)
@@ -829,63 +617,30 @@
       });
     };
 
-    const _fetchObjectPropertyIrisForClassIri = (classIri) => {
-      if (classIri === undefined) {
-        return Promise.reject(new Error('Class IRI is undefined.'));
-      }
-      return new Promise((resolve, reject) => {
-        const searchArray = [{
-          subject: classIri,
-          predicate: _iriFor('rdf-type'),
-          object: _iriFor('owl-class')
-        }, {
-          subject: db.v('x'),
-          predicate: _iriFor('rdf-type'),
-          object: _iriFor('owl-objectProperty')
-        }, {
-          subject: db.v('x'),
-          predicate: db.v('y'),
-          object: classIri
-        }];
-        db.search(searchArray, {}, function (err, result) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result.map((item) => {
-              return item.x;
-            }));
-          }
-        });
-      });
-    };
-
-    const _fetchAllParentIrisFor = (classIris) => {
-      return new Promise((resolve, reject) => {
-        const result = [];
-        const promises = [];
-        classIris.forEach((iri) => {
-          if (result.indexOf(iri) < 0) {
-            promises.push(_fetchClass(iri, {superClasses: true}));
-          }
-        });
-        Promise.all(promises).then((classes) => {
-          const promises = [];
-          classes.forEach((clazz) => {
-            clazz.parentClassIris.forEach((iri) => {
-              if (result.indexOf(iri) < 0) {
-                result.push(iri);
-                promises.push(_fetchClass(iri, {superClasses: true}));
-              }
-            });
+    const _fetchAllParentIrisFor = (classIris, level = 1) => {
+       return new Promise((resolve, reject) => {
+        const promises = classIris.map((iri) => {
+          const triples = [{
+            subject: iri,
+            predicate:  _iriFor('rdf-type'),
+            object:  _iriFor('owl-class')
+          }, {
+            subject: iri,
+            predicate:  _iriFor('rdfs-subClass'),
+            object: db.v('x')
+          }];
+          return _search(triples, {
+            materialized: { iri: db.v('x')}
           });
-          return Promise.all(promises);
-        }).then((classes) => {
-          classes.forEach((clazz) => {
-            clazz.parentClassIris.forEach((iri) => {
-              result.push(iri);
-            });
-          });
-          resolve(result);
+        });
+        Promise.all(promises).then((result) => {
+            const iris = result.reduce((accumulator, array) => {
+              array.forEach((item) => {
+                accumulator.push(item.iri);
+              });
+              return accumulator;
+            }, []);
+           resolve(iris);
         }).catch(reject);
       });
     };
@@ -973,6 +728,190 @@
         });
       });
     };
+    const _search = (triples, func) => {
+      return new Promise((resolve, reject) => {
+        db.search(triples, func, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    };
+
+    const _assembleClass = (iri, subjectTriples, objectTriples) => {
+      return new Promise((resolve, reject) => {
+        const clazz = new OwlClass(_iriForPrefix('ontology'), iri);
+        for (let t of subjectTriples) {
+          if (t.predicate === _iriFor('rdfs-comment')) {
+            const literal = _parseLiteralValue(t.object);
+            clazz.comments.push(literal.value);
+            continue;
+          }
+          if (t.predicate === _iriFor('rdfs-subClass')) {
+            clazz.parentClassIris.push(t.object);
+            continue;
+          }
+        }
+        for (let t of objectTriples) {
+          if (t.predicate === _iriFor('rdfs-subClass')) {
+            clazz.childClassIris.push(t.subject);
+            continue;
+          }
+          if (t.predicate === _iriFor('rdf-type')) {
+            clazz.individualIris.push(t.subject);
+            continue;
+          }
+        }
+       _fetchAllParentIrisFor([iri]).then((result) => {
+          clazz.allParentClassIris = result;
+          resolve(clazz);
+        }).catch(reject);
+      });
+    };
+    const _assembleIndividual = (iri, subjectTriples, objectTriples) => {
+      return new Promise((resolve, reject) => {
+        const individual = new OwlIndividual(_iriForPrefix('ontology'), [], iri);
+        const properties = [];
+        for (let t of subjectTriples) {
+          if ((t.predicate === _iriFor('rdf-type')) && (t.object !== _iriFor('owl-individual'))) {
+            individual.classIris.push(t.object);
+          }
+          if (t.predicate === _iriFor('rdfs-comment')) {
+            const literal = _parseLiteralValue(t.object);
+            individual.comments.push(literal.value);
+          }
+          if (t.predicate.startsWith(_iriForPrefix('ontology'))) {
+            if (properties.indexOf(t.predicate) < 0) {
+              properties.push(t.predicate);
+            }
+          }
+        }
+        for (let t of objectTriples) {
+          if (t.predicate.startsWith(_iriForPrefix('ontology'))) {
+            if (properties.indexOf(t.predicate) < 0) {
+              properties.push(t.predicate);
+            }
+          }
+        }
+        const promises = properties.map((p) => {
+          return _get({ subject: p, predicate: _iriFor('rdf-type') });
+        });
+        promises.push(_fetchAllParentIrisFor(individual.classIris));
+        //promises.push(Promise.resolve([]));
+
+        Promise.all(promises).then((result) => {
+          individual.allParentClassIris = result.pop();
+          const map = result.reduce((accumulator, item) => {
+            item.forEach((i) => {
+             accumulator[i.subject] = i.object;
+            });
+            return accumulator;
+          }, {});
+          for (let t of subjectTriples) {
+            const prop = map[t.predicate];
+            if (prop === _iriFor('owl-objectProperty')) {
+              individual.objectProperties.push({
+                iri: t.predicate,
+                label: _labelFor(t.predicate),
+                target: t.object
+              });
+              continue;
+            }
+             if (prop === _iriFor('owl-datatypeProperty')) {
+              const literal = _parseLiteralValue(t.object);
+              individual.datatypeProperties.push({
+                iri: t.predicate,
+                label: _labelFor(t.predicate),
+                target: literal.value,
+                targetType: literal.type
+              });
+            }
+          }
+          for (let t of objectTriples) {
+            const prop = map[t.predicate];
+            if (prop === _iriFor('owl-objectProperty')) {
+              individual.reverseObjectProperties.push({
+                iri: t.predicate,
+                label: _labelFor(t.predicate),
+                target: t.subject
+              });
+            }
+          }
+          resolve(individual);
+        }).catch(reject);
+      });
+    };
+    const _assembleObjectProperty = (iri, subjectTriples, objectTriple) => {
+      return new Promise((resolve, reject) => {
+        const property = new OwlObjectProperty(_iriForPrefix('ontology'), iri);
+        property.parentPropertyIris = [];
+        for (let t of subjectTriples) {
+          if (t.predicate === _iriFor('rdfs-comment')) {
+            const literal = _parseLiteralValue(t.object);
+            property.comments.push(literal.value);
+            continue;
+          }
+          if (t.predicate === _iriFor('rdfs-subProp')) {
+            property.parentPropertyIris.push(t.object);
+            continue;
+          }
+          if (t.predicate === _iriFor('rdfs-domain')) {
+            property.domainIris.push(t.object);
+          }
+          if (t.predicate === _iriFor('rdfs-range')) {
+            property.rangeIris.push(t.object);
+          }
+          if (t.predicate === 'http://www.w3.org/2002/07/owl#inverseOf') {
+            property.inverseOfIris.push(t.object);
+          }
+        }
+        for (let t of objectTriple) {
+          if (t.predicate === 'http://www.w3.org/2002/07/owl#inverseOf') {
+            property.inverseOfIris.push(t.subject);
+          }
+        }
+        resolve(property);
+      });
+    };
+
+    const _assembleDatatypeProperty = (iri, subjectTriples, objectTriple) => {
+
+    };
+
+    const _fetchEntity = (iri) => {
+      return new Promise((resolve, reject) => {
+        Promise.all([
+          _get({ subject: iri }),
+          _get({ object: iri }),
+        ]).then((result) => {
+          if (result[0].length === 0) {
+            throw Error(`Ontology does not contain an entity with iri: ${iri}.`);
+          }
+          const typeClass = result[0].find((r) => {
+            return ((r.predicate === _iriFor('rdf-type')) && (r.object === _iriFor('owl-class')));
+          });
+          if (typeClass) {
+            return resolve(_assembleClass(iri, result[0], result[1]));
+          }
+          const typeIndividual = result[0].find((r) => {
+             return ((r.predicate === _iriFor('rdf-type')) && (r.object === _iriFor('owl-individual')));
+          });
+          if (typeIndividual) {
+            return resolve(_assembleIndividual(iri, result[0], result[1]));
+          }
+          const typeObjectProperty = result[0].find((r) => {
+            return ((r.predicate === _iriFor('rdf-type')) && (r.object === _iriFor('owl-objectProperty')));
+          });
+          if (typeObjectProperty) {
+            return resolve(_assembleObjectProperty(iri, result[0], result[1]));
+          }
+          throw Error(`Type for iri ${iri} not known`);
+        }).then(resolve)
+          .catch(reject);
+      });
+    };
 
     return {
       initialize: () => {
@@ -994,10 +933,11 @@
         return new OwlIndividual(ontologyIri, classIri, instanceIri);
       },
       fetchIndividual (individualIri, options) {
-        return _fetchIndividual(individualIri, options);
+        //return _fetchIndividual(individualIri, options);
+        return _fetchEntity(individualIri);
       },
-      fetchObjectProperty (iri, options) {
-        return _fetchObjectProperty(iri, options);
+      fetchObjectProperty (iri) {
+        return _fetchEntity(iri);
       },
       fetchAllIndividualIris () {
         return _fetchAllIrisForType(_iriFor('owl-individual'));
@@ -1005,20 +945,21 @@
       fetchAllClassIris () {
         return _fetchAllIrisForType(_iriFor('owl-class'));
       },
-      fetchAllIndividuals (options) {
-        return _fetchAllForType(_iriFor('owl-individual'), options);
+      fetchAllIndividuals () {
+        return _fetchAllForType(_iriFor('owl-individual'));
       },
-      fetchAllClasses (options) {
-        return _fetchAllForType(_iriFor('owl-class'), options);
+      fetchAllClasses () {
+        return _fetchAllForType(_iriFor('owl-class'));
       },
-      fetchAllObjectProperties (options) {
-        return _fetchAllForType(_iriFor('owl-objectProperty'), options);
+      fetchAllObjectProperties () {
+        return _fetchAllForType(_iriFor('owl-objectProperty'));
       },
       fetchAllDatatypeProperties (options) {
         return _fetchAllForType(_iriFor('owl-datatypeProperty'), options);
       },
-      fetchClass (classIri, options) {
-        return _fetchClass(classIri, options);
+      fetchClass (classIri) {
+        //return _fetchClass(classIri, options);
+        return _fetchEntity(classIri);
       },
       insertIndividual: (individual) => {
         return _insertIndividual(individual);
