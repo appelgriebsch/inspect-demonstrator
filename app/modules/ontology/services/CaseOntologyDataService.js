@@ -6,6 +6,8 @@
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
     const Case = require(path.join(__dirname, '../models/Case'));
+    const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
+    const OwlClass = require(path.join(__dirname, '../models/OwlClass'));
 
     const caseClassName = 'Fall';
     const caseNamePropertyName = 'Fallname';
@@ -352,14 +354,85 @@
         }, []);
       return c;
     };
+
+    const _loadEntities = (iris) => {
+      if (iris === undefined || !Array.isArray(iris)) {
+        return Promise.reject('Iris be of type array!');
+      }
+      const promises = iris.map((iri) => {
+        return _loadEntity(iri);
+      });
+      return new Promise((resolve, reject) => {
+        Promise.all(promises).then((entities) => {
+          entities = entities.filter((e) => {
+            return e !== undefined;
+          });
+          resolve(entities);
+        }).catch(reject);
+      });
+
+    };
+
+    const _loadEntity = (iri) => {
+      return new Promise((resolve, reject) => {
+        Promise.all([
+          OntologyDataService.fetchEntity(iri),
+          _getCaseIdentifiersFor(iri)
+        ]).then((result) => {
+          const entity = result[0];
+          if (entity instanceof OwlIndividual) {
+            entity.objectProperties = entity.objectProperties.filter((prop) => {
+              return prop.iri !== _caseEntityInversePropertyIri;
+            });
+            entity.reverseObjectProperties = entity.reverseObjectProperties.filter((prop) => {
+              return prop.iri !== _caseEntityPropertyIri;
+            });
+            entity.cases = result[1];
+          }
+          if (entity instanceof OwlClass) {
+            const props = _objectProperties.filter((prop) => {
+              return entity.objectPropertyIris.indexOf(prop.iri) > -1;
+            });
+            entity.objectProperties = [];
+            props.forEach((prop) => {
+              prop.domainIris.forEach((source) => {
+                prop.rangeIris.forEach((target) => {
+                  if ((source === entity.iri) || (target === entity.iri)) {
+                    entity.objectProperties.push({
+                      source: source,
+                      target: target,
+                      iri: prop.iri,
+                      label: prop.label
+                    });
+                  }
+                });
+              });
+            });
+          }
+          if ((entity instanceof OwlClass) && (entity.iri === _caseClassIri)){
+            resolve();
+          } else {
+            resolve(entity);
+          }
+        }).catch(reject);
+      });
+    };
     const _loadIndividual = (iri) => {
       return new Promise((resolve, reject) => {
         Promise.all([
-          OntologyDataService.fetchIndividual(iri),
+          OntologyDataService.fetchEntity(iri),
           _getCaseIdentifiersFor(iri)
         ]).then((result) => {
+          const individual = result[0];
+          if (!(individual instanceof OwlIndividual)) {
+            throw new Error(`Entity with iri: ${iri} is not an individual.`);
+          }
+
           result[0].objectProperties = result[0].objectProperties.filter((prop) => {
             return prop.iri !== _caseEntityInversePropertyIri;
+          });
+          result[0].reverseObjectProperties = result[0].reverseObjectProperties.filter((prop) => {
+            return prop.iri !== _caseEntityPropertyIri;
           });
           result[0].cases = result[1];
           resolve(result[0]);
@@ -436,7 +509,7 @@
           .catch(reject);
       });
     };
-     const _initialize = () => {
+    const _initialize = () => {
       if (_initialized === true) {
         return Promise.resolve();
       }
@@ -508,7 +581,10 @@
         return _loadCase2(identifier, withIndividuals);
       },
       loadIndividual: (iri) => {
-        return _loadIndividual(iri);
+        return _loadEntity(iri);
+      },
+      loadEntites: (iris) => {
+        return _loadEntities(iris);
       },
       createMetadataForCases: () => {
         return _createMetadataForCases();
@@ -516,9 +592,6 @@
       getCaseIdentifiersFor: (individualIri) => {
         return _getCaseIdentifiersFor(individualIri);
       },
-      isCaseIndividual: (individual) => {
-        return individual.classIris.indexOf(`${OntologyDataService.ontologyIri()}${caseClassName}`) > -1;
-      }
     };
   }
   module.exports = CaseOntologyDataService;

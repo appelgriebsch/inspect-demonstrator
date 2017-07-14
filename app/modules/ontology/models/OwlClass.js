@@ -11,6 +11,7 @@
       this.individualIris = [];
       this.childClassIris = [];
       this.parentClassIris = [];
+      this.objectPropertyIris = [];
     }
   }
   module.exports = OwlClass;

@@ -743,6 +743,7 @@
     const _assembleClass = (iri, subjectTriples, objectTriples) => {
       return new Promise((resolve, reject) => {
         const clazz = new OwlClass(_iriForPrefix('ontology'), iri);
+        const promises = [  _fetchAllParentIrisFor([iri]) ];
         for (let t of subjectTriples) {
           if (t.predicate === _iriFor('rdfs-comment')) {
             const literal = _parseLiteralValue(t.object);
@@ -763,9 +764,18 @@
             clazz.individualIris.push(t.subject);
             continue;
           }
+          if ((t.predicate === _iriFor('rdfs-range')) || (t.predicate === _iriFor('rdfs-domain'))) {
+            promises.push(_get({ subject: t.subject, predicate: _iriFor('rdf-type'), object: _iriFor('owl-objectProperty') }));
+          }
         }
-       _fetchAllParentIrisFor([iri]).then((result) => {
-          clazz.allParentClassIris = result;
+        Promise.all(promises).then((result) => {
+          clazz.allParentClassIris = result.shift();
+          clazz.objectPropertyIris = result.reduce((accumulator, array) => {
+            if (array.length > 0) {
+              accumulator.push(array[0].subject);
+            }
+            return accumulator;
+          }, []);
           resolve(clazz);
         }).catch(reject);
       });
@@ -932,9 +942,13 @@
       createIndividual: (ontologyIri, classIri, instanceIri) => {
         return new OwlIndividual(ontologyIri, classIri, instanceIri);
       },
-      fetchIndividual (individualIri, options) {
+      fetchIndividual (individualIri) {
         //return _fetchIndividual(individualIri, options);
         return _fetchEntity(individualIri);
+      },
+      fetchEntity (iri) {
+        //return _fetchIndividual(individualIri, options);
+        return _fetchEntity(iri);
       },
       fetchObjectProperty (iri) {
         return _fetchEntity(iri);
