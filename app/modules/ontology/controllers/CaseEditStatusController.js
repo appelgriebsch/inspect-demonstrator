@@ -14,7 +14,7 @@
         return;
       }
       CaseMetadataService.initialize().then(() => {
-        return CaseMetadataService.retrieveCaseMetadata($state.params.caseId);
+        return CaseMetadataService.metadata($state.params.caseId);
       }).then((metaData) => {
         vm.metaData = metaData;
       });

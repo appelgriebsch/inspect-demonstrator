@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  function CaseOntologyDataService (OntologyDataService, CaseMetadataService) {
+  function CaseOntologyDataService (OntologyDataService, OntologyMetadataService) {
     const path = require('path');
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
@@ -141,7 +141,7 @@
         c.description = [];
         c.status = 'open';
         OntologyDataService.insertIndividual(_convertToIndividual(c)).then(() => {
-          return CaseMetadataService.saveCaseMetadata(c.metaData());
+          return OntologyMetadataService.saveMetadata(c.metaData());
         }).then(() => {
           resolve(c);
         }).catch(reject);
@@ -164,10 +164,10 @@
 
     const _updateCaseMetadata = (caseIdentifier) => {
       return new Promise((resolve, reject) => {
-        CaseMetadataService.retrieveCaseMetadata(caseIdentifier).then((data) => {
+        OntologyMetadataService.metadata(caseIdentifier).then((data) => {
           data.lastEditedBy = sysCfg.user;
           data.lastEditedOn = new Date();
-          return CaseMetadataService.saveCaseMetadata(data);
+          return OntologyMetadataService.saveMetadata(data);
         }).then(resolve)
           .catch(reject);
       });
@@ -270,7 +270,7 @@
         OntologyDataService.removeIndividual(individual).then(() => {
           return OntologyDataService.insertIndividual(individual);
         }).then(() => {
-          return CaseMetadataService.saveCaseMetadata(case_.metaData);
+          return OntologyMetadataService.saveMetadata(case_.metaData);
         }).then(resolve)
           .catch(reject);
       });
@@ -408,7 +408,7 @@
             const c = _convertFromIndividual(individual);
             return Promise.all([
               Promise.resolve(c),
-              CaseMetadataService.retrieveCaseMetadata(c.identifier)
+              OntologyMetadataService.metadata(c.identifier)
             ]);
           });
           return Promise.all(promises);
@@ -423,7 +423,6 @@
     };
 
     const _loadCase = (caseIdentifier, withIndividuals) => {
-      console.log("called _loadCase with caseIdentifier", caseIdentifier, " withIndividuals", withIndividuals);
       if (!caseIdentifier) {
         return Promise.reject(Error("Case Identifier must not be undefined."));
       }
@@ -432,21 +431,14 @@
         let case_;
         OntologyDataService.fetchIndividual(caseIri).then((individual) => {
           case_ = _convertFromIndividual(individual);
-          let promises = [];
           if (withIndividuals === true) {
             return _loadEntities(case_.individualIris);
-            /*promises = case_.individualIris.map((iri) => {
-
-              return OntologyDataService.fetchIndividual(iri);
-            });*/
           } else {
             return [];
           }
-          //return Promise.all(promises);
         }).then((individuals) => {
           case_.individuals = individuals;
-         // console.log();
-          return  CaseMetadataService.retrieveCaseMetadata(case_.identifier);
+          return  OntologyMetadataService.metadata(case_.identifier);
         }).then((metaData) => {
           case_.metaData = metaData;
           resolve(case_);
@@ -455,16 +447,17 @@
     };
 
     const _createMetadataForCases = () => {
+
       const promises = [];
       return new Promise((resolve, reject) => {
         OntologyDataService.fetchIndividualsForClass(_caseClassIri).then((individuals) => {
           individuals.forEach((individual) => {
-            CaseMetadataService.retrieveCaseMetadata(individual.label)
+            OntologyMetadataService.metadata(individual.label)
               .then()
               .catch((err) => {
                 if (err.status === 404) {
-                  const metadata = CaseMetadataService.createCaseMetadata(individual.label, sysCfg.user, new Date());
-                  promises.push(CaseMetadataService.saveCaseMetadata(metadata));
+                  const metadata = OntologyMetadataService.newMetadata(individual.label, sysCfg.user, new Date());
+                  promises.push(OntologyMetadataService.saveMetadata(metadata));
                 } else {
                   throw err;
                 }
@@ -482,7 +475,7 @@
       return new Promise((resolve, reject) => {
         Promise.all([
           OntologyDataService.initialize(),
-          CaseMetadataService.initialize()
+          OntologyMetadataService.initialize()
         ]).then(() => {
           _caseClassIri = `${OntologyDataService.ontologyIri()}${caseClassName}`;
           _caseNamePropertyIri = `${OntologyDataService.ontologyIri()}${caseNamePropertyName}`;

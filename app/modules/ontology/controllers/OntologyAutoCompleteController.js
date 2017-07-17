@@ -20,8 +20,10 @@
     $scope.itemSelected = () => {
       if (vm.selectedItem) {
         vm.onItemSelected({item: vm.selectedItem});
-        vm.selectedItem = undefined;
-        vm.searchText = '';
+        if (vm.clearOnSelect === 'true') {
+          vm.selectedItem = undefined;
+          vm.searchText = '';
+        }
       }
     };
 

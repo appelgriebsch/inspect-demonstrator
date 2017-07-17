@@ -500,6 +500,9 @@
     $scope.$on('edit-cases', () => {
       $state.go('app.ontology.cases');
     });
+    $scope.$on('settings', () => {
+      $state.go('app.ontology.settings');
+    });
   }
 
   module.exports = OntologyViewController;

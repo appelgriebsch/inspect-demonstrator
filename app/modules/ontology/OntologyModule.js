@@ -84,7 +84,14 @@
               templateUrl: 'shell/views/shell.submit.html'
             }
           },
-
+        }).state(`${moduleConfig.state}.settings`, {
+          url: '/setttings',
+          views: {
+            'content': {
+              templateUrl: `${moduleConfig.path}/views/settings.view.html`,
+              controller: 'SettingsViewController as $ctrl'
+            }
+          },
         });
       });
 
@@ -102,7 +109,7 @@
     const TreeNodeController = require('./controllers/TreeNodeController');
     const NodeEditController = require('./controllers/NodeEditController');
     const ListsController = require('./controllers/ListsController');
-
+    const SettingsViewController = require('./controllers/SettingsViewController');
 
 
     angular.module('electron-app').controller('OntologyOptionsController', ['$scope', '$mdDialog', OntologyOptionsController]);
@@ -117,6 +124,7 @@
     angular.module('electron-app').controller('TreeNodeController', ['$scope', TreeNodeController]);
     angular.module('electron-app').controller('NodeEditController', ['$scope', '$state', 'CaseOntologyDataService', NodeEditController]);
     angular.module('electron-app').controller('ListsController', ['$scope',  ListsController]);
+    angular.module('electron-app').controller('SettingsViewController', ['$scope', '$q', 'CaseOntologyDataService', 'OntologyMetadataService', 'OntologyDataService', SettingsViewController]);
 
 
     // load and register services
@@ -124,15 +132,15 @@
     const OntologyDataService = require('./services/OntologyDataService');
     const CaseOntologyDataService = require('./services/CaseOntologyDataService');
     const OntologySharingService = require('./services/OntologySharingService');
-    const CaseMetadataService = require('./services/CaseMetadataService');
+    const OntologyMetadataService = require('./services/OntologyMetadataService');
     const GraphDataService = require('./services/GraphDataService');
 
 
-    angular.module('electron-app').service('GraphService', ['OntologyDataService', 'CaseOntologyDataService', GraphService]);
-    angular.module('electron-app').service('CaseOntologyDataService', ['OntologyDataService', 'CaseMetadataService', CaseOntologyDataService]);
+    angular.module('electron-app').service('GraphService', ['OntologyDataService', 'CaseOntologyDataService', 'OntologyMetadataService', GraphService]);
+    angular.module('electron-app').service('CaseOntologyDataService', ['OntologyDataService', 'OntologyMetadataService', CaseOntologyDataService]);
     angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
     angular.module('electron-app').service('OntologySharingService', ['OntologyDataService', OntologySharingService]);
-    angular.module('electron-app').service('CaseMetadataService', ['PouchDBService', CaseMetadataService]);
+    angular.module('electron-app').service('OntologyMetadataService', ['PouchDBService', OntologyMetadataService]);
     angular.module('electron-app').service('GraphDataService', ['PouchDBService', GraphDataService]);
 
 
@@ -141,6 +149,7 @@
       templateUrl: `${moduleConfig.path}/views/ontology.autocomplete.html`,
       replace: 'true',
       bindings: {
+        clearOnSelect: '<',
         items: '<',
         onItemSelected: '&'
       },

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  function GraphService (OntologyDataService, CaseOntologyDataService) {
+  function GraphService (OntologyDataService, CaseOntologyDataService, OntologyMetadataService) {
     const path = require('path');
     const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
     const OwlClass = require(path.join(__dirname, '../models/OwlClass'));
@@ -23,18 +23,8 @@
     const _tags = {
       NO_CASE: '$NO_CASE$'
     };
-    const _iconFontFace = 'FontAwesome';
-    const _typeIcons = {
-      'http://www.AMSL/GDK/ontologie#Akteur': '\uf2ba',
-      'http://www.AMSL/GDK/ontologie#Mensch': '\uf2be',
-      'http://www.AMSL/GDK/ontologie#Organisation': '\uf19c',
-      'http://www.AMSL/GDK/ontologie#Ereignis': '\uf0e7',
-      'http://www.AMSL/GDK/ontologie#Fluss': '\uf021',
-      'http://www.AMSL/GDK/ontologie#Ressource': '\uf085',
-      'http://www.AMSL/GDK/ontologie#Schwachstelle': '\uf071',
-      'http://www.AMSL/GDK/ontologie#Straftatbestand': '\uf0e3',
-      'http://www.AMSL/GDK/ontologie#Uebertragungsweg': '\uf0ec'
-    };
+
+    let _activeProfile = {};
 
     const _createDatatypeNodes = (individual) => {
       return individual.datatypeProperties.map((prop) => {
@@ -49,16 +39,21 @@
       });
     };
 
-    const _iconFor = (iris) => {
-      const iri = iris.find((iri) => {
-        return _typeIcons[iri];
+    const _symbolFor = (iris) => {
+      if (!_activeProfile) {
+        return;
+      }
+      let iri = iris.find((iri) => {
+        return _activeProfile.images[iri];
       });
       if (iri) {
-        return {
-          face: _iconFontFace,
-          code: _typeIcons[iri],
-          size: 60
-        };
+        return _activeProfile.images[iri];
+      }
+      iri = iris.find((iri) => {
+        return _activeProfile.icons[iri];
+      });
+      if (iri) {
+        return _activeProfile.icons[iri];
       }
     };
 
@@ -72,7 +67,7 @@
         group: (individual.cases.length === 0) ? _tags.NO_CASE : individual.cases[0],
         cases: (individual.cases.length === 0) ? [_tags.NO_CASE] : individual.cases,
       };
-      const icon = _iconFor([individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
+      const icon = _symbolFor([individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
       if (icon) {
         node.shape = 'icon';
         node.icon = icon;
@@ -89,7 +84,7 @@
         group: _nodeTypes.CLASS_NODE,
         tags: [_nodeTypes.CLASS_NODE]
       };
-      const icon = _iconFor([clazz.iri].concat(clazz.allParentClassIris));
+      const icon = _symbolFor([clazz.iri].concat(clazz.allParentClassIris));
       if (icon) {
         node.shape = 'icon';
         node.icon = icon;
@@ -199,48 +194,14 @@
     };
 
     const _initialize = () => {
-      return Promise.resolve();
-
-    };
-    const _fetchNodesForCase = (id) => {
       return new Promise((resolve, reject) => {
-        console.log("!!!!!!!!!!!!!!!!!!!!");
-        CaseOntologyDataService.loadCase(id, true).then((result) => {
-          console.log(result);
-          resolve({nodes: [], edges: []});
+        OntologyMetadataService.profile("default").then((result) => {
+          _activeProfile = result;
+          console.log(_activeProfile);
+          resolve();
         }).catch(reject);
       });
     };
-  /*  const _fetchNodesForCase = (id) => {
-      return new Promise((resolve, reject) => {
-        CaseOntologyDataService.loadCase(id, true).then((result) => {
-          const promises = [];
-          result.individuals.forEach((individual) => {
-            promises.push(Promise.all([
-              Promise.resolve(individual),
-              CaseOntologyDataService.getCaseIdentifiersFor(individual.iri)
-            ]));
-          });
-          return Promise.all(promises);
-        }).then((result) => {
-          let nodes = [];
-          let edges = [];
-          result.forEach((r) => {
-            const individual = r[0];
-            const caseIdentifiers = r[1];
-            nodes.push(_createIndividualNode(individual, caseIdentifiers));
-
-            individual.objectProperties.forEach((prop) => {
-              edges.push(_createObjectEdge(individual.iri, prop.iri, prop.label, prop.target));
-            });
-            nodes = nodes.concat(_createDatatypeNodes(individual, caseIdentifiers));
-            edges = edges.concat(_createDatatypeEdges(individual));
-          });
-          resolve({nodes: nodes, edges: edges});
-        }).catch(reject);
-      });
-    };*/
-
     const _individualsToNodes = (individuals) => {
       return _convertEntities(individuals);
     };
@@ -473,9 +434,6 @@
       },
       searchTerms: () => {
         return _searchTerms();
-      },
-      caseNodes: (caseId) => {
-        return _fetchNodesForCase(caseId);
       },
       tags: _tags,
       nodeTypes: _nodeTypes
