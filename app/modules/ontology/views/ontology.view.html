@@ -25,10 +25,8 @@
     <header>Lists</header>
     <content>
       <ontology-lists
-        case-data="$ctrl.lists.caseData"
         class-individuals-data="$ctrl.lists.classIndividualsData"
-        multiple-case-data="$ctrl.lists.multipleCaseData"
-      >
+        multiple-case-data="$ctrl.lists.multipleCaseData">
 
       </ontology-lists>
     </content>
@@ -42,6 +40,8 @@
                         on-set-focus="$ctrl.setFocus($ctrl.selectedNodes)"
                         on-reset="$ctrl.reset()"
                         on-remove-nodes="$ctrl.removeNodes()"
+                        on-show-case-nodes="$ctrl.showCaseNodes(id)"
+                        on-remove-case-nodes="$ctrl.removeCaseNodes(id)"
                         on-zoom-to="$ctrl.zoomTo(nodeId)"
                         on-show-neighbours="$ctrl.showNeighbours(depth)"
                         on-filter-changed="$ctrl.filterChanged(id, enabled)"

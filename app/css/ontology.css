@@ -16,19 +16,21 @@ div.tree-nodes {
   margin-left: 0;
   padding-left: 1em;
 }
-div.tree-node .md-icon-button  {
-  padding: 0;
-  margin: 0 3px;
+div.tree-node .md-icon-button, .options-button {
+  padding: 0 !important;
+  margin: 0 3px !important;
 
-  height: 24px;
-  width: 24px;
+  height: 24px !important;
+  width: 24px !important;
 }
-div.tree-node md-icon {
-  font-size: 14px;
-  height: 14px;
-  width: 14px;
-  min-height: 14px;
-  min-width: 14px;
+
+
+div.tree-node md-icon, .options-button md-icon {
+  font-size: 14px !important;
+  height: 14px !important;
+  width: 14px !important;
+  min-height: 14px !important;
+  min-width: 14px !important;
 }
 
 .expandable {

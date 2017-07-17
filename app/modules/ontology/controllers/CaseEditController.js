@@ -74,10 +74,7 @@
       // are selected too, that's why this event is used for displaying the
       // meta data of a selected item
       this.network.on('select', (params) => {
-        if ((params.edges !== undefined) && (params.edges.length > 0)) {
-          console.log("Selected edge", params.edges);
-        }
-        if ((params.nodes !== undefined) && (params.nodes.length > 0)) {
+         if ((params.nodes !== undefined) && (params.nodes.length > 0)) {
           vm.selectedNodes = vm.data.nodes.get(params.nodes, {fields: ['id', 'label', 'type']});
 
         }
@@ -170,12 +167,23 @@
       ]).then(() => {
         return Promise.all([
           CaseOntologyDataService.loadCase($state.params.caseId),
-          GraphService.caseNodes($state.params.caseId),
+          GraphService.createFilters(),
           _createTreeData()
         ]);
       }).then((result) => {
         vm.currentCase = angular.copy(result[0]);
-        _createGraph(result[1].nodes, result[1].edges);
+
+        const filters = result[1].map((f) => {
+          if ((f.id === $state.params.caseId) || (f.id === GraphService.nodeTypes.DATA_NODE)){
+            f.enabled = true;
+          } else {
+            f.enabled = false;
+          }
+          return f;
+        });
+        return GraphService.nodes(vm.currentCase.individualIris, vm.data.nodes.getIds(), filters);
+      }).then((result) => {
+       _createGraph(result.nodes, result.edges);
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);

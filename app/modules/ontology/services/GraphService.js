@@ -36,7 +36,7 @@
       'http://www.AMSL/GDK/ontologie#Uebertragungsweg': '\uf0ec'
     };
 
-    const _createDatatypeNodes2 = (individual) => {
+    const _createDatatypeNodes = (individual) => {
       return individual.datatypeProperties.map((prop) => {
         return {
           id: `${individual.iri}_${prop.iri}_${prop.target}`,
@@ -45,19 +45,6 @@
           type: _nodeTypes.DATA_NODE,
           group: _nodeTypes.DATA_NODE,
           cases: individual.cases
-        };
-      });
-    };
-
-    const _createDatatypeNodes = (individual,caseIdentifiers) => {
-      return individual.datatypeProperties.map((prop) => {
-        return {
-          id: `${individual.iri}_${prop.iri}_${prop.target}`,
-          title: prop.target,
-          label: prop.target,
-          type: _nodeTypes.DATA_NODE,
-          group: _nodeTypes.DATA_NODE,
-          cases: caseIdentifiers
         };
       });
     };
@@ -75,7 +62,7 @@
       }
     };
 
-    const _createIndividualNode2 = (individual) => {
+    const _createIndividualNode = (individual) => {
       const node = {
         id: individual.iri,
         label: individual.label,
@@ -83,7 +70,7 @@
         title: individual.label,
         type: _nodeTypes.INDIVIDUAL_NODE,
         group: (individual.cases.length === 0) ? _tags.NO_CASE : individual.cases[0],
-        cases: individual.cases
+        cases: (individual.cases.length === 0) ? [_tags.NO_CASE] : individual.cases,
       };
       const icon = _iconFor([individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
       if (icon) {
@@ -93,24 +80,6 @@
       return node;
     };
 
-
-    const _createIndividualNode = (individual, caseIdentifiers) => {
-      const node = {
-        id: individual.iri,
-        label: individual.label,
-        classes: individual.classIris,
-        title: individual.label,
-        type: _nodeTypes.INDIVIDUAL_NODE,
-        group: (caseIdentifiers.length === 0) ? _tags.NO_CASE : caseIdentifiers[0],
-        cases: caseIdentifiers
-      };
-      const icon = _iconFor([individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
-      if (icon) {
-        node.shape = 'icon';
-        node.icon = icon;
-      }
-      return node;
-    };
     const _createClassNode = (clazz) => {
       const node = {
         id: clazz.iri,
@@ -177,23 +146,20 @@
           filters.push({
             id: _nodeTypes.CLASS_NODE,
             name: 'Schema Information',
-            hasCheckBox: true,
-            hasColor: true,
+            showOnOff: false,
             type: 'type'
           });
           filters.push({
             id: _nodeTypes.DATA_NODE,
             name: "Data Nodes",
-            hasCheckBox: true,
-            hasColor: true,
+            showOnOff: false,
             type: 'type'
           });
 
           filters.push({
             id:  _tags.NO_CASE,
             name: "Nodes without case",
-            hasCheckBox: true,
-            hasColor: true,
+            showOnOff: true,
             type: 'case'
           });
           cases.sort((c1, c2) => { return c1.name.localeCompare(c2.name);} );
@@ -201,8 +167,7 @@
             filters.push({
               id: c.identifier,
               name: c.name,
-              hasCheckBox: true,
-              hasColor: true,
+              showOnOff: true,
               type: 'case'
             });
           });
@@ -237,8 +202,16 @@
       return Promise.resolve();
 
     };
-
     const _fetchNodesForCase = (id) => {
+      return new Promise((resolve, reject) => {
+        console.log("!!!!!!!!!!!!!!!!!!!!");
+        CaseOntologyDataService.loadCase(id, true).then((result) => {
+          console.log(result);
+          resolve({nodes: [], edges: []});
+        }).catch(reject);
+      });
+    };
+  /*  const _fetchNodesForCase = (id) => {
       return new Promise((resolve, reject) => {
         CaseOntologyDataService.loadCase(id, true).then((result) => {
           const promises = [];
@@ -266,6 +239,10 @@
           resolve({nodes: nodes, edges: edges});
         }).catch(reject);
       });
+    };*/
+
+    const _individualsToNodes = (individuals) => {
+      return _convertEntities(individuals);
     };
 
     const _convertEntities = (entities) => {
@@ -317,8 +294,8 @@
       let edges = [];
 
       // create nodes
-      nodes.push(_createIndividualNode2(individual, []));
-      nodes = nodes.concat(_createDatatypeNodes2(individual, []));
+      nodes.push(_createIndividualNode(individual, []));
+      nodes = nodes.concat(_createDatatypeNodes(individual, []));
 
       // create edges
       individual.objectProperties.forEach((prop) => {
@@ -377,16 +354,6 @@
         return accumulator;
       }, []);
     };
-    const _focusNodes = (nodeIds, graphNodeIds = [], filters = [], filterEdges = true) => {
-      filters = filters.map((f) => {
-        if (f.id === _nodeTypes.DATA_NODE) {
-          f.enabled = false;
-        }
-        return f;
-      });
-      return _nodes(nodeIds, graphNodeIds, filters, filterEdges);
-    };
-
     const _nodes = (nodeIds, graphNodeIds = [], filters = [], filterEdges = true) => {
       if (!nodeIds || !Array.isArray(nodeIds)) {
         return Promise.reject('Node Ids must be of type array!');
@@ -420,6 +387,18 @@
       return _bfs2_(nodeIds, depth, filters, graphNodeIds);
     };
 
+    /**
+     * depth first search
+     * @param queue - node ids to visit
+     * @param depth - current depth
+     * @param filters - node filters
+     * @param graphNodeIds - initially, nodes which are already in the graph, after the first step, nodes from the result set are added
+     * @param visited - nodes which were already visited (to avoid circles and so on)
+     * @param nodes - the nodes result set
+     * @param edges - the edges result set
+     * @returns {*}
+     * @private
+     */
     const _bfs2_ = (queue, depth = 0, filters = [], graphNodeIds = [], visited = [], nodes = [], edges= []) => {
       // console.log("called _bfs2_ with queue=", queue, " depth=", depth, " visited=", visited, " filters=", filters, " graphNodeIds=", graphNodeIds, " nodes=", nodes, " edges=", edges);
       if ((depth < 0) || (queue.length === 0)) {
@@ -436,23 +415,33 @@
           } else {
             nodes = nodes.concat(result.nodes);
           }
+          // add the nodes from the result to the set of nodes
+          // in the graph to know which edges should be added
           graphNodeIds = graphNodeIds.concat(nodes.filter((n) => {
             return graphNodeIds.indexOf(n.id) < 0;
           }).map((n) => {
             return n.id;
           }));
-          visited = visited.concat(queue);
+          // add the nodes from the result to the visited set
+          // so they are not visited twice
+          visited = visited.concat(nodes.filter((n) => {
+            return visited.indexOf(n.id) < 0;
+          }).map((n) => {
+            return n.id;
+          }));
           queue = [];
+          // add all node ids to the queue which were never visited and
+          // which are connected to a node which was visited through an edge
           result.edges.forEach((e) => {
             // no datatype nodes should be queued
             if (e.type !==_edgeTypes.INSTANCE_TO_DATA_EDGE) {
-              // don't queue if both source and target were visited or not visited
-              const idxFrom = visited.indexOf(e.from);
-              const idxTo = visited.indexOf(e.to);
-              if ((idxFrom > -1) && (idxTo < 0) && (queue.indexOf(e.to) < 0)) {
+              // don't queue if both, source and target, were either visited or not visited
+              const visitedFrom = visited.indexOf(e.from);
+              const visitedTo = visited.indexOf(e.to);
+              if ((visitedFrom > -1) && (visitedTo < 0) && (queue.indexOf(e.to) < 0)) {
                 queue.push(e.to);
               }
-              if ((idxTo > -1) && (idxFrom < 0) && (queue.indexOf(e.from) < 0)) {
+              if ((visitedTo > -1) && (visitedFrom < 0) && (queue.indexOf(e.from) < 0)) {
                 queue.push(e.from);
               }
             }
@@ -470,15 +459,14 @@
       initialize: () => {
         return _initialize();
       },
-      focusNodes: (nodeIds, graphNodeIds, filters) => {
-        return _focusNodes(nodeIds, graphNodeIds, filters);
+      individualsToNodes: (individuals) => {
+        return _individualsToNodes(individuals);
       },
       nodes: (nodeIds, graphNodeIds, filters) => {
         return _nodes(nodeIds, graphNodeIds, filters);
       },
       neighbors: (node, filters, depth, graphNodeIds) => {
         return _bfs([node.id], depth, filters, graphNodeIds);
-        // return _neighbors([node], filters, depth, graphNodeIds);
       },
       createFilters: () => {
         return _createNodeFilters();
@@ -486,12 +474,10 @@
       searchTerms: () => {
         return _searchTerms();
       },
-      tags: () => {
-        return _tags;
-      },
       caseNodes: (caseId) => {
         return _fetchNodesForCase(caseId);
       },
+      tags: _tags,
       nodeTypes: _nodeTypes
     };
   }

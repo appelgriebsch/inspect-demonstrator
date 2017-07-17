@@ -112,7 +112,6 @@
     });
 
     $scope.$on('submit', () => {
-      console.log("object",vm.object);
       CaseOntologyDataService.saveAsIndividual(vm.object).then(() => {
         _goBack();
         $scope.setReady(true);
@@ -168,7 +167,6 @@
         });
 
         if (individual) {
-            console.log("individual", individual);
           vm.object.label = individual.label;
           vm.object["class"] = individual.classIris[0];
           vm.object.comment = individual.comments[0];

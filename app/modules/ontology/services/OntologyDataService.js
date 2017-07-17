@@ -809,7 +809,6 @@
           return _get({ subject: p, predicate: _iriFor('rdf-type') });
         });
         promises.push(_fetchAllParentIrisFor(individual.classIris));
-        //promises.push(Promise.resolve([]));
 
         Promise.all(promises).then((result) => {
           individual.allParentClassIris = result.pop();
@@ -972,7 +971,6 @@
         return _fetchAllForType(_iriFor('owl-datatypeProperty'), options);
       },
       fetchClass (classIri) {
-        //return _fetchClass(classIri, options);
         return _fetchEntity(classIri);
       },
       insertIndividual: (individual) => {

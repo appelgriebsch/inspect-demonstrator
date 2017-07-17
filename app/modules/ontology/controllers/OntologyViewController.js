@@ -115,7 +115,28 @@
         }
       });
     };
-    const _removeCaseNodes = (iri) => {
+    const _removeCaseNodes = (caseId) => {
+      console.log("_removeCaseNodes", caseId);
+      const case_ =  vm.lists.caseData.find((c) => {
+        return c.id === caseId;
+      });
+      if (case_) {
+        const nodeIds = case_.children.map((i) => {
+          return i.id;
+        });
+        const datatypeNodes = [];
+        nodeIds.forEach((n) => {
+          const nodes = this.data.nodes.getNodes(this.network.getConnectedNodes(nodeIds[0], {
+            filter: (n) => {
+              return true;
+            }
+          }));
+          console.log(nodes);
+        });
+      }
+    };
+    const _removeCaseNodes2 = (iri) => {
+      console.log("_showCaseNodes", iri);
       //TODO: do properly
       const caseIdentifier = iri.split("#")[1];
       const nodeIds = vm.data.nodes.getIds({
@@ -139,18 +160,16 @@
 
     const _setFilters = (filters) => {
       vm.filters = filters;
-
       let i = 0;
       for (const f of filters) {
-        if (f.hasColor === true) {
-          f.color = vm.palette[i % vm.palette.length];
-          vm.colorChanged(f.id, f.color);
-          i++;
-        }
+        f.color = vm.palette[i % vm.palette.length];
+        vm.colorChanged(f.id, f.color);
+        i++;
       }
     };
 
     const _showCaseNodes = (caseId) => {
+      console.log("_showCaseNodes", caseId);
       const case_ =  vm.lists.caseData.find((c) => {
         return c.id === caseId;
       });
@@ -159,8 +178,10 @@
         const nodeIds = case_.children.map((i) => {
           return i.id;
         });
-        //GraphService.nodes(nodeIds, vm.data.nodes.getIds(), vm.filters, false).then((result) => {
-        GraphService.nodes(nodeIds, vm.data.nodes.getIds(), [], true).then((result) => {
+        const filters = vm.filters.map((f) => {
+          return {id: f.id, enabled: f.enabled, type: f.type};
+        });
+        GraphService.nodes(nodeIds, vm.data.nodes.getIds(), filters).then((result) => {
           _updateNodesAndEdges(result);
           $scope.setReady(true);
         }).catch((err) => {
@@ -177,60 +198,35 @@
     };
 
     const _showClassNode = (id) => {
-      let filters_ = [];
-      let node = {};
-      GraphService.createFilters().then((filters) => {
-        filters.forEach((f) => {
-          f.enabled = true;
-        });
-        filters_ = filters;
-        return GraphService.focusNodes([id], filters);
-      }).then((nodes) => {
-        if (nodes.length === 0) {
-          return Promise.resolve();
+      let node;
+      const filters_1 = vm.filters.map((f) => {
+        if (f.id === GraphService.nodeTypes.CLASS_NODE) {
+          return {id: f.id, enabled: true, type: f.type};
         }
-        node = nodes[0];
-        return GraphService.neighbors(node, filters_, 1, []);
-      }).then((result) => {
-        result.nodes.push(node);
-        _updateNodesAndEdges(result);
-      }).catch((err) => {
-        $scope.setError('SearchAction', 'search', err);
-        $scope.setReady(true);
+        return {id: f.id, enabled: f.enabled, type: f.type};
       });
+      const filters_2 = vm.filters.map((f) => {
+        return {id: f.id, enabled: f.enabled, type: f.type};
+      });
+
+      GraphService.nodes([id], vm.data.nodes.getIds(), filters_1).then((result) => {
+        if (result.nodes.length === 0) {
+          return Promise.resolve({nodes: [], edges: []});
+        }
+        node = result.nodes[0];
+        return GraphService.neighbors(node, filters_2, 1, vm.data.nodes.getIds());
+      }).then(_updateNodesAndEdges)
+        .catch((err) => {
+          $scope.setError('SearchAction', 'search', err);
+          $scope.setReady(true);
+        });
     };
 
     const _createTreeData = () => {
       return new Promise((resolve, reject) => {
         CaseOntologyDataService.treeData().then((result) => {
-          vm.lists.caseData = result.caseTree.map((c) => {
-            c.children = c.individuals.map((i) => {
-              i.clickActions = [{
-                icon: 'my_location',
-                func: vm.zoomTo,
-              }];
-              return i;
-            });
-            c.clickActions = [{
-              icon: 'visibility',
-              func: _showCaseNodes,
-            }, {
-              icon: 'visibility_off',
-              func: _removeCaseNodes,
-            }];
-            return c;
-          });
           vm.lists.multipleCaseData = result.multipleCasesTree.map((i) => {
-            i.children = i.cases.map((c) => {
-              c.clickActions = [{
-                icon: 'visibility',
-                func: _showCaseNodes,
-              }, {
-                icon: 'visibility_off',
-                func: _removeCaseNodes,
-              }];
-              return c;
-            });
+            i.children = i.cases;
             i.clickActions = [{
               icon: 'my_location',
               func: vm.zoomTo,
@@ -268,16 +264,16 @@
         return n.id;
       });
       const filters = vm.filters.map((f) => {
-        return {id: f.id, enabled: f.enabled};
+        if (f.id === GraphService.nodeTypes.DATA_NODE) {
+          return {id: f.id, enabled: false, type: f.type};
+        }
+        return {id: f.id, enabled: f.enabled, type: f.type};
       });
-      GraphService.focusNodes(nodeIds, filters).then((result) => {
-        const nodes = vm.applyColors(result);
-        vm.data.nodes.add(nodes);
-
-        vm.network.fit();
-      }).catch((err) => {
-        $scope.setError('SearchAction', 'search', err);
-      });
+      GraphService.nodes(nodeIds, vm.data.nodes.getIds(), filters)
+        .then(_updateNodesAndEdges)
+        .catch((err) => {
+          $scope.setError('SearchAction', 'search', err);
+        });
     };
     vm.toggleSidebar = (componentId) => {
       $mdSidenav(componentId)
@@ -324,7 +320,7 @@
       $scope.setBusy('Loading neighbours...');
       const node = vm.selectedNodes[0];
       const filters = vm.filters.map((f) => {
-        return {id: f.id, enabled: f.enabled};
+        return {id: f.id, enabled: f.enabled, type: f.type};
       });
       GraphService.neighbors(node, filters, depth, vm.data.nodes.getIds()).then((result) => {
         const nodes = vm.applyColors(result.nodes);
@@ -335,6 +331,60 @@
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
       });
+    };
+
+    vm.showCaseNodes = (id) => {
+      const filter = vm.filters.find((f) => {
+          return ((f.id === id) && (f.type === 'case') && (f.enabled === true));
+      });
+      if (!filter) {
+        return;
+      }
+      const filters = vm.filters.map((f) => {
+        return {id: f.id, enabled: f.enabled, type: f.type};
+      });
+      $scope.setBusy('Loading case data...');
+      if (id === GraphService.tags.NO_CASE) {
+        CaseOntologyDataService.loadEntitesWithoutCase()
+          .then(GraphService.individualsToNodes)
+          .then((result) => {
+          _updateNodesAndEdges(result);
+          $scope.setReady(true);
+        }).catch((err) => {
+          $scope.setError('SearchAction', 'search', err);
+          $scope.setReady(true);
+        });
+      } else {
+        CaseOntologyDataService.loadCase(id).then((result) => {
+          return GraphService.nodes(result.individualIris, vm.data.nodes.getIds(), filters);
+        }).then((result) => {
+          _updateNodesAndEdges(result);
+          $scope.setReady(true);
+        }).catch((err) => {
+          $scope.setError('SearchAction', 'search', err);
+          $scope.setReady(true);
+        });
+      }
+    };
+    vm.removeCaseNodes = (id) => {
+      const filter = vm.filters.find((f) => {
+        return ((f.id === id) && (f.type === 'case') && (f.enabled === true));
+      });
+      if (!filter) {
+        return;
+      }
+      const nodeIds = vm.data.nodes.getIds({
+        filter: (n) => {
+          return ((n.cases) && (n.cases.length === 1) && (n.cases[0] === id));
+        }
+      });
+      const edgeIds = vm.data.edges.get({
+        filter: (e) => {
+          return ((nodeIds.indexOf(e.from) > -1) || (nodeIds.indexOf(e.to) > -1));
+        }
+      });
+      vm.data.nodes.remove(nodeIds);
+      vm.data.edges.remove(edgeIds);
     };
 
     vm.reset = () => {

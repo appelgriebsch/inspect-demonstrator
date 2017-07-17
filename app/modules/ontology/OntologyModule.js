@@ -177,6 +177,8 @@
         onSetFocus: '&',
         onReset: '&',
         onRemoveNodes: '&',
+        onShowCaseNodes: '&',
+        onRemoveCaseNodes: '&',
         onZoomTo: '&',
         onShowNeighbours: '&',
         onFilterChanged: '&',
@@ -201,7 +203,6 @@
       templateUrl: `${moduleConfig.path}/views/ontology.lists.html`,
       replace: 'true',
       bindings: {
-        caseData: '<',
         classIndividualsData: '<',
         multipleCaseData: '<'
 
