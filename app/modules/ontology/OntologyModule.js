@@ -121,8 +121,8 @@
     angular.module('electron-app').controller('OntologyViewStatusController', ['$scope', 'OntologyDataService', OntologyViewStatusController]);
     angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', 'CaseOntologyDataService', CasesViewController]);
     angular.module('electron-app').controller('CasesDialogController', ['$scope', '$state', '$mdDialog', 'nodeId', 'objectProperties', 'datatypeProperties', 'instances', CasesDialogController]);
-    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$q', '$mdSidenav', '$mdDialog', 'CaseOntologyDataService', 'GraphService', CaseEditController]);
-    angular.module('electron-app').controller('CaseEditStatusController', ['$state', 'CaseMetadataService', CaseEditStatusController]);
+    angular.module('electron-app').controller('CaseEditController', ['$scope', '$state', '$mdSidenav', 'CaseOntologyDataService', 'GraphService', CaseEditController]);
+    angular.module('electron-app').controller('CaseEditStatusController', ['$state', 'OntologyMetadataService', CaseEditStatusController]);
     angular.module('electron-app').controller('TreeController', ['$scope', TreeController]);
     angular.module('electron-app').controller('TreeNodeController', ['$scope', TreeNodeController]);
     angular.module('electron-app').controller('NodeEditController', ['$scope', '$state', 'CaseOntologyDataService', NodeEditController]);

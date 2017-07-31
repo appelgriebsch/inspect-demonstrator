@@ -436,6 +436,7 @@
           } else {
             return [];
           }
+
         }).then((individuals) => {
           case_.individuals = individuals;
           return  OntologyMetadataService.metadata(case_.identifier);
@@ -492,15 +493,13 @@
         return Promise.resolve();
       }
       return new Promise((resolve, reject) => {
-        Promise.all([
-          OntologyDataService.initialize(),
-          OntologyMetadataService.initialize()
-        ]).then(() => {
+        OntologyDataService.initialize()
+          .then(OntologyMetadataService.initialize())
+          .then(() => {
           _caseClassIri = `${OntologyDataService.ontologyIri()}${caseClassName}`;
           _caseNamePropertyIri = `${OntologyDataService.ontologyIri()}${caseNamePropertyName}`;
           _caseEntityPropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityPropertyName}`;
           _caseEntityInversePropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityInversePropertyName}`;
-
           return Promise.all([
             OntologyDataService.fetchAllObjectProperties(),
             OntologyDataService.fetchAllDatatypeProperties(),

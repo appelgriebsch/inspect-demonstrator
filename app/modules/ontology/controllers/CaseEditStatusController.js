@@ -2,7 +2,7 @@
 
   'use strict';
 
-  function CaseEditStatusController($state, CaseMetadataService) {
+  function CaseEditStatusController($state, OntologyMetadataService) {
     const vm = this;
     /**
      * Initializes dependant services.
@@ -13,8 +13,8 @@
         vm.metaData = {};
         return;
       }
-      CaseMetadataService.initialize().then(() => {
-        return CaseMetadataService.metadata($state.params.caseId);
+      OntologyMetadataService.initialize().then(() => {
+        return OntologyMetadataService.metadata($state.params.caseId);
       }).then((metaData) => {
         vm.metaData = metaData;
       });

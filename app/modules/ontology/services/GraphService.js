@@ -39,41 +39,53 @@
       });
     };
 
-    const _symbolFor = (iris) => {
+    const _setSymbolForNode = (node, iris) => {
       if (_activeProfile) {
-        let iri = iris.find((iri) => {
+        const iri = iris.find((iri) => {
           return _activeProfile.symbols[iri];
         });
         if (iri) {
-          return _activeProfile.symbols[iri];
+          const symbol = _activeProfile.symbols[iri];
+          if (symbol.shape && symbol.shape === 'icon' && symbol.icon) {
+            node.shape = symbol.shape;
+            node.icon = {
+              code: symbol.icon.code,
+              face: symbol.icon.face,
+              size: symbol.icon.size,
+            };
+          }
+          if (symbol.shape && (symbol.shape === 'image' || symbol.shape === 'circularImage') && symbol.image) {
+            node.shape = symbol.shape;
+            node.image = symbol.image;
+          }
         }
       }
-      return {};
+      return node;
     };
 
     const _createIndividualNode = (individual) => {
-      const node =  _symbolFor([individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
-      node.id = individual.iri;
-      node.label = individual.label;
-      node.classes = individual.classIris;
-      node.title = individual.label;
-      node.type = _nodeTypes.INDIVIDUAL_NODE;
-      node.group = (individual.cases.length === 0) ? _tags.NO_CASE : individual.cases[0];
-      node.cases = (individual.cases.length === 0) ? [_tags.NO_CASE] : individual.cases;
-
-      return node;
+      const node = {
+        id: individual.iri,
+        label: individual.label,
+        classes: individual.classIris,
+        title: individual.label,
+        type: _nodeTypes.INDIVIDUAL_NODE,
+        group: (individual.cases.length === 0) ? _tags.NO_CASE : individual.cases[0],
+        cases: (individual.cases.length === 0) ? [_tags.NO_CASE] : individual.cases
+      };
+      return _setSymbolForNode(node, [individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
     };
 
     const _createClassNode = (clazz) => {
-      const node = _symbolFor([clazz.iri].concat(clazz.allParentClassIris));
-      node.id = clazz.iri;
-      node.label = clazz.label;
-      node.title = clazz.label;
-      node.type = _nodeTypes.CLASS_NODE;
-      node.group = _nodeTypes.CLASS_NODE;
-      node.tags = [_nodeTypes.CLASS_NODE];
-      console.log("node", node);
-      return node;
+      const node = {
+        id: clazz.iri,
+        label: clazz.label,
+        title: clazz.label,
+        type: _nodeTypes.CLASS_NODE,
+        group: _nodeTypes.CLASS_NODE,
+        tags: [_nodeTypes.CLASS_NODE],
+      };
+      return _setSymbolForNode(node, [clazz.iri].concat(clazz.allParentClassIris));
     };
 
     const _createDatatypeEdges = (individual) => {
@@ -161,7 +173,6 @@
       return new Promise((resolve, reject) => {
         OntologyMetadataService.profile("default").then((result) => {
           _activeProfile = result;
-          console.log(_activeProfile);
           resolve();
         }).catch(reject);
       });
@@ -290,7 +301,6 @@
         }
         return accumulator;
       }, []);
-
       return new Promise((resolve, reject) => {
         CaseOntologyDataService.loadEntites(nodeIds)
           .then(_convertEntities)

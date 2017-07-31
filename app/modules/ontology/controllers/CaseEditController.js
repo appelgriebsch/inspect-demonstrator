@@ -1,7 +1,7 @@
 (function(angular, vis) {
 
   'use strict';
-  function CaseEditController($scope, $state, $q, $mdSidenav, $mdDialog, CaseOntologyDataService, GraphService) {
+  function CaseEditController($scope, $state, $mdSidenav, CaseOntologyDataService, GraphService) {
     const vm = this;
     vm.state = $state.$current;
 
@@ -145,6 +145,7 @@
       });
     };
 
+
     //<editor-fold desc="Initialization">
     /**
      * Initializes dependant services.
@@ -161,12 +162,12 @@
         vm.selectedTab = 0;
       }
       $scope.setBusy('Loading Case...');
-      Promise.all([
-        CaseOntologyDataService.initialize(),
-        //GraphDataService.initialize()
-      ]).then(() => {
+
+      CaseOntologyDataService.initialize()
+        .then(GraphService.initialize)
+        .then(() => {
         return Promise.all([
-          CaseOntologyDataService.loadCase($state.params.caseId),
+          CaseOntologyDataService.loadCase($state.params.caseId, false),
           GraphService.createFilters(),
           _createTreeData()
         ]);
