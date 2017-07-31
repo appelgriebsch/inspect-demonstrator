@@ -1,41 +1,83 @@
-<!--<div ng-cloak layout="row" layout-fill>
-  <md-content ng-cloak  flex  layout-padding>
-    <md-input-container class="md-block">
-      <label for="node-name">Individual</label>
-      <ontology-autocomplete
-        items="$ctrl.individuals"
-        on-item-selected="$ctrl.itemSelected(item)"
-        layout-fill></ontology-autocomplete>
+<div layout="column" ng-cloak layout-padding layout-fill >
+  <!-- so that FontAwesome is loaded -->
+  <!--<i class="fa fa-flag" style="visibility: hidden"></i>-->
+
+  <div flex="15" layout="row"  layout-align="space-around end">
+    <ontology-autocomplete
+      items="$ctrl.terms"
+      on-item-selected="$ctrl.itemSelected(item.id)"
+      clear-on-select="'false'"
+      flex="40"></ontology-autocomplete>
+    <span flex="5"></span>
+    <span flex="10"> or change a saved Symbol </span>
+    <span flex="5"></span>
+    <md-input-container flex="40">
+      <label>Select Item</label>
+      <md-select ng-model="$ctrl.selectedItem" ng-change="$ctrl.itemSelected($ctrl.selectedItem)">
+        <md-option><em>None</em></md-option>
+        <md-option ng-repeat="item in $ctrl.definedSymbols" ng-value="item.id">
+          {{item.label}}
+        </md-option>
+      </md-select>
     </md-input-container>
-
-
-  </md-content>
-</div>-->
-<div flex layout-fill layout="column"  ng-cloak>
-  <div flex layout="row">
-    <div class="layout-padding" flex layout="column">
-      <md-content ng-cloak  flex  layout-padding>
-        <md-input-container class="md-block">
-          <ontology-autocomplete
-            items="$ctrl.individuals"
-            on-item-selected="$ctrl.itemSelected(item)"
-            clear-on-select="'false'"
-            layout-fill></ontology-autocomplete>
-        </md-input-container>
-        <img class="thumb" src="$ctrl.image" ng-show="$ctrl.image">
-      </md-content>
-    </div>
-    <div class="layout-padding" flex>
-      <md-whiteframe id="dropZone" layout layout-align="center center">
-        <span>Drop your file into this area...</span>
-        <span>
-          <span>...or</span>
-          <md-button ng-click="$ctrl.showFileSelector($event)">click here</md-button>
-          <span>...</span>
-        </span>
-        <input accept=".png" class="hidden" id="fileSelector" type="file"></input>
-      </md-whiteframe>
-    </div>
   </div>
+  <div flex="15" layout-align="center center" layout-padding >
+    <span>Current Symbol:</span>
+    <span ng-show="$ctrl.selectedIcon && $ctrl.selectedIconFont" ng-style="{'font-family': $ctrl.selectedIconFont}" class="md-display-1">{{$ctrl.selectedIcon}}</span>
+    <img ng-show="$ctrl.selectedImage" ng-src="{{$ctrl.selectedImage.src}}">
+    <span ng-show="(!$ctrl.selectedIcon || !$ctrl.selectedIconFont) && !$ctrl.selectedImage">None</span>
+  </div>
+  <div flex="10"  layout="row" layout-align="center center" >
+    <md-button class="md-primary" ng-disabled="!$ctrl.selectedItem" ng-click="$ctrl.chooseIcon()" aria-label="Choose Icon" >Choose Icon</md-button>
+    <md-button class="md-primary" ng-disabled="!$ctrl.selectedItem" ng-click="$ctrl.chooseImage()" aria-label="Chose Image" >Choose Image</md-button>
+    <md-button class="md-warn" ng-disabled="!$ctrl.selectedItem" ng-click="$ctrl.clear()" aria-label="Clear symbol" >Clear Symbol</md-button>
+  </div>
+
+  <div layout="column" layout-padding ng-show="$ctrl.showIconSelection === true">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h3>Choose an Icon</h3>
+      </div>
+    </md-toolbar>
+    <md-input-container>
+      <label>Choose an Icon Font:</label>
+      <md-select ng-model="$ctrl.selectedIconFont" >
+        <md-option><em>None</em></md-option>
+        <md-option ng-repeat="font in $ctrl.iconData.iconFonts" ng-value="font">
+          {{font}}
+        </md-option>
+      </md-select>
+    </md-input-container>
+    <md-content layout-wrap="row">
+      <md-button ng-repeat="icon in $ctrl.iconData.icons[$ctrl.selectedIconFont]" flex="10"
+                 ng-click="$ctrl.iconSelected(icon)" aria-label="icon"
+                 ng-style="{'font-family': $ctrl.selectedIconFont}"
+                 ng-class="$ctrl.selectedIcon === icon ? 'md-warn'  :  'md-default'">
+        <span class="md-display-1">{{icon}}</span>
+      </md-button>
+    </md-content>
+  </div>
+
+  <div layout="column" layout-padding ng-show="$ctrl.showImageSelection === true">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h3>Choose an Image</h3>
+      </div>
+    </md-toolbar>
+    <span md-colors="{color: 'warn'}">{{$ctrl.error}}</span>
+
+    <md-radio-group ng-model="$ctrl.imageType" layout="row">
+      <md-radio-button value="image" class="md-primary">Image</md-radio-button>
+      <md-radio-button value="circularImage">Circular Image</md-radio-button>
+    </md-radio-group>
+    <md-whiteframe id="dropZone" layout layout-align="center center">
+        <md-button class="md-icon-button" ng-click="$ctrl.showFileSelector($event)">
+            <md-icon md-menu-origin>add_circle_outline</md-icon>
+        </md-button>
+      </span>
+      <input accept="image/*" class="hidden" id="fileSelector" type="file">
+    </md-whiteframe>
+  </div>
+
 </div>
 

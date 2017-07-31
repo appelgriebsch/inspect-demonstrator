@@ -40,55 +40,39 @@
     };
 
     const _symbolFor = (iris) => {
-      if (!_activeProfile) {
-        return;
+      if (_activeProfile) {
+        let iri = iris.find((iri) => {
+          return _activeProfile.symbols[iri];
+        });
+        if (iri) {
+          return _activeProfile.symbols[iri];
+        }
       }
-      let iri = iris.find((iri) => {
-        return _activeProfile.images[iri];
-      });
-      if (iri) {
-        return _activeProfile.images[iri];
-      }
-      iri = iris.find((iri) => {
-        return _activeProfile.icons[iri];
-      });
-      if (iri) {
-        return _activeProfile.icons[iri];
-      }
+      return {};
     };
 
     const _createIndividualNode = (individual) => {
-      const node = {
-        id: individual.iri,
-        label: individual.label,
-        classes: individual.classIris,
-        title: individual.label,
-        type: _nodeTypes.INDIVIDUAL_NODE,
-        group: (individual.cases.length === 0) ? _tags.NO_CASE : individual.cases[0],
-        cases: (individual.cases.length === 0) ? [_tags.NO_CASE] : individual.cases,
-      };
-      const icon = _symbolFor([individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
-      if (icon) {
-        node.shape = 'icon';
-        node.icon = icon;
-      }
+      const node =  _symbolFor([individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
+      node.id = individual.iri;
+      node.label = individual.label;
+      node.classes = individual.classIris;
+      node.title = individual.label;
+      node.type = _nodeTypes.INDIVIDUAL_NODE;
+      node.group = (individual.cases.length === 0) ? _tags.NO_CASE : individual.cases[0];
+      node.cases = (individual.cases.length === 0) ? [_tags.NO_CASE] : individual.cases;
+
       return node;
     };
 
     const _createClassNode = (clazz) => {
-      const node = {
-        id: clazz.iri,
-        label: clazz.label,
-        title: clazz.label,
-        type: _nodeTypes.CLASS_NODE,
-        group: _nodeTypes.CLASS_NODE,
-        tags: [_nodeTypes.CLASS_NODE]
-      };
-      const icon = _symbolFor([clazz.iri].concat(clazz.allParentClassIris));
-      if (icon) {
-        node.shape = 'icon';
-        node.icon = icon;
-      }
+      const node = _symbolFor([clazz.iri].concat(clazz.allParentClassIris));
+      node.id = clazz.iri;
+      node.label = clazz.label;
+      node.title = clazz.label;
+      node.type = _nodeTypes.CLASS_NODE;
+      node.group = _nodeTypes.CLASS_NODE;
+      node.tags = [_nodeTypes.CLASS_NODE];
+      console.log("node", node);
       return node;
     };
 
@@ -167,26 +151,6 @@
             });
           });
           resolve(filters);
-        }).catch((err) => {
-          reject(err);
-        });
-      });
-    };
-
-    const _searchTerms = () => {
-      return new Promise((resolve, reject) => {
-        Promise.all([
-          OntologyDataService.fetchAllIndividualIris(),
-          OntologyDataService.fetchAllClassIris()
-        ]).then((result) => {
-          const iris = [];
-          result[0].forEach((iri) => {
-            iris.push({id: iri, label: iri.replace(OntologyDataService.ontologyIri(), '')});
-          });
-          result[1].forEach((iri) => {
-            iris.push({id: iri, label: iri.replace(OntologyDataService.ontologyIri(), '')});
-          });
-          resolve(iris);
         }).catch((err) => {
           reject(err);
         });
@@ -431,9 +395,6 @@
       },
       createFilters: () => {
         return _createNodeFilters();
-      },
-      searchTerms: () => {
-        return _searchTerms();
       },
       tags: _tags,
       nodeTypes: _nodeTypes

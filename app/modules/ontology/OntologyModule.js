@@ -90,6 +90,9 @@
             'content': {
               templateUrl: `${moduleConfig.path}/views/settings.view.html`,
               controller: 'SettingsViewController as $ctrl'
+            },
+            'actions@app': {
+              templateUrl: 'shell/views/shell.submit.html'
             }
           },
         });
@@ -124,7 +127,7 @@
     angular.module('electron-app').controller('TreeNodeController', ['$scope', TreeNodeController]);
     angular.module('electron-app').controller('NodeEditController', ['$scope', '$state', 'CaseOntologyDataService', NodeEditController]);
     angular.module('electron-app').controller('ListsController', ['$scope',  ListsController]);
-    angular.module('electron-app').controller('SettingsViewController', ['$scope', '$q', 'CaseOntologyDataService', 'OntologyMetadataService', 'OntologyDataService', SettingsViewController]);
+    angular.module('electron-app').controller('SettingsViewController', ['$scope', '$q', '$state', 'CaseOntologyDataService', 'OntologyMetadataService', 'OntologyDataService', SettingsViewController]);
 
 
     // load and register services

@@ -468,6 +468,25 @@
           .catch(reject);
       });
     };
+
+    const _searchTerms = () => {
+      return new Promise((resolve, reject) => {
+          OntologyDataService.fetchAllIndividualIris().then((result) => {
+          let terms = result.map((iri) => {
+            return {id: iri, label: iri.replace(OntologyDataService.ontologyIri(), '')};
+          });
+          terms = _classes.map((c) => {
+            return { id: c.iri, label: c.label };
+          }).concat(terms);
+
+          resolve(terms);
+        }).catch((err) => {
+          reject(err);
+        });
+      });
+    };
+
+
     const _initialize = () => {
       if (_initialized === true) {
         return Promise.resolve();
@@ -550,6 +569,9 @@
       },
       createMetadataForCases: () => {
         return _createMetadataForCases();
+      },
+      searchTerms: () => {
+        return _searchTerms();
       },
     };
   }

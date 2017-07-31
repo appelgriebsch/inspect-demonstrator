@@ -439,7 +439,7 @@
         .then(GraphService.createFilters)
         .then(_setFilters)
         .then(_createGraph)
-        .then(GraphService.searchTerms)
+        .then(CaseOntologyDataService.searchTerms)
         .then((result) => {
           vm.autocomplete.items = result;
           $scope.setReady(true);

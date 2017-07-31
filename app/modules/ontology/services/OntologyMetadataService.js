@@ -27,22 +27,24 @@
           })
       );
     };
-    const _saveProfile = function(profile) {
+
+
+    const _saveProfile = (profile, overwrite = true) => {
       if (!profile._id) {
         profile._id = `profile_${profile.name}`;
       }
       return Promise.resolve(
         db.get(profile._id)
-          .then(function(result) {
+          .then((result) => {
             if ((result.version === undefined) || (result.version !== profile.version)) {
               profile._rev = result._rev;
-              if (JSON.stringify(profile).localeCompare(JSON.stringify(result)) !== 0) {
+              if (overwrite === true) {
                 return db.put(profile);
               }
             }
             return true;
           })
-          .catch(function(err) {
+          .catch((err) =>{
             if (err.status === 404) {
               return db.put(profile);
             } else {
@@ -108,7 +110,7 @@
 
       const templates = {
         _id: '_design/templates',
-        version: '1.1',
+        version: '1.5',
         metadata: {
           'type': 'metadata',
           'createdBy': '',
@@ -122,54 +124,80 @@
           'name': '${name}',
           'type': 'profile',
           'graphOptions': {},
-          'icons': {
+          symbols: {
             'http://www.AMSL/GDK/ontologie#Akteur': {
-              face: 'FontAwesome',
-              code: '\uf2ba',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf2ba',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Mensch': {
-              face: 'FontAwesome',
-              code: '\uf2be',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf2be',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Organisation': {
-              face: 'FontAwesome',
-              code: '\uf19c',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf19c',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Ereignis': {
-              face: 'FontAwesome',
-              code: '\uf0e7',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf0e7',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Fluss': {
-              face: 'FontAwesome',
-              code: '\uf021',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf021',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Ressource': {
-              face: 'FontAwesome',
-              code: '\uf085',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf085',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Schwachstelle': {
-              face: 'FontAwesome',
-              code: '\uf071',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf071',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Straftatbestand': {
-              face: 'FontAwesome',
-              code: '\uf0e3',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf0e3',
+                size: 60
+              }
             },
             'http://www.AMSL/GDK/ontologie#Uebertragungsweg': {
-              face: 'FontAwesome',
-              code: '\uf0ec',
-              size: 60
+              shape: 'icon',
+              icon: {
+                face: 'FontAwesome',
+                code: '\uf0ec',
+                size: 60
+              }
             },
-          },
-          'images': {},
+          }
         }
       };
       this.templates = templates;
@@ -183,7 +211,7 @@
         return Promise.all([
           _saveDoc(templates),
           _saveDoc(profiles),
-          _saveProfile(defaultProfile)
+          _saveProfile(defaultProfile, false)
         ]);
       });
     };
