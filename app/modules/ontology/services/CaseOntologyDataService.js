@@ -484,39 +484,34 @@
 
 
     const _initialize = () => {
-      if (_initialized === true) {
-        return Promise.resolve();
-      }
-      return new Promise((resolve, reject) => {
-        Promise.all([
-          OntologyDataService.initialize(),
-          OntologyMetadataService.initialize()
-        ]).then(() => {
+        OntologyMetadataService.initialize().then(() => {
           return OntologyMetadataService.profile("default");
         }).then((result) => {
-          if (result.cases) {
-            _caseClassIri = result.cases.caseClassIri;
-            _caseNamePropertyIri = result.cases.caseNamePropertyIri;
-            _caseEntityPropertyIri = result.cases.caseIndividualPropertyIri;
-            _caseEntityInversePropertyIri = result.cases.individualCasePropertyIri;
-          }
-          return Promise.all([
-            OntologyDataService.fetchAllObjectProperties(),
-            OntologyDataService.fetchAllDatatypeProperties(),
-            OntologyDataService.fetchAllClassIris(),
-          ]);
-        }).then((result) => {
-          _objectProperties = result[0];
-          _datatypeProperties = result[1];
-          return _loadEntities(result[2]);
-        }).then((result) => {
-          _classes = _filterClasses(result)
-          _classTree = _buildClassTree(_classes);
-          _initialized = true;
-
-          resolve();
-        }).catch(reject);
-      });
+          _caseClassIri = result.cases.caseClassIri;
+          _caseNamePropertyIri = result.cases.caseNamePropertyIri;
+          _caseEntityPropertyIri = result.cases.caseIndividualPropertyIri;
+          _caseEntityInversePropertyIri = result.cases.individualCasePropertyIri;
+        });
+        if (_initialized === true) {
+         return Promise.resolve();
+        } else {
+          return Promise.resolve(
+            OntologyDataService.initialize().then(() => {
+            return Promise.all([
+              OntologyDataService.fetchAllObjectProperties(),
+              OntologyDataService.fetchAllDatatypeProperties(),
+              OntologyDataService.fetchAllClassIris(),
+            ]);
+          }).then((result) => {
+            _objectProperties = result[0];
+            _datatypeProperties = result[1];
+            return _loadEntities(result[2]);
+          }).then((result) => {
+            _classes = _filterClasses(result);
+            _classTree = _buildClassTree(_classes);
+            _initialized = true;
+          }));
+        }
     };
 
 

@@ -57,6 +57,7 @@
           if (symbol.shape && (symbol.shape === 'image' || symbol.shape === 'circularImage') && symbol.image) {
             node.shape = symbol.shape;
             node.image = symbol.image;
+            node.size= 35;
           }
         }
       }
