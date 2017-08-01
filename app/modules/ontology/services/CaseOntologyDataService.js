@@ -500,21 +500,20 @@
             _caseEntityPropertyIri = result.cases.caseIndividualPropertyIri;
             _caseEntityInversePropertyIri = result.cases.individualCasePropertyIri;
           }
-        /*  _caseClassIri = `${OntologyDataService.ontologyIri()}${caseClassName}`;
-          _caseNamePropertyIri = `${OntologyDataService.ontologyIri()}${caseNamePropertyName}`;
-          _caseEntityPropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityPropertyName}`;
-          _caseEntityInversePropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityInversePropertyName}`;*/
           return Promise.all([
             OntologyDataService.fetchAllObjectProperties(),
             OntologyDataService.fetchAllDatatypeProperties(),
-            OntologyDataService.fetchAllClasses(),
+            OntologyDataService.fetchAllClassIris(),
           ]);
         }).then((result) => {
           _objectProperties = result[0];
           _datatypeProperties = result[1];
-          _classes = _filterClasses(result[2]);
+          return _loadEntities(result[2]);
+        }).then((result) => {
+          _classes = _filterClasses(result)
           _classTree = _buildClassTree(_classes);
           _initialized = true;
+
           resolve();
         }).catch(reject);
       });

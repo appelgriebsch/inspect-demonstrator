@@ -8,7 +8,7 @@
           <md-tooltip>Focus selected nodes</md-tooltip>
           <md-icon>center_focus_strong</md-icon>
         </md-button>
-        <md-button class="md-icon-button md-mini md-primary" ng-click="$ctrl.onRemoveNodes()" ng-disabled="$ctrl.isDisabled('removeNodes')">
+        <md-button class="md-icon-button md-mini md-primary" ng-click="$ctrl.onRemoveSelectedNodes()" ng-disabled="$ctrl.isDisabled('removeNodes')">
           <md-tooltip>Remove selected nodes</md-tooltip>
           <md-icon>remove_circle_outline</md-icon>
         </md-button>
@@ -41,11 +41,11 @@
         </md-checkbox>
       </md-list-item>
       <md-list-item  class="md-no-proxy md-body-1" ng-repeat="f in $ctrl.filters">
-        <md-button  class="options-button md-icon-button md-secondary"  ng-show="f.showOnOff" aria-label="Show case nodes" ng-click="$ctrl.onShowCaseNodes({id: f.id})">
+        <md-button  class="options-button md-icon-button md-secondary"  ng-show="f.showOnOff" aria-label="Show case nodes" ng-click="$ctrl.onShowNodes({id: f.id})">
           <md-tooltip>Show case nodes</md-tooltip>
           <md-icon>visibility</md-icon>
         </md-button>
-        <md-button  class="options-button md-icon-button md-secondary" ng-show="f.showOnOff" aria-label="Hide case nodes" ng-click="$ctrl.onRemoveCaseNodes({id: f.id})">
+        <md-button  class="options-button md-icon-button md-secondary" ng-show="f.showOnOff" aria-label="Hide case nodes" ng-click="$ctrl.onRemoveNodes({id: f.id})">
           <md-tooltip>Hide case nodes</md-tooltip>
           <md-icon>visibility_off</md-icon>
         </md-button>

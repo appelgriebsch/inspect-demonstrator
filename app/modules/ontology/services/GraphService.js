@@ -137,13 +137,13 @@
           filters.push({
             id: _nodeTypes.CLASS_NODE,
             name: 'Schema Information',
-            showOnOff: false,
+            showOnOff: true,
             type: 'type'
           });
           filters.push({
             id: _nodeTypes.DATA_NODE,
             name: "Data Nodes",
-            showOnOff: false,
+            showOnOff: true,
             type: 'type'
           });
 
@@ -177,9 +177,7 @@
         }).catch(reject);
       });
     };
-    const _individualsToNodes = (individuals) => {
-      return _convertEntities(individuals);
-    };
+
 
     const _convertEntities = (entities) => {
       let nodes = [];
@@ -223,6 +221,27 @@
         edges.push(_createInstanceOfEdge(iri, clazz.iri));
       });
       return { nodes: nodes, edges: edges};
+    };
+
+    const _classNodes = (graphNodeIds = [], filters = []) => {
+      let nodes = [];
+      let edges = [];
+      const filter = filters.find((f) => {
+        return ((f.id === _nodeTypes.CLASS_NODE) && (f.enabled === true));
+      });
+      if (!filter) {
+        return Promise.resolve({nodes: nodes, edges: edges});
+      }
+      return new Promise((resolve, reject) => {
+        OntologyDataService.fetchAllClassIris().then((result) => {
+          const iris = result.filter((iri) => {
+            return (graphNodeIds.indexOf(iri) < 0);
+          });
+          return  _nodes(iris, graphNodeIds, filters);
+        }).then(resolve)
+          .catch(reject);
+      });
+
     };
 
     const _convertIndividual = (individual) => {
@@ -395,7 +414,10 @@
         return _initialize();
       },
       individualsToNodes: (individuals) => {
-        return _individualsToNodes(individuals);
+        return _convertEntities(individuals);
+      },
+      classesToNodes: (classes) => {
+        return _convertEntities(classes);
       },
       nodes: (nodeIds, graphNodeIds, filters) => {
         return _nodes(nodeIds, graphNodeIds, filters);

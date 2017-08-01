@@ -135,38 +135,7 @@
         });
       }
     };
-    const _removeCaseNodes2 = (iri) => {
-      console.log("_showCaseNodes", iri);
-      //TODO: do properly
-      const caseIdentifier = iri.split("#")[1];
-      const nodeIds = vm.data.nodes.getIds({
-        filter: (n) => {
-          if (iri === 'none') {
 
-            return (Array.isArray(n.cases) && (n.cases.length === 0));
-          }
-          return (Array.isArray(n.cases) && (n.cases.length === 1) && (n.cases[0] === caseIdentifier));
-        }
-      });
-      vm.data.nodes.remove(nodeIds);
-      const edgeIds = vm.data.edges.getIds({
-        filter: (e) => {
-          return ((nodeIds.indexOf(e.from) > -1) || (nodeIds.indexOf(e.to) > -1));
-        }
-      });
-      vm.data.edges.remove(edgeIds);
-      vm.network.fit();
-    };
-
-    const _setFilters = (filters) => {
-      vm.filters = filters;
-      let i = 0;
-      for (const f of filters) {
-        f.color = vm.palette[i % vm.palette.length];
-        vm.colorChanged(f.id, f.color);
-        i++;
-      }
-    };
 
     const _showCaseNodes = (caseId) => {
       console.log("_showCaseNodes", caseId);
@@ -188,6 +157,15 @@
           $scope.setError('SearchAction', 'search', err);
           $scope.setReady(true);
         });
+      }
+    };
+    const _setFilters = (filters) => {
+      vm.filters = filters;
+      let i = 0;
+      for (const f of filters) {
+        f.color = vm.palette[i % vm.palette.length];
+        vm.colorChanged(f.id, f.color);
+        i++;
       }
     };
 
@@ -333,9 +311,9 @@
       });
     };
 
-    vm.showCaseNodes = (id) => {
+    vm.showNodes = (id) => {
       const filter = vm.filters.find((f) => {
-          return ((f.id === id) && (f.type === 'case') && (f.enabled === true));
+          return ((f.id === id) && (f.enabled === true));
       });
       if (!filter) {
         return;
@@ -343,46 +321,100 @@
       const filters = vm.filters.map((f) => {
         return {id: f.id, enabled: f.enabled, type: f.type};
       });
-      $scope.setBusy('Loading case data...');
-      if (id === GraphService.tags.NO_CASE) {
-        CaseOntologyDataService.loadEntitesWithoutCase()
-          .then(GraphService.individualsToNodes)
-          .then((result) => {
+      if (filter.type === 'case') {
+        $scope.setBusy('Loading case data...');
+        if (id === GraphService.tags.NO_CASE) {
+          CaseOntologyDataService.loadEntitesWithoutCase()
+            .then(GraphService.individualsToNodes)
+            .then((result) => {
+              _updateNodesAndEdges(result);
+              $scope.setReady(true);
+            }).catch((err) => {
+            $scope.setError('SearchAction', 'search', err);
+            $scope.setReady(true);
+          });
+        } else {
+          CaseOntologyDataService.loadCase(id).then((result) => {
+            return GraphService.nodes(result.individualIris, vm.data.nodes.getIds(), filters);
+          }).then((result) => {
+            _updateNodesAndEdges(result);
+            $scope.setReady(true);
+          }).catch((err) => {
+            $scope.setError('SearchAction', 'search', err);
+            $scope.setReady(true);
+          });
+        }
+      }
+      if (filter.type === 'type') {
+        if (filter.id === GraphService.nodeTypes.CLASS_NODE) {
+          $scope.setBusy('Loading schema information...');
+          const result = GraphService.classesToNodes(CaseOntologyDataService.getClasses());
           _updateNodesAndEdges(result);
           $scope.setReady(true);
-        }).catch((err) => {
-          $scope.setError('SearchAction', 'search', err);
-          $scope.setReady(true);
-        });
-      } else {
-        CaseOntologyDataService.loadCase(id).then((result) => {
-          return GraphService.nodes(result.individualIris, vm.data.nodes.getIds(), filters);
-        }).then((result) => {
-          _updateNodesAndEdges(result);
-          $scope.setReady(true);
-        }).catch((err) => {
-          $scope.setError('SearchAction', 'search', err);
-          $scope.setReady(true);
-        });
+        }
+        if (filter.id === GraphService.nodeTypes.DATA_NODE) {
+          $scope.setBusy('Loading data nodes...');
+          // get all cases that are activated
+          const promises = vm.filters.filter((f) => {
+            return ((f.type === 'case') && (f.enabled === true));
+          }).map((f) => {
+            return CaseOntologyDataService.loadCase(f.id);
+          });
+          Promise.all(promises).then((result) => {
+            const iris = result.map((c) => {
+              return c.individualIris;
+            }).reduce((accumulator, array) => {
+              accumulator = accumulator.concat(array);
+              return accumulator;
+            }, []).reduce((accumulator, iri) => {
+              if (accumulator.indexOf(iri) < 0) {
+                accumulator.push(iri);
+              }
+              return accumulator;
+            }, []);
+            return GraphService.nodes(iris, vm.data.nodes.getIds(), filters);
+          }).then((result) => {
+            const nodes = result.nodes.filter((n) => {
+              return n.type === GraphService.nodeTypes.DATA_NODE;
+            });
+            _updateNodesAndEdges({nodes: nodes, edges: result.edges});
+            $scope.setReady(true);
+          }).catch((err) => {
+            $scope.setError('SearchAction', 'search', err);
+            $scope.setReady(true);
+          });
+
+        }
       }
     };
-    vm.removeCaseNodes = (id) => {
+    vm.removeNodes = (id) => {
       const filter = vm.filters.find((f) => {
-        return ((f.id === id) && (f.type === 'case') && (f.enabled === true));
+        return ((f.id === id) &&  (f.enabled === true));
       });
       if (!filter) {
         return;
       }
-      const nodeIds = vm.data.nodes.getIds({
-        filter: (n) => {
-          return ((n.cases) && (n.cases.length === 1) && (n.cases[0] === id));
-        }
-      });
+      let nodeIds = [];
+      if (filter.type === 'case') {
+        nodeIds = vm.data.nodes.getIds({
+          filter: (n) => {
+            return ((n.cases) && (n.cases.length === 1) && (n.cases[0] === id));
+          }
+        });
+      }
+      if (filter.type === 'type') {
+        nodeIds = vm.data.nodes.getIds({
+          filter: (n) => {
+            return (n.type === id);
+          }
+        });
+      }
       const edgeIds = vm.data.edges.get({
         filter: (e) => {
           return ((nodeIds.indexOf(e.from) > -1) || (nodeIds.indexOf(e.to) > -1));
         }
       });
+
       vm.data.nodes.remove(nodeIds);
       vm.data.edges.remove(edgeIds);
     };
@@ -397,7 +429,7 @@
 
       $scope.$root.$broadcast('NodesDeselectedEvent');
     };
-    vm.removeNodes = () => {
+    vm.removeSelectedNodes = () => {
       const nodeIds = vm.selectedNodes.map((n) => {
         return n.id;
       });
