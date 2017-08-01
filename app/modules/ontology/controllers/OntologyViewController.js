@@ -356,7 +356,7 @@
           $scope.setBusy('Loading data nodes...');
           // get all cases that are activated
           const promises = vm.filters.filter((f) => {
-            return ((f.type === 'case') && (f.enabled === true));
+            return ((f.type === 'case') && (f.enabled === true) && (f.id !== GraphService.tags.NO_CASE));
           }).map((f) => {
             return CaseOntologyDataService.loadCase(f.id);
           });
