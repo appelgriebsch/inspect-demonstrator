@@ -31,6 +31,15 @@
   <section>
     <md-subheader class="md-primary">Filter</md-subheader>
     <md-list class="md-dense" >
+      <md-list-item  class="md-no-proxy md-body-1">
+        <p class="md-truncate"><span ng-if="$ctrl.isChecked()">Un-</span>Select All</p>
+        <md-checkbox class="md-primary"
+                     aria-label="Select All"
+                     ng-checked="$ctrl.isChecked()"
+                     md-indeterminate="$ctrl.isIndeterminate()"
+                     ng-click="$ctrl.toggleAll()">
+        </md-checkbox>
+      </md-list-item>
       <md-list-item  class="md-no-proxy md-body-1" ng-repeat="f in $ctrl.filters">
         <md-button  class="options-button md-icon-button md-secondary"  ng-show="f.showOnOff" aria-label="Show case nodes" ng-click="$ctrl.onShowCaseNodes({id: f.id})">
           <md-tooltip>Show case nodes</md-tooltip>
@@ -40,13 +49,14 @@
           <md-tooltip>Hide case nodes</md-tooltip>
           <md-icon>visibility_off</md-icon>
         </md-button>
-        <md-checkbox class="md-primary md-secondary" ng-model="f.enabled" ng-change="$ctrl.onFilterChanged({id: f.id, enabled: f.enabled})">
-          <md-tooltip>Set filter</md-tooltip>
-        </md-checkbox>
         <md-button  class="options-button md-icon-button md-secondary" aria-label="Pick a color" ng-click="$ctrl.showDialog($event, f.id)">
           <md-tooltip >Choose a color</md-tooltip>
           <md-icon ng-style="{'color': f.color}" >adjust</md-icon>
         </md-button>
+        <md-checkbox class="md-primary md-secondary" ng-model="f.enabled" ng-change="$ctrl.onFilterChanged({id: f.id, enabled: f.enabled})">
+          <md-tooltip>Set filter</md-tooltip>
+        </md-checkbox>
+
         <p class="md-truncate">{{f.name}}</p>
       </md-list-item>
     </md-list>

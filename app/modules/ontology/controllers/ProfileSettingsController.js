@@ -31,7 +31,6 @@
     };
 
     vm.caseSelected = (case_) => {
-      console.log("select", case_);
       vm.activeProfile.cases.caseClassIri = case_;
     };
     vm.caseNameSelected = (prop) => {

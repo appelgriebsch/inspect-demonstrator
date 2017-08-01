@@ -24,6 +24,39 @@
       return true;
     };
 
+
+    vm.isIndeterminate = function() {
+      const selectedFilters = vm.filters.filter((f) => {
+        return f.enabled === true;
+      });
+      if ((selectedFilters.length === 0) || (selectedFilters.length === vm.filters.length)) {
+        return false;
+      }
+      return true;
+    };
+
+    vm.isChecked = function() {
+      const selectedFilters = vm.filters.filter((f) => {
+        return f.enabled === true;
+      });
+      if (selectedFilters.length === vm.filters.length) {
+        return true;
+      }
+      return false;
+    };
+
+    vm.toggleAll = function() {
+      const selectedFilters = vm.filters.filter((f) => {
+        return f.enabled === true;
+      });
+      const enable = (selectedFilters.length !== vm.filters.length);
+      vm.filters = vm.filters.map((f) => {
+          f.enabled = enable;
+          return f;
+        });
+
+    };
+
     /** inner events **/
     vm.showDialog = function (event, filterId) {
       const filter = vm.filters.find((f) => {
