@@ -9,16 +9,10 @@
     const OwlIndividual = require(path.join(__dirname, '../models/OwlIndividual'));
     const OwlClass = require(path.join(__dirname, '../models/OwlClass'));
 
-    const caseClassName = 'Fall';
-    const caseNamePropertyName = 'Fallname';
-    const caseEntityPropertyName = 'beinhaltet';
-    const caseEntityInversePropertyName = 'ist_Bestandteil_von';
-
     let _caseClassIri = '';
     let _caseNamePropertyIri = '';
     let _caseEntityPropertyIri = '';
     let _caseEntityInversePropertyIri = '';
-    const regexExcludedClasses = new RegExp(`_:[a-zA-Z0-9]+|${caseClassName}`, 'g');
     let _initialized = false;
 
     let _objectProperties = [];
@@ -27,9 +21,10 @@
     let _classes = [];
 
     const _filterClasses = (classes) => {
+      const regexExcludedClasses = new RegExp(`_:[a-zA-Z0-9]+|${_caseClassIri}`, 'g');
       // filter out all classes we don't need
       return  classes.filter((c) => {
-        return (c.name.search(regexExcludedClasses) < 0);
+        return (c.iri.search(regexExcludedClasses) < 0);
       });
     };
     const sortByName = (item1, item2) => {
@@ -493,13 +488,22 @@
         return Promise.resolve();
       }
       return new Promise((resolve, reject) => {
-        OntologyDataService.initialize()
-          .then(OntologyMetadataService.initialize())
-          .then(() => {
-          _caseClassIri = `${OntologyDataService.ontologyIri()}${caseClassName}`;
+        Promise.all([
+          OntologyDataService.initialize(),
+          OntologyMetadataService.initialize()
+        ]).then(() => {
+          return OntologyMetadataService.profile("default");
+        }).then((result) => {
+          if (result.cases) {
+            _caseClassIri = result.cases.caseClassIri;
+            _caseNamePropertyIri = result.cases.caseNamePropertyIri;
+            _caseEntityPropertyIri = result.cases.caseIndividualPropertyIri;
+            _caseEntityInversePropertyIri = result.cases.individualCasePropertyIri;
+          }
+        /*  _caseClassIri = `${OntologyDataService.ontologyIri()}${caseClassName}`;
           _caseNamePropertyIri = `${OntologyDataService.ontologyIri()}${caseNamePropertyName}`;
           _caseEntityPropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityPropertyName}`;
-          _caseEntityInversePropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityInversePropertyName}`;
+          _caseEntityInversePropertyIri = `${OntologyDataService.ontologyIri()}${caseEntityInversePropertyName}`;*/
           return Promise.all([
             OntologyDataService.fetchAllObjectProperties(),
             OntologyDataService.fetchAllDatatypeProperties(),

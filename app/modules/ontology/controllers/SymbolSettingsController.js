@@ -1,7 +1,7 @@
 (function(angular) {
 
   'use strict';
-  function SettingsViewController($scope, $q, $state, CaseOntologyDataService, OntologyMetadataService, OntologyDataService) {
+  function SymbolSettingsController($scope, $q, $state, CaseOntologyDataService, OntologyMetadataService, OntologyDataService) {
     const vm = this;
     const path = require('path');
     const Icons = require(path.join(__dirname, '../models/Icons'));
@@ -152,7 +152,7 @@
     };
 
     $scope.$on('cancel', () => {
-      $state.go('app.ontology.view');
+      $state.go('app.ontology.profile');
     });
 
     $scope.$on('submit', () => {
@@ -190,6 +190,6 @@
       });
     };
   }
-  module.exports = SettingsViewController;
+  module.exports = SymbolSettingsController;
 
 })(global.angular);

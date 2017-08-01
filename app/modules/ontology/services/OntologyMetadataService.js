@@ -3,7 +3,6 @@
 
   function OntologyMetadataService (PouchDBService) {
     let db;
-    const app = require('electron').remote.app;
 
     const _saveMetadata = (data) => {
       return Promise.resolve(
@@ -124,6 +123,12 @@
           'name': '${name}',
           'type': 'profile',
           'graphOptions': {},
+          cases: {
+            caseClassIri: '',
+            caseNamePropertyIri: '',
+            caseIndividualPropertyIri: '',
+            individualCasePropertyIri: '',
+          },
           symbols: {
             'http://www.AMSL/GDK/ontologie#Akteur': {
               shape: 'icon',

@@ -501,7 +501,7 @@
       $state.go('app.ontology.cases');
     });
     $scope.$on('settings', () => {
-      $state.go('app.ontology.settings');
+      $state.go('app.ontology.profile');
     });
   }
 

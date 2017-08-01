@@ -958,6 +958,12 @@
       fetchAllClassIris () {
         return _fetchAllIrisForType(_iriFor('owl-class'));
       },
+      fetchAllObjectPropertyIris () {
+        return _fetchAllIrisForType(_iriFor('owl-objectProperty'));
+      },
+      fetchAllDatatypePropertyIris () {
+        return _fetchAllIrisForType(_iriFor('owl-datatypeProperty'));
+      },
       fetchAllIndividuals () {
         return _fetchAllForType(_iriFor('owl-individual'));
       },
@@ -967,8 +973,8 @@
       fetchAllObjectProperties () {
         return _fetchAllForType(_iriFor('owl-objectProperty'));
       },
-      fetchAllDatatypeProperties (options) {
-        return _fetchAllForType(_iriFor('owl-datatypeProperty'), options);
+      fetchAllDatatypeProperties () {
+        return _fetchAllForType(_iriFor('owl-datatypeProperty'));
       },
       fetchClass (classIri) {
         return _fetchEntity(classIri);

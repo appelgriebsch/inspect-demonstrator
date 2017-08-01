@@ -84,12 +84,23 @@
               templateUrl: 'shell/views/shell.submit.html'
             }
           },
-        }).state(`${moduleConfig.state}.settings`, {
-          url: '/setttings',
+        }).state(`${moduleConfig.state}.symbols`, {
+          url: '/symbols',
           views: {
             'content': {
-              templateUrl: `${moduleConfig.path}/views/settings.view.html`,
-              controller: 'SettingsViewController as $ctrl'
+              templateUrl: `${moduleConfig.path}/views/symbol.settings.html`,
+              controller: 'SymbolSettingsController as $ctrl'
+            },
+            'actions@app': {
+              templateUrl: 'shell/views/shell.submit.html'
+            }
+          },
+        }).state(`${moduleConfig.state}.profile`, {
+          url: '/profile',
+          views: {
+            'content': {
+              templateUrl: `${moduleConfig.path}/views/profile.settings.html`,
+              controller: 'ProfileSettingsController as $ctrl'
             },
             'actions@app': {
               templateUrl: 'shell/views/shell.submit.html'
@@ -112,7 +123,9 @@
     const TreeNodeController = require('./controllers/TreeNodeController');
     const NodeEditController = require('./controllers/NodeEditController');
     const ListsController = require('./controllers/ListsController');
-    const SettingsViewController = require('./controllers/SettingsViewController');
+    const SymbolSettingsController = require('./controllers/SymbolSettingsController');
+
+    const ProfileSettingsController = require('./controllers/ProfileSettingsController');
 
 
     angular.module('electron-app').controller('OntologyOptionsController', ['$scope', '$mdDialog', OntologyOptionsController]);
@@ -127,7 +140,8 @@
     angular.module('electron-app').controller('TreeNodeController', ['$scope', TreeNodeController]);
     angular.module('electron-app').controller('NodeEditController', ['$scope', '$state', 'CaseOntologyDataService', NodeEditController]);
     angular.module('electron-app').controller('ListsController', ['$scope',  ListsController]);
-    angular.module('electron-app').controller('SettingsViewController', ['$scope', '$q', '$state', 'CaseOntologyDataService', 'OntologyMetadataService', 'OntologyDataService', SettingsViewController]);
+    angular.module('electron-app').controller('SymbolSettingsController', ['$scope', '$q', '$state', 'CaseOntologyDataService', 'OntologyMetadataService', 'OntologyDataService', SymbolSettingsController]);
+    angular.module('electron-app').controller('ProfileSettingsController', ['$scope', '$state', 'OntologyMetadataService' ,  'OntologyDataService', ProfileSettingsController]);
 
 
     // load and register services
@@ -152,8 +166,10 @@
       templateUrl: `${moduleConfig.path}/views/ontology.autocomplete.html`,
       replace: 'true',
       bindings: {
+        selectedItem: '<',
         clearOnSelect: '<',
         items: '<',
+        label: '<',
         onItemSelected: '&'
       },
       controller: 'OntologyAutoCompleteController'

@@ -7,6 +7,7 @@
     vm.items = [];
     vm.selectedItem = undefined;
     vm.searchText = '';
+    vm.label = '';
 
     vm.findTerm = (searchText) => {
       return vm.items.filter((item) => {
