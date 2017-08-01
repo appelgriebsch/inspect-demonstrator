@@ -19,6 +19,7 @@
     let _datatypeProperties = [];
     let _classTree = [];
     let _classes = [];
+    let _caseIris = [];
 
     const _filterClasses = (classes) => {
       const regexExcludedClasses = new RegExp(`_:[a-zA-Z0-9]+|${_caseClassIri}`, 'g');
@@ -34,20 +35,9 @@
     const _buildTreeData = () => {
       const noCaseName = "[No case]";
       return new Promise((resolve, reject) => {
-        OntologyDataService.fetchAllIndividuals().then((individuals) => {
-          const cases =  individuals.filter((i)=> {
-            return i.classIris.indexOf(_caseClassIri) > -1;
-          }).map((i) => {
-            let name = i.datatypeProperties.find((p) => {
-              return p.iri === _caseNamePropertyIri;
-            });
-            if (name) {
-              name = name.target;
-            } else {
-              name = i.label;
-            }
-            return { id: i.iri, name: name};
-          });
+        OntologyDataService.fetchAllIndividualIris()
+          .then(_loadEntities)
+          .then((individuals) => {
           individuals = individuals.filter((i)=> {
             return i.classIris.indexOf(_caseClassIri) < 0;
           });
@@ -55,7 +45,7 @@
             const individuals_ = individuals.filter((item) => {
               return item.classIris.indexOf(c.iri) > -1;
             }).map((item) => {
-              return {id: item.iri, name: item.label };
+              return {id: item.iri, name: item.label, cases: item.cases};
             }).sort(sortByName);
             return {id: c.iri, name: c.label, individuals: individuals_};
           }).reduce((accumulator, item) => {
@@ -65,38 +55,16 @@
             return accumulator;
           }, []).sort(sortByName);
 
-          const individualsWithCases = individuals.map((i)=> {
-            // get all cases for an individual
-            const individualCases = i.objectProperties.filter((p) => {
-              return p.iri === _caseEntityInversePropertyIri;
-            }).concat(i.reverseObjectProperties.filter((p) => {
-              return p.iri === _caseEntityPropertyIri;
-            })).map((p) => {
-              return { id: p.target };
-            }).reduce((accumulator, item) => {
-              const case_ = cases.find((i) => {
-                return i.id === item.id;
+            // filtering the individuals belonging to multiple cases
+            const multipleCasesTree = individuals.filter((i) => {
+              return i.cases.length > 1;
+            }).map((i) => {
+              const cases = i.cases.map((c) => {
+                return { id: c, label: c};
               });
-              const found = accumulator.find((i) => {
-                return item.id === i.id;
-              });
-              if (!found && case_) {
-                item.name = case_.name;
-                accumulator.push(item);
-              }
-              return accumulator;
-            }, []);
-            if (individualCases.length === 0) {
-              individualCases.push({id: 'none', name: noCaseName});
-            }
-            return {id: i.iri, name: i.label, cases: individualCases};
-          });
-          // filtering the individuals belonging to multiple cases
-          const multipleCasesTree = individualsWithCases.filter((i) => {
-            return i.cases.length > 1;
-          });
-
-          resolve({classIndividualsTree: classIndividualsTree, multipleCasesTree: multipleCasesTree});
+              return {id: i.iri, label: i.label, children: cases};
+            });
+            resolve({classIndividualsTree: classIndividualsTree, multipleCasesTree: multipleCasesTree});
         }).catch(reject);
 
       });
@@ -129,15 +97,17 @@
       return new Promise((resolve, reject) => {
         const c = new Case(identifier);
         c.name = identifier;
-        c.createdBy = sysCfg.user;
-        c.createdOn = new Date();
-        c.lastEditedBy = sysCfg.user;
-        c.lastEditedOn = new Date();
         c.description = [];
-        c.status = 'open';
+        c.metaData = OntologyMetadataService.newMetadata(identifier, sysCfg.user, new Date());
         OntologyDataService.insertIndividual(_convertToIndividual(c)).then(() => {
-          return OntologyMetadataService.saveMetadata(c.metaData());
-        }).then(() => {
+          return Promise.all([
+            OntologyMetadataService.saveMetadata(c.metaData),
+            OntologyDataService.fetchIndividualIrisForClass(_caseClassIri)
+          ]);
+        }).then((result) => {
+          _caseIris = result[1].map((o) => {
+            return o.iri;
+          });
           resolve(c);
         }).catch(reject);
       });
@@ -147,9 +117,9 @@
       const ontologyIri = OntologyDataService.ontologyIri();
       const caseIri = `${ontologyIri}${case_.identifier}`;
       const individual = OntologyDataService.createIndividual(ontologyIri, [_caseClassIri], caseIri);
-      individual.datatypeProperties.push({iri: _caseNamePropertyIri, label: caseNamePropertyName, target: case_.name});
+      individual.datatypeProperties.push({iri: _caseNamePropertyIri, label: _caseNamePropertyIri.replace(ontologyIri , ''), target: case_.name});
       individual.objectProperties = case_.individualIris.map((iri) => {
-        return { iri: _caseEntityPropertyIri, label: caseEntityPropertyName, target: iri};
+        return { iri: _caseEntityPropertyIri, label: _caseEntityPropertyIri.replace(ontologyIri , ''), target: iri};
       });
       if (case_.description.length > 0) {
         individual.comments.push(case_.description);
@@ -255,13 +225,6 @@
       case_.metaData.lastEditedOn = new Date();
       return new Promise((resolve, reject) => {
         const individual = _convertToIndividual(case_);
-        let nameProperty;
-
-        _datatypeProperties.forEach((prop) => {
-          if (prop.label === caseNamePropertyName) {
-            nameProperty = prop;
-          }
-        });
         OntologyDataService.removeIndividual(individual).then(() => {
           return OntologyDataService.insertIndividual(individual);
         }).then(() => {
@@ -307,7 +270,7 @@
       return c;
     };
 
-    const _loadEntitesWithoutCase = () => {
+    const _loadEntitiesWithoutCase = () => {
       return new Promise((resolve, reject) => {
         OntologyDataService.fetchAllIndividualIris()
           .then(_loadEntities)
@@ -338,6 +301,7 @@
 
     };
 
+
     const _loadEntity = (iri) => {
       const ontologyIri = OntologyDataService.ontologyIri();
       return new Promise((resolve, reject) => {
@@ -346,7 +310,7 @@
           const cases = [];
           if (entity instanceof OwlIndividual) {
             entity.objectProperties = entity.objectProperties.filter((prop) => {
-              if (prop.iri === _caseEntityInversePropertyIri) {
+             if ((prop.iri === _caseEntityInversePropertyIri) && (_caseIris.indexOf(prop.target) > -1)) {
                 if (cases.indexOf(prop.target) < 0) {
                   cases.push(prop.target);
                 }
@@ -355,7 +319,7 @@
               return true;
             });
             entity.reverseObjectProperties = entity.reverseObjectProperties.filter((prop) => {
-              if (prop.iri === _caseEntityPropertyIri) {
+              if ((prop.iri === _caseEntityPropertyIri) && (_caseIris.indexOf(prop.target) > -1)) {
                 if (cases.indexOf(prop.target) < 0) {
                   cases.push(prop.target);
                 }
@@ -484,6 +448,7 @@
 
 
     const _initialize = () => {
+      return new Promise((resolve, reject) => {
         OntologyMetadataService.initialize().then(() => {
           return OntologyMetadataService.profile("default");
         }).then((result) => {
@@ -491,30 +456,36 @@
           _caseNamePropertyIri = result.cases.caseNamePropertyIri;
           _caseEntityPropertyIri = result.cases.caseIndividualPropertyIri;
           _caseEntityInversePropertyIri = result.cases.individualCasePropertyIri;
-        });
-        if (_initialized === true) {
-         return Promise.resolve();
-        } else {
-          return Promise.resolve(
+
+
+          if (_initialized === true) {
+            return Promise.resolve();
+          } else {
+            return Promise.resolve(
             OntologyDataService.initialize().then(() => {
-            return Promise.all([
-              OntologyDataService.fetchAllObjectProperties(),
-              OntologyDataService.fetchAllDatatypeProperties(),
-              OntologyDataService.fetchAllClassIris(),
-            ]);
-          }).then((result) => {
-            _objectProperties = result[0];
-            _datatypeProperties = result[1];
-            return _loadEntities(result[2]);
-          }).then((result) => {
-            _classes = _filterClasses(result);
-            _classTree = _buildClassTree(_classes);
-            _initialized = true;
-          }));
-        }
+              return Promise.all([
+                OntologyDataService.fetchAllObjectProperties(),
+                OntologyDataService.fetchAllDatatypeProperties(),
+                OntologyDataService.fetchAllClassIris(),
+                OntologyDataService.fetchIndividualIrisForClass(_caseClassIri),
+              ]);
+            }).then((result) => {
+              _objectProperties = result[0];
+              _datatypeProperties = result[1];
+              _caseIris = result[3].map((o) => {
+                return o.iri;
+              });
+              return _loadEntities(result[2]);
+            }).then((result) => {
+              _classes = _filterClasses(result);
+              _classTree = _buildClassTree(_classes);
+              _initialized = true;
+            }));
+          }
+        }).then(resolve)
+          .catch(reject);
+      });
     };
-
-
     return {
       initialize: () => {
         return _initialize();
@@ -562,7 +533,7 @@
         return _loadEntities(iris);
       },
       loadEntitesWithoutCase: () => {
-        return _loadEntitesWithoutCase();
+        return _loadEntitiesWithoutCase();
       },
       createMetadataForCases: () => {
         return _createMetadataForCases();

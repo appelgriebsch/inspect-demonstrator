@@ -601,7 +601,48 @@
           .catch(reject);
       });
     };
-    const _fetchIndividualIrisForClass = (classIri, options) => {
+
+
+
+    const _fetchIndividualIrisForClass = (classIri) => {
+      if (classIri === undefined) {
+        return Promise.reject(new Error('Class iri is undefined.'));
+      }
+      console.log("classIri", classIri);
+      /*
+       [{
+       subject: classIri,
+       predicate:  _iriFor('rdf-type'),
+       object:  _iriFor('owl-class')
+       }, {
+       subject: db.v('x'),
+       predicate: _iriFor('rdf-type'),
+       object: _iriFor('owl-individual')
+       },{
+       subject: db.v('x'),
+       predicate: _iriFor('rdf-type'),
+       object: classIri
+       }]
+       */
+      return _search([{
+        subject: classIri,
+        predicate:  _iriFor('rdf-type'),
+        object:  _iriFor('owl-class')
+      }, {
+        subject: db.v('x'),
+        predicate: _iriFor('rdf-type'),
+        object: _iriFor('owl-individual')
+      },{
+        subject: db.v('x'),
+        predicate: _iriFor('rdf-type'),
+        object: classIri
+      }], {
+        materialized: { iri: db.v('x')}
+      });
+    };
+
+
+    const _fetchIndividualForClass = (classIri, options) => {
       if (classIri === undefined) {
         return Promise.reject(new Error('Class iri is undefined.'));
       }
@@ -734,7 +775,7 @@
           if (err) {
             reject(err);
           } else {
-            resolve(result);
+           resolve(result);
           }
         });
       });
@@ -992,7 +1033,10 @@
         return _iriForPrefix('ontology');
       },
       fetchIndividualsForClass: (classIri, options) => {
-        return _fetchIndividualIrisForClass(classIri, options);
+        return _fetchIndividualForClass(classIri, options);
+      },
+      fetchIndividualIrisForClass: (classIri) => {
+        return _fetchIndividualIrisForClass(classIri);
       },
       fetchIndividualIrisWith: (propertyIri, otherIndividualIri, type) => {
         return _fetchIndividualIrisWith(propertyIri, otherIndividualIri, type);

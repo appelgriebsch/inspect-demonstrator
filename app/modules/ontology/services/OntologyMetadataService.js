@@ -109,7 +109,7 @@
 
       const templates = {
         _id: '_design/templates',
-        version: '1.5',
+        version: '2.0',
         metadata: {
           'type': 'metadata',
           'createdBy': '',

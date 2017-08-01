@@ -3,7 +3,7 @@
     <md-subheader class="md-primary expandable" ng-click="$ctrl.hideList1 = !$ctrl.hideList1">Entities</md-subheader>
     <ontology-tree ng-hide="$ctrl.hideList1"
                    tree-data="$ctrl.classIndividualsData"
-                   node-children="individuals"
+                   node-children="children"
                    node-label="name"></ontology-tree>
   </section>
   <section>
@@ -11,6 +11,7 @@
     <ontology-tree
       ng-hide="$ctrl.hideList3"
       tree-data="$ctrl.multipleCaseData"
-      node-label="name"></ontology-tree>
+      node-children="children"
+      node-label="label"></ontology-tree>
   </section>
 </md-content>

@@ -68,6 +68,7 @@
       classIndividualsData: []
     };
 
+    vm.treeData = [];
 
     /** for options menu **/
     vm.palette = ['#3399ff', '#bb99ff', '#579d1c', '#ff420e', '#ffd320', '#4b1f6f', '#004586', '#E91E63', '#69F0AE', '#795548'];
@@ -115,50 +116,6 @@
         }
       });
     };
-    const _removeCaseNodes = (caseId) => {
-      console.log("_removeCaseNodes", caseId);
-      const case_ =  vm.lists.caseData.find((c) => {
-        return c.id === caseId;
-      });
-      if (case_) {
-        const nodeIds = case_.children.map((i) => {
-          return i.id;
-        });
-        const datatypeNodes = [];
-        nodeIds.forEach((n) => {
-          const nodes = this.data.nodes.getNodes(this.network.getConnectedNodes(nodeIds[0], {
-            filter: (n) => {
-              return true;
-            }
-          }));
-          console.log(nodes);
-        });
-      }
-    };
-
-
-    const _showCaseNodes = (caseId) => {
-      console.log("_showCaseNodes", caseId);
-      const case_ =  vm.lists.caseData.find((c) => {
-        return c.id === caseId;
-      });
-      if (case_) {
-        $scope.setBusy('Loading case data...');
-        const nodeIds = case_.children.map((i) => {
-          return i.id;
-        });
-        const filters = vm.filters.map((f) => {
-          return {id: f.id, enabled: f.enabled, type: f.type};
-        });
-        GraphService.nodes(nodeIds, vm.data.nodes.getIds(), filters).then((result) => {
-          _updateNodesAndEdges(result);
-          $scope.setReady(true);
-        }).catch((err) => {
-          $scope.setError('SearchAction', 'search', err);
-          $scope.setReady(true);
-        });
-      }
-    };
     const _setFilters = (filters) => {
       vm.filters = filters;
       let i = 0;
@@ -199,36 +156,64 @@
           $scope.setReady(true);
         });
     };
-
     const _createTreeData = () => {
       return new Promise((resolve, reject) => {
         CaseOntologyDataService.treeData().then((result) => {
-          vm.lists.multipleCaseData = result.multipleCasesTree.map((i) => {
-            i.children = i.cases;
-            i.clickActions = [{
-              icon: 'my_location',
-              func: vm.zoomTo,
-            }];
-            return i;
-          });
-          vm.lists.classIndividualsData = result.classIndividualsTree.map((c) => {
-            c.children = c.individuals.map((i) => {
-              i.clickActions = [{
-                icon: 'my_location',
-                func: vm.zoomTo,
-              }];
-              return i;
-            });
-            c.clickActions = [{
-              icon: 'visibility',
-              func: _showClassNode,
-            }];
-            return c;
-          });
+          vm.treeData = result;
+          vm.lists.multipleCaseData = _createMultipleCaseData(vm.treeData);
+          $scope.$watch('$ctrl.filters', function (newValue, oldValue, scope) {
+             vm.lists.classIndividualsData = _createClassIndividualsData(vm.treeData, vm.filters);
+          }, true);
           resolve();
         }).catch(reject);
       });
     };
+    const _createMultipleCaseData = (treeData) => {
+      return treeData.multipleCasesTree.map((i) => {
+        i.clickActions = [{
+          icon: 'my_location',
+          func: vm.zoomTo,
+        }];
+        return i;
+      });
+    };
+
+    const _createClassIndividualsData = (treeData, filters) => {
+      const classFilter = filters.find((f) => {
+        return ((f.id === GraphService.nodeTypes.CLASS_NODE) && (f.enabled === true));
+      });
+      const caseFilterIds = filters.filter((f) => {
+        return ((f.type === 'case') && (f.enabled === true));
+      }).map((f) => {
+        return f.id;
+      });
+      if ((!classFilter) || (caseFilterIds.length === 0)) {
+        return [];
+      }
+      const clickActionIndividual = [{
+        icon: 'my_location',
+        func: vm.zoomTo,
+      }];
+      const clickActionClass = [{
+        icon: 'visibility',
+        func: _showClassNode,
+      }];
+      return treeData.classIndividualsTree.map((c) => {
+        c.children = c.individuals.filter((i) => {
+          return i.cases.find((c) => {
+            return (caseFilterIds.indexOf(c) > -1);
+          });
+        }).map((i) => {
+          i.clickActions = clickActionIndividual;
+          return i;
+        });
+        c.clickActions = clickActionClass;
+        return c;
+      }).filter((c) => {
+        return (c.children.length > 0);
+      });
+    };
+
 
     /** inner events **/
     vm.itemSelected = (item) => {
