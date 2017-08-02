@@ -28,7 +28,12 @@
           vm.activeProfile = result;
           vm.symbolCount = Object.keys(vm.activeProfile.symbols).length;
           if(!vm.activeProfile.cases) {
-            vm.activeProfile.cases = {};
+            vm.activeProfile.cases = {
+              caseClassIri: '',
+              caseNamePropertyIri: '',
+              caseIndividualPropertyIri: '',
+              individualCasePropertyIri: '',
+            };
           }
           $scope.setReady(true);
         }).catch((err) => {
