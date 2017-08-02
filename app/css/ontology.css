@@ -10,42 +10,33 @@ md-autocomplete[md-floating-label].transparent-blur, .transparent-blur {
   margin-top: 0.5em;
   font-size: 12px;
 }
-/*.md-icon-button.ontology-sidebar-btn {
-  height: 32px;
-  width: 32px;
-  line-height: 32px;
-  padding: 0;
-  margin: 0.5em 0 0 0;
+
+
+div.tree-nodes {
+  margin-left: 0;
+  padding-left: 1em;
 }
-.md-icon-button.ontology-sidebar-btn-closed {
-  z-index: 1;
-  position: fixed;
+div.tree-node .md-icon-button, .options-button {
+  padding: 0 !important;
+  margin: 0 3px !important;
+
+  height: 24px !important;
+  width: 24px !important;
 }
 
-.md-icon-button.ontology-sidebar-right-btn-closed {
-  right:25px;
+
+div.tree-node md-icon, .options-button md-icon {
+  font-size: 14px !important;
+  height: 14px !important;
+  width: 14px !important;
+  min-height: 14px !important;
+  min-width: 14px !important;
 }
 
-.md-icon-button.ontology-sidebar-left-btn-opened {
-  margin-right: 1em;
-  margin-top: 1em;
-  padding:0 ;
+.expandable {
+  cursor: pointer;
 }
 
-.md-icon-button.ontology-sidebar-right-btn-opened {
-  margin-right: 1em;
-  margin-top: 1em;
-  padding:0 ;
-}
-
-md-input-container.sidebar-input {
-  margin: 10px 30px;
-}
-*/
-.badge > .badge-label {
-  vertical-align: baseline;
-  font-size: 0.75em;
-  position: relative;
-  top: 1em;
-  left: -1.5em;
+.nonExpandable {
+  cursor: auto;
 }

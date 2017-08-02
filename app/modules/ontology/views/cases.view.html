@@ -1,5 +1,4 @@
-<div flex layout-fill layout="column" >
-  <md-content>
+<div flex  layout="column" ng-cloak>
     <md-button class="md-primary" ng-click="$ctrl.newCase()">
       <md-icon>create_new_folder</md-icon>
       New case
@@ -22,8 +21,6 @@
         <md-icon>folder_shared</md-icon>
       </md-button>-->
       <div flex="30">{{case.name}}</div>
-      <div hide-xs>Created by {{case.createdBy}}, last edited on {{case.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</div>
+      <div hide-xs>Created by {{case.metaData.createdBy}}, last edited on {{case.metaData.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</div>
     </div>
-  </md-content>
-
 </div>

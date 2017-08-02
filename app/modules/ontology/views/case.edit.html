@@ -1,0 +1,277 @@
+<div  ng-cloak layout="column" layout-fill>
+  <md-tabs layout="column" layout-fill md-selected="$ctrl.selectedTab">
+    <md-tab label="Case Metadata">
+      <md-tab-content layout="column" layout-fill layout-margin layout-padding>
+        <md-input-container>
+          <label for="case-identifier">Identifier (not editable)</label>
+          <input ng-readonly="true" id="case-identifier"  aria-label="Identifier" ng-model="$ctrl.currentCase.identifier">
+        </md-input-container>
+        <md-input-container>
+          <label for="case-name">Name</label>
+          <input required md-no-asterisk id="case-name" aria-label="Name" ng-model="$ctrl.currentCase.name" >
+        </md-input-container>
+        <md-input-container>
+          <label for="case-investigator">Investigator</label>
+          <input md-no-asterisk id="case-investigator" aria-label="Investigator" ng-model="$ctrl.currentCase.metaData.investigator">
+        </md-input-container>
+        <md-input-container>
+          <label for="case-description">Description</label>
+          <textarea md-no-asterisk id="case-description" aria-label="Description" ng-model="$ctrl.currentCase.description"></textarea>
+        </md-input-container>
+      </md-tab-content>
+    </md-tab>
+    <md-tab label="Graph" layout-fill>
+      <md-tab-content flex  layout-fill>
+        <!-- so that FontAwesome is loaded -->
+        <i class="fa fa-flag" style="visibility: hidden"></i>
+        <md-button class="md-icon-button md-primary" ng-click="$ctrl.toggleSidebar('ontology-sidenav-left')">
+          <md-icon>chevron_right</md-icon>
+        </md-button>
+        <div id="ontology-graph" flex layout-fill></div>
+
+        <ontology-sidenav alignment="'left'" component-id="'ontology-sidenav-left'" on-close="$ctrl.toggleSidebar(componentId)">
+          <header>Schema</header>
+          <content>
+            <ontology-tree tree-data="$ctrl.classTree"
+                  node-label="title"
+                  on-node-clicked="$ctrl.onNodeClicked(id)"></ontology-tree>
+           </content>
+        </ontology-sidenav>
+
+        <ontology-sidenav alignment="'right'" component-id="'ontology-sidenav-right'" on-close="$ctrl.toggleSidebar(componentId)">
+          <header>Options</header>
+          <content>
+            <ontology-tree tree-data="$ctrl.classTree"
+                           node-label="title"></ontology-tree>
+          </content>
+        </ontology-sidenav>
+      </md-tab-content>
+    </md-tab>
+   <!-- <md-tab label="Optionen Graph" layout-fill>
+      <md-tab-content layout-fill>
+        <div layout="row">
+          <div layout="column">
+            <ul class="menuUL">
+              <li class="menuLI"><a ng-class="showInstanzknotenActive" class="iknoten" ng-click="isShowContent('Instanzknoten')">Instanzknoten</a></li>
+              <li class="menuLI"><a ng-class="showAttributsknotenActive" class="aknoten" ng-click="isShowContent('Attributsknoten')">Attributsknoten</a></li>
+              <li class="menuLI"><a ng-class="showKantenActive" class="kanten" ng-click="isShowContent('Kanten')">Kanten</a></li>
+              <li class="menuLI"><a ng-class="showPhysikalischeActive" class="physik" ng-click="isShowContent('Physikalische')">Physikalische Kräfte</a></li>
+            </ul>
+          </div>
+        </div>
+        <div layout="row">
+          <ul class="graphCol">
+            <li class="instanzCol" ng-show='showInstanzknoten'>
+              <h3 class="h3_title">Instanzknoten</h3>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-iksize">Größe:</label>
+                <md-slider-container class="opt-graph-input">
+                  <md-icon md-svg-icon="device:brightness-low"></md-icon>
+                  <md-slider ng-model="$ctrl.currentCase.iksize" min="3" max="30" aria-label="Größe" flex md-discrete ng-disabled="data.autosetup.instanzKnoten" ng-change="onInstanzKnotenChange()"></md-slider>
+                  <md-input-container>
+                    <input flex type="number" ng-model="$ctrl.currentCase.iksize" aria-label="green" readonly aria-controls="green-slider">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-ikcolor">Farbe (Füllen):</label>
+                <md-input-container class="opt-graph-input">
+                  <input required md-no-asterisk id="case-ikcolor" aria-label="Farbe" type="color" ng-disabled="data.autosetup.instanzKnoten" ng-model="$ctrl.currentCase.ikcolor" ng-change="onInstanzKnotenChange()">
+                </md-input-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-ikcolorFrame">Farbe (Umrandung):</label>
+                <md-input-container class="opt-graph-input">
+                  <input required md-no-asterisk id="case-ikcolorFrame" aria-label="Farbe" type="color" ng-disabled="data.autosetup.instanzKnoten" ng-model="$ctrl.currentCase.ikcolorFrame" ng-change="onInstanzKnotenChange()">
+                </md-input-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-ikform">Form:</label>
+                <md-input-container class="opt-graph-input cbTextCenter" ng-disabled="data.autosetup.instanzKnoten">
+                  <md-select ng-model="$ctrl.currentCase.ikform" aria-label="Form" id="case-ikform"  required ng-disabled="data.autosetup.instanzKnoten" class="md-underline" ng-change="onInstanzKnotenChange()">
+                    <md-option value="box">Box</md-option>
+                    <md-option value="circle">Circle</md-option>
+                    <md-option value="diamond">Diamond</md-option>
+                    <md-option value="dot">Dot</md-option>
+                    <md-option value="ellipse">Ellipse</md-option>
+                    <md-option value="star">Star</md-option>
+                    <md-option value="square">Square</md-option>
+                    <md-option value="triangle">Triangle</md-option>
+                  </md-select>
+                </md-input-container>
+              </div>
+              <div layout="column" class="switchPos">
+                <md-switch ng-model="data.autosetup.instanzKnoten" layout-align="center center" aria-label="Switch 2" class="md-warn" type="checkbox" ng-change="onInstanzKnotenChange()">
+                  <h5>Instanzknoten automatisch Einstellungen</h5>
+                </md-switch>
+              </div>
+            </li>
+            <li class="attributsCol" ng-show='showAttributsknoten'>
+              <h3 class="h3_title">Attributsknoten</h3>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-aksize">Größe:</label>
+                <md-slider-container class="opt-graph-input">
+                  <md-icon md-svg-icon="device:brightness-low"></md-icon>
+                  <md-slider ng-model="$ctrl.currentCase.aksize" aria-label="Größe" ng-disabled="data.autosetup.attributsKnoten" min="3" max="30" flex md-discrete ng-change="onAttributsKnotenChange()"></md-slider>
+                  <md-input-container>
+                    <input flex type="number" ng-model="$ctrl.currentCase.aksize" aria-label="green" readonly aria-controls="green-slider">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-akcolor">Farbe (Füllen):</label>
+                <md-input-container class="opt-graph-input">
+                  <input ng-disabled="data.autosetup.attributsKnoten" required md-no-asterisk id="case-akcolor" aria-label="Farbe" type="color" ng-model="$ctrl.currentCase.akcolor" ng-change="onAttributsKnotenChange()">
+                </md-input-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-akcolorFrame">Farbe (Umrandung):</label>
+                <md-input-container class="opt-graph-input">
+                  <input ng-disabled="data.autosetup.attributsKnoten" required md-no-asterisk id="case-akcolorFrame" aria-label="Farbe" type="color" ng-model="$ctrl.currentCase.akcolorFrame" ng-change="onAttributsKnotenChange()">
+                </md-input-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-akform">Form:</label>
+                <md-input-container class="opt-graph-input cbTextCenter">
+                  <md-select ng-model="$ctrl.currentCase.akform" aria-label="Form" id="case-akform" ng-disabled="data.autosetup.attributsKnoten" required class="md-underline" ng-change="onAttributsKnotenChange()">
+                    <md-option value="box">Box</md-option>
+                    <md-option value="circle">Circle</md-option>
+                    <md-option value="diamond">Diamond</md-option>
+                    <md-option value="dot">Dot</md-option>
+                    <md-option value="ellipse">Ellipse</md-option>
+                    <md-option value="star">Star</md-option>
+                    <md-option value="square">Square</md-option>
+                    <md-option value="triangle">Triangle</md-option>
+                  </md-select>
+                </md-input-container>
+              </div>
+              <div layout="column" class="switchPos">
+                <md-switch ng-model="data.autosetup.attributsKnoten" layout-align="center center" aria-label="Switch 2" class="md-warn" ng-change="onAttributsKnotenChange()">
+                  <h5>Attributsknoten automatisch Einstellungen</h5>
+                </md-switch>
+              </div>
+            </li>
+            <li class="kantenCol" ng-show='showKanten'>
+              <h3 class="h3_title">Kanten</h3>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-ksize">Größe:</label>
+                <md-slider-container class="opt-graph-input">
+                  <md-icon md-svg-icon="device:brightness-low"></md-icon>
+                  <md-slider ng-model="$ctrl.currentCase.ksize" aria-label="Größe" ng-disabled="data.autosetup.kanten" min="1" max="20" flex md-discrete ng-change="onKantenChange()"></md-slider>
+                  <md-input-container>
+                    <input flex type="number" ng-model="$ctrl.currentCase.ksize" aria-label="green" readonly aria-controls="green-slider">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-kcolor">Farbe (Füllen):</label>
+                <md-input-container class="opt-graph-input">
+                  <input ng-disabled="data.autosetup.kanten" required md-no-asterisk id="case-kcolor" aria-label="Farbe" type="color" ng-model="$ctrl.currentCase.kcolor" ng-change="onKantenChange()">
+                </md-input-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title" for="case-kform">Form:</label>
+                <md-input-container class="opt-graph-input cbTextCenter">
+                  <md-select ng-model="$ctrl.currentCase.kform" aria-label="Form" id="case-kform" ng-disabled="data.autosetup.kanten" required class="md-underline" ng-change="onKantenChange()">
+                    <md-option value="continuous">Continuous</md-option>
+                    <md-option value="cubicBezier">CubicBezier</md-option>
+                    <md-option value="curvedCW">CurvedCW</md-option>
+                    <md-option value="curvedCCW">CurvedCCW</md-option>
+                    <md-option value="diagonalCross">DiagonalCross</md-option>
+                    <md-option value="discrete">Discrete</md-option>
+                    <md-option value="dynamic">Dynamic</md-option>
+                    <md-option value="horizontal">Horizontal</md-option>
+                    <md-option value="straightCross">StraightCross</md-option>
+                    <md-option value="vertical">Vertical</md-option>
+                  </md-select>
+                </md-input-container>
+              </div>
+              <div layout="column" class="switchPos">
+                <md-switch ng-model="data.autosetup.kanten" layout-align="center center" aria-label="Switch 2" class="md-warn" ng-change="onKantenChange()">
+                  <h5>Kanten automatisch Einstellungen</h5>
+                </md-switch>
+              </div>
+            </li>
+            <li class="physikCol" ng-show='showPhysikalische'>
+              <h3 class="h3_title">Physik</h3>
+              <div layout="column">
+                <label class="opt-graph-title infoIcon">
+                  Zentrale Schwerkraft:
+                  <md-tooltip class="ttFont">
+                    There is a central gravity attractor to pull the entire network back to the center.
+                  </md-tooltip>
+                  <i class="material-icons infoIcon">info_outline</i>
+                </label>
+                <md-slider-container>
+                  <md-icon md-svg-icon="device:brightness-low"></md-icon>
+                  <md-slider ng-model="$ctrl.currentCase.physicsCG" aria-label="Central Gravity" ng-disabled="data.autosetup.physik" min="1" max="10" step="0.1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+                  <md-input-container>
+                    <input flex type="number" ng-model="$ctrl.currentCase.physicsCG" aria-label="Central Gravity" readonly aria-controls="green-slider">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title infoIcon">
+                  Spring Length:
+                  <md-tooltip class="ttFont">
+                    The edges are modelled as springs. This springLength here is the the rest length of the spring.
+                  </md-tooltip>
+                  <i class="material-icons infoIcon">info_outline</i>
+                </label>
+                <md-slider-container>
+                  <md-icon md-svg-icon="device:brightness-low"></md-icon>
+                  <md-slider ng-model="$ctrl.currentCase.physicsSP" aria-label="Spring Length" ng-disabled="data.autosetup.physik" min="0" max="1000" step="1" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+                  <md-input-container>
+                    <input flex type="number" ng-model="$ctrl.currentCase.physicsSP" aria-label="Spring Length" readonly aria-controls="green-slider">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title infoIcon">
+                  Dämpfung:
+                  <md-tooltip class="ttFont">
+                    Accepted range: [0 .. 1]. The damping factor is how much of the velocity from the previous physics simulation iteration carries over to the next iteration.
+                  </md-tooltip>
+                  <i class="material-icons infoIcon">info_outline</i>
+                </label>
+                <md-slider-container>
+                  <md-icon md-svg-icon="device:brightness-low"></md-icon>
+                  <md-slider ng-model="$ctrl.currentCase.physicsDamping" aria-label="Damping" ng-disabled="data.autosetup.physik" min="0" max="1" step="0.01" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+                  <md-input-container>
+                    <input flex type="number" ng-model="$ctrl.currentCase.physicsDamping" aria-label="Damping" readonly aria-controls="green-slider">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+              <div layout="column">
+                <label class="opt-graph-title infoIcon">
+                  Vermeiden Sie Überschneidungen:
+                  <md-tooltip class="ttFont">
+                    Accepted range: [0 .. 1]. When larger than 0, the size of the node is taken into account. The distance will be calculated from the radius of the encompassing circle of the node for both the gravity model. Value 1 is maximum overlap avoidance.
+                  </md-tooltip>
+                  <i class="material-icons infoIcon">info_outline</i>
+                </label>
+                <md-slider-container>
+                  <md-icon md-svg-icon="device:brightness-low"></md-icon>
+                  <md-slider ng-model="$ctrl.currentCase.physicsAO" aria-label="avoidOverlap" ng-disabled="data.autosetup.physik" min="0" max="1" step="0.01" flex md-discrete ng-change="onPhysicChange()"></md-slider>
+                  <md-input-container>
+                    <input flex type="number" ng-model="$ctrl.currentCase.physicsAO" aria-label="avoidOverlap" readonly aria-controls="green-slider">
+                  </md-input-container>
+                </md-slider-container>
+              </div>
+              <div layout="column" class="switchPos">
+                <md-switch ng-model="data.autosetup.physik" layout-align="center center" aria-label="Switch 2" class="md-warn" ng-change="onPhysicChange()">
+                  <h5>Physikalische Kräfte automatisch Einstellungen</h5>
+                </md-switch>
+              </div>
+            </li>
+          </ul>
+        </div>-->
+        <!-- 2. row end-->
+        <!--<div ng-show="viewData.showFooter">
+          <p>Created by {{$ctrl.currentCase.createdBy}} on {{$ctrl.currentCase.createdOn | date: "dd. MMM yyyy' at 'HH:mm "}}</p>
+          <p>Last edited by {{$ctrl.currentCase.lastEditedBy}} on {{$ctrl.currentCase.lastEditedOn| date: "dd. MMM yyyy' at 'HH:mm "}}</p>
+        </div>
+      </md-tab-content>
+    </md-tab>-->
+  </md-tabs>
+</div>

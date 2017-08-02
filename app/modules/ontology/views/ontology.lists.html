@@ -1,0 +1,17 @@
+<md-content>
+  <section>
+    <md-subheader class="md-primary expandable" ng-click="$ctrl.hideList1 = !$ctrl.hideList1">Entities</md-subheader>
+    <ontology-tree ng-hide="$ctrl.hideList1"
+                   tree-data="$ctrl.classIndividualsData"
+                   node-children="children"
+                   node-label="name"></ontology-tree>
+  </section>
+  <section>
+    <md-subheader class="md-primary expandable"  ng-click="$ctrl.hideList3 = !$ctrl.hideList3">Nodes with multiple Cases</md-subheader>
+    <ontology-tree
+      ng-hide="$ctrl.hideList3"
+      tree-data="$ctrl.multipleCaseData"
+      node-children="children"
+      node-label="label"></ontology-tree>
+  </section>
+</md-content>

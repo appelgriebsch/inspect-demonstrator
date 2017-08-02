@@ -1,0 +1,31 @@
+<div layout="column" ng-cloak layout-padding layout-fill >
+  <h3>Profile: {{$ctrl.activeProfile.name}}</h3>
+
+  <md-input-container class="md-block">
+    <label for="case-class">Case Class:</label>
+    <input md-minlength="5" id="case-class" aria-label="Case Class" data-ng-model="$ctrl.activeProfile.cases.caseClassIri"  ng-pattern="/^[^\s]+$/">
+  </md-input-container>
+
+  <md-input-container class="md-block">
+    <label for="case-name-prop">Case Name Property:</label>
+    <input md-minlength="5" id="case-name-prop" aria-label="Case Name Property" data-ng-model="$ctrl.activeProfile.cases.caseNamePropertyIri"  ng-pattern="/^[^\s]+$/">
+  </md-input-container>
+
+  <md-input-container class="md-block">
+    <label for="case-individual-property">Property which links a Case Individual and an Individual:</label>
+    <input md-minlength="5" id="case-individual-property" aria-label="Case-Individual Property" data-ng-model="$ctrl.activeProfile.cases.caseIndividualPropertyIri"  ng-pattern="/^[^\s]+$/">
+  </md-input-container>
+
+  <md-input-container class="md-block">
+    <label for="individual-case-property">Property which links an Individual and a Case Individual:</label>
+    <input md-minlength="5" id="individual-case-property" aria-label="Individual-Case Property" data-ng-model="$ctrl.activeProfile.cases.individualCasePropertyIri"  ng-pattern="/^[^\s]+$/">
+  </md-input-container>
+
+  <div>
+    {{$ctrl.symbolCount}} symbols are configured for this profile.
+  </div>
+  <md-button class="md-primary"  ng-click="$ctrl.changeSymbolSettings()" aria-label="Edit Symbol Settings" >Edit Symbol Settings</md-button>
+</div>
+
+
+
