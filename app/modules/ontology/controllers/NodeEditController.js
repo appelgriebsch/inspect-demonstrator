@@ -1,10 +1,9 @@
 (function(angular) {
 
   'use strict';
-  function NodeEditController($scope, $state, CaseOntologyDataService) {
+  function NodeEditController($scope, $state, CaseOntologyDataService, LibraryDataService, OntologyMetadataService) {
     const vm = this;
     vm.state = $state.$current;
-
     vm.mode = "add";
     vm.dataTypes = [
       {id: "http://www.w3.org/2001/XMLSchema#string",  label: "string"},
@@ -19,6 +18,7 @@
       objectRelations: [],
       dataRelations: [],
       cases: [],
+      documents: [],
     };
     vm.selectedObjectRelation = undefined;
     vm.selectedIndividual = undefined;
@@ -26,6 +26,9 @@
     vm.selectedDataRelation = undefined;
     vm.selectedDataRelationType = undefined;
     vm.selectedDataRelationTarget = undefined;
+
+    vm.selectedDocumentId = undefined;
+    vm.documents = [];
 
     vm.addObjectRelation = () => {
       const obj = vm.object.objectRelations.find((r) => {
@@ -83,6 +86,31 @@
       vm.selectedDataRelationTarget = undefined;
     };
 
+    vm.addDocument = () => {
+      const doc = vm.documents.find((d) => {
+        return d.id === vm.selectedDocumentId;
+      });
+      if (doc) {
+        vm.documents = vm.documents.filter((d) => {
+          return d.id !== vm.selectedDocumentId;
+        });
+
+        vm.object.documents.push(doc);
+        vm.selectedDocumentId = undefined;
+      }
+    };
+
+    vm.removeDocument = (id) => {
+      const doc = vm.object.documents.find((d) => {
+        return d.id === id;
+      });
+      if (doc) {
+        vm.object.documents = vm.object.documents.filter((d) => {
+          return d.id !== id;
+        });
+        vm.documents.push(doc);
+      }
+    };
 
     vm.toggle = function (item, list) {
       const idx = list.indexOf(item);
@@ -112,7 +140,14 @@
     });
 
     $scope.$on('submit', () => {
+
+      const metadata = OntologyMetadataService.newNodeMetadata($state.params.nodeId);
+      metadata.documents = vm.object.documents.map((d) => {
+        return d.id;
+      });
       CaseOntologyDataService.saveAsIndividual(vm.object).then(() => {
+        return OntologyMetadataService.saveNodeMetadata(metadata);
+      }).then(() => {
         _goBack();
         $scope.setReady(true);
       }).catch((err) => {
@@ -130,12 +165,31 @@
         return;
       }
 
-      CaseOntologyDataService.initialize()
-        .then(CaseOntologyDataService.loadCaseList)
-        .then((cases) => {
-          vm.cases = cases.map((c) => {
+      Promise.all([
+        CaseOntologyDataService.initialize(),
+        LibraryDataService.initialize(),
+        OntologyMetadataService.initialize()
+      ]).then(() => {
+        return Promise.all([
+          CaseOntologyDataService.loadCaseList(),
+          LibraryDataService.library(),
+          OntologyMetadataService.nodeMetadata($state.params.nodeId)
+        ]);
+      }).then((result) => {
+          vm.cases = result[0].map((c) => {
             return {id: c.identifier, label: c.name};
           });
+          vm.documents = result[1].rows.map((item) => {
+            return { id: item.doc._id, label: item.doc.meta.headline ? item.doc.meta.headline : item.doc.meta.name};
+          });
+          if (result[2] && result[2].documents) {
+            vm.object.documents = vm.documents.filter((d) => {
+              return result[2].documents.indexOf(d.id) > -1;
+            });
+            vm.documents = vm.documents.filter((d) => {
+              return result[2].documents.indexOf(d.id) < 0;
+            });
+          }
           // load case to have possible targets for the object relations
           if ($state.params.caseId) {
             return CaseOntologyDataService.loadCase($state.params.caseId, true);
@@ -201,6 +255,7 @@
         }
         // in case it will be renamed
         vm.object.oldLabel = vm.object.label;
+
         $scope.setReady(true);
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);

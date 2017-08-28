@@ -87,7 +87,9 @@
           if (e.dataTransfer.files.length > 1) {
             e.dataTransfer.dropEffect = 'none';
           } else {
-            e.dataTransfer.dropEffect = (e.dataTransfer.files[0].type === 'application/pdf' ? 'copy' : 'none');
+            e.dataTransfer.dropEffect = (e.dataTransfer.files[0].type === 'application/' +
+            '' +
+            'pdf' ? 'copy' : 'none');
           }
           return false;
         };
@@ -107,6 +109,7 @@
       }
 
       return Promise.all(init);
+
     };
 
     this.showFileSelector = function() {

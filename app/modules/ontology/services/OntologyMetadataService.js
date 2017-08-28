@@ -27,6 +27,22 @@
       );
     };
 
+    const _saveNodeMetadata = (data) => {
+      return Promise.resolve(
+        db.get(data._id)
+          .then((result) => {
+             data._rev = result._rev;
+             return db.put(data);
+          })
+          .catch((err) => {
+            if (err.status === 404) {
+              return db.put(data);
+            } else {
+              throw err;
+            }
+          })
+      );
+    };
 
     const _saveProfile = (profile, overwrite = true) => {
       if (!profile._id) {
@@ -232,6 +248,7 @@
         metadata.createdOn = date;
         metadata.lastEditedBy = user;
         metadata.lastEditedOn = date;
+        metadata.documentLinks = {};
         return JSON.parse(JSON.stringify(metadata));
       },
       metadata: (caseIdentifier) => {
@@ -239,6 +256,29 @@
       },
       saveMetadata: function(data) {
         return _saveMetadata(data);
+      },
+
+      newNodeMetadata: (id, documents) => {
+        return {
+          _id : `node_${id}`,
+          documents: Array.isArray(documents) ? documents : []
+        };
+      },
+      nodeMetadata: (id) => {
+        return Promise.resolve(
+          db.get(`node_${id}`).then((data) => {
+            return data;
+        }).catch((err) => {
+            if (err.status === 404) {
+              return;
+            } else {
+              throw err;
+            }
+          })
+        );
+      },
+      saveNodeMetadata: function(data) {
+        return _saveNodeMetadata(data);
       },
 
       allProfileNames: () => {

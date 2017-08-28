@@ -1,7 +1,7 @@
 (function (angular) {
   'use strict';
 
-  function OntologyViewStatusController ($scope, OntologyDataService) {
+  function OntologyViewStatusController ($scope, OntologyDataService, LibraryDataService, OntologyMetadataService, DocumentViewService) {
     const vm = this;
 
     const _makeList = (iris) => {
@@ -43,12 +43,46 @@
           vm.nodeType = 'individual';
           vm.cases = _makeList(data[0].cases);
           vm.types = _makeList(data[0].classes);
-          $scope.$apply();
+          vm.documents = [];
+          OntologyMetadataService.nodeMetadata(data[0].id).then((metadata) => {
+            if (metadata) {
+              // wrap them cause the documents might have been deleted
+              metadata.documents.forEach((d) => {
+                  LibraryDataService.itemMeta(d).then((doc) => {
+                    vm.documents.push({
+                      id: doc._id,
+                      label: doc.meta.headline ? doc.meta.headline : doc.meta.name
+                    });
+                  }).catch((err) => {
+                    // ignore error
+                  });
+              });
+            }
+            // meh, this is executed to early
+            $scope.$apply();
+          }).catch((err) => {
+            $scope.setError('SearchAction', 'search', err);
+          });
         }
       }
     });
     vm.$onInit = () => {
-      vm.reset();
+      LibraryDataService.initialize().then(() => {
+        vm.reset();
+      }).catch((err) => {
+        $scope.setError('SearchAction', 'search', err);
+      });
+
+    };
+
+    vm.showDocument = (id) => {
+     LibraryDataService.item(id).then((document) => {
+       console.log("show document", document);
+        const attachment = document._attachments[document.meta.name] || undefined;
+        if (attachment) {
+          DocumentViewService.openFile(id, attachment);
+        }
+      });
     };
 
     vm.reset = () => {
@@ -58,6 +92,7 @@
       vm.nodeType = '';
       vm.parents = '';
       vm.children = '';
+      vm.documents = [];
     };
   }
   module.exports = OntologyViewStatusController;
