@@ -1,7 +1,7 @@
 (function (angular, vis) {
   'use strict';
 
-  function OntologyViewController ($scope, $state, $q, $mdSidenav, GraphService, CaseOntologyDataService, OntologySharingService) {
+  function OntologyViewController ($scope, $state, $q, $mdSidenav, GraphService, CaseOntologyDataService, OntologySharingService, DocumentSharingService) {
     const convert = require('color-convert');
     const vm = this;
     vm.state = $state.$current;
@@ -495,7 +495,6 @@
 
     $scope.$on('export-ontology', () => {
       const targetPath = OntologySharingService.requestSaveFile();
-
       if (targetPath !== undefined) {
         $scope.setBusy('Exporting ontology...');
 

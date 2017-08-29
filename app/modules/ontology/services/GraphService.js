@@ -74,7 +74,6 @@
         group: (individual.cases.length === 0) ? _tags.NO_CASE : individual.cases[0],
         cases: (individual.cases.length === 0) ? [_tags.NO_CASE] : individual.cases
       };
-      console.log(individual.allParentClassIris);
       return _setSymbolForNode(node, [individual.iri].concat(individual.classIris).concat(individual.allParentClassIris));
     };
 

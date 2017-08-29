@@ -2,6 +2,8 @@
   'use strict';
 
   function OntologyMetadataService (PouchDBService) {
+    const fs = require('fs');
+
     let db;
 
     const _saveMetadata = (data) => {
@@ -299,6 +301,23 @@
         return JSON.parse(JSON.stringify(doc));
       },
 
+      import: (path) => {
+        return new Promise((resolve, reject) => {
+          const stream = fs.createReadStream(path);
+          db.load(stream)
+            .then(resolve)
+            .catch(reject);
+        });
+      },
+
+      export: (path) => {
+        return new Promise((resolve, reject) => {
+          const stream = fs.createWriteStream(path);
+          db.dump(stream)
+            .then(resolve)
+            .catch(reject);
+        });
+      },
 
     };
   }

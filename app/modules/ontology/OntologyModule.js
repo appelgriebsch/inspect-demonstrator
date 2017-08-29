@@ -129,7 +129,7 @@
 
 
     angular.module('electron-app').controller('OntologyOptionsController', ['$scope', '$mdDialog', OntologyOptionsController]);
-    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$mdSidenav', 'GraphService', 'CaseOntologyDataService', 'OntologySharingService', OntologyViewController]);
+    angular.module('electron-app').controller('OntologyViewController', ['$scope', '$state', '$q', '$mdSidenav', 'GraphService', 'CaseOntologyDataService', 'OntologySharingService', 'DocumentSharingService', OntologyViewController]);
     angular.module('electron-app').controller('OntologyAutoCompleteController', ['$scope', OntologyAutoCompleteController]);
     angular.module('electron-app').controller('OntologyViewStatusController', ['$scope', 'OntologyDataService', 'LibraryDataService', 'OntologyMetadataService', 'DocumentViewService', OntologyViewStatusController]);
     angular.module('electron-app').controller('CasesViewController', ['$scope', '$state', 'CaseOntologyDataService', CasesViewController]);
@@ -158,7 +158,7 @@
     angular.module('electron-app').service('GraphService', ['OntologyDataService', 'CaseOntologyDataService', 'OntologyMetadataService', GraphService]);
     angular.module('electron-app').service('CaseOntologyDataService', ['OntologyDataService', 'OntologyMetadataService', CaseOntologyDataService]);
     angular.module('electron-app').service('OntologyDataService', ['LevelGraphService', OntologyDataService]);
-    angular.module('electron-app').service('OntologySharingService', ['OntologyDataService', OntologySharingService]);
+    angular.module('electron-app').service('OntologySharingService', ['OntologyDataService', 'OntologyMetadataService', OntologySharingService]);
     angular.module('electron-app').service('OntologyMetadataService', ['PouchDBService', OntologyMetadataService]);
     angular.module('electron-app').service('GraphDataService', ['PouchDBService', GraphDataService]);
     angular.module('electron-app').service('DocumentViewService', [ DocumentViewService]);
