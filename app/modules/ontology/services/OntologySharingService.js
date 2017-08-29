@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  function OntologySharingService (OntologyDataService) {
+  function OntologySharingService (OntologyDataService, OntologyMetadataService) {
     const electron = require('electron');
     const app = electron.remote.app;
     const dialog = electron.remote.dialog;
@@ -35,20 +35,30 @@
       });
     };
 
-    const _import = (path) => {
+    const _import = (ontologyPath) => {
+      const metaDataPath = ontologyPath.replace('.ttl', '.meta');
       return new Promise((resolve, reject) => {
         OntologyDataService.clear().then(() => {
-          return OntologyDataService.import(path);
+          return OntologyDataService.import(ontologyPath);
         }).then(() => {
-          resolve();
-        }).catch((err) => {
-          reject(err);
-        });
+          if (fs.existsSync(metaDataPath)) {
+            return OntologyMetadataService.import(metaDataPath);
+          } else {
+            return true;
+          }
+        }).then(resolve)
+          .catch(reject);
       });
     };
-
-    const _export = (path) => {
-      return OntologyDataService.export(path);
+    const _export = (ontologyPath) => {
+      return new Promise((resolve, reject) => {
+        const metaDataPath = ontologyPath.replace('.ttl', '.meta');
+        Promise.all([
+          OntologyDataService.export(ontologyPath),
+          OntologyMetadataService.export(metaDataPath)
+        ]).then(resolve)
+          .catch(reject);
+      });
     };
 
     return {

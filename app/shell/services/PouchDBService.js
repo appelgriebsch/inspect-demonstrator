@@ -9,6 +9,10 @@
     PouchDB.plugin(require('pouchdb-find'));
     PouchDB.plugin(require('pouchdb-quick-search'));
 
+    var replicationStream = require('pouchdb-replication-stream');
+    PouchDB.plugin(replicationStream.plugin);
+    PouchDB.adapter('writableStream', replicationStream.adapters.writableStream);
+
     var app = require('electron').remote.app;
 
     var sysCfg = app.sysConfig();
@@ -25,7 +29,6 @@
     }
 
     return {
-
       initialize: function(dbName) {
         return new DataService(dbName);
       }

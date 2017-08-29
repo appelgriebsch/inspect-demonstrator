@@ -608,7 +608,6 @@
       if (classIri === undefined) {
         return Promise.reject(new Error('Class iri is undefined.'));
       }
-      console.log("classIri", classIri);
       /*
        [{
        subject: classIri,

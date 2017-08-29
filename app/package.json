@@ -2,7 +2,7 @@
   "name": "inspect.demonstrator",
   "productName": "inspect.demonstrator",
   "description": "A demonstrator for the funded INSPECT project",
-  "version": "1.6.5",
+  "version": "2.0.0",
   "author": "Wincor Nixdorf International GmbH",
   "main": "index.js",
   "scripts": {
@@ -56,6 +56,7 @@
     "pouchdb": "^6.0.0",
     "pouchdb-find": "^0.10.0",
     "pouchdb-quick-search": "^1.1.0",
+    "pouchdb-replication-stream": "^1.2.9",
     "rimraf": "^2.4.3",
     "uuid": "^3.0.0",
     "vis": "^4.16.1"

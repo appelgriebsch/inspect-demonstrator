@@ -21,9 +21,6 @@
     <input md-minlength="5" id="individual-case-property" aria-label="Individual-Case Property" data-ng-model="$ctrl.activeProfile.cases.individualCasePropertyIri"  ng-pattern="/^[^\s]+$/">
   </md-input-container>
 
-  <div>
-    {{$ctrl.symbolCount}} symbols are configured for this profile.
-  </div>
   <md-button class="md-primary"  ng-click="$ctrl.changeSymbolSettings()" aria-label="Edit Symbol Settings" >Edit Symbol Settings</md-button>
 </div>
 

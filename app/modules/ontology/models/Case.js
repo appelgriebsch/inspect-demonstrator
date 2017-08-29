@@ -17,18 +17,6 @@
       this.objectProperties = [];
       this.metaData = {};
     }
-    openCase () {
-      if (this.status !== 'new') {
-        throw Error('Case can not be opened!');
-      }
-      this.status = 'open';
-    }
-    closeCase () {
-      if (this.status !== 'open') {
-        throw Error('Case can not be closed!');
-      }
-      this.status = 'closed';
-    }
   }
   module.exports = Case;
 })();

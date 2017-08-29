@@ -233,6 +233,29 @@
           </md-input-container>
         </div>
       </div>
+
+      <h3>Link with Documents</h3>
+      <md-input-container class="md-block">
+        <md-select id="documents" placeholder="Select a document to link with the node" ng-model="$ctrl.selectedDocumentId">
+          <md-option value="{{doc.id}}" ng-repeat="doc in $ctrl.documents | orderBy:'label'">{{doc.label}}</md-option>
+        </md-select>
+      </md-input-container>
+      <md-button class="md-button md-primary" ng-click="$ctrl.addDocument()" ng-disabled="!$ctrl.selectedDocumentId" aria-label="Add document">
+        Add relation
+      </md-button>
+      <div ng-hide="$ctrl.object.documents.length === 0">
+        <h4>Existing Links</h4>
+        <div ng-repeat="item in $ctrl.object.documents" layout="row" layout-margin layout-padding >
+          <md-input-container flex="50">
+            <input aria-label="Document" type="text" value="{{item.label}}" readonly></input>
+          </md-input-container>
+          <md-input-container flex="20">
+            <md-button class="md-button md-primary" ng-click="$ctrl.removeDocument(item.id)" type="button">
+              Remove
+            </md-button>
+          </md-input-container>
+        </div>
+      </div>
     </form>
   </md-content>
 </div>

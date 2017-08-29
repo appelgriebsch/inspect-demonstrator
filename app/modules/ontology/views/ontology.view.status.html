@@ -8,6 +8,9 @@
   </div>
   <span ng-if="$ctrl.nodeType === 'individual'">Types: {{$ctrl.types}}</span>
   <span ng-if="$ctrl.nodeType === 'individual'">Belongs to: {{$ctrl.cases}}</span>
+  <span ng-if="$ctrl.nodeType === 'individual' && $ctrl.documents && $ctrl.documents.length > 0">Documents:
+    <md-button md-no-ink class="md-primary" ng-click="$ctrl.showDocument(doc.id)" ng-repeat="doc in $ctrl.documents | orderBy:'label'">{{doc.label}}</md-button>
+  </span>
   <span ng-if="$ctrl.nodeType === 'class'">Parents: {{$ctrl.parents}}</span>
   <span ng-if="$ctrl.nodeType === 'class'">Children: {{$ctrl.children}}</span>
 

@@ -2,6 +2,8 @@
   'use strict';
 
   function OntologyMetadataService (PouchDBService) {
+    const fs = require('fs');
+
     let db;
 
     const _saveMetadata = (data) => {
@@ -27,6 +29,22 @@
       );
     };
 
+    const _saveNodeMetadata = (data) => {
+      return Promise.resolve(
+        db.get(data._id)
+          .then((result) => {
+            data._rev = result._rev;
+            return db.put(data);
+          })
+          .catch((err) => {
+            if (err.status === 404) {
+              return db.put(data);
+            } else {
+              throw err;
+            }
+          })
+      );
+    };
 
     const _saveProfile = (profile, overwrite = true) => {
       if (!profile._id) {
@@ -232,13 +250,44 @@
         metadata.createdOn = date;
         metadata.lastEditedBy = user;
         metadata.lastEditedOn = date;
+        metadata.documentLinks = {};
         return JSON.parse(JSON.stringify(metadata));
       },
       metadata: (caseIdentifier) => {
-        return db.get(`metadata_${caseIdentifier}`);
+        return new Promise((resolve, reject) => {
+          db.get(`metadata_${caseIdentifier}`)
+            .then(resolve)
+            .catch((err) => {
+              resolve({ ok: false, id: caseIdentifier});
+          });
+        });
       },
+
       saveMetadata: function(data) {
         return _saveMetadata(data);
+      },
+
+      newNodeMetadata: (id, documents) => {
+        return {
+          _id : `node_${id}`,
+          documents: Array.isArray(documents) ? documents : []
+        };
+      },
+      nodeMetadata: (id) => {
+        return Promise.resolve(
+          db.get(`node_${id}`).then((data) => {
+            return data;
+          }).catch((err) => {
+            if (err.status === 404) {
+              return;
+            } else {
+              throw err;
+            }
+          })
+        );
+      },
+      saveNodeMetadata: function(data) {
+        return _saveNodeMetadata(data);
       },
 
       allProfileNames: () => {
@@ -258,7 +307,23 @@
         var doc = this.templates.graphOptions || {};
         return JSON.parse(JSON.stringify(doc));
       },
+      import: (path) => {
+        return new Promise((resolve, reject) => {
+          const stream = fs.createReadStream(path);
+          db.load(stream)
+            .then(resolve)
+            .catch(reject);
+        });
+      },
 
+      export: (path) => {
+        return new Promise((resolve, reject) => {
+          const stream = fs.createWriteStream(path);
+          db.dump(stream)
+            .then(resolve)
+            .catch(reject);
+        });
+      },
 
     };
   }
