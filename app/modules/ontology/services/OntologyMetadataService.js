@@ -33,8 +33,8 @@
       return Promise.resolve(
         db.get(data._id)
           .then((result) => {
-             data._rev = result._rev;
-             return db.put(data);
+            data._rev = result._rev;
+            return db.put(data);
           })
           .catch((err) => {
             if (err.status === 404) {
@@ -254,8 +254,15 @@
         return JSON.parse(JSON.stringify(metadata));
       },
       metadata: (caseIdentifier) => {
-        return db.get(`metadata_${caseIdentifier}`);
+        return new Promise((resolve, reject) => {
+          db.get(`metadata_${caseIdentifier}`)
+            .then(resolve)
+            .catch((err) => {
+              resolve({ ok: false, id: caseIdentifier});
+          });
+        });
       },
+
       saveMetadata: function(data) {
         return _saveMetadata(data);
       },
@@ -270,7 +277,7 @@
         return Promise.resolve(
           db.get(`node_${id}`).then((data) => {
             return data;
-        }).catch((err) => {
+          }).catch((err) => {
             if (err.status === 404) {
               return;
             } else {
@@ -300,7 +307,6 @@
         var doc = this.templates.graphOptions || {};
         return JSON.parse(JSON.stringify(doc));
       },
-
       import: (path) => {
         return new Promise((resolve, reject) => {
           const stream = fs.createReadStream(path);
