@@ -1,16 +1,13 @@
 (function(angular) {
 
   'use strict';
-  function ProfileSettingsController($scope, $state, OntologyMetadataService, OntologyDataService) {
+  function ProfileSettingsController($scope, $state, OntologyMetadataService, OntologyDataService, CaseOntologyDataService) {
     const vm = this;
 
     vm.activeProfile = undefined;
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
 
-    vm.changeSymbolSettings = () => {
-      $state.go('app.ontology.symbols');
-    };
      vm.$onInit = () => {
       $state.params.profileName = "default";
       $scope.setBusy('Loading data...');
@@ -65,9 +62,12 @@
         }).map((data) => {
           return OntologyMetadataService.saveMetadata(data);
         });
+        CaseOntologyDataService.reset();
+        promises.push(CaseOntologyDataService.initialize());
         return Promise.all(promises);
       }).then(() => {
         $scope.setReady(true);
+        $state.go('app.ontology.view');
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);

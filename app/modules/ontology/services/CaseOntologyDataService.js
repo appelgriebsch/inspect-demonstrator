@@ -209,8 +209,9 @@
           //insert individual & update case metadata
           promises.push(OntologyDataService.insertIndividual(individual));
           return Promise.all(promises);
-        }).then(resolve)
-          .catch(reject);
+        }).then(() => {
+          resolve(individual);
+        }).catch(reject);
       });
     };
 
