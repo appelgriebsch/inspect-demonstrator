@@ -71,7 +71,6 @@
     };
 
     const _buildClassTree = (classes) => {
-      console.log("classes", classes);
       // transform classes into nodes
       const nodes = classes.map((c) => {
         return { id: c.iri, title: c.label, children: [] };
@@ -91,7 +90,6 @@
           result.push(node);
         }
       });
-      console.log("classes tree", result);
       return result;
     };
 

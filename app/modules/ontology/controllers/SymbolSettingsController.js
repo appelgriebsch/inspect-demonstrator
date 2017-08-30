@@ -152,16 +152,18 @@
     };
 
     $scope.$on('cancel', () => {
-      $state.go('app.ontology.profile');
+      $state.go('app.ontology.view');
     });
 
     $scope.$on('submit', () => {
       $scope.setBusy('Saving data...');
       OntologyMetadataService.saveProfile(vm.activeProfile).then((result) => {
         $scope.setReady(true);
+        $state.go('app.ontology.view');
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);
+
       });
     });
 

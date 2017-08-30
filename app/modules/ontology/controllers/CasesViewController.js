@@ -29,12 +29,6 @@
     $scope.openCase =  (caseId) => {
       $state.go('app.ontology.case', {caseId: caseId});
     };
-
-
-    $scope.$on('show-ontology', () => {
-      $state.go('app.ontology.view');
-    });
-
     vm.filter = () => {
       $scope.setBusy('Filtering...');
       vm.filteredCases = vm.cases.filter((c) => {

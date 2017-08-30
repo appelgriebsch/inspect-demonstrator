@@ -515,8 +515,11 @@
     $scope.$on('edit-cases', () => {
       $state.go('app.ontology.cases');
     });
-    $scope.$on('settings', () => {
+    $scope.$on('edit-settings', () => {
       $state.go('app.ontology.profile');
+    });
+    $scope.$on('edit-icons', () => {
+      $state.go('app.ontology.symbols');
     });
   }
 

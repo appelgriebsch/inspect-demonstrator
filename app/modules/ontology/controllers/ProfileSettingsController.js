@@ -8,9 +8,6 @@
     const app = require('electron').remote.app;
     const sysCfg = app.sysConfig();
 
-    vm.changeSymbolSettings = () => {
-      $state.go('app.ontology.symbols');
-    };
      vm.$onInit = () => {
       $state.params.profileName = "default";
       $scope.setBusy('Loading data...');
@@ -70,6 +67,7 @@
         return Promise.all(promises);
       }).then(() => {
         $scope.setReady(true);
+        $state.go('app.ontology.view');
       }).catch((err) => {
         $scope.setError('SearchAction', 'search', err);
         $scope.setReady(true);

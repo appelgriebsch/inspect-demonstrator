@@ -17,9 +17,13 @@
       <md-tooltip md-direction="left">Edit Cases</md-tooltip>
       <md-icon>fingerprint</md-icon>
     </md-button>
-    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('settings', $event)">
-      <md-tooltip md-direction="left">Settings</md-tooltip>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('edit-settings', $event)">
+      <md-tooltip md-direction="left">Edit Ontology Settings</md-tooltip>
       <md-icon>settings</md-icon>
+    </md-button>
+    <md-button class="md-fab md-raised md-mini" ng-click="shell.sendEvent('edit-icons', $event)">
+      <md-tooltip md-direction="left">Edit Icons/Symbols</md-tooltip>
+      <md-icon>add_a_photo</md-icon>
     </md-button>
   </md-fab-actions>
 </md-fab-speed-dial>

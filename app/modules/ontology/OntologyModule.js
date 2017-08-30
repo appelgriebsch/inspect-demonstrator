@@ -21,9 +21,6 @@
           }).state(`${moduleConfig.state}.view`, {
           url: '/view',
           views: {
-            /* 'content': {
-             template: '<ontology-view></ontology-view>'
-             }, */
             'content': {
               templateUrl: `${moduleConfig.path}/views/ontology.view.html`,
               controller: 'OntologyViewController as $ctrl'
@@ -44,8 +41,8 @@
               templateUrl: `${moduleConfig.path}/views/cases.view.html`,
               controller: 'CasesViewController as $ctrl'
             },
-            'actions@app': {
-              templateUrl: `${moduleConfig.path}/views/cases.view.actions.html`
+            'header@app': {
+              template: `<a ui-sref="^.view"><md-icon>chevron_left</md-icon>${moduleConfig.label}</a>`
             }
           }
         }).state(`${moduleConfig.state}.case`, {
@@ -93,6 +90,9 @@
             },
             'actions@app': {
               templateUrl: 'shell/views/shell.submit.html'
+            },
+            'header@app': {
+              template: `<a ui-sref="^.view"><md-icon>chevron_left</md-icon>${moduleConfig.label}</a>`
             }
           },
         }).state(`${moduleConfig.state}.profile`, {
@@ -104,7 +104,10 @@
             },
             'actions@app': {
               templateUrl: 'shell/views/shell.submit.html'
-            }
+            },
+            'header@app': {
+              template: `<a ui-sref="^.view"><md-icon>chevron_left</md-icon>${moduleConfig.label}</a>`
+            },
           },
         });
       });
