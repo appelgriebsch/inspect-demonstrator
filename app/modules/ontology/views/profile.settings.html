@@ -1,6 +1,4 @@
 <div layout="column" ng-cloak layout-padding layout-fill >
-  <h3>Profile: {{$ctrl.activeProfile.name}}</h3>
-
   <md-input-container class="md-block">
     <label for="case-class">Case Class:</label>
     <input md-minlength="5" id="case-class" aria-label="Case Class" data-ng-model="$ctrl.activeProfile.cases.caseClassIri"  ng-pattern="/^[^\s]+$/">

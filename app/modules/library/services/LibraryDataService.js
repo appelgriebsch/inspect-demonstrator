@@ -282,6 +282,9 @@
       },
 
       buildAuthorInformation: function(info) {
+        if (Array.isArray(info)  && info.length > 0) {
+          info = info[0];
+        }
         var template = this.templates['person'];
         if (typeof info === 'string') {
           var author = info.split(/\s*,\s*/);

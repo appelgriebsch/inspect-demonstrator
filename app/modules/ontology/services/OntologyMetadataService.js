@@ -258,7 +258,11 @@
           db.get(`metadata_${caseIdentifier}`)
             .then(resolve)
             .catch((err) => {
-              resolve({ ok: false, id: caseIdentifier});
+              if (err.status === 404) {
+                resolve({ok: false, id: caseIdentifier});
+              } else {
+                reject(err);
+              }
           });
         });
       },
@@ -274,17 +278,17 @@
         };
       },
       nodeMetadata: (id) => {
-        return Promise.resolve(
-          db.get(`node_${id}`).then((data) => {
-            return data;
-          }).catch((err) => {
-            if (err.status === 404) {
-              return;
-            } else {
-              throw err;
-            }
-          })
-        );
+        return new Promise((resolve, reject) => {
+          db.get(`node_${id}`)
+            .then(resolve)
+            .catch((err) => {
+              if (err.status === 404) {
+                resolve({ok: false, id: id});
+              } else {
+                reject(err);
+              }
+            });
+        });
       },
       saveNodeMetadata: function(data) {
         return _saveNodeMetadata(data);

@@ -141,7 +141,7 @@
     angular.module('electron-app').controller('NodeEditController', ['$scope', '$state', 'CaseOntologyDataService', 'LibraryDataService', 'OntologyMetadataService', NodeEditController]);
     angular.module('electron-app').controller('ListsController', ['$scope',  ListsController]);
     angular.module('electron-app').controller('SymbolSettingsController', ['$scope', '$q', '$state', 'CaseOntologyDataService', 'OntologyMetadataService', 'OntologyDataService', SymbolSettingsController]);
-    angular.module('electron-app').controller('ProfileSettingsController', ['$scope', '$state', 'OntologyMetadataService' ,  'OntologyDataService', ProfileSettingsController]);
+    angular.module('electron-app').controller('ProfileSettingsController', ['$scope', '$state', 'OntologyMetadataService' ,  'OntologyDataService', 'CaseOntologyDataService', ProfileSettingsController]);
 
 
     // load and register services

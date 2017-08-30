@@ -1,7 +1,7 @@
 (function(angular) {
 
   'use strict';
-  function ProfileSettingsController($scope, $state, OntologyMetadataService, OntologyDataService) {
+  function ProfileSettingsController($scope, $state, OntologyMetadataService, OntologyDataService, CaseOntologyDataService) {
     const vm = this;
 
     vm.activeProfile = undefined;
@@ -65,6 +65,8 @@
         }).map((data) => {
           return OntologyMetadataService.saveMetadata(data);
         });
+        CaseOntologyDataService.reset();
+        promises.push(CaseOntologyDataService.initialize());
         return Promise.all(promises);
       }).then(() => {
         $scope.setReady(true);

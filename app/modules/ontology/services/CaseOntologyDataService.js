@@ -71,6 +71,7 @@
     };
 
     const _buildClassTree = (classes) => {
+      console.log("classes", classes);
       // transform classes into nodes
       const nodes = classes.map((c) => {
         return { id: c.iri, title: c.label, children: [] };
@@ -90,6 +91,7 @@
           result.push(node);
         }
       });
+      console.log("classes tree", result);
       return result;
     };
 
@@ -209,8 +211,9 @@
           //insert individual & update case metadata
           promises.push(OntologyDataService.insertIndividual(individual));
           return Promise.all(promises);
-        }).then(resolve)
-          .catch(reject);
+        }).then(() => {
+          resolve(individual);
+        }).catch(reject);
       });
     };
 

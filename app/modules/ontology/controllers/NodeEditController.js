@@ -140,14 +140,14 @@
     });
 
     $scope.$on('submit', () => {
-
-      const metadata = OntologyMetadataService.newNodeMetadata($state.params.nodeId);
-      metadata.documents = vm.object.documents.map((d) => {
-        return d.id;
-      });
-      CaseOntologyDataService.saveAsIndividual(vm.object).then(() => {
+     CaseOntologyDataService.saveAsIndividual(vm.object).then((individual) => {
+        const metadata = OntologyMetadataService.newNodeMetadata(individual.iri);
+        metadata.documents = vm.object.documents.map((d) => {
+          return d.id;
+        });
         return OntologyMetadataService.saveNodeMetadata(metadata);
-      }).then(() => {
+      }).then((result) => {
+        console.log("metadata save result", result);
         _goBack();
         $scope.setReady(true);
       }).catch((err) => {
@@ -170,11 +170,17 @@
         LibraryDataService.initialize(),
         OntologyMetadataService.initialize()
       ]).then(() => {
-        return Promise.all([
+        const promises = [
           CaseOntologyDataService.loadCaseList(),
-          LibraryDataService.library(),
-          OntologyMetadataService.nodeMetadata($state.params.nodeId)
-        ]);
+          LibraryDataService.library()
+        ];
+        if ($state.params.nodeId) {
+          promises.push(OntologyMetadataService.nodeMetadata($state.params.nodeId));
+        } else {
+          promises.push(Promise.resolve());
+        }
+
+        return Promise.all(promises);
       }).then((result) => {
           vm.cases = result[0].map((c) => {
             return {id: c.identifier, label: c.name};
@@ -184,10 +190,10 @@
           });
           if (result[2] && result[2].documents) {
             vm.object.documents = vm.documents.filter((d) => {
-              return result[2].documents.indexOf(d.id) > -1;
+              return (result[2] && (result[2].documents.indexOf(d.id) > -1));
             });
             vm.documents = vm.documents.filter((d) => {
-              return result[2].documents.indexOf(d.id) < 0;
+              return !(result[2] && (result[2].documents.indexOf(d.id) > -1));
             });
           }
           // load case to have possible targets for the object relations

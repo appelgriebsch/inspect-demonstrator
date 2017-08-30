@@ -468,7 +468,6 @@
 
 
     /** events from the actions menu**/
-    //TODO: case list!
     $scope.$on('import-ontology', () => {
       const targetPath = OntologySharingService.requestOpenFile();
       if ((targetPath !== undefined) && (targetPath.length > 0)) {

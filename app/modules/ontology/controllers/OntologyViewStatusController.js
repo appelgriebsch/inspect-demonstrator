@@ -53,13 +53,12 @@
                       id: doc._id,
                       label: doc.meta.headline ? doc.meta.headline : doc.meta.name
                     });
+                    $scope.$apply();
                   }).catch((err) => {
                     // ignore error
                   });
               });
             }
-            // meh, this is executed to early
-            $scope.$apply();
           }).catch((err) => {
             $scope.setError('SearchAction', 'search', err);
           });
